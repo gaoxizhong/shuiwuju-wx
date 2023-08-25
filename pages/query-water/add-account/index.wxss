@@ -1,0 +1,23 @@
+/* pages/maintenance/add-account/index.wxss */
+page {
+  height: 100%;
+}
+
+.add-account {
+  background-color: #fff;
+}
+
+.add-account-content{
+  flex: 1;
+  overflow: hidden;
+}
+
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  padding: 20rpx;
+}

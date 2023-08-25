@@ -1,0 +1,89 @@
+<!--pages/admin/index.wxml-->
+<view class="home">
+  <view class="home-me-info">
+    <view class="me-header">
+      <image src="{{imgUrl}}" mode="" />
+    </view>
+
+    <view class="me-content">
+      <view class="nick-name">
+        {{userInfo.email || langSystem.name}}
+      </view>
+
+      <view class="me-phone">
+        {{userInfo.mobile}}
+      </view>
+    </view>
+
+  </view>
+  <view class="home-func-list">
+    <!-- <view class="func-item">
+      <view class="icon icon-my">
+        <image src="/img/account.png" mode="aspectFit" />
+      </view>
+
+      <view class="title">
+        {{admin.account}}
+      </view>
+      <view class="other-info">
+        150****9440
+      </view>
+      <view class="right">
+        <image src="/img/right.png" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="func-item">
+      <view class="icon icon-my">
+        <image src="/img/notice.png" mode="aspectFit" />
+      </view>
+
+      <view class="title">
+        {{admin.notice}}
+      </view>
+      <view class="right">
+        <image src="/img/right.png" mode="aspectFit" />
+      </view>
+    </view> -->
+    <view class="func-item" bindtap="handleEmployeeCertification">
+      <view class="icon">
+        <image src="/img/admin.png" mode="aspectFit" />
+      </view>
+
+      <view class="title">
+        {{admin.meinfo}}
+      </view>
+
+      <view class="right">
+        <image src="/img/right.png" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="func-item" bindtap="handleBluetooth">
+      <view class="icon">
+        <image src="/img/print.png" mode="aspectFit" />
+      </view>
+
+      <view class="title">
+        {{admin.deviceItem}}
+      </view>
+
+      <view class="right">
+        <image src="/img/right.png" mode="aspectFit" />
+      </view>
+    </view>
+    <view class="func-item" bindtap="handleLang">
+      <view class="icon">
+        <image src="/img/lang.png" mode="aspectFit" />
+      </view>
+
+      <view class="title">
+        {{admin.lang}}
+      </view>
+
+      <view class="right">
+        <image src="/img/right.png" mode="aspectFit" />
+      </view>
+    </view>
+
+    <!-- <button class="login-exit">{{isLogin ? admin.logout : admin.login}}</button> -->
+  </view>
+</view>

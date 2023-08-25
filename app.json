@@ -1,0 +1,72 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/index/account-search/index",
+    "pages/admin/index",
+    "pages/history/index",
+    "pages/func/index",
+    "pages/query-water/add-account/index",
+    "pages/query-water/pay/collect-info/index",
+    "pages/query-water/today-summary/index",
+    "pages/query-water/report-repair/index",
+    "pages/maintenance/maintenance/index",
+    "pages/business-hall/index/index",
+    "pages/financial-manager/search-account/index",
+    "pages/general-manager/query-report/index",
+    "pages/admin/employee-certification/index",
+    "pages/admin/bluetooth/index",
+    "pages/query-water/pay/confirm-info/index",
+    "pages/query-water/pay/print-info/index",
+    "pages/user-water-info/index",
+    "pages/maintenance/maintenance-info/index",
+    "pages/admin/set-lang/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "water management",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/admin/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "van-icon": "@vant/weapp/icon/index",
+    "van-tabbar": "@vant/weapp/tabbar/index",
+    "van-tabbar-item": "@vant/weapp/tabbar-item/index",
+    "van-search": "@vant/weapp/search/index",
+    "van-button": "@vant/weapp/button/index",
+    "van-toast": "@vant/weapp/toast/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-image": "@vant/weapp/image/index",
+    "van-radio": "@vant/weapp/radio/index",
+    "van-radio-group": "@vant/weapp/radio-group/index",
+    "van-steps": "@vant/weapp/steps/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-tab": "@vant/weapp/tab/index",
+    "van-tabs": "@vant/weapp/tabs/index",
+    "van-panel": "@vant/weapp/panel/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-picker": "@vant/weapp/picker/index",
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-collapse": "@vant/weapp/collapse/index",
+    "van-collapse-item": "@vant/weapp/collapse-item/index",
+    "wixi-card": "/components/wixi-card/index",
+    "wixi-form": "/components/wixi-form/index",
+    "wixi-time": "/components/wixi-time/index"
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

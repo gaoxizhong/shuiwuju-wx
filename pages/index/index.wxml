@@ -1,0 +1,55 @@
+<!--pages/index/index.wxml-->
+<view class="index">
+  <view class="image-logo">
+    <van-image width="100%" src="/img/index/bag.png" fit="widthFix" />
+    <view class="fix-func">
+      <view class="box-btn" bindtap="handleToSearch">
+        <view class="icon" style="background-color: #58cab4;">
+          <image src="/img/index/search.png" mode="aspectFit" />
+        </view>
+        <view class="text">
+          {{lang.iconSearch}}
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="index-content">
+
+    <scroll-view scroll-y class="scroll-content">
+      <view class="func box" wx:if="{{showFuncList.length}}">
+        <view class="title">
+          {{lang.iconFunc}}
+        </view>
+        <view class="content">
+          <view wx:for="{{showFuncList}}" wx:key="index" class="box-btn" data-index="{{index}}" bindtap="handleToFuncPage">
+            <view class="icon" style="background-color: {{item.color}};">
+              <image src="{{item.key}}" mode="aspectFit" />
+            </view>
+            <view class="text">
+              {{item.title}}
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="notice box">
+        <view class="title">
+          {{lang.iconNotice}}
+        </view>
+        <view class="content">
+          {{lang.iconNoticeText}}
+        </view>
+      </view>
+    </scroll-view>
+
+  </view>
+  <van-popup show="{{ show }}" position="bottom" bind:close="onCloseSelect">
+    <van-picker 
+      show-toolbar 
+      columns="{{ columns }}" 
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="onConfirmSelect" 
+      bind:cancel="onCloseSelect" 
+      />
+  </van-popup>
+</view>

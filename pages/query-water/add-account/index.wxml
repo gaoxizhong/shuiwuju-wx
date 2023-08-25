@@ -1,0 +1,11 @@
+<!--pages/maintenance/add-account/index.wxml-->
+<view class="container add-account">
+  <scroll-view scroll-y="true" class="add-account-content">
+    <wixi-form id="add-form" form="{{form}}"></wixi-form>
+  </scroll-view>
+  <view class="btn">
+    <view class="btn-item" bindtap="getFormInfo">
+      {{lang.submit}}
+    </view>
+  </view>
+</view>

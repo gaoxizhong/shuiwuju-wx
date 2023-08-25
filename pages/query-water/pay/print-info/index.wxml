@@ -1,0 +1,57 @@
+<!--pages/query-water/pay/print-info/index.wxml-->
+<view class="container print-info/">
+  <van-steps steps="{{ steps }}" active="{{ active }}" />
+  <view class="print-info__content">
+    <view class="info">
+      <view class="info-label">
+        {{lang.title}}
+      </view>
+      <view class="info-content">
+        <view class="info-item">
+          <view class="info-item__label">{{lang.wm_no}}</view>
+          <view class="info-item__info">{{form.wm_no}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.last_water}}</view>
+          <view class="info-item__info">{{form.last_reading}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.reading}}</view>
+          <view class="info-item__info">{{form.reading}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.total_water}}</view>
+          <view class="info-item__info">{{form.total_water}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.total_money}}</view>
+          <view class="info-item__info">{{form.total_money}}（KZ）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.createDate}}</view>
+          <view class="info-item__info">{{form.check_time_text}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.waterList}}</view>
+          <van-image width="200" height="140" fit="cover" src="{{form.imageUrl}}" />
+        </view>
+
+      </view>
+    </view>
+    <view class="btn">
+      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+        {{btnName.pay}}
+      </view>
+      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+        {{btnName.printOther}}
+      </view>
+      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+        {{btnName.print}}
+      </view>
+    </view>
+  </view>
+  <!-- 缴费 -->
+  <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
+    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+  </van-popup>
+</view>

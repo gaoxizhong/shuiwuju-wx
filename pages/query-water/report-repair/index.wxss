@@ -1,0 +1,59 @@
+/* pages/query-water/report-repair/index.wxss */
+page {
+  height: 100%;
+}
+
+.report-repair {
+  background-color: #fff;
+}
+
+.report-repair-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.van-img {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.van-img-item {
+  position: relative;
+}
+
+.img-close {
+  position: absolute;
+  background-color: red;
+  color: #fff;
+  width: 32rpx;
+  height: 32rpx;
+  right: 0rpx;
+  top: 0rpx;
+  display: flex;
+  border-radius: 32rpx;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.add-img {
+  border: 1px dotted #cfcfcf;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30rpx;
+  height: 160rpx;
+  width: 160rpx;
+}
+
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}

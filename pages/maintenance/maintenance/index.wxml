@@ -1,0 +1,39 @@
+<!--pages/maintenance/maintenance/index.wxml-->
+<view class="container maintenance">
+  <view class="search-bar">
+    <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon" slot="action">
+        <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
+        <van-icon name="ellipsis" bind:tap="onShowPopup" />
+      </view>
+    </van-search>
+  </view>
+  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!list.length}}" image="search" description="暂无数据" />
+    <scroll-view wx:else scroll-y="true" class="maintenance-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{list}}" wx:key="no">
+        <view class="maintenance-item" data-index="{{index}}" bindtap="handleDetails">
+          <view class="item__title">
+            {{item.type === 1 ? (item.meter.wm_name + ' ' + item.meter.wm_no) : item.report_user.name}}
+          </view>
+
+          <view class="item__water">
+            {{lang.phone}}：{{item.type === 1 ? item.meter.wm_phone : item.report_user.mobile}}
+          </view>
+
+          <view class="item__money">
+            {{lang.location}}：{{item.area }} {{item.address}}
+          </view>
+
+          <view class="item__status {{item.status === 1? 'item--no' : 'item--success'}}">
+            {{item.status_text}}
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
+</view>

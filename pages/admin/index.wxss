@@ -1,0 +1,88 @@
+/* pages/admin/index.wxss */
+.home {
+  padding: 20rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-me-info {
+  height: 200rpx;
+  background-color: #fff;
+  margin-bottom: 30rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.me-header {
+  height: 140rpx;
+  width: 140rpx;
+  font-size: 36rpx;
+  border-radius: 70rpx;
+  margin: 0rpx 30rpx;
+  overflow: hidden;
+}
+
+.nick-name {
+  font-weight: 600;
+}
+
+.me-phone {
+  margin-top: 14rpx;
+  font-size: 28rpx;
+  color: #84817a;
+}
+
+.home-func-list {
+  border-radius: 20rpx;
+  flex: 1;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.func-item {
+  height: 120rpx;
+  /* border-bottom: 1px solid #ececec; */
+  margin: 0px  30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0px 40rpx 0 30rpx;
+}
+
+
+.title {
+  flex: 1;
+  overflow: hidden;
+}
+
+.other-info {
+  font-size: 24rpx;
+  color: #84817a;
+  width: 150rpx;
+}
+
+.login-exit {
+  box-sizing: border-box;
+  color: #4484fc;
+  border: 1px solid #4484fc;
+  background-color: #fff;
+  font-weight: 500;
+  border-radius: 16rpx;
+  margin-top: 30rpx;
+  width: 400rpx !important;
+  /* position: absolute;
+  right: 10%;
+  bottom: calc(160rpx + env(safe-area-inset-bottom));
+  width: 80% !important; */
+}
+
+.right {
+  width: 28px;
+  height: 28px;
+}

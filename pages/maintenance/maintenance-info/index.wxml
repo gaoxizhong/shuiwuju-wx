@@ -1,0 +1,72 @@
+<!--pages/maintenance/maintenance-info/index.wxml-->
+<view class="container maintenance-info">
+  <view class="info">
+    <view class="info-label">
+      {{lang.title}}
+    </view>
+    <view class="info-content">
+      <view class="info-item">
+        <view class="info-item__label">{{lang.status}}</view>
+        <view class="info-item__info">{{form.status_text}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.name}}</view>
+        <view class="info-item__info">{{form.type === 1 ? form.meter.wm_name: form.report_user.name}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_no}}</view>
+        <view class="info-item__info">{{form.meter ? form.meter.wm_no : ''}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.area}}</view>
+        <view class="info-item__info">{{form.area}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.address}}</view>
+        <view class="info-item__info">{{form.address}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.phone}}</view>
+        <view class="info-item__info">{{form.type === 1 ? form.meter.wm_phone: form.report_user.mobile}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.report_pic}}</view>
+        <van-image width="200" height="140" fit="cover" src="{{form.report_pic}}" />
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.report_note}}</view>
+        <view class="info-item__info">{{form.report_note}}</view>
+      </view>
+
+    </view>
+  </view>
+  <view class="btn">
+    <view wx:if="{{status === 'doing'}}" class="btn-item" bindtap="openRepairDone">
+      {{btnName.submitName}}
+    </view>
+  </view>
+  <!-- 完成维修 -->
+  <van-popup show="{{ show }}" position="bottom"  bind:close="onCloseRepairDone">
+    <van-field label="{{lang.report_pic}}" type="textarea" autosize="{{autosizeimg}}" custom-style="flex-direction: column;" title-width="100%" required error="{{done_pic_error}}" error-message="{{done_pic_error ? btnName.selectImg : ''}}">
+      <view slot="input">
+        <block wx:if="{{done_pic}}">
+          <view class="van-img-item">
+            <van-image height="100" src="{{done_pic}}" webp fit="heightFix" />
+            <van-icon name="clear" class="img-close" bindtap="deleteWaterImage" />
+          </view>
+        </block>
+        <view wx:else class="add-img" bindtap="addWaterImage">
+          +
+        </view>
+      </view>
+      <view slot="button" style="height: 200rpx;">
+        
+      </view>
+    </van-field>
+    <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.report_note}}" value="{{ done_note }}" type="textarea" autosize="{{autosize}}" placeholder="{{lang.placeholder}}" error="{{done_note_error}}"  bind:change="handleInputCheckDetail" />
+    <view style="margin: 20rpx;text-align: right;">
+      <van-button type="info" size="small" bind:click="handleInfoStatus" style="margin-right: 20rpx;">确定</van-button>
+      <van-button type="info" plain size="small" bind:click="onCloseRepairDone">取消</van-button>
+    </view>
+  </van-popup>
+</view>

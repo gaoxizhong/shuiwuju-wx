@@ -1,0 +1,39 @@
+/* pages/func/index.wxss */
+.func {
+  padding: 20rpx 30rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.home-func-list {
+  border-radius: 10rpx;
+  flex: 1;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.func-item {
+  height: 120rpx;
+  /* border-bottom: 1px solid #ececec; */
+  margin: 0px  30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0px 40rpx 0 30rpx;
+}
+
+
+.title {
+  flex: 1;
+  overflow: hidden;
+}
+
+.other-info {
+  font-size: 24rpx;
+  color: #84817a;
+  width: 150rpx;
+}

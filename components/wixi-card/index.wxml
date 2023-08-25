@@ -1,0 +1,9 @@
+<!--components/card/index.wxml-->
+<view class="wixi-card">
+  <view class="wixi-card__header">
+    {{title}}
+  </view>
+  <view class="wixi-card__body">
+    <slot></slot>
+  </view>
+</view>

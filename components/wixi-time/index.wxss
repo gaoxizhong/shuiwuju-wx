@@ -1,0 +1,35 @@
+/* components/wixi-time/index.wxss */
+.wixi-time {
+  background-color: #fff;
+  width: 100%;
+}
+
+.search-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.times {
+  width: 100%;
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  padding: 10rpx 20rpx;
+}
+
+.time-box {
+  display: inline-block;
+  padding: 6rpx 26rpx;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+  background-color: #f4f4f3;
+  color: #707070;
+  margin-right: 20rpx;
+  width: max-content;
+}
+.time-box.active {
+  color: #fff;
+  background-color: #1989fa;
+}

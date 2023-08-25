@@ -1,0 +1,79 @@
+/* pages/query-water/print-bill/index.wxss */
+.print-bill {
+  /* background-color: #fff; */
+  display: flex;
+  flex-direction: column;
+}
+
+.device {
+  background-color: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.device-title {
+  margin: 0rpx 20rpx;
+  padding: 20rpx 10rpx;
+  font-weight: 600;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.unconnected-device {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.device-content {
+  box-sizing: border-box;
+  flex: 1;
+  overflow: hidden;
+}
+
+.common-device .device-content {
+  display: flex;
+  align-items: center;
+}
+
+.common-device__name {
+  padding: 20rpx 32rpx;
+  flex: 1;
+  overflow: hidden;
+}
+.common-device__btn {
+  margin-right: 20rpx;
+}
+
+.unconnected-item {
+  padding: 10rpx;
+  display: flex;
+  align-items: center;
+}
+
+.unconnected-item__name {
+  flex: 1;
+  overflow: hidden;
+  padding: 20rpx 32rpx;
+}
+
+/* .print-bill-content {
+  flex: 1;
+  padding: 0rpx 30rpx;
+  overflow: hidden;
+  border-radius: 20rpx;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.print-bill-info {
+  flex: 1;
+  padding-top: 20rpx;
+  overflow: hidden;
+} */
+
+.no-device{
+  color: #84817a;
+  padding: 20rpx 30rpx;
+}

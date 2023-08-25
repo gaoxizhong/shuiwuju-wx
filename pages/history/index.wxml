@@ -1,0 +1,9 @@
+<!--pages/history/index.wxml-->
+<view class="history">
+  <view class="search-bar">
+    <van-search value="{{ inputValue }}" placeholder="{{lang.searchBar}}" bind:search="handleSearchHistory" />
+  </view>
+  <view class="search-content">
+    <van-empty wx:if="{{!inputValue}}" image="search" description="{{lang.descriptionEmpty}}" />
+  </view>
+</view>

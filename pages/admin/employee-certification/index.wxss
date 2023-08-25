@@ -1,0 +1,21 @@
+/* pages/admin/employee-certification/index.wxss */
+page {
+  height: 100%
+}
+.employee-certification {
+  background-color: #fff;
+}
+#employee-form {
+  flex: 1;
+  overflow: hidden;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}

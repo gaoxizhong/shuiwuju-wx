@@ -1,0 +1,56 @@
+<!--pages/query-water/print-bill/index.wxml-->
+<view class="container print-bill">
+  <view class="device common-device">
+    <view class="device-title">
+      {{lang.connectDeviceTitle}}
+    </view>
+    <view class="device-content">
+      <view wx:if="{{conncetDevice.name}}" class="common-device__name">
+        {{conncetDevice.name}}
+      </view>
+      <view class="no-device" wx:else>
+        {{lang.noDevice}}
+      </view>
+      <view wx:if="{{conncetDevice.name}}" class="common-device__btn">
+        <van-button type="info" size="small" bind:click="unChooseDevice">{{langDialog.cancelText}}</van-button>
+      </view>
+    </view>
+  </view>
+
+  <view class="device unconnected-device">
+    <view class="device-title">
+      {{lang.disConnectDeviceTitle}}
+    </view>
+    <scroll-view class="device-content" scroll-y="true">
+      <!-- <radio-group bindchange="chooseDevice"> -->
+      <block wx:if="{{unconncetedDeviceList.length}}">
+        <view wx:for="{{unconncetedDeviceList}}" wx:key="deviceId" data-id="{{item.deviceId}}" class="unconnected-item" bindtap="chooseDevice">
+          <!-- <view class="unconnected-item__radio">
+              <radio value="{{item.deviceId}}" />
+            </view> -->
+
+          <view class="unconnected-item__name">
+            {{item.name}}
+          </view>
+          <!-- <view wx:if="{{item.deviceId === conncetDevice.deviceId}}" class="common-device__connect">
+            （连接过设备）
+          </view> -->
+        </view>
+      </block>
+      <view class="no-device" wx:else>
+        {{lang.noDevice}}
+      </view>
+      <!-- </radio-group> -->
+    </scroll-view>
+  </view>
+
+  <!-- <view class="print-bill-content">
+    <view class="device-title">
+      打印信息
+    </view>
+    <scroll-view scroll-y="true" class="print-bill-info">
+      <text>{{printInfo}}</text>
+    </scroll-view>
+    <van-button class="wixi-submit-btn" plain type="info" bind:click="handlePrint">打印</van-button>
+  </view> -->
+</view>

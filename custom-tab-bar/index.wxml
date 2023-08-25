@@ -1,0 +1,12 @@
+<!--custom-tab-bar/index.wxml-->
+<view class="tab-bar">
+  <!-- <block wx:for="{{list}}" wx:key="index">
+    <view class="bar-item" data-id="{{index}}" style="flex:{{1/list.length}}" bindtap="toRouter">
+      {{item.text}}
+    </view>
+  </block> -->
+  <van-tabbar active="{{ selected }}" bind:change="toRouter">
+    <van-tabbar-item  wx:for="{{list}}" icon="{{item.icon}}" wx:key="index">{{item.text}}</van-tabbar-item>
+  </van-tabbar>
+
+</view>

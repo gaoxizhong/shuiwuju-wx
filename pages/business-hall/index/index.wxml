@@ -1,0 +1,43 @@
+<!--pages/business-hall/index/index.wxml-->
+<view class="container business-hall">
+  <view class="search-bar">
+    <van-search value="{{ wm_no }}" placeholder="{{lang.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+        <van-icon name="ellipsis" bind:tap="onShowPopup" />
+      </view>
+    </van-search>
+  </view>
+  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{list}}" wx:key="order_no">
+      <view class="item" data-index="{{index}}" bindtap="handleDetails">
+        <view class="item__title">
+          {{item.wm_name}} {{item.wm_no}} 
+        </view>
+
+        <view class="item__water">
+          {{lang.water}}：{{( item.reading *10000) / 10000}}
+        </view>
+
+        <view class="item__money">
+          {{lang.money}}：{{item.price}}
+        </view>
+
+        <view class="item__money">
+          {{lang.createTime}}：{{item.created_at}}
+        </view>
+
+        <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+          {{item.status_text}}
+        </view>
+      </view>
+    </block>
+    </scroll-view>
+    <view class="loading">{{loading}}</view>
+  </view>
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
+  </van-popup>
+</view>

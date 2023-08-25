@@ -1,0 +1,9 @@
+<!--pages/admin/employee-certification/index.wxml-->
+<view class="container employee-certification">
+  <wixi-form id="employee-form" form="{{form}}" readonly="{{employee}}"></wixi-form>
+  <view class="btn" wx:if="{{!employee}}">
+      <view class="btn-item" bindtap="handleClick">
+        {{btnName.submitName}}
+      </view>
+    </view>
+</view>

@@ -1,0 +1,21 @@
+<!--components/wixi-time/index.wxml-->
+<view class="wixi-time">
+  <view class="search-time">
+    <van-field custom-style="padding: 12rpx 4rpx" input-align="center" readonly value="{{startTime}}" data-type="start" bind:click-input="handleSelectTime">
+    </van-field>
+    <text>—</text>
+    <van-field custom-style="padding: 12rpx 4rpx" input-align="center" readonly value="{{endTime}}" data-type="end" bind:click-input="handleSelectTime">
+    </van-field>
+  </view>
+  <scroll-view scroll-x="true" enhanced show-scrollbar="false" class="times" bindtap="handleClickTime">
+    <view wx:for="{{times}}" wx:key="index" class="time-box {{active===item.key ? 'active' : '' }}" data-key="{{item.key}}">
+      {{item.label}}
+    </view>
+  </scroll-view>
+  <van-popup show="{{ startShow }}" position="bottom" bind:close="onStartClose">
+    <van-datetime-picker id="start" type="date" max-date="{{endDate}}" value="{{ startDate }}" formatter="{{ formatter }}" confirm-button-text="ok" cancel-button-text="no" data-type="start" bind:confirm="confirmTime" bind:cancel="onStartClose" />
+  </van-popup>
+  <van-popup show="{{ endShow }}" position="bottom" bind:close="onEndClose">
+    <van-datetime-picker id="end" type="date" min-date="{{startDate}}" value="{{ endDate }}" formatter="{{ formatter }}" confirm-button-text="ok" cancel-button-text="no" data-type="end" bind:confirm="confirmTime" bind:cancel="onStartClose" />
+  </van-popup>
+</view>

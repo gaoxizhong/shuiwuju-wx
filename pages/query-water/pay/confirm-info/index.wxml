@@ -1,0 +1,50 @@
+<!--pages/query-water/pay/confirm-info/index.wxml-->
+<view class="container confirm-info">
+  <van-steps steps="{{ steps }}" active="{{ active }}" />
+  <view class="confirm-info__content">
+    <view class="info">
+      <view class="info-label">
+        {{lang.title}}
+      </view>
+      <view class="info-content">
+        <view class="info-item">
+          <view class="info-item__label">{{lang.wm_no}}</view>
+          <view class="info-item__info">{{form.wm_no}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.last_water}}</view>
+          <view class="info-item__info">{{form.last_reading}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.reading}}</view>
+          <view class="info-item__info">{{form.reading}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.total_water}}</view>
+          <view class="info-item__info">{{form.total_water}}（Litro）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.total_money}}</view>
+          <view class="info-item__info">{{form.total_money}}（KZ）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.createDate}}</view>
+          <view class="info-item__info">{{form.check_time_text}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{lang.waterList}}</view>
+          <van-image width="200" height="140" fit="cover" src="{{form.imageUrl}}" />
+        </view>
+
+      </view>
+    </view>
+    <view class="btn">
+      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="goBack">
+        {{btnName.updateName}}
+      </view>
+      <view class="btn-item" bindtap="next">
+        {{btnName.submitName}}
+      </view>
+    </view>
+  </view>
+</view>

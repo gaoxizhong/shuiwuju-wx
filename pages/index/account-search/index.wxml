@@ -1,0 +1,55 @@
+<view class="index">
+  <view class="search-bar">
+    <van-search value="{{ wm_no }}" placeholder="{{lang.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon" slot="action">
+        <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{lang.btnName}}</van-button>
+        <van-icon name="ellipsis" bind:tap="onShowPopup" />
+      </view>
+    </van-search>
+  </view>
+  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="wixi-list" lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{list}}" wx:key="index">
+        <view class="wixi-item" data-index="{{index}}" bindtap="handleDetails">
+          <view class="wixi-item_title">
+            <text>{{item.wm_no}}</text>
+          </view>
+
+          <view class="wixi-item_i">
+            <view class="wixi-item_i_label">
+              {{lang.water}}：
+            </view>
+            <view class="wixi-item_i_content">
+              {{( item.reading * 10000 - item.last_reading * 10000) / 10000}}（Litro）
+            </view>
+          </view>
+          <view class="wixi-item_i">
+            <view class="wixi-item_i_label">
+              {{lang.money}}：
+            </view>
+            <view class="wixi-item_i_content">
+              {{item.price}}（KZ）
+            </view>
+          </view>
+          <view class="wixi-item_i">
+            <view class="wixi-item_i_label">
+              {{lang.createTime}}：
+            </view>
+            <view class="wixi-item_i_content">
+              {{item.created_at}}
+            </view>
+          </view>
+          <view class="wixi-item__status" style="color: {{item.status === 1 ? '#ee0a24' : '#07c160'}};">
+            {{item.status_text}}
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+    <view class="loading">{{loading}}</view>
+  </view>
+
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round >
+    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
+</view>

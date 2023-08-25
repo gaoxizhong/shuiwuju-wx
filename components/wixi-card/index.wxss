@@ -1,0 +1,14 @@
+/* components/card/index.wxss */
+.wixi-card {
+  background-color: #fff;
+}
+.wixi-card__header {
+  padding: 20rpx;
+  font-size: 32rpx;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.wixi-card__body {
+  padding: 20rpx;
+  font-size: 28rpx;
+}

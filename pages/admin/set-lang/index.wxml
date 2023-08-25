@@ -1,0 +1,15 @@
+<!--pages/admin/set-lang/index.wxml-->
+<view class="container set-lang">
+<view class="content">
+  <van-field title-width="100%" custom-style="flex-direction: column;" label="{{lang.label}}" value="{{langValue}}" placeholder="{{lang.placeholder}}" readonly bind:click-input="onOpenPopup" />
+</view>
+  
+  <view class="btn">
+    <view class="btn-item" bindtap="handleClick">
+      {{btnName.submitName}}
+    </view>
+  </view>
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar columns="{{ options }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
+</view>

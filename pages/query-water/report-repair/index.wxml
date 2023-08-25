@@ -1,0 +1,32 @@
+<!--pages/query-water/report-repair/index.wxml-->
+<view class="container report-repair">
+  <scroll-view scroll-y class="report-repair-content">
+    <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type}}" value="{{ typeLabel }}" error="{{type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onOpen" />
+    <wixi-form id="report-repair-form" form="{{form}}"></wixi-form>
+    <van-field label="{{lang.photo}}" type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
+      <view slot="input">
+        <block wx:if="{{waterList.length}}">
+          <view wx:for="{{waterList}}" wx:key="tempFilePath" class="van-img-item">
+            <van-image height="100" src="{{item.tempFilePath}}" webp fit="heightFix" />
+            <van-icon name="clear" data-index="{{index}}" class="img-close" bindtap="deleteWaterImage" />
+          </view>
+        </block>
+        <view wx:if="{{showAddImg}}" class="add-img" bindtap="addWaterImage">
+          +
+        </view>
+      </view>
+      <view slot="button" style="height: 200rpx;">
+        
+      </view>
+    </van-field>
+    <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.remark}}" value="{{ report_note }}" type="textarea" autosize="{{size}}" placeholder="{{lang.placeholder}}" error="{{report_note_error}}" bind:change="handleInputReportNote" />
+  </scroll-view>
+  <van-popup show="{{ show }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseSelect">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns }}" bind:confirm="onConfirmSelect" bind:cancel="onCloseSelect" />
+  </van-popup>
+  <view class="btn">
+    <view class="btn-item" bindtap="handleReportRepair">
+      {{btnName.submitName}}
+    </view>
+  </view>
+</view>

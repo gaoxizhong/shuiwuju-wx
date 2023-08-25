@@ -1,0 +1,103 @@
+<!--components/wixi-form/index.wxml-->
+<view class="add-account-content">
+  <block wx:for="{{wixiForm}}" wx:key="key">
+      <van-field 
+        wx:if="{{item.type === 'input'}}"
+        title-width="100%" 
+        readonly="{{readonly || item.readonly}}" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:change="handleChange" />
+      <van-field 
+        wx:if="{{item.type === 'password'}}"
+        type="password"
+        title-width="100%" 
+        readonly="{{readonly || item.readonly}}" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}"  
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:change="handleChange" />
+      <van-field 
+        wx:if="{{item.type === 'textarea'}}"
+        type="textarea" 
+        title-width="100%" 
+        autosize="{{item.size}}"
+        readonly="{{readonly || item.readonly}}" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:change="handleChange"
+      ></van-field>
+      <van-field 
+        wx:if="{{item.type === 'area'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:click-input="onOpenSelect"
+      ></van-field>
+      <van-field 
+        wx:if="{{item.type === 'date'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        data-key="{{item.key}}"
+        bind:click-input="onOpenTimeSelect"
+      ></van-field>
+  </block>
+  <!-- 地区 -->
+  <van-popup show="{{ showSelect }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseSelect">
+    <van-picker 
+      id="wixi-area" 
+      show-toolbar 
+      columns="{{ columns }}" 
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="onConfirmSelect" 
+      bind:cancel="onCloseSelect" 
+      bind:change="onChangeSelect" />
+  </van-popup>
+  <!-- 时间 -->
+  <van-popup show="{{ showSelectTime }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseTimeSelect">
+    <van-datetime-picker
+      id="wixi-date"
+      type="date"
+      value="{{ currentDate }}"
+      formatter="{{ formatter }}"
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="handleGetTime"
+      bind:cancel="onCloseTimeSelect"
+    />
+  </van-popup>
+</view>

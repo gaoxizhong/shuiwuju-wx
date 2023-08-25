@@ -1,0 +1,17 @@
+/* pages/general-manager/index.wxss */
+page {
+  height: 100%;
+}
+.report {
+  background-color: #fff;
+}
+.report-content {
+  box-sizing: border-box;
+  flex: 1;
+  padding: 0rpx 10rpx;
+  overflow: hidden;
+}
+
+.card-canvas {
+  /* height: 300rpx; */
+}

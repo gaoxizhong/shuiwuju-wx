@@ -1,0 +1,21 @@
+<!--pages/general-manager/index.wxml-->
+<view class="container report">
+  <scroll-view scroll-y class="report-content">
+    <wixi-card class="card-item" title="financeiro">
+      <view class="card-canvas">
+        <canvas type="2d" id="bar" style="width: 100%; height: 400rpx;"></canvas>
+      </view>
+    </wixi-card>
+    <wixi-card class="card-item" title="reparação">
+      <view class="card-canvas">
+        <canvas type="2d" id="line" style="width: 100%; height: 400rpx;"></canvas>
+      </view>
+    </wixi-card>
+    <!-- <wixi-card class="card-item" title="开票">
+      <view class="card-canvas">12313</view>
+    </wixi-card>
+    <wixi-card class="card-item" title="缴费">
+      <view class="card-canvas">12313</view>
+    </wixi-card> -->
+  </scroll-view>
+</view>

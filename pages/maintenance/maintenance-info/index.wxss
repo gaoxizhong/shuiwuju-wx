@@ -1,0 +1,70 @@
+/* pages/maintenance/maintenance-info/index.wxss */
+.maintenance-info {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.info-label {
+  padding: 20rpx 32rpx;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.info-item {
+  display: flex;
+  font-size: 28rpx;
+  padding: 20rpx 32rpx;
+}
+
+.info-item__label {
+  font-size: 24rpx;
+  flex: 1;
+  overflow: hidden;
+  color: rgba(69, 90, 100, 0.6);
+}
+
+.info-item__info {
+  padding-left: 30rpx;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}
+
+.van-img {
+  display: flex;
+  width: 100%;
+}
+
+.van-img-item {
+  position: relative;
+}
+
+.img-close {
+  position: absolute;
+  color: #ee0a24;
+  right: 0rpx;
+  top: 0;
+  font-size: 32rpx;
+}
+
+.add-img {
+  border: 1px dotted #cfcfcf;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30rpx;
+  height: 160rpx;
+  width: 160rpx;
+}

@@ -1,0 +1,33 @@
+<!--pages/query-water/pay/collect-info/index.wxml-->
+<view class="container search-pay">
+  <van-steps steps="{{ steps }}" active="{{ active }}" />
+  <scroll-view scroll-y class="search-pay-content">
+    <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" value="{{ wm_no }}" placeholder="{{lang.placeholder}}" />
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ last_reading }}" readonly placeholder="{{lang.systemPlaceholder}}" />
+
+    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.reading}}" error="{{reading_error}}" value="{{ reading }}" placeholder="{{lang.placeholder}}" />
+    <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_water}}" value="{{ total_water }}" placeholder="{{lang.systemPlaceholder}}" />
+    <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_money}}" value="{{ total_money }}" placeholder="{{lang.systemPlaceholder}}" />
+    <van-field type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required label="{{lang.waterList}}" error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
+      <view slot="input">
+        <block wx:if="{{waterList.length && !readonly}}">
+          <view wx:for="{{waterList}}" wx:key="tempFilePath" class="van-img-item">
+            <van-image height="100" src="{{item.tempFilePath}}" webp fit="heightFix" />
+            <van-icon name="clear" data-index="{{index}}" class="img-close" bindtap="deleteWaterImage" />
+          </view>
+        </block>
+        <view wx:if="{{showAddImg}}" class="add-img" bindtap="addWaterImage">
+          +
+        </view>
+      </view>
+      <view slot="button" style="height: 200rpx;">
+        
+      </view>
+    </van-field>
+  </scroll-view>
+  <view class="btn">
+    <view class="btn-item" bindtap="toConfirmInfo">
+      {{btnName.next}}
+    </view>
+  </view>
+</view>
