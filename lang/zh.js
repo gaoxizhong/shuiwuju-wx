@@ -187,7 +187,8 @@ const zh_lang = {
     cash: '现金',
     pos: 'POS机',
     itemWater: '用水量',
-    itemMoney: '缴费金额'
+    itemMoney: '缴费金额',
+    num: '个',
   },
   // 上报维修
   reportRepair: {

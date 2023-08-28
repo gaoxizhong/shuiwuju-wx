@@ -12,7 +12,7 @@
     <view class="important-data" style="margin-right: 8rpx;">
       <text>{{lang.todayNumber}}</text>
       <view class="important-data-font">
-        {{today_bill_count}}（个）
+        {{today_bill_count}}（ {{ lang.num }} ）
       </view>
     </view>
     <view class="important-data">

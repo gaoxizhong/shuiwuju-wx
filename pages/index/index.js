@@ -59,6 +59,7 @@ Page({
     this.setData({
       showFuncList
     })
+    console.log(showFuncList)
   },
 
   handleToSearch() {

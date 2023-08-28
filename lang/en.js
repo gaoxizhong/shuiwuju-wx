@@ -187,7 +187,8 @@ const en_lang = {
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
     itemWater: 'Consumo de água',
-    itemMoney: 'Valor a pagar'
+    itemMoney: 'Valor a pagar',
+    num: 'un',
   },
   // 上报维修
   reportRepair: {
@@ -280,7 +281,7 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/search-pay.png',
-        title: 'Consulta',
+        title: 'Consumo',
         tabberName: 'Nota de cobrança',
         color: '#fc9c3c',
         url: '/pages/query-water/pay/collect-info/index'
@@ -288,8 +289,8 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/today-summary.png',
-        title: 'Diário',
-        tabberName: 'Diário',
+        title: 'Impressos',
+        tabberName: 'Impressos',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },
@@ -304,7 +305,7 @@ const en_lang = {
       {
         auth: 'C',
         key: '/img/index/maintenance.png',
-        title: 'Recordes',
+        title: 'Extratos',
         tabberName: 'Tavefas de Revisão',
         color: '#fc9c3c',
         url: '/pages/maintenance/maintenance/index'
