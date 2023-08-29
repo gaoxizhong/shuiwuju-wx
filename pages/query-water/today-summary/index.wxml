@@ -12,7 +12,7 @@
     <view class="important-data" style="margin-right: 8rpx;">
       <text>{{lang.todayNumber}}</text>
       <view class="important-data-font">
-        {{today_bill_count}}（ {{ lang.num }} ）
+        {{today_bill_count}}（{{ lang.num }}）
       </view>
     </view>
     <view class="important-data">
@@ -24,14 +24,14 @@
     <view class="general-data" style="margin-right: 8rpx;">
       <text>{{lang.cash}}</text>
       <view class="general-data-font">
-        <tex> {{today_cash_count}}（个） </tex>
+        <tex> {{today_cash_count}}（{{ lang.num }}） </tex>
         <tex> {{today_cash_amount}}（KZ） </tex>
       </view>
     </view>
     <view class="general-data">
       <text>{{lang.pos}}</text>
       <view class="general-data-font">
-        <tex> {{today_card_count}}（个） </tex>
+        <tex> {{today_card_count}}（{{ lang.num }}） </tex>
         <tex> {{today_card_amount}}（KZ） </tex>
       </view>
     </view>
