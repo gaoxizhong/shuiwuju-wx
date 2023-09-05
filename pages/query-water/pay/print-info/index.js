@@ -131,6 +131,7 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
     const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
     const lang = getApp().globalData.lang
     console.log(lang.blueToolth)
+    console.log(connectDeviceInfo)
     if (!connectDeviceInfo) {
       wx.showModal({
         title: lang.blueToolth.noConnect,
@@ -156,19 +157,23 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
         }
       })
     } else {
-      this.connectBlueToothDevice(connectDeviceInfo)
+      wx.showToast({
+        title: lang.blueToolth.connectDevice,
+        icon: "none",
+        duration: 30000,
+      })
+      this.handlePrint(connectDeviceInfo)
+      // this.connectBlueToothDevice(connectDeviceInfo)
     }
   },
-  connectBlueToothDevice({
-    deviceId,
-    serviceId
-  }) {
+  connectBlueToothDevice({ deviceId, serviceId }) {
     wx.showToast({
       title: lang.blueToolth.connectDevice,
       icon: "none",
       duration: 30000,
     })
     blueToolth.createBLEConnection(deviceId).then(res => {
+      console.log(res)
       if (res.errMsg && res.errMsg.includes('ok')) {
         blueToolth.getBLEDeviceServices({
           deviceId,
@@ -219,9 +224,10 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       })
     })
   },
-  handlePrint() {
+  handlePrint(p) {
     blueToolth.writeBLECharacteristicValue({
-      ...this.data.printDeviceInfo,
+      // ...this.data.printDeviceInfo,
+      ...p,
       value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(this.data.printInfo), ...blueToolth.printCommand.enter])
         .buffer,
       lasterSuccess() {

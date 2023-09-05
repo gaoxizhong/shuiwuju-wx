@@ -132,6 +132,7 @@ Page({
         duration: 30000,
       })
       blueToolth.createBLEConnection(deviceId).then(res => {
+        console.log(res)
         if (res.errMsg && res.errMsg.includes('ok')) {
           const serviceId = item.advertisServiceUUIDs[0]
           blueToolth.getBLEDeviceServices({
@@ -139,7 +140,7 @@ Page({
             serviceId
           }).then(data => {
             wx.hideToast()
-
+            console.log(data)
             if (!flag) {
               wx.showModal({
                 title: this.data.lang.defaultDevice,
@@ -163,8 +164,10 @@ Page({
             }
             wx.setStorageSync('connectDevice', JSON.stringify({
               deviceId,
-              serviceId
+              serviceId,
+              characteristicId:data.characteristicId
             }))
+            console.log(wx.getStorageSync('connectDevice'))
             this.setData({
               isConnect: true,
               conncetDevice: item,
@@ -187,6 +190,9 @@ Page({
           wx.hideToast()
         }
       }).catch((res) => {
+        console.log(res)
+        console.log(wx.getStorageSync('connectDevice'))
+
         wx.hideToast()
         let msg = ''
         if (res.errCode) {
