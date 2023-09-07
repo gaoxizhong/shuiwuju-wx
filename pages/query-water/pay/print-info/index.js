@@ -58,7 +58,8 @@ Page({
         check_time_text
       },
       payStatusList: JSON.parse(payStatusList),
-      printInfo: `
+      // 打印内容
+      printInfo: `  
 EPAL CUANZA SUL WATER MANEGEMENT
 
 ${this.data.lang.wm_no}：${wm_no};
