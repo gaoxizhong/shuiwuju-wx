@@ -115,7 +115,7 @@ Page({
 
     // 是否用户存在和输入了水费
     if (type === 'reading' && reading) {
-      if (reading <= this.data.last_reading) {
+      if (Number(reading) <= Number(this.data.last_reading)) {
         wx.showToast({
           title: '用水量需要大于上一次用水量',
           duration: 3000,
