@@ -48,6 +48,7 @@ Page({
   },
   // 采集用户
   handleInputWmNo(e) {
+    console.log(e.detail)
     const wm_no = e.detail
     let wm_no_error = this.data.wm_no_error
     if (wm_no) {
@@ -72,13 +73,21 @@ Page({
   },
   // 判断用户是否存在
   handleReading(e) {
+    console.log(e)
     const type = e.currentTarget.dataset.type
-    const reading = this.data.reading
     const my_isAdmin = this.data.isAdmin
-    const wm_no = this.data.wm_no
     // 判断用户是否存在
     if (!type) {
+      const wm_no = e.detail.value
+      let wm_no_error = this.data.wm_no_error
+      this.setData({
+        wm_no,
+      })
       if (wm_no) {
+        wm_no_error = false
+        this.setData({
+          wm_no_error
+        })
         isAdmin({
           wm_no: wm_no
         }).then(res => {
@@ -111,27 +120,43 @@ Page({
           total_water: ''
         })
       }
+
+    }else{
+
+      const reading = e.detail.value
+      console.log(reading)
+      let reading_error = this.data.reading_error
+      if (reading) {
+        reading_error = false
+      }
+      this.setData({
+        reading,
+        reading_error
+      })
+      // 是否用户存在和输入了水费
+      if (type === 'reading' && reading) {
+    
+        if (Number(reading) <= Number(this.data.last_reading)) {
+          wx.showToast({
+            title: '用水量需要大于上一次用水量',
+            duration: 3000,
+            icon: 'none'
+          })
+          return
+        }
+      } else {
+        this.setData({
+          total_money: '',
+          total_water: ''
+        })
+      }
+      if (type === 'reading' && reading && my_isAdmin) {
+        this.waterCount()
+      }
+
     }
 
-    // 是否用户存在和输入了水费
-    if (type === 'reading' && reading) {
-      if (Number(reading) <= Number(this.data.last_reading)) {
-        wx.showToast({
-          title: '用水量需要大于上一次用水量',
-          duration: 3000,
-          icon: 'none'
-        })
-        return
-      }
-    } else {
-      this.setData({
-        total_money: '',
-        total_water: ''
-      })
-    }
-    if (type === 'reading' && reading && my_isAdmin) {
-      this.waterCount()
-    }
+
   },
   // 计算金额和用水量
   waterCount() {

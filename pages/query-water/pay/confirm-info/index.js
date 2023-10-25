@@ -60,6 +60,9 @@ Page({
     const ss = _date.getSeconds()
     const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
     const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+    console.log(time)
+    console.log(timestamp)
+
     return {
       time,
       timestamp
@@ -84,6 +87,10 @@ Page({
     const filePath = this.data.form.imageUrl
     const baseUrl = app.globalData.baseUrl
     const token = wx.getStorageSync('token')
+    console.log(wm_no)
+    console.log(reading)
+    console.log(check_time)
+
     wx.uploadFile({
       filePath,
       name: 'reading_pic',
@@ -97,25 +104,40 @@ Page({
         check_time
       },
       success(res) {
+
+        console.log(res)
         if(res.statusCode === 200){
-          wx.showToast({
-            title: lang.message.success,
-            duration: 2000,
-            icon: 'none'
-          })
           const data = JSON.parse(res.data)
-          const payStatusList = JSON.stringify(data.data.pay_way.map(i => ({
-            text: i.title,
-            key: i.key
-          })))
-          const up_id = data.data.data.up_id
-          wxAsyncApi('reLaunch', {
-            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
-          }).then(res => {
-            wx.setNavigationBarTitle({
-              title: lang.message.info,
+          
+          if(data.code == 200){
+            wx.showToast({
+              title: lang.message.success,
+              duration: 2000,
+              icon: 'none'
             })
-          })
+            const payStatusList = JSON.stringify(data.data.pay_way.map(i => ({
+              text: i.title,
+              key: i.key
+            })))
+            console.log(payStatusList)
+            const up_id = data.data.data.up_id
+            wxAsyncApi('reLaunch', {
+              url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
+            }).then(res => {
+              wx.setNavigationBarTitle({
+                title: lang.message.info,
+              })
+            })
+
+          }else{
+            wx.showToast({
+              title: data.desc,
+              duration: 2000,
+              icon: 'none'
+            })
+          }
+          
+        
         }else {
           // wx.showToast({
           //   title: "操作成功",
@@ -126,6 +148,7 @@ Page({
         
       },
       fail(res) {
+        console.log(res)
       }
     })
 
