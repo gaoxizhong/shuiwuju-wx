@@ -101,10 +101,11 @@ const en_lang = {
   // 新增用户
   addAccount: {
     form: [{
-        name: 'Dados do contador',
+        name: 'Serie do Contador',
         placeholder: 'Digite Dados do contador',
         type: 'input',
         key: 'wm_no',
+        maxlength: 10,
         required: true
       },
       {

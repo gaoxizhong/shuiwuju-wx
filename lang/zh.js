@@ -105,6 +105,7 @@ const zh_lang = {
         placeholder: '请输入水表号',
         type: 'input',
         key: 'wm_no',
+        maxlength: 10,
         required: true
       },
       {

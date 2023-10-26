@@ -1,6 +1,7 @@
 // pages/maintenance/add-account/index.js
 const lang = getApp().globalData.lang
 const pages = getCurrentPages()
+console.log(lang)
 import {
   addAccount
 } from './../../../apis/water'
