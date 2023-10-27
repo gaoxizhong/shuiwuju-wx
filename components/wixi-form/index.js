@@ -92,6 +92,7 @@ Component({
       })
     },
     handleChange(e) {
+      console.log(e)
       const {
         index,
       } = e.currentTarget.dataset

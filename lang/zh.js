@@ -123,6 +123,13 @@ const zh_lang = {
         required: true
       },
       {
+        name: '分区',
+        placeholder: '请输入分区',
+        type: 'input',
+        key: 'wm_fq',
+        required: true
+      },
+      {
         name: '初始读数',
         placeholder: '请输入初始读数',
         type: 'input',
@@ -137,6 +144,14 @@ const zh_lang = {
         required: true
       },
       {
+        name: '用户编号',
+        placeholder: '用户编号',
+        readonly: true,
+        type: 'input',
+        key: 'wm_number',
+        required: true
+      },
+      {
         name: '姓名',
         placeholder: '请输入姓名',
         type: 'input',
@@ -144,11 +159,26 @@ const zh_lang = {
         required: true
       },
       {
+        name: '税号/身份证号',
+        placeholder: '税号/身份证号',
+        type: 'input',
+        key: 'wm_bi',
+        required: true
+      },
+      
+      {
         name: '电话号码',
         placeholder: '请输入电话号码',
         type: 'input',
         key: 'wm_phone',
         required: true
+      },
+      {
+        name: '邮箱',
+        placeholder: '请输入邮箱',
+        type: 'input',
+        key: 'wm_emall',
+        required: false
       },
     ],
     submit: '确认'

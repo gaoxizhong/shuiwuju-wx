@@ -8,7 +8,7 @@
         custom-style="flex-direction: column;" 
         label="{{item.name}}" 
         value="{{ item.value }}" 
-        maxlength="{{ item.maxlength }}" 
+        maxlength="{{ item.maxlength?item.maxlength:'-1' }}" 
         placeholder="{{item.placeholder}}" 
         required="{{item.required}}" 
         error="{{item.error}}" 
@@ -101,4 +101,5 @@
       bind:cancel="onCloseTimeSelect"
     />
   </van-popup>
+
 </view>

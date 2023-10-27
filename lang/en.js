@@ -123,6 +123,13 @@ const en_lang = {
         required: true
       },
       {
+        name: '分区',
+        placeholder: '请输入分区',
+        type: 'input',
+        key: 'wm_fq',
+        required: true
+      },
+      {
         name: 'Leitura inicial',
         placeholder: 'Preecher o Leitura inicial de Registo',
         type: 'input',
@@ -137,10 +144,25 @@ const en_lang = {
         required: true
       },
       {
+        name: 'Nr do Cliente',
+        placeholder: 'Nr do Cliente',
+        readonly: true,
+        type: 'input',
+        key: 'wm_number',
+        required: true
+      },
+      {
         name: 'Consumidor',
         placeholder: 'Preencher o nome do consumidor',
         type: 'input',
         key: 'wm_name',
+        required: true
+      },
+      {
+        name: 'NIF/BI',
+        placeholder: 'Preencher o NIF/BI',
+        type: 'input',
+        key: 'wm_bi',
         required: true
       },
       {
@@ -149,6 +171,13 @@ const en_lang = {
         type: 'input',
         key: 'wm_phone',
         required: true
+      },
+      {
+        name: 'Email',
+        placeholder: 'Digite número de Email',
+        type: 'input',
+        key: 'wm_emall',
+        required: false
       },
     ],
     submit: 'Confirmar'
