@@ -1,6 +1,7 @@
 <!--components/wixi-form/index.wxml-->
 <view class="add-account-content">
   <block wx:for="{{wixiForm}}" wx:key="key">
+      <!-- 输入 -->
       <van-field 
         wx:if="{{item.type === 'input'}}"
         title-width="100%" 
@@ -16,6 +17,22 @@
         data-func="{{item.eventFunc}}" 
         data-index="{{index}}" 
         bind:change="handleChange" />
+         <!-- 价格类型下拉选择 -->
+        <van-field 
+          wx:if="{{item.type === 'tot_sim'}}"
+          title-width="100%" 
+          readonly="true" 
+          custom-style="flex-direction: column;" 
+          label="{{item.name}}" 
+          value="{{ item.value }}" 
+          placeholder="{{item.placeholder}}" 
+          required="{{item.required}}" 
+          error="{{item.error}}" 
+          data-func="{{item.eventFunc}}" 
+          data-index="{{index}}" 
+          bind:click-input="onTotSim" 
+        />
+        <!-- 密码 -->
       <van-field 
         wx:if="{{item.type === 'password'}}"
         type="password"
@@ -30,6 +47,7 @@
         data-func="{{item.eventFunc}}" 
         data-index="{{index}}" 
         bind:change="handleChange" />
+        <!-- 文本输入 -->
       <van-field 
         wx:if="{{item.type === 'textarea'}}"
         type="textarea" 
@@ -46,6 +64,37 @@
         data-index="{{index}}" 
         bind:change="handleChange"
       ></van-field>
+      <!-- 价格类型下拉选择 -->
+      <van-field 
+        wx:if="{{item.type === 'priceType'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:click-input="onPriceType" 
+      />
+      <!-- 污水下拉选择 -->
+      <van-field 
+        wx:if="{{item.type === 'sewage'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:click-input="onSewage" 
+      />
+      <!-- 地区选择 -->
       <van-field 
         wx:if="{{item.type === 'area'}}"
         title-width="100%" 
@@ -60,6 +109,7 @@
         data-index="{{index}}" 
         bind:click-input="onOpenSelect"
       ></van-field>
+      <!-- 时间选择 -->
       <van-field 
         wx:if="{{item.type === 'date'}}"
         title-width="100%" 
@@ -102,4 +152,38 @@
     />
   </van-popup>
 
+
+  <!-- 污水 -->
+  <van-popup show="{{ showSewage }}" safe-area-tab-bar position="bottom" bind:close="onCloseSewage" round>
+    <van-picker
+     id="sewage"
+      show-toolbar 
+      columns="{{ optionsSewage }}"
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onCloseSewage" 
+     bind:confirm="handleSewage" />
+  </van-popup>
+   <!-- 价格类型 -->
+   <van-popup show="{{ showPriceType }}" safe-area-tab-bar position="bottom" bind:close="onClosePriceType" round>
+    <van-picker
+     id="priceType"
+      show-toolbar 
+      columns="{{ optionsPriceType }}"
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onClosePriceType" 
+     bind:confirm="handlePriceType" />
+  </van-popup>
+    <!-- 共有/独有 -->
+  <van-popup show="{{ showTotSim }}" safe-area-tab-bar position="bottom" bind:close="onCloseTotSim" round>
+    <van-picker
+    id="tot_sim"
+      show-toolbar 
+      columns="{{ optionsTotSim }}"
+    confirm-button-text="{{langDialog.confirmText}}" 
+    cancel-button-text="{{langDialog.cancelText}}" 
+    bind:cancel="onCloseTotSim" 
+    bind:confirm="handleTotSim" />
+  </van-popup>
 </view>

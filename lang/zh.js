@@ -109,6 +109,20 @@ const zh_lang = {
         required: true
       },
       {
+        name: '共有/独有',
+        placeholder: '共有/独有',
+        type: 'tot_sim',
+        key: 'is_share',
+        required: true
+      },
+      {
+        name: '户数',
+        placeholder: '户数',
+        type: 'input',
+        key: 'household_num',
+        required: true,
+      },
+      {
         name: '地区',
         placeholder: '请选择地区',
         type: 'area',
@@ -126,7 +140,7 @@ const zh_lang = {
         name: '分区',
         placeholder: '请输入分区',
         type: 'input',
-        key: 'wm_fq',
+        key: 'area_code',
         required: true
       },
       {
@@ -144,11 +158,17 @@ const zh_lang = {
         required: true
       },
       {
-        name: '用户编号',
-        placeholder: '用户编号',
-        readonly: true,
-        type: 'input',
-        key: 'wm_number',
+        name: '价格类型',
+        placeholder: '请选择价格类型',
+        type: 'priceType',
+        key: 'user_type_id',
+        required: true
+      },
+      {
+        name: '是否有污水',
+        placeholder: '是否有污水',
+        type: 'sewage',
+        key: 'sewage_rate',
         required: true
       },
       {
@@ -162,7 +182,7 @@ const zh_lang = {
         name: '税号/身份证号',
         placeholder: '税号/身份证号',
         type: 'input',
-        key: 'wm_bi',
+        key: 'user_card',
         required: true
       },
       
@@ -177,7 +197,7 @@ const zh_lang = {
         name: '邮箱',
         placeholder: '请输入邮箱',
         type: 'input',
-        key: 'wm_emall',
+        key: 'email',
         required: false
       },
     ],

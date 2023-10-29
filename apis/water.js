@@ -12,6 +12,15 @@ export const addAccount = (data) => {
     data
   })
 }
+// 获取价格类型
+export const fbUserType = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/user_type`,
+    method: 'POST',
+    data
+  })
+}
 
 
 // 计算水费

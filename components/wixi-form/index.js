@@ -1,6 +1,9 @@
 // components/wixi-form/index.js
 const app = getApp()
 let lang = app.globalData.lang
+import {
+  fbUserType
+} from '../../apis/water'
 Component({
   /**
    * 组件的属性列表
@@ -49,6 +52,19 @@ Component({
           return value;
         },
       })
+      // 获取价格类型
+      fbUserType({}).then(res => {
+        wx.hideToast()
+        let list = res.data.data.map(i => ({
+          text: i.type_name,
+          value: i.id
+        }))
+        this.setData({
+          optionsPriceType: list
+        })
+      }).catch(res => {
+        wx.hideToast()
+      })
     },
 
   },
@@ -60,6 +76,24 @@ Component({
     langDialog: lang.dialog,
     wixiForm: [],
     columns: [],
+    showSewage: false, // 是否污水
+    optionsSewage: [{ 
+      text: 'Sim',
+      value: 0
+    }, {
+      text: 'No',
+      value: 1
+    }],
+    optionsPriceType: [],  // 价格类型
+    showTotSim: false, // 共有/独有
+    optionsTotSim:[
+      {
+        text: 'Totalizador',
+        value: 1
+      }, {
+        text: 'Simpre',
+        value: 0
+    }],
     showSelect: false,
     formIndex: '',
     columnsIndex: [0, 0, 0],
@@ -229,6 +263,7 @@ Component({
     getFormData() {
       const params = {}
       const form = this.data.wixiForm
+      console.log(form)
       let flag = true
       const newForm = form.map(i => {
         if (i.required) {
@@ -243,7 +278,11 @@ Component({
             params[j] = confirmValue[index]
           })
         } else {
-          params[i.key] = i.value
+          if(i.type === 'tot_sim' || i.type === 'priceType' || i.type === 'sewage' ){
+            params[i.key] = i.value_name
+          }else{
+            params[i.key] = i.value
+          }
         }
         return i
       })
@@ -255,6 +294,104 @@ Component({
         })
         return false
       }
-    }
-  }
+    },
+
+
+
+    ///  有无污水
+    onSewage(e){
+      console.log(e)
+      this.setData({
+        showSewage: true,
+        formIndex: e.currentTarget.dataset.index,
+      })
+    },
+    onCloseSewage() {
+      this.setData({
+        showSewage: false
+      })
+    },
+    handleSewage(e){
+      const form = this.data.wixiForm
+      const item = form[this.data.formIndex]
+      item.value = e.detail.value.text
+      item.value_name = e.detail.value.value
+      if (item.required) {
+        item.error = false
+      }
+      this.setData({
+        wixiForm: form
+      })
+      this.onCloseSewage()
+    },
+    // 价格类型
+    onPriceType(e){
+      console.log(e)
+      this.setData({
+        showPriceType: true,
+        formIndex: e.currentTarget.dataset.index,
+      })
+    },
+    onClosePriceType() {
+      this.setData({
+        showPriceType: false
+      })
+    },
+    handlePriceType(e){
+      console.log(e)
+      const form = this.data.wixiForm
+      const item = form[this.data.formIndex]
+      item.value = e.detail.value.text
+      item.value_name = e.detail.value.value
+      if (item.required) {
+        item.error = false
+      }
+      this.setData({
+        wixiForm: form
+      })
+      this.onClosePriceType()
+    },
+    // 共有、 独有
+    onTotSim(e){
+      console.log(e)
+      this.setData({
+        showTotSim: true,
+        formIndex: e.currentTarget.dataset.index,
+      })
+    },
+    onCloseTotSim() {
+      this.setData({
+        showTotSim: false
+      })
+    },
+    handleTotSim(e){
+      console.log(e)
+      const form = this.data.wixiForm
+      const item = form[this.data.formIndex]
+      item.value = e.detail.value.text
+      item.value_name = e.detail.value.value
+      if (item.required) {
+        item.error = false
+      }
+      form.forEach((ele) =>{
+        if( ele.key == 'household_num'){
+          if(e.detail.value.value == 0){ // 不共有
+            ele.value = 1;
+            ele.readonly = true;
+          }
+          if(e.detail.value.value == 1){ // 共有
+            ele.value = '';
+            ele.readonly = false;
+          }
+        }
+      })
+      this.setData({
+        wixiForm: form
+      })
+      this.onCloseTotSim()
+    },
+
+
+  },
+
 })

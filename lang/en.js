@@ -109,6 +109,20 @@ const en_lang = {
         required: true
       },
       {
+        name: 'Totalizador/simpres',
+        placeholder: 'Totalizador/simpres',
+        type: 'tot_sim',
+        key: 'is_share',
+        required: true
+      },
+      {
+        name: 'Unidades',
+        placeholder: 'Unidades',
+        type: 'input',
+        key: 'household_num',
+        required: true,
+      },
+      {
         name: 'Localidade',
         placeholder: 'Escolha Localidade',
         type: 'area',
@@ -123,10 +137,10 @@ const en_lang = {
         required: true
       },
       {
-        name: '分区',
-        placeholder: '请输入分区',
+        name: 'Giro/Zona',
+        placeholder: 'Giro/Zona',
         type: 'input',
-        key: 'wm_fq',
+        key: 'area_code',
         required: true
       },
       {
@@ -144,11 +158,17 @@ const en_lang = {
         required: true
       },
       {
-        name: 'Nr do Cliente',
-        placeholder: 'Nr do Cliente',
-        readonly: true,
-        type: 'input',
-        key: 'wm_number',
+        name: 'Categoria Tarifaria',
+        placeholder: 'Categoria Tarifaria',
+        type: 'priceType',
+        key: 'user_type_id',
+        required: true
+      },
+      {
+        name: 'Agua Residuais',
+        placeholder: 'Agua Residuais',
+        type: 'sewage',
+        key: 'sewage_rate',
         required: true
       },
       {
@@ -176,7 +196,7 @@ const en_lang = {
         name: 'Email',
         placeholder: 'Digite número de Email',
         type: 'input',
-        key: 'wm_emall',
+        key: 'email',
         required: false
       },
     ],

@@ -38,15 +38,19 @@
   </view>
   <view class="btn">
     <block wx:if="{{source === 'search-person'}}">
+    <!-- 支付 -->
       <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
       </view>
+      <!-- 支付 -->
       <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
         {{btnName.printOther}}
       </view>
+      <!-- 打印缴费单 -->
       <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
         {{btnName.print}}
       </view>
+      <!-- 打印缴费单 -->
     </block>
     <block wx:if="{{source === 'business-hall'}}">
       <view wx:if="{{status === 'bank_pay'}}" class="btn-item over" bindtap="showPayPopup">
