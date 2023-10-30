@@ -2,9 +2,6 @@
 const app = getApp()
 let lang = app.globalData.lang
 const pages = getCurrentPages()
-import {
-  getArrearsMoneySum
-} from './../../../../apis/water'
 const {
   wxAsyncApi,
 } = require('./../../../../utils/util')
@@ -49,40 +46,6 @@ Page({
       lang: lang.pay.collectInfo,
       btnName: lang.btnName,
       steps: lang.pay.steps,
-    })
-    this.getArrearsMoneySum(options.wm_no)
-  },
-  // 新改版  获取用户待缴费金额接口 
-  getArrearsMoneySum(n){
-    const wm_no = n
-    const params = {
-      wm_no,
-    }
-    getArrearsMoneySum(params).then(res => {
-      const {
-        imageUrl,
-        reading,
-        total_money,
-        total_water,
-        wm_no,
-        last_reading
-      } = res.data
-      this.setData({
-        form: {
-          imageUrl,
-          reading,
-          total_money,
-          total_water,
-          wm_no,
-          last_reading,
-        },
-      })
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none',
-        duration: 2000
-      })
     })
   },
   //获取当前时间

@@ -6,5 +6,17 @@
     "urlCheck": false
   },
   "libVersion": "3.1.4",
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "缴费确定第三步",
+          "pathName": "pages/query-water/pay/print-info/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
 }

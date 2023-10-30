@@ -81,3 +81,13 @@ export const getArrearsMoneySum = (data) => {
     data
   })
 }
+
+// 获取用户打印信息
+export const getUserBluetoolthInfoData = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_user_info`,
+    method: 'POST',
+    data
+  })
+}

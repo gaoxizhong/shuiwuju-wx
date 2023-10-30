@@ -6,9 +6,11 @@ const {
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
+  getArrearsMoneySum,
   new_payWater,
   payWater,
-  printWater
+  printWater,
+  getUserBluetoolthInfoData
 } = require('./../../../../apis/water')
 const GBK = require('./../../../../utils/gbk.min')
 Page({
@@ -19,7 +21,7 @@ Page({
   data: {
     lang: lang.pay.collectInfo,
     langDialog: lang.dialog,
-    paid_total_money: 0,
+    paid_total_money: '',
     btnName: lang.btnName,
     form: {},
     payStatusList: [],
@@ -28,7 +30,8 @@ Page({
     status: 'pay',
     showPay: false,
     printDeviceInfo: null,
-    printInfo: '',
+    arrears_money_sum: '', //欠费
+    printInfo: '', // 缴费单信息打印内容
   },
 
   /**
@@ -76,8 +79,31 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       btnName: lang.btnName,
       steps: lang.pay.steps,
     })
-  },
 
+    this.getArrearsMoneySum(options.wm_no)
+
+  },
+  // 新改版  获取用户待缴费金额接口 
+  getArrearsMoneySum(n){
+    const wm_no = n
+    const params = {
+      wm_no,
+    }
+    getArrearsMoneySum(params).then(res => {
+      const {
+        arrears_money_sum
+        } = res.data
+      this.setData({
+        arrears_money_sum,
+      })
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  },
   showPayPopup() {
     const paid_total_money = this.data.paid_total_money
     if (!paid_total_money) {
@@ -120,24 +146,27 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       }
     },
   //  新的确认支付
-  new_onConfirmPay(e){
+   new_onConfirmPay(e){
+     let that =  this;
     const {
       text,
       key
     } = e.detail.value
-    const form = this.data.form
-    let date = this.handleTimeValue();
+    const form = that.data.form
+    let date = that.handleTimeValue();
     const params = {
       wm_no: form.wm_no,
-      total_money: this.data.paid_total_money,
+      total_money: that.data.paid_total_money,
       pay_way: key,
       pay_time: date.time
     }
     new_payWater(params).then(res => {
-      this.setData({
+      that.setData({
         status: 'print',
         showPay: false
       })
+      console.log('11')
+      that.getUserBluetoolthInfoData();
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -309,6 +338,27 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
     this.setData({
       paid_total_money,
       no_error
+    })
+  },
+  // 缴费成功后获取用户打印信息
+  getUserBluetoolthInfoData(){
+    let that = this;
+    const params = {
+      wm_no: that.data.form.wm_no,
+    }
+    console.log(params)
+    getUserBluetoolthInfoData(params).then(res => {
+      const {
+        } = res.data
+      this.setData({
+
+      })
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
     })
   }
 })
