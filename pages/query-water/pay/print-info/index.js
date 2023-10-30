@@ -6,6 +6,7 @@ const {
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
+  new_payWater,
   payWater,
   printWater
 } = require('./../../../../apis/water')
@@ -18,7 +19,7 @@ Page({
   data: {
     lang: lang.pay.collectInfo,
     langDialog: lang.dialog,
-
+    paid_total_money: 0,
     btnName: lang.btnName,
     form: {},
     payStatusList: [],
@@ -27,7 +28,7 @@ Page({
     status: 'pay',
     showPay: false,
     printDeviceInfo: null,
-    printInfo: ''
+    printInfo: '',
   },
 
   /**
@@ -78,6 +79,18 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
   },
 
   showPayPopup() {
+    const paid_total_money = this.data.paid_total_money
+    if (!paid_total_money) {
+      this.setData({
+        no_error: true
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
     this.setData({
       showPay: true
     })
@@ -86,6 +99,52 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
     this.setData({
       showPay: false
     })
+  },
+    //获取当前时间
+    handleTimeValue(date) {
+      const _date = date ? new Date(date) : new Date()
+      const year = _date.getFullYear()
+      const month = _date.getMonth() + 1
+      const day = _date.getDate()
+      const hh = _date.getHours()
+      const mm = _date.getMinutes()
+      const ss = _date.getSeconds()
+      const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+      const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+      console.log(time)
+      console.log(timestamp)
+  
+      return {
+        time,
+        timestamp
+      }
+    },
+  //  新的确认支付
+  new_onConfirmPay(e){
+    const {
+      text,
+      key
+    } = e.detail.value
+    const form = this.data.form
+    let date = this.handleTimeValue();
+    const params = {
+      wm_no: form.wm_no,
+      total_money: this.data.paid_total_money,
+      pay_way: key,
+      pay_time: date.time
+    }
+    new_payWater(params).then(res => {
+      this.setData({
+        status: 'print',
+        showPay: false
+      })
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none'
+      })
+    })
+
   },
   onConfirmPay(e) {
     const {
@@ -240,4 +299,16 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       }
     });
   },
+  //输入实缴金额
+  handleInputMoney(e){
+    const paid_total_money = e.detail
+    let no_error = this.data.no_error
+    if (paid_total_money) {
+      no_error = false
+    }
+    this.setData({
+      paid_total_money,
+      no_error
+    })
+  }
 })

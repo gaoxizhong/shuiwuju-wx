@@ -257,6 +257,7 @@ Page({
     }
     wxAsyncApi('navigateTo', {
       url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
+      // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

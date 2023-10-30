@@ -42,6 +42,15 @@ export const payWater = (data) => {
     data
   })
 }
+// 新支付水费
+export const new_payWater = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_user_payment`,
+    method: 'POST',
+    data
+  })
+}
 
 // 开收据
 export const printWater = (data) => {
@@ -58,6 +67,16 @@ export const payWaterList = (data) => {
   const baseUrl = getApp().globalData.baseUrl
   return httpRequest({
     url: `${baseUrl}/api/wx/fb/fb_bill_list`,
+    method: 'POST',
+    data
+  })
+}
+
+// 获取待缴费金额接口
+export const getArrearsMoneySum = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_arrears_money_sum`,
     method: 'POST',
     data
   })

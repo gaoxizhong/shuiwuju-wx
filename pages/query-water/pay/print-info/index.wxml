@@ -11,22 +11,25 @@
           <view class="info-item__label">{{lang.wm_no}}</view>
           <view class="info-item__info">{{form.wm_no}}</view>
         </view>
-        <view class="info-item">
+        <!-- <view class="info-item">
           <view class="info-item__label">{{lang.last_water}}</view>
           <view class="info-item__info">{{form.last_reading}}（Litro）</view>
-        </view>
+        </view> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.reading}}</view>
           <view class="info-item__info">{{form.reading}}（Litro）</view>
         </view>
-        <view class="info-item">
+        <!-- <view class="info-item">
           <view class="info-item__label">{{lang.total_water}}</view>
           <view class="info-item__info">{{form.total_water}}（Litro）</view>
-        </view>
+        </view> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.total_money}}</view>
           <view class="info-item__info">{{form.total_money}}（KZ）</view>
         </view>
+        <van-cell-group>
+          <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
+        </van-cell-group>
         <view class="info-item">
           <view class="info-item__label">{{lang.createDate}}</view>
           <view class="info-item__info">{{form.check_time_text}}</view>
@@ -42,16 +45,19 @@
       <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
       </view>
-      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+      <!-- <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
         {{btnName.printOther}}
-      </view>
-      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+      </view> -->
+      <!-- <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+        {{btnName.print}}
+      </view> -->
+      <view wx:if="{{status === 'print'}}" bindtap="blueToothPrint">
         {{btnName.print}}
       </view>
     </view>
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
-    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="new_onConfirmPay" bind:cancel="onClosePay" />
   </van-popup>
 </view>
