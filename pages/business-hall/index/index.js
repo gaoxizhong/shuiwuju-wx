@@ -15,7 +15,9 @@ Page({
   data: {
     lang: lang.index,
     langDialog: lang.dialog,
+    btnName: lang.btnName,
     wm_no: '',
+    is_seach: false,
     status: '',
 
     selectIndex: 0,
@@ -89,6 +91,15 @@ Page({
         isScroll: true,
         loading: total > list.length ? lang.message.scrollLoading : lang.message.noMoreEmpty
       })
+      if(this.data.wm_no){
+        this.setData({
+          is_seach: true
+        })
+      }else{
+        this.setData({
+          is_seach: false
+        })
+      }
     })
   },
   addListData() {
@@ -149,4 +160,14 @@ Page({
     this.onClosePopup()
     this.getListData()
   },
+  // 点击缴费按钮
+  clickPayBtn(){
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-total-info/index?wm_no=${this.data.wm_no}`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
+  }
 })

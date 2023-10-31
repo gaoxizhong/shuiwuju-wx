@@ -27,9 +27,9 @@
           <view class="info-item__label">{{lang.total_money}}</view>
           <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
         </view>
-        <van-cell-group>
+        <!-- <van-cell-group>
           <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
-        </van-cell-group>
+        </van-cell-group> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.createDate}}</view>
           <view class="info-item__info">{{form.check_time_text}}</view>
@@ -41,7 +41,12 @@
 
       </view>
     </view>
-    <view class="btn" wx:if="{{status === 'pay'}}">
+    <view class="btn">
+      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+        {{btnName.print}}
+      </view>
+    </view>
+    <!-- <view class="btn" wx:if="{{status === 'pay'}}">
       <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
       </view>
@@ -57,7 +62,7 @@
         {{btnName.invoice}}
       </view>
       
-    </view>
+    </view> -->
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">

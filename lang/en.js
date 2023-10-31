@@ -320,6 +320,9 @@ const en_lang = {
 
     check_detail: 'Causa',
     placeholder: 'Por favor, digite',
+    pay_type: 'Métodos de Pagamento',
+    paid_total_money: 'Valor a pagar',
+
   },
   // 功能列表
   func: {

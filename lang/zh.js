@@ -321,6 +321,9 @@ const zh_lang = {
 
     check_detail: '原因',
     placeholder: '请输入',
+    pay_type: '支付方式',
+    paid_total_money: '实缴金额',
+
   },
   // 功能列表
   func: {

@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 const {
-  wxAsyncApi,
+  wxAsyncApi, 
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
@@ -84,9 +84,7 @@ Page({
       btnName: lang.btnName,
       steps: lang.pay.steps,
     })
-
     this.getArrearsMoneySum(options.wm_no)
-
   },
   
   // 新改版  获取用户待缴费金额接口 
@@ -147,39 +145,23 @@ Page({
       console.log(timestamp)
   
       return {
+        year,
+        month,
+        day,
         time,
         timestamp
       }
     },
     // 近n天
     getMoreDay(value) {
-      const _date = this.handleTimeValue()
-      let year = parseInt(_date.year)
-      let month = parseInt(_date.month)
-      let day = parseInt(_date.day)
-      let time = _date.time
-      const days = value
-      if (day < days) {
-        const num = days - 1 - day
-        if (month === 1) {
-          year = year - 1
-          month = 12
-          day = 31 - num
-        } else {
-          month = month - 1
-          day = this.getMonthLastDay(month) - num
-        }
-      } else {
-        day = day - days + 1
-      }
-      return `${day >= 10 ? day : '0' + day}.${month >= 10 ? month : '0' + month}.${year}`
-      const arr = time.split('-')
-      this.setData({
-        startTime: `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`,
-        endTime: `${arr[0]}-${arr[1]}-${arr[2]}`,
-        startDate: new Date(year, month - 1, day).getTime(),
-        endDate: new Date(arr[0], arr[1] - 1, arr[2]).getTime(),
-      })
+      const _date = new Date().getTime();
+      let letenddate = _date + (value*24*60*60*1000);
+      let  _days = new Date(letenddate);
+      const year = _days.getFullYear()
+      const month = _days.getMonth() + 1
+      const day = _days.getDate()
+      const time = `${day >= 10 ? day : '0' + day}.${month >= 10 ? month : '0' + month}.${year}`
+      return time
     },
   //  新的确认支付
    new_onConfirmPay(e){
@@ -563,13 +545,13 @@ Método   Moeda    Total
       wx.hideToast()
     })
   },
-// 5.修改发票收据状态
-setInvoiceStatus(){
-  let that = this;
-  setInvoiceStatus({id: that.data.id}).then(res => {
-   
-  }).catch(res => {
-    wx.hideToast()
-  })
-},
+  // 5.修改发票收据状态
+  setInvoiceStatus(){
+    let that = this;
+    setInvoiceStatus({id: that.data.id}).then(res => {
+    
+    }).catch(res => {
+      wx.hideToast()
+    })
+  },
 })

@@ -7,42 +7,48 @@
     <view class="info-content">
       <view class="info-item">
         <view class="info-item__label">{{lang.wm_no}}</view>
-        <view class="info-item__info">{{form.wm_no}}</view>
+        <view class="info-item__info">{{wm_no}}</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.last_water_1}}</view>
-        <view class="info-item__info">{{form.last_reading}}（Litro）</view>
+        <view class="info-item__info">{{last_reading}}（Litro）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.createDate}}</view>
-        <view class="info-item__info">{{form.createDate}}</view>
+        <view class="info-item__info">{{last_time}}</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.total_money}}</view>
-        <view class="info-item__info">{{form.price}}（KZ）</view>
+        <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
       </view>
       <van-cell-group>
         <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
       </van-cell-group>
-
+      <van-cell-group>
+        <van-field custom-style="flex-direction: column;" title-width="100%" readonly required error="{{pay_type_error}}" label="{{lang.pay_type}}" model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}" bindtap="showPayPopup"/>
+      </van-cell-group>
 
     </view>
   </view>
   <view class="btn">
-    <block wx:if="{{source === 'search-person'}}">
-    <!-- 支付 -->
-      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+    <!-- <block wx:if="{{source === 'search-person'}}"> -->
+    <block>
+     <!-- 支付 开始 -->
+      <!-- <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
-      </view>
-      <!-- 支付 -->
-      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+      </view> -->
+      <!-- 支付 结束 -->
+
+      <!-- 打印 开始-->
+      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
         {{btnName.printOther}}
       </view>
-      <!-- 打印缴费单 -->
-      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
-        {{btnName.print}}
+      <!-- 打印 结束-->
+      <!-- 打印发票 开始-->
+      <view class="btn-item {{status === 'over' ? 'over' : ''}}"  bindtap="blueToothInvoice">
+        {{btnName.invoice}}
       </view>
-      <!-- 打印缴费单 -->
+      <!-- 打印发票 -->
     </block>
     <block wx:if="{{source === 'business-hall'}}">
       <view wx:if="{{status === 'bank_pay'}}" class="btn-item over" bindtap="showPayPopup">

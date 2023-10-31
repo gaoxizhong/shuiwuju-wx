@@ -164,9 +164,16 @@ ${this.data.lang.total_money}：${form.price}（KZ）;
   },
 
   showPayPopup() {
-    this.setData({
-      showPay: true
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
     })
+    // this.setData({
+    //   showPay: true
+    // })
   },
   onClosePay() {
     this.setData({

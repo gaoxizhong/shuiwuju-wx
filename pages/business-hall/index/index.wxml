@@ -41,3 +41,8 @@
     <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
   </van-popup>
 </view>
+<view class="btn" wx:if="{{ wm_no && is_seach }}">
+  <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPayBtn">
+    {{btnName.pay}}
+  </view>
+</view>
