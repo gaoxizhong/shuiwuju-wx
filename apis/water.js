@@ -91,3 +91,22 @@ export const getUserBluetoolthInfoData = (data) => {
     data
   })
 }
+
+// 修改打印收据状态
+export const setReceiptStatus = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_up_print_receipt_status`,
+    method: 'POST',
+    data
+  })
+}
+// 修改发票收据状态
+export const setInvoiceStatus = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_up_print_invoice_status`,
+    method: 'POST',
+    data
+  })
+}

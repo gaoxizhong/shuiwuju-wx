@@ -1,0 +1,79 @@
+<!--pages/user-water-info/index.wxml-->
+<view class="container user-water-info">
+  <view class="info">
+    <view class="info-label">
+      {{lang.title}}
+    </view>
+    <view class="info-content">
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_no}}</view>
+        <view class="info-item__info">{{form.wm_no}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.last_water_1}}</view>
+        <view class="info-item__info">{{form.last_reading}}（Litro）</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.createDate}}</view>
+        <view class="info-item__info">{{form.createDate}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.total_money}}</view>
+        <view class="info-item__info">{{form.price}}（KZ）</view>
+      </view>
+      <van-cell-group>
+        <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
+      </van-cell-group>
+
+
+    </view>
+  </view>
+  <view class="btn">
+    <block wx:if="{{source === 'search-person'}}">
+    <!-- 支付 -->
+      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+        {{btnName.pay}}
+      </view>
+      <!-- 支付 -->
+      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+        {{btnName.printOther}}
+      </view>
+      <!-- 打印缴费单 -->
+      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+        {{btnName.print}}
+      </view>
+      <!-- 打印缴费单 -->
+    </block>
+    <block wx:if="{{source === 'business-hall'}}">
+      <view wx:if="{{status === 'bank_pay'}}" class="btn-item over" bindtap="showPayPopup">
+        {{btnName.pay}}
+      </view>
+      <view wx:if="{{status === 'print'}}" class="btn-item over" bindtap="businessHallPrint">
+        {{btnName.printOther}}
+      </view>
+      <view wx:if="{{status === 'print_two'}}" class="btn-item over" bindtap="businessHallPrint">
+        {{btnName.printOtherTwo}}
+      </view>
+    </block>
+    <block wx:if="{{source === 'financial-manager'}}">
+      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="1" style="border-right: 1px solid #ebeef5;" bindtap="handleInfoStatus">
+        {{btnName.agree}}
+      </view>
+      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="2" bindtap="handleOpenResult">
+        {{btnName.disagree}}
+      </view>
+    </block>
+  </view>
+  <!-- 缴费 -->
+  <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
+    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}"  bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+  </van-popup>
+  <!-- 拒绝原因 -->
+  <van-popup show="{{ showResult }}" position="bottom" bind:close="onCloseResult">
+    <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.check_detail}}" value="{{ check_detail }}" type="textarea" autosize="{{size}}" placeholder="{{lang.placeholder}}" error="{{check_detail_error}}" bind:change="handleInputCheckDetail" />
+    <view style="margin: 20rpx;text-align: right;">
+      <van-button type="info" size="small" bind:click="handleInputResult" style="margin-right: 20rpx;">{{btnName.submitName}}</van-button>
+      <van-button type="info" plain size="small" bind:click="onCloseResult">{{lang.cancelName}}</van-button>
+    </view>
+  </van-popup>
+</view>

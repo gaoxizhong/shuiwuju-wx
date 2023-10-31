@@ -48,6 +48,7 @@ const en_lang = {
     printOther: 'Imprimir recibo',
     printOtherTwo: 'Reabastecimento de recibos',
     print: 'Imprimir boleto de pagamento',
+    invoice: 'Imprimir As facturas',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
     selectImg: 'Por favor, selecione uma imagem'
@@ -311,6 +312,7 @@ const en_lang = {
     wm_no: 'Dados do contador',
     last_water: 'Leitura inicial',
     reading: 'Leitura do contador',
+    last_water_1: 'Leitura O último',
     total_water: 'Consumo de água',
     total_money: 'Valor a pagar',
     createDate: 'Hora da consulta',
@@ -332,7 +334,7 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/search-pay.png',
-        title: 'Consumo',
+        title: 'Leituras',
         tabberName: 'Nota de cobrança',
         color: '#fc9c3c',
         url: '/pages/query-water/pay/collect-info/index'
@@ -364,7 +366,7 @@ const en_lang = {
       {
         auth: 'R',
         key: '/img/index/business-hall.png',
-        title: 'Recibo',
+        title: 'Caixa',
         tabberName: 'Pagamento e recibo',
         color: '#58cab4',
         url: '/pages/business-hall/index/index',

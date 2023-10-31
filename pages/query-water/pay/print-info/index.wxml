@@ -41,19 +41,22 @@
 
       </view>
     </view>
-    <view class="btn">
-      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+    <view class="btn" wx:if="{{status === 'pay'}}">
+      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
-      </view>
-      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
-        {{btnName.printOther}}
       </view>
       <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
         {{btnName.print}}
       </view>
-      <!-- <view wx:if="{{status === 'print'}}" bindtap="blueToothPrint">
-        {{btnName.print}}
-      </view> -->
+    </view>
+    <view class="btn" wx:if="{{status === 'print'}}">
+      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+        {{btnName.printOther}}
+      </view>
+      <view class="btn-item {{status === 'over' ? 'over' : ''}}"  bindtap="blueToothInvoice">
+        {{btnName.invoice}}
+      </view>
+      
     </view>
   </view>
   <!-- 缴费 -->

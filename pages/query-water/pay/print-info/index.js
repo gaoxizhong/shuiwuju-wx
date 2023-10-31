@@ -10,7 +10,9 @@ const {
   new_payWater,
   payWater,
   printWater,
-  getUserBluetoolthInfoData
+  getUserBluetoolthInfoData,
+  setReceiptStatus,
+  setInvoiceStatus
 } = require('./../../../../apis/water')
 const GBK = require('./../../../../utils/gbk.min')
 Page({
@@ -32,6 +34,9 @@ Page({
     printDeviceInfo: null,
     arrears_money_sum: '', //欠费
     printInfo: '', // 缴费单信息打印内容
+    receiptInfo: '', // 收据信息打印内容
+    invoiceInfo:'', // 发票打印内容
+    print_type: '',
   },
 
   /**
@@ -63,17 +68,17 @@ Page({
       },
       payStatusList: JSON.parse(payStatusList),
       // 打印内容
-      printInfo: `  
-EPAL CUANZA SUL WATER MANEGEMENT
+//       printInfo: `  
+// EPAL CUANZA SUL WATER MANEGEMENT
 
-${this.data.lang.wm_no}：${wm_no};
-${this.data.lang.last_water}：${last_reading}（Litro）;
-${this.data.lang.reading}：${reading}（Litro）;
-${this.data.lang.total_water}：${total_water}（Litro）;
-${this.data.lang.total_money}：${total_money}（KZ）;
+// ${this.data.lang.wm_no}：${wm_no};
+// ${this.data.lang.last_water}：${last_reading}（Litro）;
+// ${this.data.lang.reading}：${reading}（Litro）;
+// ${this.data.lang.total_water}：${total_water}（Litro）;
+// ${this.data.lang.total_money}：${total_money}（KZ）;
 
 
-`,
+// `,
       lang: lang.pay.collectInfo,
       langDialog: lang.dialog,
       btnName: lang.btnName,
@@ -83,6 +88,7 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
     this.getArrearsMoneySum(options.wm_no)
 
   },
+  
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){
     const wm_no = n
@@ -145,6 +151,36 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
         timestamp
       }
     },
+    // 近n天
+    getMoreDay(value) {
+      const _date = this.handleTimeValue()
+      let year = parseInt(_date.year)
+      let month = parseInt(_date.month)
+      let day = parseInt(_date.day)
+      let time = _date.time
+      const days = value
+      if (day < days) {
+        const num = days - 1 - day
+        if (month === 1) {
+          year = year - 1
+          month = 12
+          day = 31 - num
+        } else {
+          month = month - 1
+          day = this.getMonthLastDay(month) - num
+        }
+      } else {
+        day = day - days + 1
+      }
+      return `${day >= 10 ? day : '0' + day}.${month >= 10 ? month : '0' + month}.${year}`
+      const arr = time.split('-')
+      this.setData({
+        startTime: `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`,
+        endTime: `${arr[0]}-${arr[1]}-${arr[2]}`,
+        startDate: new Date(year, month - 1, day).getTime(),
+        endDate: new Date(arr[0], arr[1] - 1, arr[2]).getTime(),
+      })
+    },
   //  新的确认支付
    new_onConfirmPay(e){
      let that =  this;
@@ -197,25 +233,47 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       })
     })
   },
-  printWaterInfo() {
-    const up_id = this.data.form.up_id
-    const params = {
-      up_id,
-    }
-    printWater(params).then(res => {
-      this.setData({
-        status: 'over',
-        showPay: false
-      })
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none'
-      })
+  // printWaterInfo() {
+  //   const up_id = this.data.form.up_id
+  //   const params = {
+  //     up_id,
+  //   }
+  //   printWater(params).then(res => {
+  //     this.setData({
+  //       status: 'over',
+  //       showPay: false
+  //     })
+  //   }).catch((res) => {
+  //     wx.showToast({
+  //       title: res.desc,
+  //       icon: 'none'
+  //     })
+  //   })
+  // },
+  // 缴费单
+  blueToothPrint(){
+    this.setData({
+      print_type: 'printInfo'
     })
+    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
+  },
+  // 收据
+  printWaterInfo(){
+    this.setData({
+      print_type: 'receiptInfo'
+    })
+    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
+  },
+  // 发票
+  blueToothInvoice(){
+    this.setData({
+      print_type: 'invoiceInfo'
+    })
+    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
   // 蓝牙设备打印
-  blueToothPrint() {
+  verifyBlueToothPrint() {
+    console.log('蓝牙设备打印')
     const connectStorage = wx.getStorageSync('connectDevice')
     const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
     const lang = getApp().globalData.lang
@@ -252,6 +310,7 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
         duration: 30000,
       })
       this.handlePrint(connectDeviceInfo)
+
       // this.connectBlueToothDevice(connectDeviceInfo)
     }
   },
@@ -314,10 +373,22 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
     })
   },
   handlePrint(p) {
+    let print_type = this.data.print_type;
+    let info = '';
+    if(print_type == 'printInfo'){
+      info = this.data.printInfo
+    }
+    if(print_type == 'receiptInfo'){
+      info = this.data.receiptInfo
+    }
+    if(print_type == 'invoiceInfo'){
+      info = this.data.invoiceInfo
+    }
+    
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
-      value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(this.data.printInfo), ...blueToolth.printCommand.enter])
+      value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(info), ...blueToolth.printCommand.enter])
         .buffer,
       lasterSuccess() {
         wx.showToast({
@@ -325,6 +396,8 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
           icon: "none",
           duration: 3000,
         })
+        //修改发票收据状态
+        // this.setInvoiceStatus();
       }
     });
   },
@@ -340,19 +413,138 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
       no_error
     })
   },
-  // 缴费成功后获取用户打印信息
-  getUserBluetoolthInfoData(){
+  // 获取用户打印信息
+  getUserBluetoolthInfoData(f){
     let that = this;
     const params = {
       wm_no: that.data.form.wm_no,
     }
     console.log(params)
     getUserBluetoolthInfoData(params).then(res => {
-      const {
-        } = res.data
-      this.setData({
+      const userBluetoolthInfoData = res.data
+      let date = that.handleTimeValue();
 
+      this.setData({
+        printInfo: `
+EPASKS
+EMPRESA PUBLICA DE AGUAS E
+SANEAMENTO DO KWANZA SUL-E.P.
+No Contribuinte: 5601022917
+Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
+Atendimento ao Cliente: 941648993
+Comunicacao de Leituras: 941648993
+Comunicacso de Rupturas: 941648999
+Falhas de Aqua: 941648999
+Email: info.epasksagmail.com
+
+Nota de Coberanca Nr 2023-*******
+
+Dados do Cliente
+
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
+NIF: ${userBluetoolthInfoData.water_meter.user_card}
+EMAIL: ${userBluetoolthInfoData.water_meter.email}
+Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type.type_name}
+N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
+Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
+
+Histórico de Leituras
+Data        m3     Origem
+${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1].check_date}  ${userBluetoolthInfoData.user_payment[1].water}   ${userBluetoolthInfoData.user_payment[1].reading_user}
+${userBluetoolthInfoData.user_payment[2].check_date}  ${userBluetoolthInfoData.user_payment[2].water}   ${userBluetoolthInfoData.user_payment[2].reading_user}
+
+Detalhes de Facturacao
+CONTAS DE GUA
+Domestico：
+Tarifa Fixa Domestico
+Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
+IVA(0%)
+TOTAL GERAL A PAGAR
+
+Data limite de pagamento:  ${this.getMoreDay(15)}
+valores pendentes
+${userBluetoolthInfoData.user_payment[0].price} Kz
+
+${date.time}
+
+`,
+      invoiceInfo:`
+EPASKS
+EMPRESA PUBLICA DE AGUAS E
+SANEAMENTO DO KWANZA SUL-E.P.
+No Contribuinte: 5601022917
+Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
+Atendimento ao Cliente: 941648993
+Comunicacao de Leituras: 941648993
+Comunicacso de Rupturas: 941648999
+Falhas de Aqua: 941648999
+Email: info.epasksagmail.com
+
+Fcatura Nr 2023-*******
+
+Dados do Cliente
+
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
+NIF: ${userBluetoolthInfoData.water_meter.user_card}
+EMAIL: ${userBluetoolthInfoData.water_meter.email}
+Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type.type_name}
+N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
+Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
+
+Histórico de Leituras
+Data        m3     Origem
+${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1].check_date}  ${userBluetoolthInfoData.user_payment[1].water}   ${userBluetoolthInfoData.user_payment[1].reading_user}
+${userBluetoolthInfoData.user_payment[2].check_date}  ${userBluetoolthInfoData.user_payment[2].water}   ${userBluetoolthInfoData.user_payment[2].reading_user}
+
+Detalhes de Facturacao
+CONTAS DE GUA
+Domestico：
+Tarifa Fixa Domestico
+Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
+IVA(0%)
+TOTAL GERAL A PAGAR
+
+Data limite de pagamento:  ${this.getMoreDay(15)}
+valores pendentes
+${userBluetoolthInfoData.user_payment[0].price} Kz
+
+${date.time}
+      
+      `,
+      receiptInfo: `
+EPASKS-E.P.
+Empresa Publica de Aguas e Saneamento do Kwanza
+Sul EP
+Avenida Comandante Cassange - Zona 3 - ETA
+Sumbe - Cuanza Sul
+NIF: 5601022917
+Recibo Nº: REC 2023/29259
+ORIGINAL
+Nome: MARIA DA GRAÇA FERNANDES LIMA
+Contribuinte: 001189995BA039
+
+DATA: ${date.time}
+Data   Total    Pend.   Liq.
+${userBluetoolthInfoData.user_payment[0].check_pay_time}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].price}
+TOTAL: ${userBluetoolthInfoData.user_payment[0].arrears_money}Kz
+
+Modos de Pagamento
+
+Método   Moeda    Total
+  无       无      ${userBluetoolthInfoData.user_payment[0].arrears_money}
+
+  Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
+
+`
       })
+      console.log(typeof f)
+      if (typeof f == 'function'){
+        return f()
+      }
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -360,5 +552,24 @@ ${this.data.lang.total_money}：${total_money}（KZ）;
         duration: 2000
       })
     })
-  }
+  },
+
+  // 4.修改打印收据状态
+  setReceiptStatus (){
+    let that = this;
+    setReceiptStatus({id: that.data.id}).then(res => {
+     
+    }).catch(res => {
+      wx.hideToast()
+    })
+  },
+// 5.修改发票收据状态
+setInvoiceStatus(){
+  let that = this;
+  setInvoiceStatus({id: that.data.id}).then(res => {
+   
+  }).catch(res => {
+    wx.hideToast()
+  })
+},
 })
