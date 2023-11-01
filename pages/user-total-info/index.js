@@ -33,7 +33,6 @@ Page({
     langDialog: lang.dialog,
     wm_no:'',
     form: {},
-    payStatusList: [],
 
     status: 'pay',
     showPay: false,
@@ -53,11 +52,14 @@ Page({
     arrears_money_sum:'',
     paid_total_money: '',
     no_error: false,
-    pay_way:'1',
-    pay_text:'现金',
+    payStatusList: [],
+    pay_way:'',
+    pay_text:'',
     receiptInfo:'', //  收据
     invoiceInfo:'',//  发票
-    pay_success: false
+    pay_success: false,
+    user_PayFees_info: {}, // 缴费记录信息
+    user_payment_info: [], // 缴费记录下的缴费单信息
   },
 
   /**
@@ -70,7 +72,7 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog,
     })
-    const payStatusList = options.payWayList
+    // const payStatusList = options.payWayList
     const source = options.source
     let status = ''
 
@@ -106,7 +108,7 @@ Page({
       wm_no,
       source,
       status,
-      payStatusList: JSON.parse(payStatusList || '[]'),
+      // payStatusList: JSON.parse(payStatusList || '[]'),
     })
     this.getArrearsMoneySum(options.wm_no)
   },
@@ -120,12 +122,17 @@ Page({
       const {
         arrears_money_sum,
         last_reading,
-        last_time
+        last_time,
         } = res.data
+        const payWayList = Object.keys(res.data.pay_way).map(i => ({
+          text: res.data.pay_way[i].title,
+          key: res.data.pay_way[i].key
+        }))
       this.setData({
         last_reading,
         last_time,
-        arrears_money_sum,
+        arrears_money_sum: Math.abs(arrears_money_sum),
+        payStatusList: payWayList
       })
     }).catch((res) => {
       wx.showToast({
@@ -169,6 +176,10 @@ Page({
           status: 'print',
           showPay: false,
           pay_success: true
+        })
+        this.setData({
+          user_PayFees_info: res.data.data, // 缴费记录信息
+          user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
         })
         that.getUserBluetoolthInfoData(that.blueToothPrint);
       }).catch((res) => {
@@ -240,6 +251,14 @@ Page({
       text,
       key
     } = e.detail.value
+    this.setData({
+      pay_way: key,
+      pay_text: text,
+      status: 'print',
+      showPay: false,
+      no_error: false
+    })
+    return
     const up_id = this.data.form.up_id
     const source = this.data.source
     const params = {
@@ -367,8 +386,16 @@ Page({
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
       let date = that.handleTimeValue();
+      let info = that.data.user_payment_info;
+      let user_payment_info = '';
+      info.forEach(ele =>{
+        user_payment_info += `
+        ${ele.check_time}   ${ele.arrears_money}   ${ele.arrears_money}   ${ele.pay_money}
 
-      this.setData({
+        `
+      })
+      console.log(user_payment_info)
+      that.setData({
       invoiceInfo:`
 EPASKS
 EMPRESA PUBLICA DE AGUAS E
@@ -389,27 +416,27 @@ Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type.type_name}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
 Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
 
 Histórico de Leituras
 Data        m3     Origem
 ${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1].check_date}  ${userBluetoolthInfoData.user_payment[1].water}   ${userBluetoolthInfoData.user_payment[1].reading_user}
-${userBluetoolthInfoData.user_payment[2].check_date}  ${userBluetoolthInfoData.user_payment[2].water}   ${userBluetoolthInfoData.user_payment[2].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}  ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 
 Detalhes de Facturacao
 CONTAS DE GUA
-Domestico：
-Tarifa Fixa Domestico
+Domestico： ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_payment[0].water}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
 TOTAL GERAL A PAGAR
 
-Data limite de pagamento:  ${this.getMoreDay(15)}
+Data limite de pagamento:  ${that.getMoreDay(15)}
 valores pendentes
-${userBluetoolthInfoData.user_payment[0].price} Kz
+${userBluetoolthInfoData.water_meter.user_bal} Kz
 
 ${date.time}
       
@@ -428,13 +455,14 @@ Contribuinte: 001189995BA039
 
 DATA: ${date.time}
 Data   Total    Pend.   Liq.
-${userBluetoolthInfoData.user_payment[0].check_pay_time}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].price}
-TOTAL: ${userBluetoolthInfoData.user_payment[0].arrears_money}Kz
+${user_payment_info?user_payment_info:''}
+
+TOTAL: ${that.data.user_PayFees_info.total_money}Kz
 
 Modos de Pagamento
 
 Método   Moeda    Total
-  无       无      ${userBluetoolthInfoData.user_payment[0].arrears_money}
+${that.data.pay_text}     AOA    ${that.data.user_PayFees_info.total_money}Kz
 
   Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
 

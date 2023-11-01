@@ -64,6 +64,7 @@ Page({
     let status = ''
 
     if (source === 'search-person') {
+      // 查表员
       status = 'pay'
       if (form.status !== 1) {
         status = 'print'
@@ -74,6 +75,7 @@ Page({
     }
 
     if (source === 'business-hall') {
+      // 营业厅
       status = 'bank_pay'
       if (form.status !== 1) {
         status = 'print'
@@ -143,9 +145,9 @@ valores pendentes
 EPAL CUANZA SUL WATER MANEGEMENT
 
 ${this.data.lang.wm_no}：${form.wm_no};
-${this.data.lang.last_water}：${form.last_reading}（Litro）;
-${this.data.lang.reading}：${form.reading}（Litro）;
-${this.data.lang.total_water}：${ (form.reading * 10000 - form.last_reading * 10000) /10000}（Litro）;
+${this.data.lang.last_water}：${form.last_reading}（m³）;
+${this.data.lang.reading}：${form.reading}（m³）;
+${this.data.lang.total_water}：${ (form.reading * 10000 - form.last_reading * 10000) /10000}（m³）;
 ${this.data.lang.total_money}：${form.price}（KZ）;
 
 
@@ -165,7 +167,7 @@ ${this.data.lang.total_money}：${form.price}（KZ）;
 
   showPayPopup() {
     wxAsyncApi('navigateTo', {
-      url: `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}`,
+      url: `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

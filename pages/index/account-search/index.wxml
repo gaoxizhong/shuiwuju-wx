@@ -21,7 +21,7 @@
               {{lang.water}}：
             </view>
             <view class="wixi-item_i_content">
-              {{( item.reading * 10000 - item.last_reading * 10000) / 10000}}（Litro）
+              {{( item.reading * 10000 - item.last_reading * 10000) / 10000}}（m³）
             </view>
           </view>
           <view class="wixi-item_i">

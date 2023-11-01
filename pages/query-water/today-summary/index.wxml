@@ -46,7 +46,7 @@
           </view>
 
           <view class="item__water">
-            {{lang.itemWater}}：{{(item.reading * 10000 - item.last_reading * 10000 )/ 10000}}（Litro）
+            {{lang.itemWater}}：{{(item.reading * 10000 - item.last_reading * 10000 )/ 10000}}（m³）
           </view>
 
           <view class="item__money">

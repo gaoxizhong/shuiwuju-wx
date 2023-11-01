@@ -11,15 +11,15 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.last_water}}</view>
-        <view class="info-item__info">{{form.last_reading}}（Litro）</view>
+        <view class="info-item__info">{{form.last_reading}}（m³）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.reading}}</view>
-        <view class="info-item__info">{{form.reading}}（Litro）</view>
+        <view class="info-item__info">{{form.reading}}（m³）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.total_water}}</view>
-        <view class="info-item__info">{{(form.reading * 10000 - form.last_reading * 10000) /10000}}（Litro）</view>
+        <view class="info-item__info">{{(form.reading * 10000 - form.last_reading * 10000) /10000}}（m³）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.createDate}}</view>
@@ -37,20 +37,19 @@
     </view>
   </view>
   <view class="btn">
-    <block wx:if="{{source === 'search-person'}}">
-    <!-- 支付 -->
+    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+      {{btnName.pay}}
+    </view>
+    <!-- <block wx:if="{{source === 'search-person'}}">
       <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
         {{btnName.pay}}
       </view>
-      <!-- 支付 -->
       <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
         {{btnName.printOther}}
       </view>
-      <!-- 打印缴费单 -->
       <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
         {{btnName.print}}
       </view>
-      <!-- 打印缴费单 -->
     </block>
     <block wx:if="{{source === 'business-hall'}}">
       <view wx:if="{{status === 'bank_pay'}}" class="btn-item over" bindtap="showPayPopup">
@@ -70,7 +69,7 @@
       <view wx:if="{{status === 'no'}}" class="btn-item" data-status="2" bindtap="handleOpenResult">
         {{btnName.disagree}}
       </view>
-    </block>
+    </block> -->
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">

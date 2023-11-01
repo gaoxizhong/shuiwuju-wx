@@ -315,13 +315,14 @@ const en_lang = {
     last_water_1: 'Leitura O último',
     total_water: 'Consumo de água',
     total_money: 'Valor a pagar',
-    createDate: 'Hora da consulta',
+    createDate: 'Date',
+    // createDate: 'Hora da consulta',
     waterList: 'Fotos',
 
     check_detail: 'Causa',
     placeholder: 'Por favor, digite',
     pay_type: 'Métodos de Pagamento',
-    paid_total_money: 'Valor a pagar',
+    paid_total_money: 'Valor real pago',
 
   },
   // 功能列表

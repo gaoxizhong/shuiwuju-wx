@@ -72,9 +72,9 @@ Page({
 // EPAL CUANZA SUL WATER MANEGEMENT
 
 // ${this.data.lang.wm_no}：${wm_no};
-// ${this.data.lang.last_water}：${last_reading}（Litro）;
-// ${this.data.lang.reading}：${reading}（Litro）;
-// ${this.data.lang.total_water}：${total_water}（Litro）;
+// ${this.data.lang.last_water}：${last_reading}（m³）;
+// ${this.data.lang.reading}：${reading}（m³）;
+// ${this.data.lang.total_water}：${total_water}（m³）;
 // ${this.data.lang.total_money}：${total_money}（KZ）;
 
 
@@ -97,8 +97,9 @@ Page({
       const {
         arrears_money_sum
         } = res.data
+         
       this.setData({
-        arrears_money_sum,
+        arrears_money_sum: Math.abs(arrears_money_sum),
       })
     }).catch((res) => {
       wx.showToast({
@@ -427,101 +428,32 @@ Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type.type_name}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
 Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
 
 Histórico de Leituras
 Data        m3     Origem
 ${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1].check_date}  ${userBluetoolthInfoData.user_payment[1].water}   ${userBluetoolthInfoData.user_payment[1].reading_user}
-${userBluetoolthInfoData.user_payment[2].check_date}  ${userBluetoolthInfoData.user_payment[2].water}   ${userBluetoolthInfoData.user_payment[2].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}  ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 
 Detalhes de Facturacao
-CONTAS DE GUA
-Domestico：
-Tarifa Fixa Domestico
+CONTAS DE GUA ${this.data.form.total_water?this.data.form.total_water:0}(m³)
+Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_payment[0].water}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
 TOTAL GERAL A PAGAR
 
 Data limite de pagamento:  ${this.getMoreDay(15)}
 valores pendentes
-${userBluetoolthInfoData.user_payment[0].price} Kz
+${userBluetoolthInfoData.water_meter.user_bal} Kz
 
 ${date.time}
 
 `,
-      invoiceInfo:`
-EPASKS
-EMPRESA PUBLICA DE AGUAS E
-SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte: 5601022917
-Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
-Atendimento ao Cliente: 941648993
-Comunicacao de Leituras: 941648993
-Comunicacso de Rupturas: 941648999
-Falhas de Aqua: 941648999
-Email: info.epasksagmail.com
 
-Fcatura Nr 2023-*******
-
-Dados do Cliente
-
-Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
-NIF: ${userBluetoolthInfoData.water_meter.user_card}
-EMAIL: ${userBluetoolthInfoData.water_meter.email}
-Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type.type_name}
-N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
-Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
-
-Histórico de Leituras
-Data        m3     Origem
-${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1].check_date}  ${userBluetoolthInfoData.user_payment[1].water}   ${userBluetoolthInfoData.user_payment[1].reading_user}
-${userBluetoolthInfoData.user_payment[2].check_date}  ${userBluetoolthInfoData.user_payment[2].water}   ${userBluetoolthInfoData.user_payment[2].reading_user}
-
-Detalhes de Facturacao
-CONTAS DE GUA
-Domestico：
-Tarifa Fixa Domestico
-Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
-IVA(0%)
-TOTAL GERAL A PAGAR
-
-Data limite de pagamento:  ${this.getMoreDay(15)}
-valores pendentes
-${userBluetoolthInfoData.user_payment[0].price} Kz
-
-${date.time}
-      
-      `,
-      receiptInfo: `
-EPASKS-E.P.
-Empresa Publica de Aguas e Saneamento do Kwanza
-Sul EP
-Avenida Comandante Cassange - Zona 3 - ETA
-Sumbe - Cuanza Sul
-NIF: 5601022917
-Recibo Nº: REC 2023/29259
-ORIGINAL
-Nome: MARIA DA GRAÇA FERNANDES LIMA
-Contribuinte: 001189995BA039
-
-DATA: ${date.time}
-Data   Total    Pend.   Liq.
-${userBluetoolthInfoData.user_payment[0].check_pay_time}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].arrears_money}   ${userBluetoolthInfoData.user_payment[0].price}
-TOTAL: ${userBluetoolthInfoData.user_payment[0].arrears_money}Kz
-
-Modos de Pagamento
-
-Método   Moeda    Total
-  无       无      ${userBluetoolthInfoData.user_payment[0].arrears_money}
-
-  Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
-
-`
       })
       console.log(typeof f)
       if (typeof f == 'function'){

@@ -315,7 +315,7 @@ const zh_lang = {
     reading: '本次读数',
     last_water_1:'末次读数',
     total_water: '用水量',
-    total_money: '缴费金额',
+    total_money: '应缴金额',
     createDate: '查询时间',
     waterList: '照片',
 

@@ -38,7 +38,7 @@
   font-size: 28rpx;
 }
 .btn-item{
-  flex: 0.5;
+  flex: 1;
   text-align: center;
   border-top: 1px solid #ebeef5;
   padding: 20rpx;
