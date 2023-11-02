@@ -17,7 +17,7 @@
         </view> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.reading}}</view>
-          <view class="info-item__info">{{form.reading}}（m³）</view>
+          <view class="info-item__info">{{last_reading}}（m³）</view>
         </view>
         <!-- <view class="info-item">
           <view class="info-item__label">{{lang.total_water}}</view>
@@ -25,7 +25,7 @@
         </view> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.total_money}}</view>
-          <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
+          <view class="info-item__info">{{form.total_money}}（KZ）</view>
         </view>
         <!-- <van-cell-group>
           <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />

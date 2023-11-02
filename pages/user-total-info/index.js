@@ -389,26 +389,24 @@ Page({
       let info = that.data.user_payment_info;
       let user_payment_info = '';
       info.forEach(ele =>{
-        user_payment_info += `
-        ${ele.check_time}   ${ele.arrears_money}   ${ele.arrears_money}   ${ele.pay_money}
+        user_payment_info += `${ele.check_time}   ${ele.arrears_money}Kz   ${ele.arrears_money}Kz   ${ele.pay_money}Kz
 
         `
       })
-      console.log(user_payment_info)
       that.setData({
       invoiceInfo:`
 EPASKS
 EMPRESA PUBLICA DE AGUAS E
 SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte: 5601022917
+No Contribuinte 5601022917
 Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
-Atendimento ao Cliente: 941648993
-Comunicacao de Leituras: 941648993
-Comunicacso de Rupturas: 941648999
-Falhas de Aqua: 941648999
-Email: info.epasksagmail.com
+Atendimento ao Cliente
+Comunicação de Leituras
+Comunicação de Roturas
+Falhas de Aqua
+Email info.epasksagmail.com
 
-Fcatura Nr 2023-*******
+factura Nr 2023******
 
 Dados do Cliente
 
@@ -417,7 +415,7 @@ NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
+Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
 Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
 
 Histórico de Leituras
@@ -427,28 +425,29 @@ ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 
 Detalhes de Facturacao
-CONTAS DE GUA
+Contas de água
 Domestico： ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_payment[0].water}
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
-TOTAL GERAL A PAGAR
+TOTAL GERAL A PAGAR ${that.data.paid_total_money} KZ
 
-Data limite de pagamento:  ${that.getMoreDay(15)}
+Data limite de pagamento:
+${that.getMoreDay(15)}
 valores pendentes
-${userBluetoolthInfoData.water_meter.user_bal} Kz
+${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 ${date.time}
       
       `,
+      //收据
       receiptInfo: `
 EPASKS-E.P.
-Empresa Publica de Aguas e Saneamento do Kwanza
-Sul EP
+Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida Comandante Cassange - Zona 3 - ETA
 Sumbe - Cuanza Sul
 NIF: 5601022917
-Recibo Nº: REC 2023/29259
+Recibo Nr: REC 2023/29259
 ORIGINAL
 Nome: MARIA DA GRAÇA FERNANDES LIMA
 Contribuinte: 001189995BA039
@@ -457,12 +456,12 @@ DATA: ${date.time}
 Data   Total    Pend.   Liq.
 ${user_payment_info?user_payment_info:''}
 
-TOTAL: ${that.data.user_PayFees_info.total_money}Kz
+TOTAL: ${that.data.user_PayFees_info.total_money} Kz
 
 Modos de Pagamento
 
-Método   Moeda    Total
-${that.data.pay_text}     AOA    ${that.data.user_PayFees_info.total_money}Kz
+Método    Moeda    Total
+${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} Kz
 
   Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
 

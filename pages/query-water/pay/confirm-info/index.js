@@ -86,9 +86,6 @@ Page({
     const filePath = this.data.form.imageUrl
     const baseUrl = app.globalData.baseUrl
     const token = wx.getStorageSync('token')
-    console.log(wm_no)
-    console.log(reading)
-    console.log(check_time)
 
     wx.uploadFile({
       filePath,

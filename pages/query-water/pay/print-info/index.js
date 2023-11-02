@@ -37,6 +37,7 @@ Page({
     receiptInfo: '', // 收据信息打印内容
     invoiceInfo:'', // 发票打印内容
     print_type: '',
+    last_reading:'', // 本次读数
   },
 
   /**
@@ -95,11 +96,13 @@ Page({
     }
     getArrearsMoneySum(params).then(res => {
       const {
-        arrears_money_sum
+        arrears_money_sum,
+        last_reading
         } = res.data
          
       this.setData({
         arrears_money_sum: Math.abs(arrears_money_sum),
+        last_reading
       })
     }).catch((res) => {
       wx.showToast({
@@ -412,15 +415,15 @@ Page({
 EPASKS
 EMPRESA PUBLICA DE AGUAS E
 SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte: 5601022917
+No Contribuinte 5601022917
 Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
-Atendimento ao Cliente: 941648993
-Comunicacao de Leituras: 941648993
-Comunicacso de Rupturas: 941648999
-Falhas de Aqua: 941648999
-Email: info.epasksagmail.com
+Atendimento ao Cliente941648993
+Comunicação de Leituras941648993
+Comunicação de Roturas941648999
+Falhas de Aqua 941648999
+Email info.epasksagmail.com
 
-Nota de Coberanca Nr 2023-*******
+Nota de Coberanca Nr 2023-******
 
 Dados do Cliente
 
@@ -429,7 +432,7 @@ NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-N.º Série: ${userBluetoolthInfoData.water_meter.user_code}
+Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
 Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
 
 Histórico de Leituras
@@ -439,16 +442,16 @@ ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 
 Detalhes de Facturacao
-CONTAS DE GUA ${this.data.form.total_water?this.data.form.total_water:0}(m³)
+Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m³)
 Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_payment[0].water}
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
-TOTAL GERAL A PAGAR
+TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
 Data limite de pagamento:  ${this.getMoreDay(15)}
 valores pendentes
-${userBluetoolthInfoData.water_meter.user_bal} Kz
+${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 ${date.time}
 
