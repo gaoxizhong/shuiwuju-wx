@@ -360,22 +360,35 @@ Page({
   },
   handlePrint(p) {
     let print_type = this.data.print_type;
-    let info = '';
+    let info = [];
+    // 缴费单
     if(print_type == 'printInfo'){
-      info = this.data.printInfo
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.printInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...GBK.encode(this.data.printInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.printInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.printInfo_historyData_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.printInfo_historyData_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.printInfo_facturacao_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.printInfo_facturacao_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.printInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
     }
-    if(print_type == 'receiptInfo'){
-      info = this.data.receiptInfo
-    }
-    if(print_type == 'invoiceInfo'){
-      info = this.data.invoiceInfo
-    }
-    
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
-      value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(info), ...blueToolth.printCommand.enter])
-        .buffer,
+      value: new Uint8Array(info).buffer,
       lasterSuccess() {
         wx.showToast({
           title: lang.blueToolth.printSuccess,
@@ -411,37 +424,47 @@ Page({
       let date = that.handleTimeValue();
 
       this.setData({
-        printInfo: `
-EPASKS
-EMPRESA PUBLICA DE AGUAS E
-SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte 5601022917
-Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
+        printInfo_title:`EPASKS-E.P.`,
+        printInfo_title_1:`
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida Comandante Cassange - Zona 3 ETASumbe - Cuanza Sul - Angola
+NIF:5601022917
 Atendimento ao Cliente941648993
 Comunicação de Leituras941648993
 Comunicação de Roturas941648999
 Falhas de Aqua 941648999
 Email info.epasksagmail.com
 
-Nota de Coberanca Nr 2023-******
+Nota de Coberanca Nr 2023/29259
 
 Dados do Cliente
 
+          `,
+        printInfo_CustomerData:`
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
-Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
+Giro/Zona: ${userBluetoolthInfoData.water_meter.household_num}
 
+        `,
+        printInfo_historyData_title:`
 Histórico de Leituras
-Data        m3     Origem
-${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}  ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
-${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
-
+        `,
+        printInfo_historyData_info:`
+   Data       m3      Origem
+--------------------------------
+${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
+--------------------------------
+      `,
+      printInfo_facturacao_title:`
 Detalhes de Facturacao
+      `,
+      printInfo_facturacao_info:`
 Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m³)
 Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
 Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
@@ -449,14 +472,14 @@ Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
 TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
-Data limite de pagamento:  ${this.getMoreDay(15)}
+Data limite de pagamento: ${this.getMoreDay(15)}
+      `,
+      printInfo_valores:`
 valores pendentes
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
-
 ${date.time}
 
-`,
-
+      `,
       })
       console.log(typeof f)
       if (typeof f == 'function'){

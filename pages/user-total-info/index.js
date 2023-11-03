@@ -376,131 +376,6 @@ Page({
     // this.getUserBluetoolthInfoData(this.blueToothPrint);
     this.new_onConfirmPay();
   },
-  // 获取用户打印信息
-  getUserBluetoolthInfoData(f){
-    let that = this;
-    const params = {
-      wm_no: that.data.wm_no,
-    }
-    console.log(params)
-    getUserBluetoolthInfoData(params).then(res => {
-      const userBluetoolthInfoData = res.data
-      let date = that.handleTimeValue();
-      let info = that.data.user_payment_info;
-      let user_payment_info = '';
-      info.forEach(ele =>{
-        user_payment_info += `${ele.check_time}   ${ele.arrears_money}Kz   ${ele.arrears_money}Kz   ${ele.pay_money}Kz
-
-        `
-      })
-      that.setData({
-      invoiceInfo:`
-EPASKS
-EMPRESA PUBLICA DE AGUAS E
-SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte 5601022917
-Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
-Atendimento ao Cliente
-Comunicação de Leituras
-Comunicação de Roturas
-Falhas de Aqua
-Email info.epasksagmail.com
-
-factura Nr 2023******
-
-Dados do Cliente
-
-Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
-NIF: ${userBluetoolthInfoData.water_meter.user_card}
-EMAIL: ${userBluetoolthInfoData.water_meter.email}
-Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
-Giro/Zona ${userBluetoolthInfoData.water_meter.household_num}
-
-Histórico de Leituras
-Data        m3     Origem
-${userBluetoolthInfoData.user_payment[0].check_date}  ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}  ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
-${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}  ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
-
-Detalhes de Facturacao
-Contas de água
-Domestico： ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
-Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
-IVA(0%)
-TOTAL GERAL A PAGAR ${that.data.paid_total_money} KZ
-
-Data limite de pagamento:
-${that.getMoreDay(15)}
-valores pendentes
-${userBluetoolthInfoData.water_meter.user_bal} KZ
-
-${date.time}
-      
-      `,
-      //收据
-      receiptInfo: `
-EPASKS-E.P.
-Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
-Avenida Comandante Cassange - Zona 3 - ETA
-Sumbe - Cuanza Sul
-NIF: 5601022917
-Recibo Nr: REC 2023/29259
-ORIGINAL
-Nome: MARIA DA GRAÇA FERNANDES LIMA
-Contribuinte: 001189995BA039
-
-DATA: ${date.time}
-Data   Total    Pend.   Liq.
-${user_payment_info?user_payment_info:''}
-
-TOTAL: ${that.data.user_PayFees_info.total_money} Kz
-
-Modos de Pagamento
-
-Método    Moeda    Total
-${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} Kz
-
-  Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
-
-`
-      })
-      console.log(typeof f)
-      if (typeof f == 'function'){
-        return f()
-      }
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none',
-        duration: 2000
-      })
-    })
-  },
-
-  // 4.修改打印收据状态
-  setReceiptStatus (){
-    let that = this;
-    setReceiptStatus({id: that.data.id}).then(res => {
-     
-    }).catch(res => {
-      wx.hideToast()
-    })
-  },
-  // 5.修改发票收据状态
-  setInvoiceStatus(){
-    let that = this;
-    setInvoiceStatus({id: that.data.id}).then(res => {
-    
-    }).catch(res => {
-      wx.hideToast()
-    })
-  },
-
-
-
 
   // 蓝牙设备打印
   blueToothPrint() {
@@ -600,16 +475,58 @@ ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} Kz
   },
   handlePrint() {
     let print_type = this.data.print_type;
-    let info = '';
-    if(print_type == 'receiptInfo'){
-      info = this.data.receiptInfo
-    }
+    let info = [];
+    // 发票
     if(print_type == 'invoiceInfo'){
-      info = this.data.invoiceInfo
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...GBK.encode(this.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_historyData_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_historyData_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_facturacao_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_facturacao_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
     }
+     //  收据
+    if(print_type == 'receiptInfo'){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.receiptInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...GBK.encode(this.data.receiptInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.receiptInfo_historyData),
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.receiptInfo_TOTAL),
+        ...blueToolth.printCommand.ct_zc,
+        ...GBK.encode(this.data.receiptInfo_Pagamento),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.receiptInfo_Modos),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.receiptInfo_Saldo),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+
     blueToolth.writeBLECharacteristicValue({
       ...this.data.printDeviceInfo,
-      value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(info), ...blueToolth.printCommand.enter])
+      value: new Uint8Array(info)
         .buffer,
       lasterSuccess() {
         wx.showToast({
@@ -620,6 +537,160 @@ ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} Kz
       }
     });
   },
+  // 获取用户打印信息
+  getUserBluetoolthInfoData(f){
+    let that = this;
+    const params = {
+      wm_no: that.data.wm_no,
+    }
+    console.log(params)
+    getUserBluetoolthInfoData(params).then(res => {
+      const userBluetoolthInfoData = res.data
+      let date = that.handleTimeValue();
+      let info = that.data.user_payment_info;
+      let user_payment_info = '';
+      info.forEach(ele =>{
+        user_payment_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
+        `
+      })
+      that.setData({
+      // 发票
+      invoiceInfo_title:`EPASKS-E.P.`,
+      invoiceInfo_title_1:`
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida Comandante Cassange - Zona 3 ETASumbe - Cuanza Sul - Angola
+NIF:5601022917
+Atendimento ao Cliente941648993
+Comunicação de Leituras941648993
+Comunicação de Roturas941648999
+Falhas de Aqua 941648999
+Email info.epasksagmail.com
+
+factura Nr 2023/29259
+
+Dados do Cliente
+
+        `,
+        invoiceInfo_CustomerData:`
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
+NIF: ${userBluetoolthInfoData.water_meter.user_card}
+EMAIL: ${userBluetoolthInfoData.water_meter.email}
+Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
+Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
+Giro/Zona: ${userBluetoolthInfoData.water_meter.household_num}
+
+      `,
+      invoiceInfo_historyData_title:`
+Histórico de Leituras
+      `,
+      invoiceInfo_historyData_info:`
+ Data       m3      Origem
+--------------------------------
+${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
+--------------------------------
+    `,
+    invoiceInfo_facturacao_title:`
+Detalhes de Facturacao
+    `,
+    invoiceInfo_facturacao_info:`
+Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m³)
+Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
+Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
+IVA(0%)
+TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
+
+Data limite de pagamento: ${this.getMoreDay(15)}
+    `,
+    invoiceInfo_valores:`
+valores pendentes
+${userBluetoolthInfoData.water_meter.user_bal} KZ
+${date.time}
+
+    `,
+      //收据
+      receiptInfo_title:`EPASKS-E.P.`,
+      receiptInfo_title_1:`
+Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
+Avenida Comandante Cassange - Zona 3 - ETA
+Sumbe - Cuanza Sul
+NIF: 5601022917
+Recibo Nr: REC 2023/29259
+ORIGINAL
+Nome: MARIA DA GRAÇA FERNANDES LIMA
+Contribuinte: 001189995BA039
+
+`,
+      receiptInfo_historyData:`
+DATA: ${date.time}
+ Data    Total    Pend.    Liq.
+--------------------------------
+${user_payment_info?user_payment_info:''}
+--------------------------------
+`,
+      receiptInfo_TOTAL: `
+TOTAL: ${that.data.user_PayFees_info.total_money} KZ
+`,
+      receiptInfo_Pagamento:`
+Modos de Pagamento
+`,
+      receiptInfo_Modos: `
+Método       Moeda       Total
+--------------------------------
+${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
+--------------------------------
+`,
+      receiptInfo_Saldo: `
+Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
+
+Este documento nao serve de fatura
+Emitido por programa validado N.73/AGT/2019|XD
+Software
+
+IVA Regime Simplificado
+Utilizador:ISAURA FERNANDOP DA CRUZ
+
+--------------------------------
+*Obrigado e volte sempre!*
+
+`,
+
+      })
+      console.log(typeof f)
+      if (typeof f == 'function'){
+        return f()
+      }
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  },
+
+  // 4.修改打印收据状态
+  setReceiptStatus (){
+    let that = this;
+    setReceiptStatus({id: that.data.id}).then(res => {
+     
+    }).catch(res => {
+      wx.hideToast()
+    })
+  },
+  // 5.修改发票收据状态
+  setInvoiceStatus(){
+    let that = this;
+    setInvoiceStatus({id: that.data.id}).then(res => {
+    
+    }).catch(res => {
+      wx.hideToast()
+    })
+  },
+
 
   // 营业厅 打印（补开）
   businessHallPrint() {

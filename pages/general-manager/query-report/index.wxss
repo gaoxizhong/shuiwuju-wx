@@ -12,6 +12,6 @@ page {
   overflow: hidden;
 }
 
-.card-canvas {
-  /* height: 300rpx; */
-}
+/* .card-canvas {
+  height: 300rpx;
+} */
