@@ -79,6 +79,21 @@
         data-index="{{index}}" 
         bind:click-input="onPriceType" 
       />
+      <!-- 分区选择 -->
+      <van-field 
+        wx:if="{{item.type === 'area_code'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:click-input="onarea_code" 
+      />
       <!-- 污水下拉选择 -->
       <van-field 
         wx:if="{{item.type === 'sewage'}}"
@@ -163,6 +178,17 @@
      cancel-button-text="{{langDialog.cancelText}}" 
      bind:cancel="onCloseSewage" 
      bind:confirm="handleSewage" />
+  </van-popup>
+  <!-- 分区 -->
+  <van-popup show="{{ showarea_code }}" safe-area-tab-bar position="bottom" bind:close="onClosearea_code" round>
+    <van-picker
+     id="area_code"
+      show-toolbar 
+      columns="{{ optionsarea_code }}"
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onClosearea_code" 
+     bind:confirm="handlearea_code" />
   </van-popup>
    <!-- 价格类型 -->
    <van-popup show="{{ showPriceType }}" safe-area-tab-bar position="bottom" bind:close="onClosePriceType" round>

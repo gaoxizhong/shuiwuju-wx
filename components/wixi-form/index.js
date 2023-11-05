@@ -84,6 +84,35 @@ Component({
       text: 'No',
       value: 1
     }],
+    optionsarea_code:[{ 
+      text: '1',
+      value: 1
+    }, {
+      text: '2',
+      value: 2
+    },{ 
+      text: '3',
+      value: 3
+    }, {
+      text: '4',
+      value: 4
+    },{ 
+      text: '5',
+      value: 5
+    }, {
+      text: 'A',
+      value: 'A'
+    },{ 
+      text: 'B',
+      value: 'B'
+    }, {
+      text: 'C',
+      value: 'C'
+    },{ 
+      text: 'D',
+      value: 'D'
+    }
+  ],
     optionsPriceType: [],  // 价格类型
     showTotSim: false, // 共有/独有
     optionsTotSim:[
@@ -91,7 +120,7 @@ Component({
         text: 'Totalizador',
         value: 1
       }, {
-        text: 'Simpre',
+        text: 'Normal',
         value: 0
     }],
     showSelect: false,
@@ -297,8 +326,33 @@ Component({
     },
 
 
-
-    ///  有无污水
+    // 分区
+    onarea_code(e){
+      console.log(e)
+      this.setData({
+        showarea_code: true,
+        formIndex: e.currentTarget.dataset.index,
+      })
+    },
+    onClosearea_code() {
+      this.setData({
+        showarea_code: false
+      })
+    },
+    handlearea_code(e){
+      const form = this.data.wixiForm
+      const item = form[this.data.formIndex]
+      item.value = e.detail.value.text
+      item.value_name = e.detail.value.value
+      if (item.required) {
+        item.error = false
+      }
+      this.setData({
+        wixiForm: form
+      })
+      this.onClosearea_code()
+    },
+    // 有无污水
     onSewage(e){
       console.log(e)
       this.setData({

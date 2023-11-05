@@ -606,7 +606,7 @@ TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfo
 Data limite de pagamento: ${this.getMoreDay(15)}
     `,
     invoiceInfo_valores:`
-valores pendentes
+Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 ${date.time}
 
@@ -644,12 +644,9 @@ ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
 --------------------------------
 `,
       receiptInfo_Saldo: `
-Saldo: ${userBluetoolthInfoData.water_meter.user_bal} Kz
+Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Este documento nao serve de fatura
-Emitido por programa validado N.73/AGT/2019|XD
-Software
-
 IVA Regime Simplificado
 Utilizador:ISAURA FERNANDOP DA CRUZ
 

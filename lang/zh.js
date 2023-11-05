@@ -138,9 +138,16 @@ const zh_lang = {
         required: true
       },
       {
+        name: '门牌号',
+        placeholder: '请输入门牌号',
+        type: 'input',
+        key: 'house_number',
+        required: true
+      },
+      {
         name: '分区',
         placeholder: '请输入分区',
-        type: 'input',
+        type: 'area_code',
         key: 'area_code',
         required: true
       },

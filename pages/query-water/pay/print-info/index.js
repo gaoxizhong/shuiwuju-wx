@@ -475,7 +475,7 @@ TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfo
 Data limite de pagamento: ${this.getMoreDay(15)}
       `,
       printInfo_valores:`
-valores pendentes
+Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 ${date.time}
 

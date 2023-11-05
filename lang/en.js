@@ -47,7 +47,7 @@ const en_lang = {
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
     printOtherTwo: 'Reabastecimento de recibos',
-    print: 'Imprimir boleto de pagamento',
+    print: 'Imprimir Nota de Coberanca',
     invoice: 'Imprimir As facturas',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
@@ -110,8 +110,8 @@ const en_lang = {
         required: true
       },
       {
-        name: 'Totalizador/simpres',
-        placeholder: 'Totalizador/simpres',
+        name: 'Totalizador/Normal',
+        placeholder: 'Totalizador/Normal',
         type: 'tot_sim',
         key: 'is_share',
         required: true
@@ -138,9 +138,16 @@ const en_lang = {
         required: true
       },
       {
+        name: 'Nº de Porta',
+        placeholder: 'Nº de Porta',
+        type: 'input',
+        key: 'house_number',
+        required: true
+      },
+      {
         name: 'Giro/Zona',
         placeholder: 'Giro/Zona',
-        type: 'input',
+        type: 'area_code',
         key: 'area_code',
         required: true
       },
@@ -159,8 +166,8 @@ const en_lang = {
         required: true
       },
       {
-        name: 'Categoria Tarifaria',
-        placeholder: 'Categoria Tarifaria',
+        name: 'Totalizando e Normal',
+        placeholder: 'Totalizando e Normal',
         type: 'priceType',
         key: 'user_type_id',
         required: true

@@ -97,51 +97,6 @@ Page({
       status,
       payStatusList: JSON.parse(payStatusList || '[]'),
       printInfo: `
-EPASKS
-EMPRESA PUBLICA DE AGUAS E
-SANEAMENTO DO KWANZA SUL-E.P.
-No Contribuinte: 5601022917
-Avenida Comandante Cassange - Zona 3 - ETASumbe - Cuanza Sul - Angola
-Atendimento ao Cliente: 941648993
-Comunicacao de Leituras: 941648993
-Comunicacso de Rupturas: 941648999
-Falhas de Aqua: 941648999
-Email: info.epasksagmail.com
-
-Nota de Coberanca Nr 2023-*******
-
-Dados do Cliente
-
-Comsumidor: MARIA DA GRAÇA FERNANDES LIMA
-NIF: 001189995BA039
-EMAIL: sinharena27@gmail.com
-Endereco detalhado: BLOCO G DO BAIRRO E-15
-Categoria Tarifaria: Doméstico escalão 2
-N.º Série:2014-**********
-Giro/Zona 4
-
-Histórico de Leituras
-Data        m3     Origem
-21.08.2023  421   Leitor
-21.08.2023  421   Leitor
-21.08.2023  421   Leitor
-
-Detalhes de Facturacao
-CONTAS DE GUA
-Domestico：
-Tarifa Fixa Domestico
-Taxa Aguas Residuais (80%)
-IVA(0%)
-TOTAL GERAL A PAGAR
-
-Data limite de pagamento:  16.09.2023
-
-valores pendentes
-
-*****.** Kz
-
-
-
 EPAL CUANZA SUL WATER MANEGEMENT
 
 ${this.data.lang.wm_no}：${form.wm_no};
