@@ -419,9 +419,11 @@ Page({
       icon: "none",
       duration: 30000,
     })
+    console.log('开始连接蓝牙设备')
     // 开始连接蓝牙设备
     blueToolth.createBLEConnection(deviceId).then(res => {
       // 连接蓝牙设备成功
+      console.log('连接蓝牙设备成功')
       if (res.errMsg && res.errMsg.includes('ok')) {
         blueToolth.getBLEDeviceServices({
           deviceId,
@@ -450,13 +452,14 @@ Page({
           })
         })
       } else {
+      console.log('11')
         wx.hideToast()
         this.setData({
           printDeviceInfo: null,
         })
       }
     }).catch((res) => {
-      console.log(res)
+    console.log('连接蓝牙设备成功'+ res)
       wx.hideToast()
       let msg = ''
       if (res.errCode) {
