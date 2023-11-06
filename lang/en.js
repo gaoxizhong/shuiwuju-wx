@@ -47,7 +47,7 @@ const en_lang = {
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
     printOtherTwo: 'Reabastecimento de recibos',
-    print: 'Imprimir Nota de Coberanca',
+    print: 'Nota de Coberanca',
     invoice: 'Imprimir As facturas',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
@@ -166,8 +166,8 @@ const en_lang = {
         required: true
       },
       {
-        name: 'Totalizando e Normal',
-        placeholder: 'Totalizando e Normal',
+        name: 'Categoria Tarifaria',
+        placeholder: 'Categoria Tarifaria',
         type: 'priceType',
         key: 'user_type_id',
         required: true

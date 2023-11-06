@@ -79,10 +79,10 @@ Component({
     showSewage: false, // 是否污水
     optionsSewage: [{ 
       text: 'Sim',
-      value: 0
+      value: 1
     }, {
       text: 'No',
-      value: 1
+      value: 0
     }],
     optionsarea_code:[{ 
       text: '1',
