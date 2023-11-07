@@ -54,6 +54,14 @@ Page({
       wm_no: value,
     })
   },
+  // 失焦赋值
+  handleReading(e) {
+    console.log(e)
+    const wm_no = e.detail.value;
+    this.setData({
+      wm_no,
+    })
+  },
   handleSearchInfo() {
     this.setData({
       page: 1,

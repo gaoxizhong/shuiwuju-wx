@@ -145,6 +145,7 @@ Page({
 
    //输入实缴金额
    handleInputMoney(e){
+     console.log(e)
     const paid_total_money = e.detail
     let no_error = this.data.no_error
     if (paid_total_money) {
@@ -155,7 +156,14 @@ Page({
       no_error
     })
   },
-
+  // 失焦赋值
+  handleReading(e) {
+    console.log(e)
+    const paid_total_money = e.detail.value;
+    this.setData({
+      paid_total_money,
+    })
+  },
   //  新的确认支付
   new_onConfirmPay(){
     let that =  this;
@@ -408,7 +416,9 @@ Page({
         }
       })
     } else {
-      this.connectBlueToothDevice(connectDeviceInfo)
+      console.log('已连接。。。')
+      // this.connectBlueToothDevice(connectDeviceInfo)
+     this.handlePrint(connectDeviceInfo)
     }
   },
   connectBlueToothDevice({
@@ -473,7 +483,9 @@ Page({
       })
     })
   },
-  handlePrint() {
+  // 开始打印
+  handlePrint(p) {
+    console.log('')
     let print_type = this.data.print_type;
     let info = [];
     // 发票
@@ -525,9 +537,9 @@ Page({
     }
 
     blueToolth.writeBLECharacteristicValue({
-      ...this.data.printDeviceInfo,
-      value: new Uint8Array(info)
-        .buffer,
+      // ...this.data.printDeviceInfo,
+      ...p,
+      value: new Uint8Array(info).buffer,
       lasterSuccess() {
         wx.showToast({
           title: lang.blueToolth.printSuccess,
