@@ -110,3 +110,13 @@ export const setInvoiceStatus = (data) => {
     data
   })
 }
+
+// 确认缴费单
+export const readingPic = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_wm_reading`,
+    method: 'POST',
+    data
+  })
+}

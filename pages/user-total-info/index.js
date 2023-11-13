@@ -576,8 +576,8 @@ Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida Comandante Cassange - Zona 3 ETASumbe - Cuanza Sul - Angola
 NIF:5601022917
 Atendimento ao Cliente941648993
-Comunicação de Leituras941648993
-Comunicação de Roturas941648999
+Comunicacao de Leituras941648993
+Comunicacao de Roturas941648999
 Falhas de Aqua 941648999
 Email info.epasksagmail.com
 
@@ -611,7 +611,7 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Detalhes de Facturacao
     `,
     invoiceInfo_facturacao_info:`
-Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m³)
+Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m3)
 Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
 Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)

@@ -5,6 +5,9 @@ const pages = getCurrentPages()
 const {
   wxAsyncApi,
 } = require('./../../../../utils/util')
+const {
+  readingPic
+} = require('./../../../../apis/water')
 Page({
 
   /**
@@ -75,78 +78,129 @@ Page({
     })
   },
   // 确认信息
+  // next() {
+  //   const wm_no = this.data.form.wm_no
+  //   const reading = this.data.form.reading
+  //   const total_money = this.data.form.total_money
+  //   const total_water = this.data.form.total_water
+  //   const last_reading = this.data.form.last_reading
+  //   const check_time = this.data.form.check_time
+  //   const check_time_text = this.data.form.check_time_text
+  //   const filePath = this.data.form.imageUrl
+  //   const baseUrl = app.globalData.baseUrl
+  //   const token = wx.getStorageSync('token')
+
+  //   wx.uploadFile({
+  //     filePath,
+  //     name: 'reading_pic',
+  //     url: `${baseUrl}/api/wx/fb/fb_wm_reading`,
+  //     header: {
+  //       'Authorization': token ? 'Bearer ' + token : '',
+  //     },
+  //     formData: {
+  //       wm_no,
+  //       reading,
+  //       check_time
+  //     },
+  //     success(res) {
+
+  //       console.log(res)
+  //       if(res.statusCode === 200){
+  //         const data = JSON.parse(res.data)
+          
+  //         if(data.code == 200){
+  //           wx.showToast({
+  //             title: lang.message.success,
+  //             duration: 2000,
+  //             icon: 'none'
+  //           })
+  //           const payStatusList = JSON.stringify(data.data.pay_way.map(i => ({
+  //             text: i.title,
+  //             key: i.key
+  //           })))
+  //           console.log(payStatusList)
+  //           const up_id = data.data.data.up_id
+  //           wxAsyncApi('reLaunch', {
+  //             url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
+  //           }).then(res => {
+  //             wx.setNavigationBarTitle({
+  //               title: lang.message.info,
+  //             })
+  //           })
+
+  //         }else{
+  //           wx.showToast({
+  //             title: data.desc,
+  //             duration: 2000,
+  //             icon: 'none'
+  //           })
+  //         }
+          
+        
+  //       }
+        
+  //     },
+  //     fail(res) {
+  //       console.log(res)
+  //     }
+  //   })
+
+  // },
   next() {
-    const wm_no = this.data.form.wm_no
-    const reading = this.data.form.reading
-    const total_money = this.data.form.total_money
-    const total_water = this.data.form.total_water
-    const last_reading = this.data.form.last_reading
-    const check_time = this.data.form.check_time
-    const check_time_text = this.data.form.check_time_text
-    const filePath = this.data.form.imageUrl
+    let that = this;
+    const wm_no = that.data.form.wm_no
+    const reading = that.data.form.reading
+    const total_money = that.data.form.total_money
+    const total_water = that.data.form.total_water
+    const last_reading = that.data.form.last_reading
+    const check_time = that.data.form.check_time
+    const check_time_text = that.data.form.check_time_text
+    const filePath = that.data.form.imageUrl
     const baseUrl = app.globalData.baseUrl
     const token = wx.getStorageSync('token')
-
-    wx.uploadFile({
-      filePath,
-      name: 'reading_pic',
-      url: `${baseUrl}/api/wx/fb/fb_wm_reading`,
-      header: {
-        'Authorization': token ? 'Bearer ' + token : '',
-      },
-      formData: {
-        wm_no,
-        reading,
-        check_time
-      },
-      success(res) {
-
-        console.log(res)
-        if(res.statusCode === 200){
-          const data = JSON.parse(res.data)
-          
-          if(data.code == 200){
-            wx.showToast({
-              title: lang.message.success,
-              duration: 2000,
-              icon: 'none'
+    let params = {
+      wm_no,
+      reading,
+      check_time
+    }
+    readingPic(params).then(res => {
+      console.log(res)
+      if(res.code == 200){
+        wx.showToast({
+          title: lang.message.success,
+          duration: 2000,
+          icon: 'none'
+        })
+        const payStatusList = JSON.stringify(res.data.pay_way.map(i => ({
+          text: i.title,
+          key: i.key
+        })))
+        console.log(payStatusList)
+        const up_id = res.data.data.up_id
+        setTimeout( ()=>{
+          wxAsyncApi('reLaunch', {
+            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
+          }).then(res => {
+            wx.setNavigationBarTitle({
+              title: lang.message.info,
             })
-            const payStatusList = JSON.stringify(data.data.pay_way.map(i => ({
-              text: i.title,
-              key: i.key
-            })))
-            console.log(payStatusList)
-            const up_id = data.data.data.up_id
-            wxAsyncApi('reLaunch', {
-              url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
-            }).then(res => {
-              wx.setNavigationBarTitle({
-                title: lang.message.info,
-              })
-            })
+          })
+        },1500)
 
-          }else{
-            wx.showToast({
-              title: data.desc,
-              duration: 2000,
-              icon: 'none'
-            })
-          }
-          
-        
-        }else {
-          // wx.showToast({
-          //   title: "操作成功",
-          //   duration: 2000,
-          //   icon: 'none'
-          // })
-        }
-        
-      },
-      fail(res) {
-        console.log(res)
+      }else{
+        wx.showToast({
+          title: res.desc,
+          duration: 2000,
+          icon: 'none'
+        })
       }
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none'
+      })
     })
 
   }
+  
 })

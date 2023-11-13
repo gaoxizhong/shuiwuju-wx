@@ -14,7 +14,7 @@ Page({
     lang: lang.index,
     langDialog: lang.dialog,
     funcLang: lang.func,
-    showFuncList: [],
+    showFuncList: [], // 展示功能列表
     show: false
   },
 
@@ -30,6 +30,7 @@ Page({
     })
     const _this = this
     app.watchAuth(_this.getFuncList)
+
   },
 
   /**
@@ -43,7 +44,11 @@ Page({
         selected,
         list,
       })
-      this.getFuncList()
+      if(app.globalData.wm_id ){
+        console.log(app.globalData.wm_id )
+        app.handleUserInfo();
+      }
+      // this.getFuncList();
     }
   },
  /**
@@ -52,9 +57,13 @@ Page({
   onShareAppMessage: function () {
 
   },
+  // 用户权限变化
   getFuncList() {
+    console.log('用户权限变化')
     const auth = app.globalData.auth
     const allList = this.data.funcLang.list
+    console.log(auth)
+    console.log(allList)
     const showFuncList = allList.filter(i => auth.includes(i.auth))
     this.setData({
       showFuncList
