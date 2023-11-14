@@ -1,6 +1,5 @@
 // index.js
 const blueToolth = require('../../../utils/bluetoolth')
-const GBK = require('../../../utils/gbk.min')
 const pages = getCurrentPages()
 const app = getApp()
 let lang = app.globalData.lang
@@ -13,18 +12,6 @@ Page({
     deviceList: [],
     conncetDevice: {},
     unconncetedDeviceList: [],
-    printInfo: `
-
-    
-    EPAL CUANZA SUL WATER MANEGEMENT
-
-    水表账单
-    水表号： 1535234323
-    上次水表读数：36
-    现在水表读数： 44
-    合计消费水：8
-    合计金额：64
-    `,
     printDeviceInfo: {},
     origin: 'tabber'
   },
@@ -216,30 +203,4 @@ Page({
       conncetDevice: {}
     })
   },
-  handlePrint() {
-    if (!this.data.printDeviceInfo.deviceId) {
-      wx.showToast({
-        title: this.data.lang.noDeviceBuleToolth,
-        icon: 'none',
-      });
-      return;
-    }
-    blueToolth.writeBLECharacteristicValue({
-      ...this.data.printDeviceInfo,
-      value: new Uint8Array([...blueToolth.printCommand.clear, ...GBK.encode(this.data.printInfo), ...blueToolth.printCommand.enter])
-        .buffer,
-      lasterSuccess() {
-        this.handleToPayPage()
-      }
-    });
-  },
-  handleToPayPage() {
-    wxAsyncApi('navigateTo', {
-      url: `/pages/query-water/pay-page/index`,
-    }).then(res => {
-      wx.setNavigationBarTitle({
-        title: lang.message.deviceName,
-      })
-    })
-  }
 })

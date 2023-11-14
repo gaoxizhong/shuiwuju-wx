@@ -45,10 +45,8 @@ Page({
         list,
       })
       if(app.globalData.wm_id ){
-        console.log(app.globalData.wm_id )
         app.handleUserInfo();
       }
-      // this.getFuncList();
     }
   },
  /**
@@ -68,6 +66,7 @@ Page({
     this.setData({
       showFuncList
     })
+    console.log(showFuncList)
   },
 
   handleToSearch() {

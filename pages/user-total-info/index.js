@@ -558,7 +558,12 @@ Page({
     const params = {
       wm_no: that.data.wm_no,
     }
-    console.log(params)
+    if( !that.data.is_return ){
+      return
+    }
+    that.setData({
+      is_return: false
+    })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
       let date = that.handleTimeValue();
@@ -675,12 +680,22 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
       if (typeof f == 'function'){
         return f()
       }
+      setTimeout(()=>{
+        that.setData({
+          is_return: true
+        })
+      },1000)
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
         icon: 'none',
         duration: 2000
       })
+      setTimeout(()=>{
+        that.setData({
+          is_return: true
+        })
+      },1000)
     })
   },
 

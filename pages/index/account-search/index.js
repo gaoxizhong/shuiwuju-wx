@@ -24,19 +24,21 @@ Page({
 
     list: [], // 展示账单列表
     statusList: [], //状态列表
-
     isScroll: true,
-    loading: ''
+    loading: '',
+    userInfo: {}
   },
   // 初始化 监听水表状态
   onLoad() {
     lang = app.globalData.lang
     const _this = this
+    const userInfo = app.globalData.userInfo || {}
     // app.watchBillStatus(_this.getStatusList)
     this.getStatusList(app.globalData.billStatus)
     this.setData({
       lang: lang.index, // 语言
       langDialog: lang.dialog,
+      userInfo
     })
   },
   onShow() {

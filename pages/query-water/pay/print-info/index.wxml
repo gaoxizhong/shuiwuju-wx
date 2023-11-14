@@ -42,7 +42,7 @@
       </view>
     </view>
     <view class="btn">
-      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" bindtap="{{is_return ? 'blueToothPrint' : ''}}">
         {{btnName.print}}
       </view>
     </view>

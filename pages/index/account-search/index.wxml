@@ -11,7 +11,7 @@
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="wixi-list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="index">
-        <view class="wixi-item" data-index="{{index}}" bindtap="handleDetails">
+        <view class="wixi-item" data-index="{{index}}" bindtap="{{ userInfo?'handleDetails':'' }}">
           <view class="wixi-item_title">
             <text>{{item.wm_no}}</text>
           </view>

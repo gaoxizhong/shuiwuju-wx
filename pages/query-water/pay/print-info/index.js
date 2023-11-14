@@ -38,6 +38,7 @@ Page({
     invoiceInfo:'', // 发票打印内容
     print_type: '',
     last_reading:'', // 本次读数
+    is_return: true
   },
 
   /**
@@ -418,7 +419,12 @@ Page({
     const params = {
       wm_no: that.data.form.wm_no,
     }
-    console.log(params)
+    if( !that.data.is_return ){
+      return
+    }
+    that.setData({
+      is_return: false
+    })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
       let date = that.handleTimeValue();
@@ -485,6 +491,11 @@ ${date.time}
       if (typeof f == 'function'){
         return f()
       }
+      setTimeout(()=>{
+        that.setData({
+          is_return: true
+        })
+      },1000)
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -492,6 +503,11 @@ ${date.time}
         duration: 2000
       })
     })
+    setTimeout(()=>{
+      that.setData({
+        is_return: true
+      })
+    },1000)
   },
 
   // 4.修改打印收据状态

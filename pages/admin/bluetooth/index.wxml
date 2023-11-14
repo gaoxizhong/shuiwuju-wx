@@ -43,14 +43,4 @@
       <!-- </radio-group> -->
     </scroll-view>
   </view>
-
-  <!-- <view class="print-bill-content">
-    <view class="device-title">
-      打印信息
-    </view>
-    <scroll-view scroll-y="true" class="print-bill-info">
-      <text>{{printInfo}}</text>
-    </scroll-view>
-    <van-button class="wixi-submit-btn" plain type="info" bind:click="handlePrint">打印</van-button>
-  </view> -->
 </view>
