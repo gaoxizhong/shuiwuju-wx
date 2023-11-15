@@ -586,7 +586,7 @@ Comunicacao de Roturas941648999
 Falhas de Aqua 941648999
 Email info.epasksagmail.com
 
-factura Nr 2023/29259
+Factura/Recibo Nr 2023/29259
 
 Dados do Cliente
 
@@ -617,7 +617,7 @@ Detalhes de Facturacao
     `,
     invoiceInfo_facturacao_info:`
 Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m3)
-Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
+Domestico：${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)

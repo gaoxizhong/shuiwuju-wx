@@ -472,7 +472,7 @@ Detalhes de Facturacao
       `,
       printInfo_facturacao_info:`
 Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m3)
-Domestico：${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_min:''} - ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.range_max:''}
+Domestico：${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
 Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)

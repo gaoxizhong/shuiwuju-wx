@@ -82,6 +82,7 @@ Page({
     })
   },
   getDevice(devices) {
+    console.log(devices)
     const foreverStorage = wx.getStorageSync('foreverDevice')
     const connectStorage = wx.getStorageSync('connectDevice')
     const foreverDevice = foreverStorage ? JSON.parse(foreverStorage).deviceId : ''
@@ -108,6 +109,7 @@ Page({
   },
   chooseDevice(e, flag) {
     const deviceId = flag || e.currentTarget.dataset.id;
+
     if (deviceId) {
       const item = this.data.deviceList.find(i => i.deviceId === deviceId)
       if (!item) {
@@ -155,6 +157,7 @@ Page({
               characteristicId:data.characteristicId
             }))
             console.log(wx.getStorageSync('connectDevice'))
+            console.log(item)
             this.setData({
               isConnect: true,
               conncetDevice: item,
@@ -179,7 +182,6 @@ Page({
       }).catch((res) => {
         console.log(res)
         console.log(wx.getStorageSync('connectDevice'))
-
         wx.hideToast()
         let msg = ''
         if (res.errCode) {
@@ -191,9 +193,19 @@ Page({
           icon: "none",
           duration: 3000,
         })
-        this.setData({
-          printDeviceInfo: {}
-        })
+        if(wx.getStorageSync('connectDevice')){
+          this.setData({
+            printDeviceInfo: {},
+            isConnect: true,
+            conncetDevice: item,
+            unconncetedDeviceList: this.data.deviceList.filter(i => i.deviceId !== deviceId)
+          })
+        }else{
+          this.setData({
+            printDeviceInfo: {},
+          })
+        }
+        
       })
     }
   },
