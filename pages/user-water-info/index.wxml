@@ -37,7 +37,7 @@
     </view>
   </view>
   <view class="btn">
-    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup" wx:if="{{source === 'search-person' || source === 'business-hall'}}">
       {{btnName.pay}}
     </view>
     <!-- <block wx:if="{{source === 'search-person'}}">

@@ -57,6 +57,8 @@ Page({
       langDialog: lang.dialog,
     })
     const form = JSON.parse(options.data)
+    console.log(options)
+    console.log(form)
     const payStatusList = options.payWayList
     const source = options.source
     const createDate = form.check_time ? this.handleDate(form.check_time) : ""
@@ -96,17 +98,7 @@ Page({
       form,
       status,
       payStatusList: JSON.parse(payStatusList || '[]'),
-      printInfo: `
-EPAL CUANZA SUL WATER MANEGEMENT
-
-${this.data.lang.wm_no}：${form.wm_no};
-${this.data.lang.last_water}：${form.last_reading}（m³）;
-${this.data.lang.reading}：${form.reading}（m³）;
-${this.data.lang.total_water}：${ (form.reading * 10000 - form.last_reading * 10000) /10000}（m³）;
-${this.data.lang.total_money}：${form.price}（KZ）;
-
-
-`
+      printInfo: '',
     })
   },
   handleDate(value) {

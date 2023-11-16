@@ -39,7 +39,39 @@ Page({
       return
     }
     const data = wixiForm.getFormData()
+    console.log(data)
+ 
     if (data) {
+      let wm_no = data.wm_no;
+      let str = wm_no.substring(0,3);
+      console.log(str)
+      if(data.user_type_id == 8){
+        if(str !== '777'){
+          wx.showToast({
+            title: 'Serie do Contador: 777 início',
+            icon: 'none'
+          })
+          return
+        }
+      }
+      if(data.user_type_id == 9){
+        if(str !== '888'){
+          wx.showToast({
+            title: 'Serie do Contador: 888 início',
+            icon: 'none'
+          })
+          return
+        }
+      }
+      if(data.user_type_id == 10){
+        if(str !== '999'){
+          wx.showToast({
+            title: 'Serie do Contador: 999 início',
+            icon: 'none'
+          })
+          return
+        }
+      }
       addAccount(data).then(res => {
         wx.hideToast()
         const page = pages[pages.length - 2]

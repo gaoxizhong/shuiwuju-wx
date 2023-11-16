@@ -60,6 +60,7 @@ Page({
     pay_success: false,
     user_PayFees_info: {}, // 缴费记录信息
     user_payment_info: [], // 缴费记录下的缴费单信息
+    is_return: true
   },
 
   /**
@@ -72,6 +73,7 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog,
     })
+
     // const payStatusList = options.payWayList
     const source = options.source
     let status = ''
@@ -185,6 +187,7 @@ Page({
           showPay: false,
           pay_success: true
         })
+
         this.setData({
           user_PayFees_info: res.data.data, // 缴费记录信息
           user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
@@ -510,6 +513,9 @@ Page({
         ...GBK.encode(this.data.invoiceInfo_facturacao_title),
         ...blueToolth.printCommand.left,
         ...GBK.encode(this.data.invoiceInfo_facturacao_info),
+        ...GBK.encode(this.data.invoiceInfo_facturacao_info_1),
+        ...GBK.encode(this.data.invoiceInfo_facturacao_info_2),
+        ...GBK.encode(this.data.invoiceInfo_facturacao_info_3),
         ...blueToolth.printCommand.center,
         ...GBK.encode(this.data.invoiceInfo_valores),
         ...blueToolth.printCommand.enter
@@ -566,13 +572,34 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
+      console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
-      let info = that.data.user_payment_info;
+      let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let user_payment_info = '';
       info.forEach(ele =>{
         user_payment_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
         `
       })
+      let total_water = 0;
+      let domestico_water = 0;
+      let domestico_water_2 = 0;
+      let domestico_socio = 0;
+      let domestico_socio_2 = 0;
+      let sewage_rate_num = 0; // 污水量
+      let sewage_rate_price = 0; // 污水价格 
+      // total_water * sewage_rate/100 * user_type_price
+      let user_type_price = userBluetoolthInfoData.user_type.price;
+      if(that.data.user_PayFees_info.total_water){
+        total_water =  that.data.user_PayFees_info.total_water; // 总用水量
+        domestico_water =  Number(total_water) > 5 ? 5 : Number(total_water); // 基础用水量
+        domestico_water_2 =  Number(total_water) - Number(domestico_water);
+        domestico_socio = Number(domestico_water * 109); // 基础用水量的价格
+        domestico_socio_2 = Number(domestico_water_2 * price);
+        sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100);
+        sewage_rate_price = sewage_rate_num * user_type_price
+      }
+      console.log(2222)
+
       that.setData({
       // 发票
       invoiceInfo_title:`EPASKS-E.P.`,
@@ -616,10 +643,18 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Detalhes de Facturacao
     `,
     invoiceInfo_facturacao_info:`
-Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m3)
 Domestico：${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
-Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
+Contas de água ${ total_water?total_water:0 }(m3)
+    `,
+    invoiceInfo_facturacao_info_1:`
+Domestico socio: ${ domestico_water?(domestico_water + '* 109 = ' + domestico_socio ): 0 }
+    `,
+    invoiceInfo_facturacao_info_2:`
+Domestico Escalao 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
+    `,
+    invoiceInfo_facturacao_info_3:`
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
+Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
 TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
@@ -676,6 +711,7 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
 `,
 
       })
+      console.log(11111)
       console.log(typeof f)
       if (typeof f == 'function'){
         return f()

@@ -152,8 +152,8 @@ const en_lang = {
         required: true
       },
       {
-        name: 'Leitura inicial',
-        placeholder: 'Preecher o Leitura inicial de Registo',
+        name: 'Leitura anterior',
+        placeholder: 'Preecher o Leitura anterior de Registo',
         type: 'input',
         key: 'last_reading',
         required: true
