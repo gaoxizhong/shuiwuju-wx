@@ -487,15 +487,15 @@ ${date.time}
 
       `,
       })
-      console.log(typeof f)
-      if (typeof f == 'function'){
-        return f()
-      }
       setTimeout(()=>{
         that.setData({
           is_return: true
         })
       },1000)
+      console.log(typeof f)
+      if (typeof f == 'function'){
+        return f()
+      }
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
