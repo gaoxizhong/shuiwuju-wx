@@ -497,7 +497,6 @@ Page({
   },
   // 开始打印
   handlePrint(p) {
-    console.log('')
     let print_type = this.data.print_type;
     let info = [];
     // 发票
@@ -547,7 +546,8 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
-
+    console.log(p)
+    console.log('开始打印，api传信息...')
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
