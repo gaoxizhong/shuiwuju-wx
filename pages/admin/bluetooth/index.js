@@ -59,7 +59,7 @@ Page({
         conncetDevice: connectDevice,
       })
     }else{
-      // that.getblueToolth();
+      that.getblueToolth();
     }
      
   },

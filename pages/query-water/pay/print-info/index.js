@@ -430,6 +430,7 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
+      console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
       let user_type_price = userBluetoolthInfoData.user_type.price;
       let total_water = that.data.form.total_water;
