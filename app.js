@@ -101,7 +101,8 @@ App({
       this.globalData.repair_type = data.repair_type
       // userinfo
       this.globalData.userInfo = data.admin_auth
-
+    }).catch(e =>{
+      console.log(e)
     })
   },
   // 获取国家省市区

@@ -3,6 +3,9 @@ const blueToolth = require('../../../utils/bluetoolth')
 const pages = getCurrentPages()
 const app = getApp()
 let lang = app.globalData.lang
+const {
+  wxAsyncApi
+} = require('./../../../utils/util')
 Page({
   data: {
     lang: lang.admin.bluetoolthDevice,
@@ -24,25 +27,64 @@ Page({
     })
   },
   onLoad: function (options) {
+    let that = this;
     lang = app.globalData.lang
-    this.setData({
+    that.setData({
       origin: options.origin || 'tabber',
       lang: lang.admin.bluetoolthDevice,
       langDialog: lang.dialog,
     })
+    wxAsyncApi('getFuzzyLocation').then(res =>{
+      console.log('getFuzzyLocation: res')
+      console.log(res)
+
+    }).catch(fail =>{
+      console.log('getFuzzyLocation: fail')
+      console.log(fail)
+    })
+    // wx.getFuzzyLocation({
+    //   type: 'wgs84',
+    //   success (res) {
+    //     console.log(res)
+    //   },
+    //   complete (res) {
+    //     console.log(res)
+    //   },
+    //  })
+     console.log(wx.getStorageSync('connectDevice'))
+     if(wx.getStorageSync('connectDevice')){
+     let connectDevice = JSON.parse(wx.getStorageSync('connectDevice'));
+      this.setData({
+        printDeviceInfo: {},
+        conncetDevice: connectDevice,
+      })
+    }else{
+      // that.getblueToolth();
+    }
+     
+  },
+  // 返回上一个页面
+  goBack() {
+    const page = pages[pages.length - 1]
+    wx.navigateBack({
+      delta: page
+    })
+  },
+  getblueToolth(){
+    let that = this;
     blueToolth.initBlueToolth().then(() => {
-      blueToolth.onBluetoothDeviceFound(this.getDevice)
+      blueToolth.onBluetoothDeviceFound(that.getDevice)
       wx.showToast({
-        title: this.data.lang.searching,
+        title: that.data.lang.searching,
         icon: "none",
         duration: 10000,
         mask: true,
       })
       setTimeout(() => {
         blueToolth.stopBluetoothDevicesDiscovery().then(() => {
-          if (!this.data.deviceList.length) {
+          if (!that.data.deviceList.length) {
             wx.showToast({
-              title: this.data.lang.noSearchDevice,
+              title: that.data.lang.noSearchDevice,
               icon: "none",
               duration: 3000,
             })
@@ -58,8 +100,8 @@ Page({
         })
       }, 10000)
     }).catch((res) => {
-      if (this.data.origin === 'page') {
-        this.goBack()
+      if (that.data.origin === 'page') {
+        that.goBack()
       } else {
         wx.switchTab({
           url: "/pages/admin/index",
@@ -72,13 +114,6 @@ Page({
           }
         })
       }
-    })
-  },
-  // 返回上一个页面
-  goBack() {
-    const page = pages[pages.length - 1]
-    wx.navigateBack({
-      delta: page
     })
   },
   getDevice(devices) {
@@ -154,7 +189,8 @@ Page({
             wx.setStorageSync('connectDevice', JSON.stringify({
               deviceId,
               serviceId,
-              characteristicId:data.characteristicId
+              characteristicId:data.characteristicId,
+              name: item.name
             }))
             console.log(wx.getStorageSync('connectDevice'))
             console.log(item)
@@ -193,18 +229,7 @@ Page({
           icon: "none",
           duration: 3000,
         })
-        if(wx.getStorageSync('connectDevice')){
-          this.setData({
-            printDeviceInfo: {},
-            isConnect: true,
-            conncetDevice: item,
-            unconncetedDeviceList: this.data.deviceList.filter(i => i.deviceId !== deviceId)
-          })
-        }else{
-          this.setData({
-            printDeviceInfo: {},
-          })
-        }
+      
         
       })
     }

@@ -38,13 +38,14 @@ Page({
     })
   },
   handleClick() {
-    const wixiForm = this.selectComponent('#employee-form')
+    let that = this;
+    const wixiForm = that.selectComponent('#employee-form')
     const data = wixiForm.getFormData()
     if (data) {
       employeeCertification(data).then(res => {
         wx.setStorageSync('tabberIndex', 0)
         wx.setStorageSync('employee', true)
-        this.setData({
+        that.setData({
           employee: true
         })
         wx.showToast({
@@ -54,7 +55,10 @@ Page({
         });
         const auth = res.data.my_roles.map(i => i.name)
         app.setAuth(auth)
-        this.goBack()
+        app.handleUserInfo();
+        setTimeout( () =>{
+          that.goBack()
+        },500)
       }).catch((res) => {
         wx.showToast({
           title: res.desc || lang.message.fail,

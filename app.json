@@ -69,5 +69,8 @@
     "wixi-time": "/components/wixi-time/index"
   },
   "lazyCodeLoading": "requiredComponents",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "requiredPrivateInfos": [
+    "getFuzzyLocation"
+  ]
 }

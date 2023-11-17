@@ -35,7 +35,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    const list = lang.tabber.list
+    const list = lang.tabber.list;
     const selected = wx.getStorageSync('tabberIndex')
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
@@ -48,6 +48,7 @@ Page({
     const key = length ? auth[length - 1] : 'H'
     const imgUrl = imgList[key || 'H']
     const userInfo = app.globalData.userInfo || {}
+    console.log(userInfo)
     this.setData({
       imgUrl,
       userInfo

@@ -36,7 +36,8 @@ const zh_lang = {
   // 弹框
   dialog: {
     confirmText: '确认',
-    cancelText: '取消'
+    cancelText: '取消',
+    refreshText: '刷新',
   },
   // 按钮
   btnName: {
@@ -229,7 +230,7 @@ const zh_lang = {
     collectInfo: {
       title: '用水信息',
       wm_no: '水表号',
-      last_water: '初始读数',
+      last_water: '上次读数',
       reading: '本次读数',
       total_water: '用水量',
       total_money: '应缴金额',
@@ -429,7 +430,6 @@ const zh_lang = {
           placeholder: '请输入',
           type: 'input',
           key: 'mobile',
-          required: true,
           error: false,
         },
       ],

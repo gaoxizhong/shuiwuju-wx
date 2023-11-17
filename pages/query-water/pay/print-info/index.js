@@ -264,9 +264,9 @@ Page({
     const connectStorage = wx.getStorageSync('connectDevice')
     const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
     const lang = getApp().globalData.lang
-    console.log(lang.blueToolth)
     console.log(connectDeviceInfo)
     if (!connectDeviceInfo) {
+    console.log('无链接...')
       wx.showModal({
         title: lang.blueToolth.noConnect,
         content: lang.blueToolth.noConnectWarning,
@@ -291,6 +291,7 @@ Page({
         }
       })
     } else {
+      console.log('已链接...')
       wx.showToast({
         title: lang.blueToolth.connectDevice,
         icon: "none",
@@ -363,6 +364,7 @@ Page({
     let print_type = this.data.print_type;
     let info = [];
     // 缴费单
+    console.log('printInfo: 拼接缴费单信息...')
     if(print_type == 'printInfo'){
       info = [
         ...blueToolth.printCommand.clear,
@@ -386,6 +388,7 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
+    console.log('开始打印，api传信息...')
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
@@ -428,6 +431,15 @@ Page({
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
       let date = that.handleTimeValue();
+      let user_type_price = userBluetoolthInfoData.user_type.price;
+      let total_water = that.data.form.total_water;
+      console.log(total_water)
+      let domestico_water = Number(total_water) > 5 ? 5 : Number(total_water); // 基础用水量
+      let domestico_water_2 = Number(total_water) - Number(domestico_water);
+      let domestico_socio = Number(domestico_water * 109); // 基础用水量的价格
+      let domestico_socio_2 = Number(domestico_water_2 * user_type_price);
+      let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100); // 污水量
+      let sewage_rate_price =  sewage_rate_num * user_type_price; // 污水价格 
 
       this.setData({
         printInfo_title:`EPASKS-E.P.`,
@@ -471,10 +483,12 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Detalhes de Facturacao
       `,
       printInfo_facturacao_info:`
-Contas de água ${this.data.form.total_water?this.data.form.total_water:0}(m3)
 Domestico：${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money:''}
-Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%)
+Contas de água ${ total_water?total_water:0 }(m3)
+Domestico socio: ${ domestico_water?(domestico_water + '* 109 = ' + domestico_socio ): 0 }
+Domestico Escalao 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
+Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
+Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
 TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 

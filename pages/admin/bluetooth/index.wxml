@@ -20,6 +20,7 @@
   <view class="device unconnected-device">
     <view class="device-title">
       {{lang.disConnectDeviceTitle}}
+      <van-button type="info" size="small" bind:click="getblueToolth" class="sx-box">{{langDialog.refreshText}}</van-button>
     </view>
     <scroll-view class="device-content" scroll-y="true">
       <!-- <radio-group bindchange="chooseDevice"> -->

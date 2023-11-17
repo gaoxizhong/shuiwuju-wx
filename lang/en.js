@@ -36,7 +36,8 @@ const en_lang = {
   // 弹框
   dialog: {
     confirmText: 'Confirmar',
-    cancelText: 'Cancelar'
+    cancelText: 'Cancelar',
+    refreshText: 'Actualizar',
   },
   // 按钮
   btnName: {
@@ -228,7 +229,7 @@ const en_lang = {
     collectInfo: {
       title: 'Informações de comsumir água',
       wm_no: 'Dados do contador',
-      last_water: 'Leitura inicial',
+      last_water: 'Leitura anterior',
       reading: 'Leitura do contador',
       total_water: 'Consumo de água',
       total_money: 'Montante a pagar',
@@ -317,7 +318,7 @@ const en_lang = {
     title: 'Informações de comsumir água',
 
     wm_no: 'Dados do contador',
-    last_water: 'Leitura inicial',
+    last_water: 'Leitura anterior',
     reading: 'Leitura do contador',
     last_water_1: 'Leitura O último',
     total_water: 'Consumo de água',
@@ -437,7 +438,6 @@ const en_lang = {
           placeholder: 'Por favor, digite',
           type: 'input',
           key: 'mobile',
-          required: true,
           error: false,
         },
       ],
