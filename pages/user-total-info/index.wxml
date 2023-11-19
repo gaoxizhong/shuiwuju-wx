@@ -39,12 +39,12 @@
       <!-- 支付 结束 -->
 
       <!-- 打印 开始-->
-      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
         {{btnName.printOther}}
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{status === 'over' ? 'over' : ''}}"  bindtap="blueToothInvoice">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}">
         {{btnName.invoice}}
       </view>
       <!-- 打印发票 -->

@@ -61,7 +61,8 @@ Page({
     user_PayFees_info: {}, // 缴费记录信息
     user_payment_info: [], // 缴费记录下的缴费单信息
     total_water: 0, // 总用水量
-    is_return: true
+    is_return: true,
+    invoice_code: '', // 发票号
   },
 
   /**
@@ -106,7 +107,6 @@ Page({
     //   }
     // }
     const wm_no = options.wm_no;
-
     this.setData({
       wm_no,
       source,
@@ -197,7 +197,9 @@ Page({
           user_PayFees_info: res.data.data, // 缴费记录信息
           user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
           total_water: res.data.total_water, // 总用水量
+          invoice_code: res.data.invoice_code,
         })
+        that.getArrearsMoneySum(that.data.wm_no);
         that.getUserBluetoolthInfoData(that.blueToothPrint);
       }).catch((res) => {
         wx.showToast({
@@ -426,6 +428,11 @@ Page({
       })
     } else {
       console.log('已连接。。。')
+      wx.showToast({
+        title: lang.blueToolth.connectDevice,
+        icon: "none",
+        duration: 30000,
+      })
       // this.connectBlueToothDevice(connectDeviceInfo)
      this.handlePrint(connectDeviceInfo)
     }
@@ -508,6 +515,7 @@ Page({
         ...GBK.encode(this.data.invoiceInfo_title),
         ...blueToolth.printCommand.ct_zc,
         ...GBK.encode(this.data.invoiceInfo_title_1),
+        ...GBK.encode(this.data.invoiceInfo_invoice_code),
         ...blueToolth.printCommand.left,
         ...GBK.encode(this.data.invoiceInfo_CustomerData),
         ...blueToolth.printCommand.center,
@@ -546,18 +554,22 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
-    console.log(p)
     console.log('开始打印，api传信息...')
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
       value: new Uint8Array(info).buffer,
       lasterSuccess() {
+        console.log('打印成功...')
         wx.showToast({
           title: lang.blueToolth.printSuccess,
           icon: "none",
           duration: 3000,
         })
+      },
+      onFail(res){
+        console.log('打印失败...')
+        console.log(res)
       }
     });
   },
@@ -613,7 +625,9 @@ Comunicacao de Roturas941648999
 Falhas de Aqua 941648999
 Email info.epasksagmail.com
 
-Factura/Recibo Nr 2023/29259
+        `,
+        invoiceInfo_invoice_code:`
+Factura/Recibo Nr ${that.data.invoice_code}
 
 Dados do Cliente
 

@@ -164,12 +164,18 @@ function writeBLECharacteristicValue(options) {
         }
       },
       fail: function (res) {
-        options.onError && options.onError(res);
+        console.log('fail')
+        console.log(res)
+        options.onError && options.onFail(res);
       },
       complete: function (res) {
-        options.onError && options.onError(res);
+        options.onError && options.onComplete(res);
       },
     });
+    // setTimeout(()=>{
+   
+    // },260)
+
   }
 }
 

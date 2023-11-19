@@ -394,6 +394,7 @@ Page({
       ...p,
       value: new Uint8Array(info).buffer,
       lasterSuccess() {
+        console.log('打印成功...')
         wx.showToast({
           title: lang.blueToolth.printSuccess,
           icon: "none",
@@ -401,6 +402,10 @@ Page({
         })
         //修改发票收据状态
         // this.setInvoiceStatus();
+      },
+      onFail(res){
+        console.log('打印失败...')
+        console.log(res)
       }
     });
   },
