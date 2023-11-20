@@ -142,9 +142,18 @@ function getBLEDeviceCharacteristics(deviceId, list, success, fail) {
     fail && fail()
   }
 }
-
+// 监听连接状态
+function onConnectionStatus(){
+  wx.onBLEConnectionStateChange(function (res) {
+    // 该方法回调中可以用于处理连接意外断开等异常情况
+    console.log(`设备 ${res.deviceId} 连接状态变化, 连接状态: ${res.connected}`)
+  })
+}
 
 function writeBLECharacteristicValue(options) {
+  let that = this;
+    // 监听连接状态
+    onConnectionStatus();
   let byteLength = options.value.byteLength;
   //这里默认一次20个字发送
   const speed = options.onceByleLength || 20;
@@ -155,6 +164,7 @@ function writeBLECharacteristicValue(options) {
       value: options.value.slice(0, byteLength > speed ? speed : byteLength),
       success: function (res) {
         if (byteLength > speed) {
+          console.log('success')
           writeBLECharacteristicValue({
             ...options,
             value: options.value.slice(speed, byteLength),
@@ -164,9 +174,18 @@ function writeBLECharacteristicValue(options) {
         }
       },
       fail: function (res) {
-        console.log('fail')
-        console.log(res)
-        options.onError && options.onFail(res);
+        if (byteLength > speed) {
+          console.log('fail--1')
+          console.log(res)
+          // writeBLECharacteristicValue({
+          //   ...options,
+          //   value: options.value.slice(speed, byteLength),
+          // });
+        } else {
+          console.log('fail--2')
+          console.log(res)
+          options.onError && options.onFail(res);
+        }
       },
       complete: function (res) {
         options.onError && options.onComplete(res);

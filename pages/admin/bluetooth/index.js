@@ -34,6 +34,7 @@ Page({
       lang: lang.admin.bluetoolthDevice,
       langDialog: lang.dialog,
     })
+   // 授权定位
     wxAsyncApi('getFuzzyLocation').then(res =>{
       console.log('getFuzzyLocation: res')
       console.log(res)
@@ -42,15 +43,6 @@ Page({
       console.log('getFuzzyLocation: fail')
       console.log(fail)
     })
-    // wx.getFuzzyLocation({
-    //   type: 'wgs84',
-    //   success (res) {
-    //     console.log(res)
-    //   },
-    //   complete (res) {
-    //     console.log(res)
-    //   },
-    //  })
      console.log(wx.getStorageSync('connectDevice'))
      if(wx.getStorageSync('connectDevice')){
      let connectDevice = JSON.parse(wx.getStorageSync('connectDevice'));
@@ -72,7 +64,9 @@ Page({
   },
   getblueToolth(){
     let that = this;
+    // 初始化蓝牙模块
     blueToolth.initBlueToolth().then(() => {
+      // 开始监听周围蓝牙设备
       blueToolth.onBluetoothDeviceFound(that.getDevice)
       wx.showToast({
         title: that.data.lang.searching,
@@ -155,6 +149,7 @@ Page({
         icon: "none",
         duration: 30000,
       })
+      // 开始连接蓝牙设备
       blueToolth.createBLEConnection(deviceId).then(res => {
         console.log(res)
         if (res.errMsg && res.errMsg.includes('ok')) {
