@@ -466,12 +466,14 @@ Dados do Cliente
           `,
         printInfo_CustomerData:`
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
+Nr do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
+Nr Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
-Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address} ${userBluetoolthInfoData.water_meter.area_code}
+Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
+Nr da Porta: ${userBluetoolthInfoData.water_meter.house_number}
+Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Nr Série: ${userBluetoolthInfoData.water_meter.user_code}
-Giro/Zona: ${userBluetoolthInfoData.water_meter.household_num}
 
         `,
         printInfo_historyData_title:`
@@ -489,12 +491,12 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Detalhes de Facturacao
       `,
       printInfo_facturacao_info:`
-Domestico：${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Contas de água ${ total_water?total_water:0 }(m3)
+Domestico：${ total_water?total_water:0 } ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
+Consumo ${ total_water?total_water:0 }(m3)
 Domestico socio: ${ domestico_water?(domestico_water + '* 109 = ' + domestico_socio ): 0 }
-Domestico Escalao 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
-Tarifa Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
-Taxa Aguas Residuais (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+Domestico 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
+T.Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
+Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
 TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 

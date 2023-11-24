@@ -36,9 +36,7 @@ Page({
     })
    // 授权定位
     wxAsyncApi('getFuzzyLocation').then(res =>{
-      console.log('getFuzzyLocation: res')
       console.log(res)
-
     }).catch(fail =>{
       console.log('getFuzzyLocation: fail')
       console.log(fail)

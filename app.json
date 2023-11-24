@@ -68,7 +68,6 @@
     "wixi-form": "/components/wixi-form/index",
     "wixi-time": "/components/wixi-time/index"
   },
-  "lazyCodeLoading": "requiredComponents",
   "sitemapLocation": "sitemap.json",
   "requiredPrivateInfos": [
     "getFuzzyLocation"
