@@ -179,7 +179,7 @@ Page({
         const up_id = res.data.data.up_id
         setTimeout( ()=>{
           wxAsyncApi('reLaunch', {
-            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
+            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
           }).then(res => {
             wx.setNavigationBarTitle({
               title: lang.message.info,

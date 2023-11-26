@@ -38,7 +38,8 @@ Page({
     invoiceInfo:'', // 发票打印内容
     print_type: '',
     last_reading:'', // 本次读数
-    is_return: true
+    is_return: true,
+    order_no:'',
   },
 
   /**
@@ -51,6 +52,7 @@ Page({
       reading,
       total_money,
       total_water,
+      order_no,
       wm_no,
       last_reading,
       up_id,
@@ -63,6 +65,7 @@ Page({
         reading,
         total_money,
         total_water,
+        order_no,
         wm_no,
         up_id,
         last_reading,
@@ -451,19 +454,15 @@ Page({
         printInfo_title:`EPASKS-E.P.`,
         printInfo_title_1:`
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
-Avenida Comandante Cassange - Zona 3 ETASumbe - Cuanza Sul - Angola
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
 Atendimento ao Cliente941648993
-Comunicacao de Leituras941648993
 Comunicacao de Roturas941648999
-Falhas de Aqua 941648999
 Email info.epasksagmail.com
 
-Nota de Coberanca Nr 2023/29259
+Nota de Coberanca Nr ${order_no}
 
-Dados do Cliente
-
-          `,
+Dados do Cliente`,
         printInfo_CustomerData:`
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 Nr do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
@@ -485,10 +484,9 @@ Histórico de Leituras
 ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
---------------------------------
-      `,
+-------------------------------- `,
       printInfo_facturacao_title:`
-Detalhes de Facturacao
+Detalhes de Coberanca
       `,
       printInfo_facturacao_info:`
 Domestico：${ total_water?total_water:0 } ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
@@ -498,9 +496,9 @@ Domestico 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + 
 T.Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
 Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
-TOTAL GERAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
+TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
-Data limite de pagamento: ${this.getMoreDay(15)}
+limite de pagamento: ${this.getMoreDay(15)}
       `,
       printInfo_valores:`
 Saldo
