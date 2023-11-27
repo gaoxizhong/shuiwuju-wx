@@ -16,8 +16,7 @@ Page({
   data: {
     lang: lang.addAccount,
     form: [],
-    latitude:'',
-    longitude:''
+
   },
 
   /**
@@ -31,17 +30,7 @@ Page({
     this.setData({
       form
     })
-    // 授权定位
-    wxAsyncApi('getFuzzyLocation').then(res =>{
-      console.log(res)
-      this.setData({
-        latitude: res.latitude,
-        longitude: res.longitude,
-      })
-    }).catch(fail =>{
-      console.log('getFuzzyLocation: fail')
-      console.log(fail)
-    })
+
   },
   getFormInfo() {
     let that = this;
@@ -89,6 +78,13 @@ Page({
         data.latitude = that.data.latitude;
         data.longitude = that.data.longitude;
         console.log(data)
+      }
+      if(!data.latitude){
+        wx.showToast({
+          title: 'Clique para localizar',
+          icon: 'none'
+        })
+        return
       }
       addAccount(data).then(res => {
         wx.hideToast()

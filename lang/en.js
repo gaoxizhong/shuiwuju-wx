@@ -108,7 +108,9 @@ const en_lang = {
         type: 'input',
         key: 'wm_no',
         maxlength: 10,
-        required: true
+        required: true,
+        is_button: true,
+        orientation:'localização'
       },
       {
         name: 'Totalizador/Normal',

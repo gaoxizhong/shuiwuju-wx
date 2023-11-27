@@ -108,7 +108,9 @@ const zh_lang = {
         type: 'input',
         key: 'wm_no',
         maxlength: 10,
-        required: true
+        required: true,
+        is_button: true,
+        orientation:'定位'
       },
       {
         name: '共有/独有',

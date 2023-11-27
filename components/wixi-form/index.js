@@ -4,6 +4,9 @@ let lang = app.globalData.lang
 import {
   fbUserType
 } from '../../apis/water'
+const {
+  wxAsyncApi,
+} = require('../../utils/util')
 Component({
   /**
    * 组件的属性列表
@@ -143,6 +146,8 @@ Component({
       }
       return value;
     },
+    latitude:'',
+    longitude:''
   },
 
   /**
@@ -291,8 +296,10 @@ Component({
     // 获取数据
     getFormData() {
       const params = {}
+      params.latitude = this.data.latitude
+      params.longitude = this.data.longitude
+      console.log(params)
       const form = this.data.wixiForm
-      console.log(form)
       let flag = true
       const newForm = form.map(i => {
         if (i.required) {
@@ -444,7 +451,23 @@ Component({
       })
       this.onCloseTotSim()
     },
-
+    // 获取定位
+    getorientation(){
+      wxAsyncApi('getFuzzyLocation').then(res =>{
+        console.log(res)
+        this.setData({
+          latitude: res.latitude,
+          longitude: res.longitude,
+        })
+        wx.showToast({
+          title: 'Obtenha o sucesso',
+          icon:'none'
+        })
+      }).catch(fail =>{
+        console.log('getFuzzyLocation: fail')
+        console.log(fail)
+      })
+    }
 
   },
 

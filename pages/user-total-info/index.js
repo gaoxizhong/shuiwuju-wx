@@ -663,10 +663,9 @@ ${date.time}
       receiptInfo_title:`EPASKS-E.P.`,
       receiptInfo_title_1:`
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
-Avenida Comandante Cassange - Zona 3 - ETA
-Sumbe - Cuanza Sul
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
-Recibo Nr: REC 2023/29259
+Recibo Nr ${that.data.invoice_code}
 ORIGINAL
 Nome: MARIA DA GRAÇA FERNANDES LIMA
 Contribuinte: 001189995BA039

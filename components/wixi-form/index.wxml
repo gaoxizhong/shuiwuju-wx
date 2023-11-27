@@ -16,23 +16,25 @@
         
         data-func="{{item.eventFunc}}" 
         data-index="{{index}}" 
-        bind:change="handleChange" />
-         <!-- 价格类型下拉选择 -->
-        <van-field 
-          wx:if="{{item.type === 'tot_sim'}}"
-          title-width="100%" 
-          readonly="true" 
-          custom-style="flex-direction: column;" 
-          label="{{item.name}}" 
-          value="{{ item.value }}" 
-          placeholder="{{item.placeholder}}" 
-          required="{{item.required}}" 
-          error="{{item.error}}" 
-          data-func="{{item.eventFunc}}" 
-          data-index="{{index}}" 
-          bind:click-input="onTotSim" 
-        />
-        <!-- 密码 -->
+        bind:change="handleChange" >
+        <van-button slot="button" type="info" size="small" bind:click="getorientation" wx:if="{{item.is_button}}">{{item.orientation}}</van-button>
+      </van-field>
+      <!-- 价格类型下拉选择 -->
+      <van-field 
+        wx:if="{{item.type === 'tot_sim'}}"
+        title-width="100%" 
+        readonly="true" 
+        custom-style="flex-direction: column;" 
+        label="{{item.name}}" 
+        value="{{ item.value }}" 
+        placeholder="{{item.placeholder}}" 
+        required="{{item.required}}" 
+        error="{{item.error}}" 
+        data-func="{{item.eventFunc}}" 
+        data-index="{{index}}" 
+        bind:click-input="onTotSim" 
+      />
+      <!-- 密码 -->
       <van-field 
         wx:if="{{item.type === 'password'}}"
         type="password"
