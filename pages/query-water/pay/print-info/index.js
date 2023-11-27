@@ -39,13 +39,13 @@ Page({
     print_type: '',
     last_reading:'', // 本次读数
     is_return: true,
-    order_no:'',
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log(options)
     lang = app.globalData.lang
     const {
       imageUrl,
@@ -442,14 +442,14 @@ Page({
       let date = that.handleTimeValue();
       let user_type_price = userBluetoolthInfoData.user_type.price;
       let total_water = that.data.form.total_water;
-      console.log(total_water)
-      let domestico_water = Number(total_water) > 5 ? 5 : Number(total_water); // 基础用水量
-      let domestico_water_2 = Number(total_water) - Number(domestico_water);
-      let domestico_socio = Number(domestico_water * 109); // 基础用水量的价格
-      let domestico_socio_2 = Number(domestico_water_2 * user_type_price);
-      let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100); // 污水量
-      let sewage_rate_price =  sewage_rate_num * user_type_price; // 污水价格 
-
+      let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100).toFixed(2); // 污水量
+      let sewage_rate_price =  Number(sewage_rate_num * user_type_price.toFixed(2)); // 污水价格
+      let first_step_water = userBluetoolthInfoData.user_payment[0].first_step_water;
+      let first_step_price = userBluetoolthInfoData.user_payment[0].first_step_price;
+      let second_step_water = userBluetoolthInfoData.user_payment[0].second_step_water;
+      let second_step_price = userBluetoolthInfoData.user_payment[0].second_step_price;
+      let domestico_socio = Number(first_step_water * first_step_price).toFixed(2);
+      let domestico_socio_2 = Number(second_step_water * second_step_price).toFixed(2);
       this.setData({
         printInfo_title:`EPASKS-E.P.`,
         printInfo_title_1:`
@@ -459,10 +459,13 @@ NIF:5601022917
 Atendimento ao Cliente941648993
 Comunicacao de Roturas941648999
 Email info.epasksagmail.com
+0040.0000.9258.2876.1026.4 Banco Bai
+0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Nota de Coberanca Nr ${order_no}
+Nota de Coberanca Nr ${userBluetoolthInfoData.user_payment[0].order_no}
 
-Dados do Cliente`,
+Dados do Cliente
+`,
         printInfo_CustomerData:`
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 Nr do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
@@ -472,8 +475,6 @@ EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
 Nr da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-
         `,
         printInfo_historyData_title:`
 Histórico de Leituras
@@ -481,18 +482,17 @@ Histórico de Leituras
         printInfo_historyData_info:`
    Data       m3      Origem
 --------------------------------
-${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
-${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
+${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].reading}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 -------------------------------- `,
-      printInfo_facturacao_title:`
-Detalhes de Coberanca
-      `,
+      printInfo_facturacao_title:`   Detalhes de Coberanca`,
       printInfo_facturacao_info:`
-Domestico：${ total_water?total_water:0 } ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
+Domestico： ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Consumo ${ total_water?total_water:0 }(m3)
-Domestico socio: ${ domestico_water?(domestico_water + '* 109 = ' + domestico_socio ): 0 }
-Domestico 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
+Domestico socio: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
+Domestico 2: ${ second_step_water?(second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2 ): 0 }
 T.Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
 Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)

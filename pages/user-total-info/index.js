@@ -596,21 +596,13 @@ Page({
         `
       })
       let total_water = that.data.total_water;
-      let domestico_water = 0;
-      let domestico_water_2 = 0;
-      let domestico_socio = 0;
-      let domestico_socio_2 = 0;
       let sewage_rate_num = 0; // 污水量
       let sewage_rate_price = 0; // 污水价格 
       let user_type_price = userBluetoolthInfoData.user_type.price;
       if(total_water){
         console.log(total_water)
-        domestico_water =  Number(total_water) > 5 ? 5 : Number(total_water); // 基础用水量
-        domestico_water_2 =  Number(total_water) - Number(domestico_water);
-        domestico_socio = Number(domestico_water * 109); // 基础用水量的价格
-        domestico_socio_2 = Number(domestico_water_2 * user_type_price);
         sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100);
-        sewage_rate_price = sewage_rate_num * user_type_price;
+        sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
       }
       that.setData({
       // 发票
@@ -637,7 +629,6 @@ EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
 Nr da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 
       `,
       invoiceInfo_historyData_title:`
@@ -650,14 +641,11 @@ ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 -------------------------------- `,
-    invoiceInfo_facturacao_title:`
-Detalhes de Coberanca
-    `,
+    invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Consumo ${ total_water?total_water:0 }(m3)
-Domestico socio: ${ domestico_water?(domestico_water + '* 109 = ' + domestico_socio ): 0 }
-Domestico 2: ${ domestico_water_2?(domestico_water_2 + '* ' + user_type_price + ' = ' + domestico_socio_2 ): 0 }
 T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
 Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)

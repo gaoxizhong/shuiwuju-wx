@@ -1,6 +1,9 @@
 // pages/maintenance/add-account/index.js
 const lang = getApp().globalData.lang
 const pages = getCurrentPages()
+const {
+  wxAsyncApi,
+} = require('./../../../utils/util')
 console.log(lang)
 import {
   addAccount
@@ -12,7 +15,9 @@ Page({
    */
   data: {
     lang: lang.addAccount,
-    form: []
+    form: [],
+    latitude:'',
+    longitude:''
   },
 
   /**
@@ -26,8 +31,20 @@ Page({
     this.setData({
       form
     })
+    // 授权定位
+    wxAsyncApi('getFuzzyLocation').then(res =>{
+      console.log(res)
+      this.setData({
+        latitude: res.latitude,
+        longitude: res.longitude,
+      })
+    }).catch(fail =>{
+      console.log('getFuzzyLocation: fail')
+      console.log(fail)
+    })
   },
   getFormInfo() {
+    let that = this;
     wx.showToast({
       title: lang.message.loading,
       duration: 999999,
@@ -39,8 +56,6 @@ Page({
       return
     }
     const data = wixiForm.getFormData()
-    console.log(data)
- 
     if (data) {
       let wm_no = data.wm_no;
       let str = wm_no.substring(0,3);
@@ -71,6 +86,9 @@ Page({
           })
           return
         }
+        data.latitude = that.data.latitude;
+        data.longitude = that.data.longitude;
+        console.log(data)
       }
       addAccount(data).then(res => {
         wx.hideToast()

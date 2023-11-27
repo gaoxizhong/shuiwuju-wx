@@ -155,7 +155,7 @@ Page({
     const last_reading = that.data.form.last_reading
     const check_time = that.data.form.check_time
     const check_time_text = that.data.form.check_time_text
-    const filePath = that.data.form.imageUrl
+    const filePath = that.data.form.imageUrl    
     const baseUrl = app.globalData.baseUrl
     const token = wx.getStorageSync('token')
     let params = {
@@ -171,6 +171,7 @@ Page({
           duration: 2000,
           icon: 'none'
         })
+        const order_no = res.data.data.order_no
         const payStatusList = JSON.stringify(res.data.pay_way.map(i => ({
           text: i.title,
           key: i.key
