@@ -139,7 +139,8 @@ Page({
       this.setData({
         last_reading,
         last_time,
-        arrears_money_sum: Math.abs(arrears_money_sum),
+        arrears_money_sum,
+        // arrears_money_sum: Math.abs(arrears_money_sum),
         payStatusList: payWayList
       })
     }).catch((res) => {

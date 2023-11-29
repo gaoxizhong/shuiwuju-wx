@@ -3,6 +3,7 @@ import zh_lang from './zh'
 import en_lang from './en'
 export const getLang = () => {
   const langVersion = wx.getStorageSync('langversion')
+  console.log(langVersion)
   if (langVersion === 0) {
     return JSON.parse(JSON.stringify(zh_lang))
   } else {

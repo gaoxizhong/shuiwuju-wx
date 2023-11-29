@@ -62,6 +62,7 @@ App({
     wx.setStorageSync('langversion', langType)
     const lang = getLang()
     this.globalData.lang = lang
+    console.log(this.globalData.lang)
     wx.setNavigationBarTitle({
       title: lang.tabber.list[0].text,
     })

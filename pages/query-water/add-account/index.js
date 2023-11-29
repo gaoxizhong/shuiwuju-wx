@@ -1,10 +1,12 @@
 // pages/maintenance/add-account/index.js
-const lang = getApp().globalData.lang
+const app = getApp();
+import {
+  getLang
+} from './../../../lang/index'
 const pages = getCurrentPages()
 const {
   wxAsyncApi,
 } = require('./../../../utils/util')
-console.log(lang)
 import {
   addAccount
 } from './../../../apis/water'
@@ -14,16 +16,15 @@ Page({
    * 页面的初始数据
    */
   data: {
-    lang: lang.addAccount,
+    lang: getLang(),
     form: [],
-
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    const form = lang.addAccount.form.map(i => ({
+    const form = getLang().addAccount.form.map(i => ({
       ...i,
       value: ''
     }))
@@ -32,6 +33,7 @@ Page({
     })
 
   },
+
   getFormInfo() {
     let that = this;
     wx.showToast({
