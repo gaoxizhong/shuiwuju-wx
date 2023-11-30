@@ -3,7 +3,7 @@
   <van-steps steps="{{ steps }}" active="{{ active }}" />
   <scroll-view scroll-y class="search-pay-content">
     <view class="search-bar">
-      <van-search value="{{ wm_no }}" placeholder="{{lang.placeholder}}" bind:change="handleChangeInput"  bind:blur="handleReading"   bind:search="handleSearchInfo" use-action-slot>
+      <van-search value="{{ select }}" placeholder="{{lang.placeholder}}" bind:change="handleChangeInput"  bind:blur="handleReading"   bind:search="handleSearchInfo" use-action-slot>
         <view class="icon"  slot="action">
           <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
           <van-icon name="ellipsis" bind:tap="onShowPopup" />
@@ -11,12 +11,15 @@
       </van-search>
     </view>
     <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->
-    
+    <!-- 初始读数 -->
     <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ last_reading }}" readonly placeholder="{{lang.systemPlaceholder}}" />
-
+    <!-- 本次读数 -->
     <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.reading}}" error="{{reading_error}}" value="{{ reading }}" placeholder="{{lang.placeholder}}" />
+    <!-- 用水量 -->
     <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_water}}" value="{{ total_water }}" placeholder="{{lang.systemPlaceholder}}" />
+    <!-- 应缴金额 -->
     <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_money}}" value="{{ total_money }}" placeholder="{{lang.systemPlaceholder}}" />
+    <!-- 照片 -->
     <van-field type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required label="{{lang.waterList}}" error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
       <view slot="input">
         <block wx:if="{{waterList.length && !readonly}}">

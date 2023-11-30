@@ -18,6 +18,7 @@ Page({
    */
   data: {
     lang: lang.pay.collectInfo,
+    langDialog: lang.dialog,
     btnName: lang.btnName,
     showAddImg: true,
     wm_no: '',
@@ -42,7 +43,14 @@ Page({
     selectIndex: 0,
     show: false,
     list: [],
-    statusList: [],
+    statusList: [
+      {id: 1,text: '水表号'},
+      {id: 2,text: '用户名'},
+      {id: 3,text: '用户地址'},
+      {id: 4,text: '门牌号'}
+    ],
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
+    select:'', // 查询内容
     payWayList: [],
   },
   onLoad() {
@@ -288,15 +296,42 @@ Page({
       index,
       value
     } = e.detail;
+    console.log(e.detail)
     this.setData({
       selectIndex: index,
-      status: value.key,
-      page: 1,
-      list: [],
-      isScroll: true,
-      loading: ''
+      select_type: value.id,
     });
     this.onClosePopup()
-    this.getListData()
+  },
+  // 搜索 Change 事件
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select: value,
+    })
+  },
+   //搜索 失焦赋值 
+   handleReading(e) {
+    const select = e.detail.value;
+    this.setData({
+      select,
+    })
+  },
+  // 搜索事件
+  handleSearchInfo() {
+    isAdmin({
+      select: this.data.select,
+      type: this.data.select_type
+    }).then(res => {
+      const {
+        water_meter_exits,
+        last_reading
+      } = res.data
+      this.setData({
+        isAdmin: water_meter_exits,
+        last_reading
+      })
+      // this.waterCount()
+    })
   },
 })

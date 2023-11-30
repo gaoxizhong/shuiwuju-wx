@@ -30,9 +30,7 @@ Page({
     loading: '',
 
     list: [],
-    statusList: [ 
-      {id: 1,text: '水表'}
-    ],
+    statusList: [],
     payWayList: [],
   },
   /**
