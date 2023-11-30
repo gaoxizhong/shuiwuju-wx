@@ -376,6 +376,9 @@ Page({
         ...GBK.encode(this.data.printInfo_title),
         ...blueToolth.printCommand.ct_zc,
         ...GBK.encode(this.data.printInfo_title_1),
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.printInfo_Comsumidor),
+        ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.left,
         ...GBK.encode(this.data.printInfo_CustomerData),
         ...blueToolth.printCommand.center,
@@ -387,7 +390,16 @@ Page({
         ...blueToolth.printCommand.left,
         ...GBK.encode(this.data.printInfo_facturacao_info),
         ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.printInfo_TOTAL),
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.pagamento_pagamento),
+        ...blueToolth.printCommand.ct,
         ...GBK.encode(this.data.printInfo_valores),
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.printInfo_time),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -462,25 +474,26 @@ Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Nota de Coberanca Nr ${userBluetoolthInfoData.user_payment[0].order_no}
+Nota de Coberanca N° ${userBluetoolthInfoData.user_payment[0].order_no}
 
 Dados do Cliente
 `,
-        printInfo_CustomerData:`
-Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
-Nr do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
-Nr Contador: ${userBluetoolthInfoData.water_meter.wm_no}
+printInfo_Comsumidor:`
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}`,
+printInfo_CustomerData:`
+N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
+N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
-Nr da Porta: ${userBluetoolthInfoData.water_meter.house_number}
+N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
         `,
         printInfo_historyData_title:`
 Histórico de Leituras
         `,
         printInfo_historyData_info:`
-   Data       m3      Origem
+   Data       m3      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].reading}   ${userBluetoolthInfoData.user_payment[0].reading_user}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
@@ -491,21 +504,24 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Domestico： ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Consumo ${ total_water?total_water:0 }(m3)
-Domestico socio: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
+Domestico socil: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
 Domestico 2: ${ second_step_water?(second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2 ): 0 }
 T.Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
 Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
-IVA(0%)
-TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
-
-limite de pagamento: ${this.getMoreDay(15)}
-      `,
+IVA(0%) 
+`,
+      printInfo_TOTAL:`
+TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ`,
+      pagamento_pagamento:`
+limite de pagamento: ${this.getMoreDay(15)}`,
       printInfo_valores:`
 Saldo
-${userBluetoolthInfoData.water_meter.user_bal} KZ
+${userBluetoolthInfoData.water_meter.user_bal} KZ`,     
+      printInfo_time:`
 ${date.time}
 
-      `,
+`,
+
       })
       setTimeout(()=>{
         that.setData({

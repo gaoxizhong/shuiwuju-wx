@@ -193,7 +193,9 @@ const en_lang = {
         name: 'NIF/BI',
         placeholder: 'Preencher o NIF/BI',
         type: 'input',
-        key: 'wm_bi',
+        type_digit:'number',
+        maxlength: 14,
+        key: 'user_card',
         required: true
       },
       {
@@ -240,6 +242,8 @@ const en_lang = {
       waterList: 'Fotos',
       placeholder: 'Por favor, digite',
       systemPlaceholder: 'O sistema calcula automaticamente',
+      btnName: "Pesquisar",
+
     }
   },
   // 今日收费

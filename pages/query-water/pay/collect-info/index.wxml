@@ -2,7 +2,15 @@
 <view class="container search-pay">
   <van-steps steps="{{ steps }}" active="{{ active }}" />
   <scroll-view scroll-y class="search-pay-content">
-    <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" />
+    <view class="search-bar">
+      <van-search value="{{ wm_no }}" placeholder="{{lang.placeholder}}" bind:change="handleChangeInput"  bind:blur="handleReading"   bind:search="handleSearchInfo" use-action-slot>
+        <view class="icon"  slot="action">
+          <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+          <van-icon name="ellipsis" bind:tap="onShowPopup" />
+        </view>
+      </van-search>
+    </view>
+    <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->
     
     <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ last_reading }}" readonly placeholder="{{lang.systemPlaceholder}}" />
 
@@ -31,4 +39,9 @@
       {{btnName.next}}
     </view>
   </view>
+
+
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
+  </van-popup>
 </view>

@@ -36,7 +36,14 @@ Page({
     autosize: {
       maxHeight: 140,
       minHeight: 140
-    }
+    },
+
+
+    selectIndex: 0,
+    show: false,
+    list: [],
+    statusList: [],
+    payWayList: [],
   },
   onLoad() {
     lang = app.globalData.lang
@@ -263,5 +270,33 @@ Page({
         title: lang.message.info,
       })
     })
+  },
+  onShowPopup() {
+    const select = this.selectComponent('#select')
+    select && select.setColumnIndex(0, this.data.selectIndex)
+    this.setData({
+      show: true
+    })
+  },
+  onClosePopup() {
+    this.setData({
+      show: false
+    })
+  },
+  handleSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    this.setData({
+      selectIndex: index,
+      status: value.key,
+      page: 1,
+      list: [],
+      isScroll: true,
+      loading: ''
+    });
+    this.onClosePopup()
+    this.getListData()
   },
 })

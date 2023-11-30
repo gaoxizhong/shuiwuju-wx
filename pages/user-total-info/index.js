@@ -618,17 +618,17 @@ Email info.epasksagmail.com
 
         `,
         invoiceInfo_invoice_code:`
-Factura/Recibo Nr ${that.data.invoice_code}
+Factura/Recibo N° ${that.data.invoice_code}
 
 Dados do Cliente `,
         invoiceInfo_CustomerData:`
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
-Nr do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
-Nr Contador: ${userBluetoolthInfoData.water_meter.wm_no}
+N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
+N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
 EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
-Nr da Porta: ${userBluetoolthInfoData.water_meter.house_number}
+N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
 
       `,
@@ -636,7 +636,7 @@ Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Histórico de Leituras
       `,
       invoiceInfo_historyData_info:`
- Data       m3      Origem
+ Data       m3      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
@@ -666,7 +666,7 @@ ${date.time}
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
-Recibo Nr ${that.data.invoice_code}
+Recibo N° ${that.data.invoice_code}
 ORIGINAL
 Nome: MARIA DA GRAÇA FERNANDES LIMA
 Contribuinte: 001189995BA039

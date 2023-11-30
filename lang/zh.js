@@ -193,6 +193,8 @@ const zh_lang = {
         name: '税号/身份证号',
         placeholder: '税号/身份证号',
         type: 'input',
+        type_digit:'number',
+        maxlength: 14,
         key: 'user_card',
         required: true
       },
@@ -241,6 +243,7 @@ const zh_lang = {
       waterList: '照片',
       placeholder: '请输入',
       systemPlaceholder: '系统自动带出',
+      btnName: "搜索",
     }
   },
   // 今日收费

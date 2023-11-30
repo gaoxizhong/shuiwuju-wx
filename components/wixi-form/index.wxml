@@ -13,7 +13,7 @@
         placeholder="{{item.placeholder}}" 
         required="{{item.required}}" 
         error="{{item.error}}" 
-        
+        type="{{item.type_digit == 'number'?'number':'text'}}"
         data-func="{{item.eventFunc}}" 
         data-index="{{index}}" 
         bind:change="handleChange" >
