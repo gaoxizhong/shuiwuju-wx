@@ -1,10 +1,10 @@
 <!--pages/business-hall/index/index.wxml-->
 <view class="container business-hall">
   <view class="search-bar">
-    <van-search value="{{ wm_no }}" placeholder="{{lang.searchBar}}" bind:change="handleChangeInput"  bind:blur="handleReading"   bind:search="handleSearchInfo" use-action-slot>
+    <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
       <view class="icon"  slot="action">
-        <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
-        <van-icon name="ellipsis" bind:tap="onShowPopup" />
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+        <van-icon name="ellipsis" catchtap="onShowPopup" />
       </view>
     </van-search>
   </view>
@@ -46,3 +46,7 @@
     {{btnName.pay}}
   </view>
 </view>
+
+<van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
+  <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
+</van-popup>

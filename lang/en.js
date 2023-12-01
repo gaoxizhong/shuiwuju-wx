@@ -52,7 +52,8 @@ const en_lang = {
     invoice: 'Imprimir As facturas',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
-    selectImg: 'Por favor, selecione uma imagem'
+    selectImg: 'Por favor, selecione uma imagem',
+    selectPop: 'Por favor selecione'
   },
   // 蓝牙
   blueToolth: {
@@ -243,7 +244,7 @@ const en_lang = {
       placeholder: 'Por favor, digite',
       systemPlaceholder: 'O sistema calcula automaticamente',
       btnName: "Pesquisar",
-
+      noData: "Dados não disponíveis"
     }
   },
   // 今日收费

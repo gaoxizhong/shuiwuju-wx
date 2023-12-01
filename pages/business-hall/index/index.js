@@ -32,6 +32,17 @@ Page({
     list: [],
     statusList: [],
     payWayList: [],
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
+    select_value:'', // 查询内容
+    Type_statusList: [
+      {id: 1,text: 'Dados do contador'},
+      {id: 2,text: 'Nome de usuário'},
+      {id: 3,text: 'Endereço detalhado'},
+      {id: 4,text: 'Nº de Porta'}
+    ],
+    selectTypeIndex: 0,
+    Type_show: false,
+    type_seach: 'type', // type - - 选类型  seach 输入
   },
   /**
    * 生命周期函数--监听页面显示
@@ -51,15 +62,16 @@ Page({
   handleChangeInput(e) {
     const value = e.detail
     this.setData({
-      wm_no: value,
+      select_value: value,
     })
   },
   // 失焦赋值
   handleReading(e) {
     console.log(e)
-    const wm_no = e.detail.value;
+    const select_value = e.detail.value;
     this.setData({
-      wm_no,
+      select_value,
+      type_seach: 'type'
     })
   },
   handleSearchInfo() {
@@ -76,8 +88,11 @@ Page({
     const params = {
       wm_no: this.data.wm_no,
       status: this.data.status,
-      page: this.data.page
+      page: this.data.page,
+      select: this.data.select_value,
+      type: this.data.select_type
     }
+    console.log(params)
     getBusinessHallList(params).then(res => {
       const list = this.data.list.concat(res.data.list.data || [])
       const total = res.data.list.total || 0
@@ -177,5 +192,31 @@ Page({
         title: lang.message.info,
       })
     })
-  }
+  },
+  onShowTypePopup() {
+    console.log('#Type_select')
+    const select = this.selectComponent('#Type_select')
+    select && select.setColumnIndex(0, this.data.selectTypeIndex)
+    this.setData({
+      Type_show: true
+    })
+  },
+  onCloseTypePopup() {
+    this.setData({
+      Type_show: false
+    })
+  },
+  handleTypeSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    console.log(e.detail)
+    this.setData({
+      selectTypeIndex: index,
+      select_type: value.id,
+      type_seach: 'seach'
+    });
+    this.onCloseTypePopup()
+  },
 })

@@ -52,7 +52,8 @@ const zh_lang = {
     invoice: '打印发票',
     agree: '同意',
     disagree: '不同意',
-    selectImg: '请选择图片'
+    selectImg: '请选择图片',
+    selectPop: '请选择'
   },
   // 蓝牙
   blueToolth: {
@@ -244,6 +245,7 @@ const zh_lang = {
       placeholder: '请输入',
       systemPlaceholder: '系统自动带出',
       btnName: "搜索",
+      noData: "暂无数据"
     }
   },
   // 今日收费

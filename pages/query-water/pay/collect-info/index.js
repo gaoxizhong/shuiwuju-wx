@@ -55,7 +55,8 @@ Page({
     radio: 0,
     selectradio_info:{},
     dialog_show: false,
-    radioList:[]
+    radioList:[],
+    type_seach: 'type', // type - - 选类型  seach 输入
   },
   onLoad() {
     lang = app.globalData.lang
@@ -302,9 +303,12 @@ Page({
     this.setData({
       selectIndex: index,
       select_type: value.id,
+      type_seach: 'seach'
     });
     this.onClosePopup()
   },
+  // 
+
   // 搜索 Change 事件
   handleChangeInput(e) {
     const value = e.detail
@@ -317,6 +321,7 @@ Page({
     const select_value = e.detail.value;
     this.setData({
       select_value,
+      type_seach: 'type'
     })
   },
   // 搜索事件
@@ -327,9 +332,18 @@ Page({
     }).then(res => {
       if(res.code == 200){
         const radioList = res.data;
+        if(radioList.length > 0){
+          this.setData({
+            dialog_show: true
+          })
+        }else{
+          wx.showToast({
+            title: this.data.lang.noData,
+            icon:'none'
+          })
+        }
         this.setData({
           radioList,
-          dialog_show: true
         })
       }else{
         wx.showToast({

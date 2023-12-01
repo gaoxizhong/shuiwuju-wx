@@ -80,7 +80,7 @@ Page({
       btnName: lang.btnName,
       steps: lang.pay.steps,
     })
-    this.getArrearsMoneySum(options.wm_no)
+    // this.getArrearsMoneySum(options.wm_no)
   },
   
   // 新改版  获取用户待缴费金额接口 
@@ -170,7 +170,8 @@ Page({
         wm_no: form.wm_no,
         total_money: form.total_money,
         pay_way: 2,
-        pay_time: date.time
+        pay_time: date.time,
+        user_payment_id: that.data.up_id
       }
       new_payWater(params).then(res => {
         that.setData({
@@ -185,7 +186,7 @@ Page({
           total_water: res.data.total_water, // 总用水量
           invoice_code: res.data.invoice_code,
         })
-        that.getArrearsMoneySum(form.wm_no);
+        // that.getArrearsMoneySum(form.wm_no);
         that.getUserBluetoolthInfoData(that.verifyBlueToothPrint);
       }).catch((res) => {
         wx.showToast({
@@ -243,13 +244,7 @@ Page({
     })
     this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
-  // 收据
-  printWaterInfo(){
-    this.setData({
-      print_type: 'receiptInfo'
-    })
-    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
-  },
+
    // 发票
    blueToothInvoice(){
     this.setData({

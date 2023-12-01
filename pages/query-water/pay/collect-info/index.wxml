@@ -3,10 +3,10 @@
   <van-steps steps="{{ steps }}" active="{{ active }}" />
   <scroll-view scroll-y class="search-pay-content">
     <view class="search-bar">
-      <van-search value="{{ select_value }}" placeholder="{{lang.placeholder}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+      <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
         <view class="icon"  slot="action">
-          <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
-          <van-icon name="ellipsis" bind:tap="onShowPopup" />
+          <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+          <!-- <van-icon name="ellipsis" bind:tap="onShowPopup" /> -->
         </view>
       </van-search>
     </view>
@@ -65,7 +65,7 @@
 
 
   <!-- 选择信息弹窗 -->
-  <van-dialog use-slot theme='round-button' show="{{ dialog_show }}" title="请选择"  bind:close="onClose_dialog"
+  <van-dialog use-slot theme='round-button' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"
   bind:getuserinfo="getdialogInfo">
     <view class="dialog-pay-content">
       <scroll-view scroll-y>

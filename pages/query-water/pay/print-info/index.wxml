@@ -17,7 +17,7 @@
         </view> -->
         <view class="info-item">
           <view class="info-item__label">{{lang.reading}}</view>
-          <view class="info-item__info">{{last_reading}}（m³）</view>
+          <view class="info-item__info">{{form.last_reading}}（m³）</view>
         </view>
         <!-- <view class="info-item">
           <view class="info-item__label">{{lang.total_water}}</view>
