@@ -42,8 +42,11 @@
       </view>
     </view>
     <view class="btn">
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}" bindtap="{{is_return ? 'blueToothPrint' : ''}}">
+      <view class="btn-item {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}">
         {{btnName.print}}
+      </view>
+      <view class="btn-item {{is_Invoicereturn ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_Invoicereturn ? 'blueToothInvoice' : ''}}">
+        {{btnName.invoice}}
       </view>
     </view>
     <!-- <view class="btn" wx:if="{{status === 'pay'}}">
@@ -65,7 +68,7 @@
     </view> -->
   </view>
   <!-- 缴费 -->
-  <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
+  <!-- <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
     <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="new_onConfirmPay" bind:cancel="onClosePay" />
-  </van-popup>
+  </van-popup> -->
 </view>

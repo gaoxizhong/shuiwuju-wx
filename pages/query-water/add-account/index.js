@@ -33,11 +33,16 @@ Page({
     })
 
   },
-
+  onShow(){
+    this.setData({
+      lang: getLang(),
+    })
+    console.log(this.data.lang)
+  },
   getFormInfo() {
     let that = this;
     wx.showToast({
-      title: lang.message.loading,
+      title: this.data.lang.message.loading,
       duration: 999999,
       icon: 'none'
     })
@@ -95,7 +100,7 @@ Page({
           delta: page
         })
         wx.showToast({
-          title: lang.message.success,
+          title: this.data.lang.message.success,
           icon: 'none',
           duration: 2000
         })
@@ -105,7 +110,7 @@ Page({
     } else {
       wx.hideToast()
       wx.showToast({
-        title: lang.message.formWarning,
+        title: this.data.lang.message.formWarning,
         duration: 2000,
         icon: 'none'
       })

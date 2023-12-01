@@ -38,7 +38,8 @@ Page({
     invoiceInfo:'', // 发票打印内容
     print_type: '',
     last_reading:'', // 本次读数
-    is_return: true,
+    is_Printreturn: true,
+    is_Invoicereturn: true,
   },
 
   /**
@@ -56,9 +57,11 @@ Page({
       wm_no,
       last_reading,
       up_id,
-      payStatusList,
       check_time_text
     } = options
+    let arr = [];
+    let payStatusList = JSON.parse(options.payStatusList);
+    arr.push(payStatusList[1])
     this.setData({
       form: {
         imageUrl,
@@ -71,19 +74,7 @@ Page({
         last_reading,
         check_time_text
       },
-      payStatusList: JSON.parse(payStatusList),
-      // 打印内容
-//       printInfo: `  
-// EPAL CUANZA SUL WATER MANEGEMENT
-
-// ${this.data.lang.wm_no}：${wm_no};
-// ${this.data.lang.last_water}：${last_reading}（m³）;
-// ${this.data.lang.reading}：${reading}（m³）;
-// ${this.data.lang.total_water}：${total_water}（m³）;
-// ${this.data.lang.total_money}：${total_money}（KZ）;
-
-
-// `,
+      payStatusList: arr,
       lang: lang.pay.collectInfo,
       langDialog: lang.dialog,
       btnName: lang.btnName,
@@ -101,12 +92,19 @@ Page({
     getArrearsMoneySum(params).then(res => {
       const {
         arrears_money_sum,
-        last_reading
+        last_reading,
+        last_time,
         } = res.data
-         
+        const payWayList = Object.keys(res.data.pay_way).map(i => ({
+          text: res.data.pay_way[i].title,
+          key: res.data.pay_way[i].key
+        }))
       this.setData({
-        arrears_money_sum: Math.abs(arrears_money_sum),
-        last_reading
+        last_reading,
+        last_time,
+        arrears_money_sum,
+        // arrears_money_sum: Math.abs(arrears_money_sum),
+        payStatusList: payWayList
       })
     }).catch((res) => {
       wx.showToast({
@@ -117,18 +115,6 @@ Page({
     })
   },
   showPayPopup() {
-    const paid_total_money = this.data.paid_total_money
-    if (!paid_total_money) {
-      this.setData({
-        no_error: true
-      })
-      wx.showToast({
-        title: lang.message.formWarning,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
     this.setData({
       showPay: true
     })
@@ -172,33 +158,43 @@ Page({
       return time
     },
   //  新的确认支付
-   new_onConfirmPay(e){
+   new_onConfirmPay(){
      let that =  this;
-    const {
-      text,
-      key
-    } = e.detail.value
-    const form = that.data.form
-    let date = that.handleTimeValue();
-    const params = {
-      wm_no: form.wm_no,
-      total_money: that.data.paid_total_money,
-      pay_way: key,
-      pay_time: date.time
+    const form = that.data.form;
+    let pay_success = that.data.pay_success;
+    if(pay_success){
+      that.getUserBluetoolthInfoData(that.verifyBlueToothPrint);
+    }else{
+      let date = that.handleTimeValue();
+      const params = {
+        wm_no: form.wm_no,
+        total_money: form.total_money,
+        pay_way: 2,
+        pay_time: date.time
+      }
+      new_payWater(params).then(res => {
+        that.setData({
+          status: 'print',
+          showPay: false,
+          pay_success: true
+        })
+
+        this.setData({
+          user_PayFees_info: res.data.data, // 缴费记录信息
+          user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
+          total_water: res.data.total_water, // 总用水量
+          invoice_code: res.data.invoice_code,
+        })
+        that.getArrearsMoneySum(form.wm_no);
+        that.getUserBluetoolthInfoData(that.verifyBlueToothPrint);
+      }).catch((res) => {
+        wx.showToast({
+          title: res.desc,
+          icon: 'none'
+        })
+      })
     }
-    new_payWater(params).then(res => {
-      that.setData({
-        status: 'print',
-        showPay: false
-      })
-      console.log('11')
-      that.getUserBluetoolthInfoData();
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none'
-      })
-    })
+   
 
   },
   onConfirmPay(e) {
@@ -254,13 +250,14 @@ Page({
     })
     this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
-  // 发票
-  blueToothInvoice(){
+   // 发票
+   blueToothInvoice(){
     this.setData({
       print_type: 'invoiceInfo'
     })
-    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
+    this.new_onConfirmPay();
   },
+ 
   // 蓝牙设备打印
   verifyBlueToothPrint() {
     console.log('蓝牙设备打印')
@@ -366,6 +363,31 @@ Page({
   handlePrint(p) {
     let print_type = this.data.print_type;
     let info = [];
+    // 发票
+    if(print_type == 'invoiceInfo'){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...GBK.encode(this.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...GBK.encode(this.data.invoiceInfo_title_1),
+        ...GBK.encode(this.data.invoiceInfo_invoice_code),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_historyData_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_historyData_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_facturacao_title),
+        ...blueToolth.printCommand.left,
+        ...GBK.encode(this.data.invoiceInfo_facturacao_info),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
     // 缴费单
     console.log('printInfo: 拼接缴费单信息...')
     if(print_type == 'printInfo'){
@@ -415,6 +437,11 @@ Page({
           icon: "none",
           duration: 3000,
         })
+        if(print_type == 'invoiceInfo'){
+          that.setData({
+            is_Printreturn: false
+          })
+        }
         //修改发票收据状态
         // this.setInvoiceStatus();
       },
@@ -442,12 +469,25 @@ Page({
     const params = {
       wm_no: that.data.form.wm_no,
     }
-    if( !that.data.is_return ){
-      return
+    if(that.data.print_type == 'printInfo'){
+      //缴费单
+      if( !that.data.is_Printreturn ){
+        return
+      }
+      that.setData({
+        is_Printreturn: false
+      })
     }
-    that.setData({
-      is_return: false
-    })
+     if(that.data.print_type == 'invoiceInfo'){
+      //发票
+      if( !that.data.is_Invoicereturn ){
+        return
+      }
+      that.setData({
+        is_Invoicereturn: false
+      })
+    }
+   
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
       console.log(userBluetoolthInfoData)
@@ -463,6 +503,60 @@ Page({
       let domestico_socio = Number(first_step_water * first_step_price).toFixed(2);
       let domestico_socio_2 = Number(second_step_water * second_step_price).toFixed(2);
       this.setData({
+      // 发票
+      invoiceInfo_title:`EPASKS-E.P.`,
+      invoiceInfo_title_1:`
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
+NIF:5601022917
+Atendimento ao Cliente941648993
+Comunicacao de Roturas941648999
+Email info.epasksagmail.com
+
+        `,
+        invoiceInfo_invoice_code:`
+Factura/Recibo N° ${that.data.invoice_code}
+
+Dados do Cliente `,
+        invoiceInfo_CustomerData:`
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
+N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
+N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
+NIF: ${userBluetoolthInfoData.water_meter.user_card}
+EMAIL: ${userBluetoolthInfoData.water_meter.email}
+Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
+N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
+Giro: ${userBluetoolthInfoData.water_meter.area_code}
+
+      `,
+      invoiceInfo_historyData_title:`
+Histórico de Leituras
+      `,
+      invoiceInfo_historyData_info:`
+ Data       m3      Leitor
+--------------------------------
+${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
+${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
+-------------------------------- `,
+    invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
+    invoiceInfo_facturacao_info:`
+Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
+Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
+Consumo ${ total_water?total_water:0 }(m3)
+T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
+Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+IVA(0%)
+TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
+
+limite de pagamento: ${this.getMoreDay(15)}
+    `,
+    invoiceInfo_valores:`
+Saldo
+${userBluetoolthInfoData.water_meter.user_bal} KZ
+${date.time}
+
+    `,
         printInfo_title:`EPASKS-E.P.`,
         printInfo_title_1:`
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
@@ -525,7 +619,8 @@ ${date.time}
       })
       setTimeout(()=>{
         that.setData({
-          is_return: true
+          is_Printreturn: true,
+          is_Invoicereturn: true,
         })
       },1000)
       console.log(typeof f)
@@ -541,7 +636,8 @@ ${date.time}
     })
     setTimeout(()=>{
       that.setData({
-        is_return: true
+        is_Printreturn: true,
+        is_Invoicereturn: true,
       })
     },1000)
   },

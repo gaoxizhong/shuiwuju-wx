@@ -44,14 +44,18 @@ Page({
     show: false,
     list: [],
     statusList: [
-      {id: 1,text: '水表号'},
-      {id: 2,text: '用户名'},
-      {id: 3,text: '用户地址'},
-      {id: 4,text: '门牌号'}
+      {id: 1,text: 'Dados do contador'},
+      {id: 2,text: 'Nome de usuário'},
+      {id: 3,text: 'Endereço detalhado'},
+      {id: 4,text: 'Nº de Porta'}
     ],
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
-    select:'', // 查询内容
+    select_value:'', // 查询内容
     payWayList: [],
+    radio: 0,
+    selectradio_info:{},
+    dialog_show: false,
+    radioList:[]
   },
   onLoad() {
     lang = app.globalData.lang
@@ -90,7 +94,7 @@ Page({
   handleReading(e) {
     console.log(e)
     const type = e.currentTarget.dataset.type
-    const my_isAdmin = this.data.isAdmin
+    // const my_isAdmin = this.data.isAdmin
     // 判断用户是否存在
     if (!type) {
       const wm_no = e.detail.value
@@ -151,7 +155,7 @@ Page({
       // 是否用户存在和输入了水费
       if (type === 'reading' && reading) {
     
-        if (Number(reading) < Number(this.data.last_reading)) {
+        if (Number(reading) < Number(this.data.selectradio_info.last_reading)) {
           wx.showToast({
             title: '用水量需要大于等于上一次用水量',
             duration: 3000,
@@ -159,14 +163,12 @@ Page({
           })
           return
         }
+        this.waterCount();
       } else {
         this.setData({
           total_money: '',
           total_water: ''
         })
-      }
-      if (type === 'reading' && reading && my_isAdmin) {
-        this.waterCount()
       }
 
     }
@@ -176,7 +178,7 @@ Page({
   // 计算金额和用水量
   waterCount() {
     const reading = this.data.reading
-    const wm_no = this.data.wm_no
+    const wm_no = this.data.selectradio_info.wm_no
     if (reading && wm_no) {
       const params = {
         wm_no,
@@ -236,12 +238,12 @@ Page({
   },
   // 采集信息 跳转 确认信息页面
   toConfirmInfo() {
-    const wm_no = this.data.wm_no
+    const wm_no = this.data.selectradio_info.wm_no
     const reading = this.data.reading
     const total_money = this.data.total_money
     const total_water = this.data.total_water
     const waterList = this.data.waterList
-    const last_reading = this.data.last_reading
+    const last_reading = this.data.selectradio_info.last_reading
     const imageUrl = waterList[0] ? waterList[0].tempFilePath : ''
     let flag = true
     if (!wm_no) {
@@ -307,31 +309,72 @@ Page({
   handleChangeInput(e) {
     const value = e.detail
     this.setData({
-      select: value,
+      select_value: value,
     })
   },
    //搜索 失焦赋值 
-   handleReading(e) {
-    const select = e.detail.value;
+   handlesearchReading(e) {
+    const select_value = e.detail.value;
     this.setData({
-      select,
+      select_value,
     })
   },
   // 搜索事件
   handleSearchInfo() {
     isAdmin({
-      select: this.data.select,
+      select: this.data.select_value,
       type: this.data.select_type
     }).then(res => {
-      const {
-        water_meter_exits,
-        last_reading
-      } = res.data
-      this.setData({
-        isAdmin: water_meter_exits,
-        last_reading
-      })
+      if(res.code == 200){
+        const radioList = res.data;
+        this.setData({
+          radioList,
+          dialog_show: true
+        })
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon:'none'
+        })
+      }
+     
       // this.waterCount()
+    }).catch(e =>{
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon:'none'
+      })
     })
   },
+  onChange(event) {
+    console.log(event)
+    this.setData({
+      radio: event.detail,
+    });
+  },
+  onClick(event) {
+    const { name } = event.currentTarget.dataset;
+    this.setData({
+      radio: name,
+      selectradio_info: event.currentTarget.dataset.item
+    });
+  },
+  onClose_dialog(){
+    if(!this.data.radio){
+      this.setData({ 
+        dialog_show: false,
+        selectradio_info: {},
+       });
+      return
+    }else{
+      this.setData({ 
+        dialog_show: false,
+        wm_no_error:false
+       });
+    }
+
+    
+  },
+
 })

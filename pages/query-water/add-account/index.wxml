@@ -5,7 +5,7 @@
   </scroll-view>
   <view class="btn">
     <view class="btn-item" bindtap="getFormInfo">
-      {{lang.submit}}
+      {{lang.addAccount.submit}}
     </view>
   </view>
 </view>

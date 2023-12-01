@@ -8,7 +8,12 @@
   flex: 1;
   overflow: hidden;
 }
-
+.dialog-pay-content{
+  height: 680rpx;
+}
+.dialog-pay-content scroll-view{
+  height: 100%;
+}
 .van-img {
   display: flex;
   width: 100%;
