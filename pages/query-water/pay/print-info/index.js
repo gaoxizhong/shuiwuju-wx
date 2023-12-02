@@ -433,7 +433,7 @@ Page({
           duration: 3000,
         })
         if(print_type == 'invoiceInfo'){
-          that.setData({
+          this.setData({
             is_Printreturn: false
           })
         }
@@ -507,10 +507,9 @@ NIF:5601022917
 Atendimento ao Cliente941648993
 Comunicacao de Roturas941648999
 Email info.epasksagmail.com
-
         `,
         invoiceInfo_invoice_code:`
-Factura/Recibo N° ${that.data.invoice_code}
+Factura/Recibo N°${that.data.invoice_code}
 
 Dados do Cliente `,
         invoiceInfo_CustomerData:`
@@ -522,7 +521,6 @@ EMAIL: ${userBluetoolthInfoData.water_meter.email}
 Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
 N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
-
       `,
       invoiceInfo_historyData_title:`
 Histórico de Leituras
@@ -539,6 +537,8 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Consumo ${ total_water?total_water:0 }(m3)
+Domestico socil: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
+Domestico 2: ${ second_step_water?(second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2 ): 0 }
 T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
 Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
