@@ -244,7 +244,8 @@ const en_lang = {
       placeholder: 'Por favor, digite',
       systemPlaceholder: 'O sistema calcula automaticamente',
       btnName: "Pesquisar",
-      noData: "Dados não disponíveis"
+      noData: "Dados não disponíveis",
+      look: "Ver usuários próximos"
     }
   },
   // 今日收费

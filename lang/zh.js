@@ -245,7 +245,8 @@ const zh_lang = {
       placeholder: '请输入',
       systemPlaceholder: '系统自动带出',
       btnName: "搜索",
-      noData: "暂无数据"
+      noData: "暂无数据",
+      look: "查看附近用户"
     }
   },
   // 今日收费

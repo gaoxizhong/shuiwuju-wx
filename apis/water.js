@@ -120,3 +120,12 @@ export const readingPic = (data) => {
     data
   })
 }
+// 确认缴费单
+export const getUserListLngLat = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_get_user_list_by_lng_lat`,
+    method: 'POST',
+    data
+  })
+}

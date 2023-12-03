@@ -4,7 +4,8 @@ const {
 } = require('./../../../../utils/util')
 import {
   countWater,
-  payWater
+  payWater,
+  getUserListLngLat
 } from './../../../../apis/water'
 import {
   isAdmin
@@ -49,7 +50,7 @@ Page({
       {id: 3,text: 'Endereço detalhado'},
       {id: 4,text: 'Nº de Porta'}
     ],
-    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
     select_value:'', // 查询内容
     payWayList: [],
     radio: 0,
@@ -57,6 +58,9 @@ Page({
     dialog_show: false,
     radioList:[],
     type_seach: 'type', // type - - 选类型  seach 输入
+    page: 1,
+    latitude: '',
+    longitude: '',
   },
   onLoad() {
     lang = app.globalData.lang
@@ -303,7 +307,10 @@ Page({
     this.setData({
       selectIndex: index,
       select_type: value.id,
-      type_seach: 'seach'
+      type_seach: 'seach',
+      page: 1,
+      select_value: '',
+      radioList: []
     });
     this.onClosePopup()
   },
@@ -326,12 +333,23 @@ Page({
   },
   // 搜索事件
   handleSearchInfo() {
-    isAdmin({
+    let that = this;
+    let p = {
       select: this.data.select_value,
-      type: this.data.select_type
-    }).then(res => {
+      type: this.data.select_type,
+      page: this.data.page
+    }
+    if( p.type == 5){
+      p.lng = that.data.longitude;
+      p.lat = that.data.latitude;
+    }
+    wx.showLoading({
+      title: lang.message.loading,
+    })
+    isAdmin(p).then(res => {
+      wx.hideLoading();
       if(res.code == 200){
-        const radioList = res.data;
+        const radioList = this.data.radioList.concat(res.data.data || [])
         if(radioList.length > 0){
           this.setData({
             dialog_show: true
@@ -354,6 +372,7 @@ Page({
      
       // this.waterCount()
     }).catch(e =>{
+      wx.hideLoading();
       console.log(e)
       wx.showToast({
         title: e.desc,
@@ -390,5 +409,34 @@ Page({
 
     
   },
+  bindscrolltolower(){
+    console.log('底部')
+    let page = this.data.page;
+    page += 1
+    this.setData({
+      page,
+    })
+    this.handleSearchInfo();
+  },
+  clickLook(){
+    let that = this;
+    wxAsyncApi('getFuzzyLocation').then(res =>{
+      console.log(res)
+      that.setData({
+        radio: 0,
+        radioList: [],
+        select_value:'',
+        page: 1,
+        select_type: 5,
+        latitude: res.latitude,
+        longitude: res.longitude,
+      })
+      // 搜索事件
+      that.handleSearchInfo();
+    }).catch(fail =>{
+      console.log('getFuzzyLocation: fail')
+      console.log(fail)
+    })
+  }
 
 })

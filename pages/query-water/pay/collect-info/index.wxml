@@ -10,6 +10,7 @@
         </view>
       </van-search>
     </view>
+    <view class="look-box" bindtap="clickLook">{{lang.look}}</view>
     <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->
     <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.placeholder}}" />
     <!-- 初始读数 -->
@@ -68,7 +69,7 @@
   <van-dialog use-slot theme='round-button' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"
   bind:getuserinfo="getdialogInfo">
     <view class="dialog-pay-content">
-      <scroll-view scroll-y>
+      <scroll-view scroll-y bindscrolltolower="bindscrolltolower">
         <van-radio-group value="{{ radio }}" bind:change="onChange">
           <van-cell-group>
             <van-cell title="{{item.wm_name}}  {{item.wm_no}}" label="{{item.wm_address}} {{item.area_code}} {{item.house_number}}"  clickable data-name="{{item.wm_id}}"  data-item="{{item}}" bind:click="onClick" wx:for="{{radioList}}" wx:key="index">

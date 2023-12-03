@@ -63,3 +63,10 @@
 .icon-btn {
   margin: 0rpx 20rpx;
 }
+.look-box{
+  padding: 6rpx 30rpx;
+  font-size: 26rpx;
+  color: #1989fa;
+  text-align: right;
+  padding-right: 40rpx;
+}
