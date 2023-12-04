@@ -10,7 +10,9 @@
         </view>
       </van-search>
     </view>
-    <view class="look-box" bindtap="clickLook">{{lang.look}}</view>
+    <view class="look-box">
+      <view bindtap="clickLook" hover-class="hoverClass">{{lang.look}}</view>
+    </view>
     <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->
     <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.placeholder}}" />
     <!-- 初始读数 -->
@@ -66,7 +68,7 @@
 
 
   <!-- 选择信息弹窗 -->
-  <van-dialog use-slot theme='round-button' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"
+  <van-dialog use-slot theme='round-button' closeOnClickOverlay='true' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"
   bind:getuserinfo="getdialogInfo">
     <view class="dialog-pay-content">
       <scroll-view scroll-y bindscrolltolower="bindscrolltolower">

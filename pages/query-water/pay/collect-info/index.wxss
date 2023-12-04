@@ -64,9 +64,15 @@
   margin: 0rpx 20rpx;
 }
 .look-box{
+  text-align: right;
+  padding-right: 10rpx;
+}
+.look-box view{
+  display: inline-block;
   padding: 6rpx 30rpx;
   font-size: 26rpx;
   color: #1989fa;
-  text-align: right;
-  padding-right: 40rpx;
+}
+.hoverClass{
+  opacity: 0.8;
 }
