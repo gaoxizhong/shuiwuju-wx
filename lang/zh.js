@@ -235,6 +235,7 @@ const zh_lang = {
     collectInfo: {
       title: '用水信息',
       wm_no: '水表号',
+      wm_name: '用户名',
       last_water: '上次读数',
       reading: '本次读数',
       total_water: '用水量',
@@ -325,7 +326,7 @@ const zh_lang = {
   // 用水详情
   userWaterInfo: {
     title: '用水信息',
-
+    wm_name: '用户名',
     wm_no: '水表号',
     last_water: '初始读数',
     reading: '本次读数',

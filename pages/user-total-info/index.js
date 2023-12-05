@@ -594,16 +594,18 @@ Page({
       let user_payment_info = '';
       info.forEach(ele =>{
         user_payment_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
-        `
+`
       })
       let total_water = that.data.total_water;
       let sewage_rate_num = 0; // 污水量
       let sewage_rate_price = 0; // 污水价格 
       let user_type_price = userBluetoolthInfoData.user_type.price;
+      let consumo_price = 0;  // 非阶段计价 水费用展示
       if(total_water){
         console.log(total_water)
         sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100);
         sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
+        consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
       }
       that.setData({
       // 发票
@@ -645,6 +647,10 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
+
+${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'
+:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
+
 Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 Consumo ${ total_water?total_water:0 }(m3)
 T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}

@@ -234,6 +234,7 @@ const en_lang = {
     collectInfo: {
       title: 'Informações de comsumir água',
       wm_no: 'Dados do contador',
+      wm_name: 'Nome do Cliente',
       last_water: 'Leitura anterior',
       reading: 'Leitura do contador',
       total_water: 'Consumo de água',
@@ -324,7 +325,7 @@ const en_lang = {
   // 用水详情
   userWaterInfo: {
     title: 'Informações de comsumir água',
-
+    wm_name: 'Nome do Cliente',
     wm_no: 'Dados do contador',
     last_water: 'Leitura anterior',
     reading: 'Leitura do contador',

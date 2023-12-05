@@ -74,7 +74,7 @@
       <scroll-view scroll-y bindscrolltolower="bindscrolltolower">
         <van-radio-group value="{{ radio }}" bind:change="onChange">
           <van-cell-group>
-            <van-cell title="{{item.wm_name}}  {{item.wm_no}}" label="{{item.wm_address}} {{item.area_code}} {{item.house_number}}"  clickable data-name="{{item.wm_id}}"  data-item="{{item}}" bind:click="onClick" wx:for="{{radioList}}" wx:key="index">
+            <van-cell title="{{item.wm_name}}  {{item.wm_no}}" label="{{item.area2}} {{item.wm_address}} {{item.area_code}} {{item.house_number}}"  clickable data-name="{{item.wm_id}}"  data-item="{{item}}" bind:click="onClick" wx:for="{{radioList}}" wx:key="index">
               <van-radio slot="right-icon" name="{{item.wm_id}}" />
             </van-cell>
           </van-cell-group>

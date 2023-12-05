@@ -33,6 +33,7 @@ Page({
       total_money,
       total_water,
       wm_no,
+      wm_name,
       last_reading
     } = options
     this.setData({
@@ -42,6 +43,7 @@ Page({
         total_money,
         total_water,
         wm_no,
+        wm_name,
         last_reading,
         check_time_text: date.time,
         check_time: date.timestamp
@@ -149,6 +151,7 @@ Page({
   next() {
     let that = this;
     const wm_no = that.data.form.wm_no
+    const wm_name = that.data.form.wm_name
     const reading = that.data.form.reading
     const total_money = that.data.form.total_money
     const total_water = that.data.form.total_water
@@ -180,7 +183,7 @@ Page({
         const up_id = res.data.data.up_id
         setTimeout( ()=>{
           wxAsyncApi('reLaunch', {
-            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
+            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}`,
           }).then(res => {
             wx.setNavigationBarTitle({
               title: lang.message.info,

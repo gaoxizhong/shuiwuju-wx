@@ -55,6 +55,7 @@ Page({
       total_water,
       order_no,
       wm_no,
+      wm_name,
       last_reading,
       up_id,
       check_time_text
@@ -70,6 +71,7 @@ Page({
         total_water,
         order_no,
         wm_no,
+        wm_name,
         up_id,
         last_reading,
         check_time_text
@@ -487,7 +489,7 @@ Page({
       const userBluetoolthInfoData = res.data
       console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
-      let user_type_price = userBluetoolthInfoData.user_type.price;
+      let user_type_price = userBluetoolthInfoData.user_type.price; // 用户类型单价
       let total_water = that.data.form.total_water;
       let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100).toFixed(2); // 污水量
       let sewage_rate_price =  Number(sewage_rate_num * user_type_price.toFixed(2)); // 污水价格
@@ -497,6 +499,11 @@ Page({
       let second_step_price = userBluetoolthInfoData.user_payment[0].second_step_price;
       let domestico_socio = Number(first_step_water * first_step_price).toFixed(2);
       let domestico_socio_2 = Number(second_step_water * second_step_price).toFixed(2);
+
+      let months = userBluetoolthInfoData.user_payment[0].months; // 月份
+      let T_Fixa = Number(userBluetoolthInfoData.user_type.rent_money * months).toFixed(2);
+      let consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
+
       this.setData({
       // 发票
       invoiceInfo_title:`EPASKS-E.P.`,
@@ -535,12 +542,13 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Consumo ${ total_water?total_water:0 }(m3)
-Domestico socil: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
-Domestico 2: ${ second_step_water?(second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2 ): 0 }
-T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
-Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'+
+'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
++'Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
+:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
+T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
+Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
@@ -552,6 +560,7 @@ ${userBluetoolthInfoData.water_meter.user_bal} KZ
 ${date.time}
 
     `,
+        // 缴费单
         printInfo_title:`EPASKS-E.P.`,
         printInfo_title_1:`
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
@@ -591,12 +600,13 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
       printInfo_facturacao_title:`   Detalhes de Coberanca`,
       printInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Domestico： ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Consumo ${ total_water?total_water:0 }(m3)
-Domestico socil: ${first_step_water?(first_step_water + '*'+ first_step_price +' = ' + domestico_socio ): 0 }
-Domestico 2: ${ second_step_water?(second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2 ): 0 }
-T.Fixa Domestico  ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
-Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'+
+'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
++'Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
+:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
+T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
+Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%) 
 `,
       printInfo_TOTAL:`

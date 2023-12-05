@@ -244,6 +244,7 @@ Page({
   // 采集信息 跳转 确认信息页面
   toConfirmInfo() {
     const wm_no = this.data.selectradio_info.wm_no
+    const wm_name = this.data.selectradio_info.wm_name
     const reading = this.data.reading
     const total_money = this.data.total_money
     const total_water = this.data.total_water
@@ -278,7 +279,7 @@ Page({
       return
     }
     wxAsyncApi('navigateTo', {
-      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
+      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
       // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
     }).then(res => {
       wx.setNavigationBarTitle({
@@ -334,10 +335,18 @@ Page({
   // 搜索事件
   handleSearchInfo() {
     let that = this;
+    that.setData({
+      page: 1,
+      radioList: []
+    })
+    that.getlist();
+  },
+  getlist(){
+    let that = this;
     let p = {
       select: this.data.select_value,
       type: this.data.select_type,
-      page: this.data.page
+      page: this.data.page,
     }
     if( p.type == 5){
       p.lng = that.data.longitude;
@@ -387,6 +396,7 @@ Page({
     });
   },
   onClick(event) {
+    console.log(event)
     const { name } = event.currentTarget.dataset;
     this.setData({
       radio: name,
@@ -416,7 +426,7 @@ Page({
     this.setData({
       page,
     })
-    this.handleSearchInfo();
+    this.getlist()
   },
   clickLook(){
     let that = this;
@@ -432,7 +442,7 @@ Page({
         longitude: res.longitude,
       })
       // 搜索事件
-      that.handleSearchInfo();
+      that.getlist();
     }).catch(fail =>{
       console.log('getFuzzyLocation: fail')
       console.log(fail)
