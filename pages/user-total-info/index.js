@@ -32,6 +32,7 @@ Page({
     btnName: lang.btnName,
     langDialog: lang.dialog,
     wm_no:'',
+    wm_name:'',
     form: {},
 
     status: 'pay',
@@ -69,6 +70,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log(options)
     lang = app.globalData.lang
     this.setData({
       lang: lang.userWaterInfo,
@@ -107,8 +109,10 @@ Page({
     //   }
     // }
     const wm_no = options.wm_no;
+    const wm_name = options.wm_name;
     this.setData({
       wm_no,
+      wm_name,
       source,
       status,
       // payStatusList: JSON.parse(payStatusList || '[]'),
@@ -567,6 +571,12 @@ Page({
           icon: "none",
           duration: 3000,
         })
+        that.setData({
+          paid_total_money: '',
+          pay_success: false,
+          pay_way: '',
+          pay_text: '',
+        })
       },
       onFail(res){
         console.log('打印失败...')
@@ -591,9 +601,9 @@ Page({
       console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
-      let user_payment_info = '';
+      let user_info = '';
       info.forEach(ele =>{
-        user_payment_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
+        user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
 `
       })
       let total_water = that.data.total_water;
@@ -647,19 +657,15 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-
-${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'
-:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
-
-Domestico：${userBluetoolthInfoData.user_type.type_name} ${userBluetoolthInfoData.user_type?(userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-Consumo ${ total_water?total_water:0 }(m3)
-T.Fixa Domestico ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.rent_money +' *1=' + userBluetoolthInfoData.user_type.rent_money:''}
-Agua Resid (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+Consumo: ${total_water} (m3)
+${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
+T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
+Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
-TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
+TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
-    `,
+`,
     invoiceInfo_valores:`
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
@@ -682,7 +688,7 @@ Contribuinte: 001189995BA039
 DATA: ${date.time}
  Data    Total    Pend.    Liq.
 --------------------------------
-${user_payment_info?user_payment_info:''}
+${user_info?user_info:''}
 --------------------------------
 `,
       receiptInfo_TOTAL: `

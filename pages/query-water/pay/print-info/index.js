@@ -553,7 +553,7 @@ IVA(0%)
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
-    `,
+`,
     invoiceInfo_valores:`
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
