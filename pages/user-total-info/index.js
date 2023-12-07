@@ -511,6 +511,7 @@ Page({
   handlePrint(p) {
     let print_type = this.data.print_type;
     let info = [];
+    // GBK.encode({string}) 解码GBK为一个字节数组
     // 发票
     if(print_type == 'invoiceInfo'){
       info = [
@@ -680,8 +681,8 @@ Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
 Recibo N° ${that.data.invoice_code}
 ORIGINAL
-Nome: MARIA DA GRAÇA FERNANDES LIMA
-Contribuinte: 001189995BA039
+Nome: ${userBluetoolthInfoData.water_meter.wm_name}
+Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 
 `,
       receiptInfo_historyData:`
