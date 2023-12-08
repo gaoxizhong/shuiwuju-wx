@@ -40,6 +40,12 @@ Page({
     last_reading:'', // 本次读数
     is_Printreturn: true,
     is_Invoicereturn: true,
+    // 打印机纸张宽度，我用的打印几的纸张最大宽度是384，可以修改其他的
+    paperWidth: 384,
+    canvasWidth: 1,
+    canvasHeight: 1,
+    img: '',
+    printing: false,
   },
 
   /**
@@ -83,6 +89,8 @@ Page({
       steps: lang.pay.steps,
     })
     // this.getArrearsMoneySum(options.wm_no)
+    // 获取图片
+    this.getLogoImage();
   },
   
   // 新改版  获取用户待缴费金额接口 
@@ -646,6 +654,40 @@ ${date.time}
       })
     },1000)
   },
+  // 获取图片
+  getLogoImage(){
+    const ctx = wx.createCanvasContext('secondCanvas');
+    wx.getImageInfo({
+      src: '../../../../img/epasks-logo.png',
+      success: (res) => {
+        console.log(res)
+        // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
+        const mw = this.data.paperWidth % 8;
+        const w = mw === 0 ? this.data.paperWidth : this.data.paperWidth - mw;
+        // 等比算出图片的高度
+        const h = Math.floor((res.height * w) / res.width);
+        // 设置canvas宽高
+        this.setData({
+          img: tempFilePath,
+          canvasHeight: h,
+          canvasWidth: w,
+        });
+        // 在canvas 画一张图片
+        ctx.fillStyle = 'rgba(255,255,255,1)';
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(tempFilePath, 0, 0, w, h);
+        ctx.draw(false, () => {
+            wx.hideLoading();
+        });
+      },
+      fail: (res) => {
+        console.log('get info fail', res);
+        wx.hideLoading();
+      },
+    })
+  },
+  
 
   // 4.修改打印收据状态
   setReceiptStatus (){
