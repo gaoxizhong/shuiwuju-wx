@@ -76,6 +76,6 @@
     <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="new_onConfirmPay" bind:cancel="onClosePay" />
   </van-popup> -->
 </view>
-<view style="width:100%;margin-top:30rpx;overflow:auto;" wx:if="{{!printing}}">
+<view style="width:100%;margin-top:30rpx;overflow:auto;position: fixed;left: 99999px;bottom: 9999px;">
     <canvas style="width: {{canvasWidth}}px; height: {{canvasHeight}}px" canvas-id="secondCanvas"></canvas>
 </view>

@@ -668,7 +668,7 @@ ${date.time}
         const h = Math.floor((res.height * w) / res.width);
         // 设置canvas宽高
         this.setData({
-          img: tempFilePath,
+          img: '../../../../img/epasks-logo.png',
           canvasHeight: h,
           canvasWidth: w,
         });
@@ -676,7 +676,7 @@ ${date.time}
         ctx.fillStyle = 'rgba(255,255,255,1)';
         ctx.clearRect(0, 0, w, h);
         ctx.fillRect(0, 0, w, h);
-        ctx.drawImage(tempFilePath, 0, 0, w, h);
+        ctx.drawImage('../../../../img/epasks-logo.png', 0, 0, w, h);
         ctx.draw(false, () => {
             wx.hideLoading();
         });
