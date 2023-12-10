@@ -256,7 +256,7 @@ const zh_lang = {
   },
   // 今日收费
   todaySummary: {
-    todayNumber: '订单总数',
+    todayNumber: '缴费单',
     todayMoney: '金额总数',
     cash: '现金',
     pos: 'POS机',

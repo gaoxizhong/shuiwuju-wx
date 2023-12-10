@@ -255,7 +255,7 @@ const en_lang = {
   },
   // 今日收费
   todaySummary: {
-    todayNumber: 'Total de pedidos',
+    todayNumber: 'Nota de Coberanca',
     todayMoney: 'Valor total',
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
