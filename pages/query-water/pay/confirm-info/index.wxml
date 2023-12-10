@@ -15,17 +15,27 @@
           <view class="info-item__label">{{lang.wm_name}}</view>
           <view class="info-item__info">{{form.wm_name}}</view>
         </view>
-        <view class="info-item">
+        <view class="info-item" wx:if="{{ !form.is_T }}">
           <view class="info-item__label">{{lang.last_water}}</view>
           <view class="info-item__info">{{form.last_reading}}（m³）</view>
         </view>
-        <view class="info-item">
+        <view class="info-item" wx:if="{{ !form.is_T }}">
           <view class="info-item__label">{{lang.reading}}</view>
           <view class="info-item__info">{{form.reading}}（m³）</view>
         </view>
-        <view class="info-item">
+        <view class="info-item" wx:if="{{ !form.is_T }}">
           <view class="info-item__label">{{lang.total_water}}</view>
           <view class="info-item__info">{{form.total_water}}（m³）</view>
+        </view>
+        <!-- 上次抄表时间 -->
+        <view class="info-item" wx:if="{{ form.is_T }}">
+          <view class="info-item__label">{{lang.last_date}}</view>
+          <view class="info-item__info">{{form.last_time}}</view>
+        </view>
+        <!-- 本次抄表时间 -->
+        <view class="info-item" wx:if="{{ form.is_T }}">
+          <view class="info-item__label">{{lang.now_date}}</view>
+          <view class="info-item__info">{{form.now_time}}</view>
         </view>
         <view class="info-item">
           <view class="info-item__label">{{lang.total_money}}</view>

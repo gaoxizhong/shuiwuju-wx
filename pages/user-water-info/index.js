@@ -57,7 +57,6 @@ Page({
       langDialog: lang.dialog,
     })
     const form = JSON.parse(options.data)
-    console.log(options)
     console.log(form)
     const payStatusList = options.payWayList
     const source = options.source

@@ -16,28 +16,30 @@
     <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->
     <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.placeholder}}" />
     <!-- 初始读数 -->
-    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ selectradio_info.last_reading }}" readonly placeholder="{{lang.systemPlaceholder}}" />
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ selectradio_info.last_reading }}" readonly placeholder="{{lang.systemPlaceholder}}" wx:if="{{ !is_T }}"/>
 
     <!-- 本次读数 -->
-    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.reading}}" error="{{reading_error}}" value="{{ reading }}" placeholder="{{lang.placeholder}}" />
+    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.reading}}" error="{{reading_error}}" value="{{ reading }}" placeholder="{{lang.placeholder}}" wx:if="{{ !is_T }}"/>
     <!-- 用水量 -->
-    <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_water}}" value="{{ total_water }}" placeholder="{{lang.systemPlaceholder}}" />
-    <!-- 初始时间 -->
-    <!-- <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_water}}" value="{{ selectradio_info.last_time }}" readonly placeholder="{{lang.systemPlaceholder}}" /> -->
-      <!-- 时间选择 -->
-      <!-- <van-field title-width="100%"  readonly="true" 
-        custom-style="flex-direction: column;" 
-        label="Data" 
-        value="{{ Datavalue }}" 
-        placeholder="Preecher a data" 
-        required="true" 
-        bind:click-input="onOpenTimeSelect"
-      ></van-field> -->
+    <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_water}}" value="{{ total_water }}" placeholder="{{lang.systemPlaceholder}}" wx:if="{{ !is_T }}"/>
+   
+    <!-- 上次抄表时间 -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_date}}" value="{{ selectradio_info.last_time }}" readonly placeholder="{{lang.systemPlaceholder}}"  wx:if="{{ is_T }}"/>
+    <!-- 本次抄表时间选择 -->
+    <van-field title-width="100%"  readonly="true" 
+      custom-style="flex-direction: column;" 
+      label="{{lang.now_date}}" 
+      value="{{ now_time }}" 
+      placeholder="Preecher a data" 
+      required="true" 
+      error="{{data_error}}" 
+      bind:click-input="onOpenTimeSelect"  wx:if="{{ is_T }}"
+    ></van-field>
 
     <!-- 应缴金额 -->
     <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_money}}" value="{{ total_money }}" placeholder="{{lang.systemPlaceholder}}" />
     <!-- 照片 -->
-    <van-field type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required label="{{lang.waterList}}" error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
+    <van-field type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required label="{{lang.waterList}}" error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}" wx:if="{{ !is_T }}">
       <view slot="input">
         <block wx:if="{{waterList.length && !readonly}}">
           <view wx:for="{{waterList}}" wx:key="tempFilePath" class="van-img-item">
@@ -85,4 +87,18 @@
  
   </van-dialog>
 
+
+<!-- 时间 -->
+<van-popup show="{{ showSelectTime }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseTimeSelect">
+    <van-datetime-picker
+      id="wixi-date"
+      type="date"
+      value="{{ currentDate }}"
+      formatter="{{ formatter }}"
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="handleGetTime"
+      bind:cancel="onCloseTimeSelect"
+    />
+  </van-popup>
 </view>

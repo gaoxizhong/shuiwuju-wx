@@ -34,7 +34,10 @@ Page({
       total_water,
       wm_no,
       wm_name,
-      last_reading
+      last_reading,
+      is_T,
+      last_time, // 上次抄表时间
+      now_time, // 本次抄表时间
     } = options
     this.setData({
       form: {
@@ -46,7 +49,10 @@ Page({
         wm_name,
         last_reading,
         check_time_text: date.time,
-        check_time: date.timestamp
+        check_time: date.timestamp,
+        is_T,
+        last_time, // 上次抄表时间
+        now_time, // 本次抄表时间
       },
       lang: lang.pay.collectInfo,
       btnName: lang.btnName,

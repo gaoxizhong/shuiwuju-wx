@@ -100,6 +100,8 @@ const en_lang = {
     iconFunc: 'Função',
     iconNotice: 'Anúncio de parada de água',
     iconNoticeText: 'Não há informações de parada de água ainda',
+    wm_name: 'Nome do Cliente',
+
   },
   // 新增用户
   addAccount: {
@@ -240,6 +242,8 @@ const en_lang = {
       total_water: 'Consumo de água',
       total_money: 'Montante a pagar',
       paid_total_money: 'Valor a pagar',
+      last_date:'Ultima data',
+      now_date:'Esta data',
       createDate: 'Hora da consulta',
       waterList: 'Fotos',
       placeholder: 'Por favor, digite',

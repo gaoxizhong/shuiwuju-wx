@@ -100,6 +100,8 @@ const zh_lang = {
     iconFunc: '功能',
     iconNotice: '停水公告',
     iconNoticeText: '暂无停水信息',
+    wm_name: '用户名',
+
   },
   // 新增用户
   addAccount: {
@@ -241,6 +243,8 @@ const zh_lang = {
       total_water: '用水量',
       total_money: '应缴金额',
       paid_total_money: '实缴金额',
+      last_date:'上次抄表时间',
+      now_date:'本次抄表时间',
       createDate: '查询时间',
       waterList: '照片',
       placeholder: '请输入',

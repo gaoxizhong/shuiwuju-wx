@@ -11,7 +11,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.wm_name}}</view>
-        <view class="info-item__info">{{form.meter.wm_name}}</view>
+        <view class="info-item__info">{{form.meter.wm_name || form.wm_name}}</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.last_water}}</view>
@@ -23,7 +23,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.total_water}}</view>
-        <view class="info-item__info">{{(form.reading * 10000 - form.last_reading * 10000) /10000}}（m³）</view>
+        <view class="info-item__info">{{form.total_water}}（m³）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.createDate}}</view>

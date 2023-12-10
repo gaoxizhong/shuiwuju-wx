@@ -31,6 +31,7 @@ Page({
     wm_no_error: false,
     reading_error: false,
     image_error: false,
+    data_error: false,
     isAdmin: false,
     last_reading: '',
     steps: lang.pay.steps,
@@ -61,6 +62,22 @@ Page({
     page: 1,
     latitude: '',
     longitude: '',
+    is_T: false,
+    now_time:'',
+    showSelectTime: false,
+    currentDate: new Date().getTime(),
+    formatter(type, value) {
+      if (type === 'year') {
+        return `${value}${lang.timeName.year}`;
+      }
+      if (type === 'month') {
+        return `${value}${lang.timeName.month}`;
+      }
+      if (type === 'day') {
+        return `${value}${lang.timeName.day}`;
+      }
+      return value;
+    },
   },
   onLoad() {
     lang = app.globalData.lang
@@ -243,14 +260,17 @@ Page({
   },
   // 采集信息 跳转 确认信息页面
   toConfirmInfo() {
-    const wm_no = this.data.selectradio_info.wm_no
-    const wm_name = this.data.selectradio_info.wm_name
-    const reading = this.data.reading
-    const total_money = this.data.total_money
-    const total_water = this.data.total_water
-    const waterList = this.data.waterList
-    const last_reading = this.data.selectradio_info.last_reading
-    const imageUrl = waterList[0] ? waterList[0].tempFilePath : ''
+    const wm_no = this.data.selectradio_info.wm_no;
+    const wm_name = this.data.selectradio_info.wm_name;
+    const reading = this.data.reading;
+    const total_money = this.data.total_money;
+    const total_water = this.data.total_water;
+    const waterList = this.data.waterList;
+    const last_reading = this.data.selectradio_info.last_reading;
+    const last_time = this.data.selectradio_info.last_time;
+    const now_time = this.data.now_time;
+    const imageUrl = waterList[0] ? waterList[0].tempFilePath : '';
+    const is_T = this.data.is_T;
     let flag = true
     if (!wm_no) {
       flag = false
@@ -258,16 +278,22 @@ Page({
         wm_no_error: true
       })
     }
-    if (!reading) {
+    if (!reading && !is_T) {
       flag = false
       this.setData({
         reading_error: true
       })
     }
-    if (!imageUrl) {
+    if (!imageUrl && !is_T) {
       flag = false
       this.setData({
         image_error: true
+      })
+    }
+    if (!now_time && is_T) {
+      flag = false
+      this.setData({
+        data_error: true
       })
     }
     if (!flag) {
@@ -279,7 +305,7 @@ Page({
       return
     }
     wxAsyncApi('navigateTo', {
-      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
+      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}&last_time=${last_time}&now_time=${now_time}&is_T=${is_T}`,
       // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
     }).then(res => {
       wx.setNavigationBarTitle({
@@ -324,8 +350,8 @@ Page({
       select_value: value,
     })
   },
-   //搜索 失焦赋值 
-   handlesearchReading(e) {
+  //搜索 失焦赋值 
+  handlesearchReading(e) {
     const select_value = e.detail.value;
     this.setData({
       select_value,
@@ -398,9 +424,20 @@ Page({
   onClick(event) {
     console.log(event)
     const { name } = event.currentTarget.dataset;
+    let user_type_id =  event.currentTarget.dataset.item.user_type_id;
+    if (user_type_id == 8 || user_type_id == 9 || user_type_id == 10){
+      this.setData({
+        is_T: true
+      })
+    }else{
+      this.setData({
+        is_T: false
+      })
+    }
     this.setData({
       radio: name,
-      selectradio_info: event.currentTarget.dataset.item
+      selectradio_info: event.currentTarget.dataset.item,
+
     });
   },
   onClose_dialog(){
@@ -447,6 +484,28 @@ Page({
       console.log('getFuzzyLocation: fail')
       console.log(fail)
     })
-  }
-
+  },
+  onOpenTimeSelect() {
+    this.setData({
+      showSelectTime: true,
+      currentDate: new Date().getTime()
+    })
+  },
+  onCloseTimeSelect() {
+    this.setData({
+      showSelectTime: false,
+    })
+  },
+  handleGetTime(e) {
+    const date = new Date(e.detail)
+    const year = Number( date.getFullYear() )
+    const month = Number( date.getMonth() + 1 )
+    const day = Number( date.getDate() )
+    const value = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`
+    this.setData({
+      data_error: false,
+      now_time: value
+    })
+    this.onCloseTimeSelect()
+  },
 })

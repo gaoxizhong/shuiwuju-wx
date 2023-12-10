@@ -5,6 +5,9 @@ let lang = app.globalData.lang
 import {
   searchWaterList
 } from '../../../apis/home'
+import {
+  isAdmin
+} from '../../../apis/admin'
 const {
   wxAsyncApi
 } = require('../../../utils/util')
@@ -23,10 +26,18 @@ Page({
     per_page: 0,
 
     list: [], // 展示账单列表
-    statusList: [], //状态列表
     isScroll: true,
     loading: '',
-    userInfo: {}
+    userInfo: {},
+
+    type_seach: 'type', // type - - 选类型  seach 输入
+    select_value:'', // 查询内容
+    statusList: [
+      {id: 1,text: 'Dados do contador'},
+      {id: 2,text: 'Nome de usuário'},
+      {id: 3,text: 'Endereço detalhado'},
+      {id: 4,text: 'Nº de Porta'}
+    ],
   },
   // 初始化 监听水表状态
   onLoad() {
@@ -34,7 +45,7 @@ Page({
     const _this = this
     const userInfo = app.globalData.userInfo || {}
     // app.watchBillStatus(_this.getStatusList)
-    this.getStatusList(app.globalData.billStatus)
+    // this.getStatusList(app.globalData.billStatus)
     this.setData({
       lang: lang.index, // 语言
       langDialog: lang.dialog,
@@ -43,9 +54,6 @@ Page({
   },
   onShow() {
     
-  },
-  getStatusLabel(value) {
-    return this.data.statusList.find(i => i.value === value)?.label || ''
   },
   getStatusList(values) {
     const statusList = Object.keys(values).map(i => ({
@@ -75,6 +83,21 @@ Page({
       wm_no: value,
     })
   },
+  // 搜索 Change 事件
+  // handleChangeInput(e) {
+  //   const value = e.detail
+  //   this.setData({
+  //     select_value: value,
+  //   })
+  // },
+  //搜索 失焦赋值 
+  handlesearchReading(e) {
+    const select_value = e.detail.value;
+    this.setData({
+      select_value,
+      type_seach: 'type'
+    })
+  },
   handleSearchInfo() {
     this.setData({
       page: 1,
@@ -91,30 +114,32 @@ Page({
     } = e.detail;
     this.setData({
       selectIndex: index,
-      status: value.key,
+      select_type: value.id,
       page: 1,
       list: [],
       isScroll: true,
-      loading: ''
+      loading: '',
+      select_value: '',
+      type_seach: 'seach',
     });
     this.onClosePopup()
-    this.getListData()
   },
   getListData() {
-    if (!this.data.wm_no) {
-      return
-    }
+
     const params = {
-      wm_no: this.data.wm_no,
-      status: this.data.status,
-      page: this.data.page
+      // wm_no: this.data.wm_no,
+      // status: this.data.status,
+      // page: this.data.page
+      select: this.data.select_value,
+      type: this.data.select_type,
+      page: this.data.page,
     }
-    searchWaterList(params).then(res => {
+    isAdmin(params).then(res => {
       const {
         total,
         data,
         per_page,
-      } = res.data.data
+      } = res.data
       const list = this.data.list.concat(data || [])
       this.setData({
         total,
@@ -159,6 +184,7 @@ Page({
   handleDetails(e) {
     const index = e.currentTarget.dataset.index
     const data = JSON.stringify(this.data.list[index])
+    return
     wxAsyncApi('navigateTo', {
       url: `/pages/user-water-info/index?data=${data}&source=user`,
     }).then(res => {
