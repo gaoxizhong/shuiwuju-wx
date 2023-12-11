@@ -26,15 +26,7 @@
     <!-- 上次抄表时间 -->
     <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.last_date}}" value="{{ selectradio_info.last_time }}" readonly placeholder="{{lang.systemPlaceholder}}"  wx:if="{{ is_T }}"/>
     <!-- 本次抄表时间选择 -->
-    <van-field title-width="100%"  readonly="true" 
-      custom-style="flex-direction: column;" 
-      label="{{lang.now_date}}" 
-      value="{{ now_time }}" 
-      placeholder="Preecher a data" 
-      required="true" 
-      error="{{data_error}}" 
-      bind:click-input="onOpenTimeSelect"  wx:if="{{ is_T }}"
-    ></van-field>
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.now_date}}" value="{{ now_time }}" readonly placeholder="Data" wx:if="{{ is_T }}"/>
 
     <!-- 应缴金额 -->
     <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_money}}" value="{{ total_money }}" placeholder="{{lang.systemPlaceholder}}" />
@@ -83,22 +75,7 @@
         </van-radio-group>
       </scroll-view>
     </view>
-
  
   </van-dialog>
 
-
-<!-- 时间 -->
-<van-popup show="{{ showSelectTime }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseTimeSelect">
-    <van-datetime-picker
-      id="wixi-date"
-      type="date"
-      value="{{ currentDate }}"
-      formatter="{{ formatter }}"
-      confirm-button-text="{{langDialog.confirmText}}"
-      cancel-button-text="{{langDialog.cancelText}}"
-      bind:confirm="handleGetTime"
-      bind:cancel="onCloseTimeSelect"
-    />
-  </van-popup>
 </view>

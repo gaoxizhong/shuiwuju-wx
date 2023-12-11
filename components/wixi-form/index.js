@@ -56,18 +56,15 @@ Component({
         },
       })
       // 获取价格类型
-      fbUserType({}).then(res => {
-        wx.hideToast()
-        let list = res.data.data.map(i => ({
-          text: i.type_name,
-          value: i.id
-        }))
-        this.setData({
-          optionsPriceType: list
-        })
-      }).catch(res => {
-        wx.hideToast()
+      let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
+      let list = fbUserType.map(i => ({
+        text: i.type_name,
+        value: i.id
+      }))
+      this.setData({
+        optionsPriceType: list
       })
+      console.log(this.data.optionsPriceType)
     },
 
   },
@@ -323,6 +320,7 @@ Component({
         return i
       })
       if (flag) {
+        console.log(params)
         return params
       } else {
         this.setData({

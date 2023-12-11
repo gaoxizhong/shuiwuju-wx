@@ -46,6 +46,7 @@ Page({
     canvasHeight: 1,
     img: '',
     printing: false,
+    is_T: false
   },
 
   /**
@@ -64,7 +65,9 @@ Page({
       wm_name,
       last_reading,
       up_id,
-      check_time_text
+      check_time_text,
+      is_T,
+      now_time
     } = options
     let arr = [];
     let payStatusList = JSON.parse(options.payStatusList);
@@ -80,8 +83,10 @@ Page({
         wm_name,
         up_id,
         last_reading,
-        check_time_text
+        check_time_text,
+        now_time
       },
+      is_T: is_T?true:false,
       payStatusList: arr,
       lang: lang.pay.collectInfo,
       langDialog: lang.dialog,

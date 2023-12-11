@@ -6,7 +6,8 @@ import {
   getUserInfo,
   getToken,
   getArea,
-  updateLang
+  updateLang,
+  fbUserType
 } from './apis/app'
 import {
   wxAsyncApi
@@ -41,6 +42,8 @@ App({
     wxAsyncApi('login').then(res => {
       //获取token
       this.getUserToken(res)
+      // 获取价格类型
+      this.getFbUserType();
     }).catch(res => {})
   },
   // 获取用户token
@@ -51,6 +54,13 @@ App({
       wx.setStorageSync('token', res.data.api_token)
       // 设置语言
       this.setLang(1)
+    }).catch((res) => {})
+  },
+  // 获取价格类型
+  getFbUserType() {
+    fbUserType({}).then(res => {
+      let list = JSON.stringify(res.data.data);
+      wx.setStorageSync('fbUserType',list)
     }).catch((res) => {})
   },
   // 设置语言

@@ -28,6 +28,7 @@ Page({
     reading: '',
     total_water: '',
     total_money: '',
+    months:'',
     wm_no_error: false,
     reading_error: false,
     image_error: false,
@@ -114,58 +115,9 @@ Page({
   },
   // 判断用户是否存在
   handleReading(e) {
-    console.log(e)
     const type = e.currentTarget.dataset.type
     // const my_isAdmin = this.data.isAdmin
-    // 判断用户是否存在
-    if (!type) {
-      const wm_no = e.detail.value
-      let wm_no_error = this.data.wm_no_error
-      this.setData({
-        wm_no,
-      })
-      if (wm_no) {
-        wm_no_error = false
-        this.setData({
-          wm_no_error
-        })
-        isAdmin({
-          wm_no: wm_no
-        }).then(res => {
-          const {
-            water_meter_exits,
-            last_reading
-          } = res.data
-          this.setData({
-            isAdmin: water_meter_exits,
-            last_reading
-          })
-          if (!water_meter_exits) {
-            this.setData({
-              total_money: '',
-              total_water: ''
-            })
-            wx.showToast({
-              title: '未查询到用户，请输入正确的用户名',
-              duration: 3000,
-              icon: 'none'
-            })
-          }
-          this.waterCount()
-        })
-      } else {
-        this.setData({
-          isAdmin: false,
-          last_reading: 0,
-          total_money: '',
-          total_water: ''
-        })
-      }
-
-    }else{
-
       const reading = e.detail.value
-      console.log(reading)
       let reading_error = this.data.reading_error
       if (reading) {
         reading_error = false
@@ -192,27 +144,28 @@ Page({
           total_water: ''
         })
       }
-
-    }
-
-
   },
   // 计算金额和用水量
   waterCount() {
-    const reading = this.data.reading
+    const reading = Number(this.data.reading)
     const wm_no = this.data.selectradio_info.wm_no
-    if (reading && wm_no) {
+    const now_time = this.data.now_time
+    if ( wm_no ) {
       const params = {
         wm_no,
-        reading
+        reading,
+        now_time
       }
       countWater(params).then(res => {
         const {
-          water = 1, price
+          water = 1,
+          price,
+          months
         } = res.data
         this.setData({
           total_water: water,
-          total_money: price
+          total_money: price,
+          months
         })
       }).catch((res) => {
         wx.showToast({
@@ -220,6 +173,7 @@ Page({
           icon: 'none',
           duration: 2000
         })
+
       })
     }
   },
@@ -262,7 +216,7 @@ Page({
   toConfirmInfo() {
     const wm_no = this.data.selectradio_info.wm_no;
     const wm_name = this.data.selectradio_info.wm_name;
-    const reading = this.data.reading;
+    let reading = this.data.reading;
     const total_money = this.data.total_money;
     const total_water = this.data.total_water;
     const waterList = this.data.waterList;
@@ -304,6 +258,23 @@ Page({
       })
       return
     }
+    // 计算包月 当前用水量 -----  ↓
+    if(is_T){
+      // 获取价格类型
+      let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
+      // 获取当前选中用户的 类型 下的固定用水量 water_num
+      let id = this.data.selectradio_info.user_type_id;
+      let water_num = 0;
+      fbUserType.forEach(ele => {
+        if(ele.id == id){
+          water_num = ele.water_num
+          }
+      });
+      let months = this.data.months;
+      reading = Number(last_reading) + Number(months * Number(water_num))
+    }
+    // 计算包月 当前用水量 -----  ↑
+
     wxAsyncApi('navigateTo', {
       url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}&last_time=${last_time}&now_time=${now_time}&is_T=${is_T}`,
       // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
@@ -427,16 +398,19 @@ Page({
     let user_type_id =  event.currentTarget.dataset.item.user_type_id;
     if (user_type_id == 8 || user_type_id == 9 || user_type_id == 10){
       this.setData({
-        is_T: true
+        is_T: true,
+        selectradio_info: event.currentTarget.dataset.item,
       })
+      let time = new Date().getTime();
+      this.handleGetTime(time);
     }else{
       this.setData({
-        is_T: false
+        is_T: false,
+        selectradio_info: event.currentTarget.dataset.item,
       })
     }
     this.setData({
       radio: name,
-      selectradio_info: event.currentTarget.dataset.item,
 
     });
   },
@@ -485,19 +459,9 @@ Page({
       console.log(fail)
     })
   },
-  onOpenTimeSelect() {
-    this.setData({
-      showSelectTime: true,
-      currentDate: new Date().getTime()
-    })
-  },
-  onCloseTimeSelect() {
-    this.setData({
-      showSelectTime: false,
-    })
-  },
-  handleGetTime(e) {
-    const date = new Date(e.detail)
+
+  handleGetTime(time) {
+    const date = new Date(time)
     const year = Number( date.getFullYear() )
     const month = Number( date.getMonth() + 1 )
     const day = Number( date.getDate() )
@@ -506,6 +470,6 @@ Page({
       data_error: false,
       now_time: value
     })
-    this.onCloseTimeSelect()
+    this.waterCount();
   },
 })

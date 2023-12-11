@@ -82,9 +82,6 @@ Page({
           })
           return
         }
-        data.latitude = that.data.latitude;
-        data.longitude = that.data.longitude;
-        console.log(data)
       }
       if(!data.latitude){
         wx.showToast({
