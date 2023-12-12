@@ -67,7 +67,8 @@ Page({
       up_id,
       check_time_text,
       is_T,
-      now_time
+      now_time,
+      months
     } = options
     let arr = [];
     let payStatusList = JSON.parse(options.payStatusList);
@@ -84,7 +85,8 @@ Page({
         up_id,
         last_reading,
         check_time_text,
-        now_time
+        now_time,
+        months
       },
       is_T: is_T?true:false,
       payStatusList: arr,

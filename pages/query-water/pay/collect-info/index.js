@@ -28,7 +28,7 @@ Page({
     reading: '',
     total_water: '',
     total_money: '',
-    months:'',
+    months:'', // 月份
     wm_no_error: false,
     reading_error: false,
     image_error: false,
@@ -47,10 +47,10 @@ Page({
     show: false,
     list: [],
     statusList: [
-      {id: 1,text: 'Dados do contador'},
-      {id: 2,text: 'Nome de usuário'},
-      {id: 3,text: 'Endereço detalhado'},
-      {id: 4,text: 'Nº de Porta'}
+      {id: 1,text: 'Dados do contador'}, // 水表号
+      {id: 2,text: 'Nome de usuário'},  // 用户名
+      {id: 3,text: 'Endereço detalhado'}, // 用户地址
+      {id: 4,text: 'Nº de Porta'}  // 门牌号
     ],
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
     select_value:'', // 查询内容
@@ -223,6 +223,7 @@ Page({
     const last_reading = this.data.selectradio_info.last_reading;
     const last_time = this.data.selectradio_info.last_time;
     const now_time = this.data.now_time;
+    const months = this.data.months;
     const imageUrl = waterList[0] ? waterList[0].tempFilePath : '';
     const is_T = this.data.is_T;
     let flag = true
@@ -276,7 +277,7 @@ Page({
     // 计算包月 当前用水量 -----  ↑
 
     wxAsyncApi('navigateTo', {
-      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}&last_time=${last_time}&now_time=${now_time}&is_T=${is_T}`,
+      url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}&last_time=${last_time}&now_time=${now_time}&months=${months}&is_T=${is_T}`,
       // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
     }).then(res => {
       wx.setNavigationBarTitle({
@@ -402,7 +403,7 @@ Page({
         selectradio_info: event.currentTarget.dataset.item,
       })
       let time = new Date().getTime();
-      this.handleGetTime(time);
+      this.getNowTime(time);
     }else{
       this.setData({
         is_T: false,
@@ -459,8 +460,22 @@ Page({
       console.log(fail)
     })
   },
-
-  handleGetTime(time) {
+  onOpenTimeSelect() {
+    this.setData({
+      showSelectTime: true,
+      currentDate: new Date().getTime()
+    })
+  },
+  onCloseTimeSelect() {
+    this.setData({
+      showSelectTime: false,
+    })
+  },
+  handleGetTime(e) {
+    const date = new Date(e.detail)
+    this.getNowTime(date);
+  },
+  getNowTime(time) {
     const date = new Date(time)
     const year = Number( date.getFullYear() )
     const month = Number( date.getMonth() + 1 )
@@ -470,6 +485,7 @@ Page({
       data_error: false,
       now_time: value
     })
+    this.onCloseTimeSelect();
     this.waterCount();
   },
 })

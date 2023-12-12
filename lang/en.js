@@ -240,6 +240,7 @@ const en_lang = {
       last_water: 'Leitura anterior',
       reading: 'Leitura do contador',
       total_water: 'Consumo de água',
+      months: 'Em julho',
       total_money: 'Montante a pagar',
       paid_total_money: 'Valor a pagar',
       last_date:'Ultima data',

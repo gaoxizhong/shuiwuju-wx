@@ -241,6 +241,7 @@ const zh_lang = {
       last_water: '上次读数',
       reading: '本次读数',
       total_water: '用水量',
+      months: '月份',
       total_money: '应缴金额',
       paid_total_money: '实缴金额',
       last_date:'上次抄表时间',

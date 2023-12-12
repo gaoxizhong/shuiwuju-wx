@@ -77,19 +77,19 @@ Page({
       show: false
     })
   },
-  handleChangeInput(e) {
-    const value = e.detail
-    this.setData({
-      wm_no: value,
-    })
-  },
-  // 搜索 Change 事件
   // handleChangeInput(e) {
   //   const value = e.detail
   //   this.setData({
-  //     select_value: value,
+  //     wm_no: value,
   //   })
   // },
+  // 搜索 Change 事件
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select_value: value,
+    })
+  },
   //搜索 失焦赋值 
   handlesearchReading(e) {
     const select_value = e.detail.value;

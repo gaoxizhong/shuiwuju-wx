@@ -37,6 +37,10 @@
           <view class="info-item__label">{{lang.now_date}}</view>
           <view class="info-item__info">{{form.now_time}}</view>
         </view>
+        <view class="info-item" wx:if="{{ form.is_T }}">
+          <view class="info-item__label">{{lang.months}}</view>
+          <view class="info-item__info">{{form.months}}</view>
+        </view>
         <view class="info-item">
           <view class="info-item__label">{{lang.total_money}}</view>
           <view class="info-item__info">{{form.total_money}}（KZ）</view>

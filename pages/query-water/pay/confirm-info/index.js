@@ -38,6 +38,7 @@ Page({
       is_T,
       last_time, // 上次抄表时间
       now_time, // 本次抄表时间
+      months,
     } = options
     this.setData({
       form: {
@@ -53,6 +54,7 @@ Page({
         is_T,
         last_time, // 上次抄表时间
         now_time, // 本次抄表时间
+        months
       },
       lang: lang.pay.collectInfo,
       btnName: lang.btnName,
@@ -167,6 +169,7 @@ Page({
     const filePath = that.data.form.imageUrl;
     const is_T = that.data.form.is_T;
     const now_time = that.data.form.now_time;
+    const months = that.data.form.months;
     const baseUrl = app.globalData.baseUrl;
     const token = wx.getStorageSync('token')
     let params = {
@@ -191,7 +194,7 @@ Page({
         const up_id = res.data.data.up_id
         setTimeout( ()=>{
           wxAsyncApi('reLaunch', {
-            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}&now_time=${now_time}&is_T=${is_T}`,
+            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}&now_time=${now_time}&months=${months}&is_T=${is_T}`,
           }).then(res => {
             wx.setNavigationBarTitle({
               title: lang.message.info,
