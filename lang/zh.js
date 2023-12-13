@@ -101,7 +101,8 @@ const zh_lang = {
     iconNotice: '停水公告',
     iconNoticeText: '暂无停水信息',
     wm_name: '用户名',
-
+    historio: '历史记录',
+    fecho: '交接班'
   },
   // 新增用户
   addAccount: {

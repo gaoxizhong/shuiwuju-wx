@@ -373,7 +373,8 @@ Page({
     })
   },
   handlePrint(p) {
-    let print_type = this.data.print_type;
+    let that = this;
+    let print_type = that.data.print_type;
     let info = [];
     // 发票
     if(print_type == 'invoiceInfo'){
@@ -381,22 +382,22 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.invoiceInfo_title),
+        ...GBK.encode(that.data.invoiceInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(this.data.invoiceInfo_title_1),
-        ...GBK.encode(this.data.invoiceInfo_invoice_code),
+        ...GBK.encode(that.data.invoiceInfo_title_1),
+        ...GBK.encode(that.data.invoiceInfo_invoice_code),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_CustomerData),
+        ...GBK.encode(that.data.invoiceInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_historyData_title),
+        ...GBK.encode(that.data.invoiceInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_historyData_info),
+        ...GBK.encode(that.data.invoiceInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_facturacao_title),
+        ...GBK.encode(that.data.invoiceInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_facturacao_info),
+        ...GBK.encode(that.data.invoiceInfo_facturacao_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_valores),
+        ...GBK.encode(that.data.invoiceInfo_valores),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -407,33 +408,33 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.printInfo_title),
+        ...GBK.encode(that.data.printInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(this.data.printInfo_title_1),
+        ...GBK.encode(that.data.printInfo_title_1),
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.printInfo_Comsumidor),
+        ...GBK.encode(that.data.printInfo_Comsumidor),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.printInfo_CustomerData),
+        ...GBK.encode(that.data.printInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.printInfo_historyData_title),
+        ...GBK.encode(that.data.printInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.printInfo_historyData_info),
+        ...GBK.encode(that.data.printInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.printInfo_facturacao_title),
+        ...GBK.encode(that.data.printInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.printInfo_facturacao_info),
+        ...GBK.encode(that.data.printInfo_facturacao_info),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.printInfo_TOTAL),
+        ...GBK.encode(that.data.printInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.pagamento_pagamento),
+        ...GBK.encode(that.data.pagamento_pagamento),
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.printInfo_valores),
+        ...GBK.encode(that.data.printInfo_valores),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.printInfo_time),
+        ...GBK.encode(that.data.printInfo_time),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -450,12 +451,13 @@ Page({
           duration: 3000,
         })
         if(print_type == 'invoiceInfo'){
-          this.setData({
+          that.setData({
             is_Printreturn: false
           })
+           //修改发票收据状态
+           that.setInvoiceStatus();
         }
-        //修改发票收据状态
-        // this.setInvoiceStatus();
+       
       },
       onFail(res){
         console.log('打印失败...')
@@ -572,6 +574,7 @@ limite de pagamento: ${this.getMoreDay(15)}
     invoiceInfo_valores:`
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
+Water manager
 ${date.time}
 
     `,
@@ -708,7 +711,7 @@ ${date.time}
   // 5.修改发票收据状态
   setInvoiceStatus(){
     let that = this;
-    setInvoiceStatus({id: that.data.id}).then(res => {
+    setInvoiceStatus({id: that.data.user_PayFees_info.id}).then(res => {
     
     }).catch(res => {
       wx.hideToast()

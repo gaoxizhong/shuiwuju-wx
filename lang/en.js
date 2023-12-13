@@ -31,7 +31,9 @@ const en_lang = {
     fail: 'Falha na operação',
     formWarning: 'Insira as informações completas',
     info: 'Detalhes',
-    deviceName: 'Permissões para dispositivos'
+    deviceName: 'Permissões para dispositivos',
+    historio: 'Historio',
+    fecho: 'Fecho'
   },
   // 弹框
   dialog: {
@@ -101,7 +103,8 @@ const en_lang = {
     iconNotice: 'Anúncio de parada de água',
     iconNoticeText: 'Não há informações de parada de água ainda',
     wm_name: 'Nome do Cliente',
-
+    historio: 'Historio',
+    fecho: 'Fecho'
   },
   // 新增用户
   addAccount: {

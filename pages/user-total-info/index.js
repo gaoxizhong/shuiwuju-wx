@@ -578,6 +578,13 @@ Page({
           pay_way: '',
           pay_text: '',
         })
+        if(print_type == 'receiptInfo'){
+          // 4.修改打印收据状态
+          that.setReceiptStatus();
+        }else{
+          // 5.修改发票收据状态
+          that.setInvoiceStatus();
+        }
       },
       onFail(res){
         console.log('打印失败...')
@@ -670,6 +677,7 @@ limite de pagamento: ${this.getMoreDay(15)}
     invoiceInfo_valores:`
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
+Water manager
 ${date.time}
 
     `,
@@ -739,9 +747,9 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
   },
 
   // 4.修改打印收据状态
-  setReceiptStatus (){
+  setReceiptStatus() {
     let that = this;
-    setReceiptStatus({id: that.data.id}).then(res => {
+    setReceiptStatus({id: that.data.user_PayFees_info.id}).then(res => {
      
     }).catch(res => {
       wx.hideToast()
@@ -750,7 +758,7 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
   // 5.修改发票收据状态
   setInvoiceStatus(){
     let that = this;
-    setInvoiceStatus({id: that.data.id}).then(res => {
+    setInvoiceStatus({id: that.data.user_PayFees_info.id}).then(res => {
     
     }).catch(res => {
       wx.hideToast()

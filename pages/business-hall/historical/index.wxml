@@ -1,0 +1,29 @@
+<!--pages/business-hall/index/index.wxml-->
+<view class="container business-hall">
+  <view class="his-box"></view>
+  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{list}}" wx:key="order_no">
+      <view class="item" data-index="{{index}}" bindtap="handleDetails">
+        <view class="item__title"> {{item.wm_name}} </view>
+
+        <view class="item__water">
+          {{lang.water}}
+        </view>
+
+        <view class="item__money">
+          {{lang.money}}：{{item.price}}
+        </view>
+
+        <view class="item__money">
+          {{lang.createTime}}：{{item.created_at}}
+        </view>
+      </view>
+    </block>
+    </scroll-view>
+    <view class="loading">{{loading}}</view>
+  </view>
+
+</view>
+

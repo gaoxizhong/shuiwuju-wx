@@ -5,12 +5,6 @@
   flex-direction: column;
 }
 
-.search-bar {
-  width: 100%;
-  border-radius: 10rpx;
-  overflow: hidden;
-}
-
 .icon {
   padding-right: 20rpx;
 }
@@ -50,6 +44,7 @@
   position: relative;
   padding: 20rpx;
   font-size: 28rpx;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 .item__title {
@@ -81,24 +76,8 @@
   font-size: 24rpx;
   color: #ccc
 }
-.btn{
-  width: 100%;
-  height: auto;
-  background: 100%;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  z-index: 9999;
-  display: flex;
-  font-size: 28rpx;
-  padding: 20rpx;
-}
-.btn-item{
-  flex: 1;
-  text-align: center;
-  border-top: 1px solid #ebeef5;
-  padding: 20rpx;
-}
+
+
 .his-box{
   width: 100%;
   border-radius: 10rpx;
@@ -109,11 +88,4 @@
   background: #ffffff;
   padding: 20rpx;
   margin-top: 20rpx;
-}
-.his-box van-button{
-  flex: 1;
-  margin: 0 20rpx;
-}
-.his-box van-button .van-button{
-  text-align: center;
 }

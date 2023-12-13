@@ -1,0 +1,69 @@
+<view>
+  <view class="view-box">
+    <view class="info-box">
+      <view>
+        <text class="text-1">收据</text>
+        <text class="text-2">*张</text>
+      </view>
+      <view>
+        <text class="text-1">现金</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">转账</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">刷卡</text>
+        <text class="text-2">*</text>
+      </view>
+    </view>
+  </view>
+  <view class="view-box">
+    <view class="info-box">
+      <view>
+        <text class="text-1">发票</text>
+        <text class="text-2">*张</text>
+      </view>
+      <view>
+        <text class="text-1">现金</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">转账</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">刷卡</text>
+        <text class="text-2">*</text>
+      </view>
+    </view>
+  </view>
+  <view class="view-box">
+    <view class="info-box">
+      <view>
+        <text class="text-1">总金额</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">现金</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">转账</text>
+        <text class="text-2">*</text>
+      </view>
+      <view>
+        <text class="text-1">刷卡</text>
+        <text class="text-2">*</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer-box">
+    <view class="input-box">
+      <van-field value="{{ username }}" required label="交班人" placeholder="交班人姓名" bind:blur="handleReading" bind:change="handleInputReading" error="{{name_error}}" />
+    </view>
+    <van-button type="info" size="small" block='true' bindtap="clickPrint">打印</van-button>
+  </view>
+</view>

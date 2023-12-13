@@ -154,7 +154,26 @@ Page({
       })
     })
   },
-
+  // 点击历史记录按钮
+  goToHistorio(){
+    wxAsyncApi('navigateTo', {
+      url: '/pages/business-hall/historical/index',
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.historio,
+      })
+    })
+  },
+  // 点击交班按钮
+  goToFecho(){
+    wxAsyncApi('navigateTo', {
+      url: '/pages/business-hall/fecho/index',
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.fecho,
+      })
+    })
+  },
   onShowPopup() {
     const select = this.selectComponent('#select')
     select && select.setColumnIndex(0, this.data.selectIndex)

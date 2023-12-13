@@ -23,7 +23,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.total_water}}</view>
-        <view class="info-item__info">{{form.total_water}}（m³）</view>
+        <view class="info-item__info">{{form.water}}（m³）</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.createDate}}</view>
