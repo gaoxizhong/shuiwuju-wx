@@ -103,7 +103,7 @@ Page({
     const id = e.currentTarget.dataset.id;
     const item = e.currentTarget.dataset.item;
     wxAsyncApi('navigateTo', {
-      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}`,
+      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

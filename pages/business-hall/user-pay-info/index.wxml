@@ -5,10 +5,10 @@
       {{lang.title}}
     </view>
     <view class="info-content">
-      <view class="info-item">
+      <!-- <view class="info-item">
         <view class="info-item__label">订单号：</view>
         <view class="info-item__info">{{infoData.order_no}}</view>
-      </view>
+      </view> -->
       <view class="info-item">
         <view class="info-item__label">{{lang.wm_no}}</view>
         <view class="info-item__info">{{from.wm_no}}</view>
@@ -17,20 +17,20 @@
         <view class="info-item__label">{{lang.wm_name}}</view>
         <view class="info-item__info">{{from.wm_name}}</view>
       </view>
-      <view class="info-item">
+      <!-- <view class="info-item">
         <view class="info-item__label">{{lang.last_water_1}}</view>
         <view class="info-item__info">{{infoData.reading}}（m³）</view>
-      </view>
+      </view> -->
       <view class="info-item">
         <view class="info-item__label">{{lang.createDate}}</view>
-        <view class="info-item__info">{{infoData.user_pay_payment_relation.pay_time}}</view>
+        <view class="info-item__info">{{from.pay_time}}</view>
       </view>
       <!-- <view class="info-item">
         <view class="info-item__label">{{lang.total_money}}</view>
         <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
       </view> -->
       <van-cell-group>
-        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly bind:blur="handleReading"     bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ infoData.user_pay_payment_relation.pay_money }}" placeholder="{{lang.paid_total_money}}" />
+        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly bind:blur="handleReading"     bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ from.total_money }}" placeholder="{{lang.paid_total_money}}" />
       </van-cell-group>
       <van-cell-group>
         <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.pay_type}}" readonly model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}"/>

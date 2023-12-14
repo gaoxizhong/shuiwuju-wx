@@ -47,7 +47,6 @@ Page({
     receiptInfo:'', //  收据
     invoiceInfo:'',//  发票
     pay_success: false,
-    user_PayFees_info: {}, // 缴费记录信息
     user_payment_info: [], // 缴费记录下的缴费单信息
     total_water: 0, // 总用水量
     is_return: true,
@@ -69,15 +68,21 @@ Page({
       id,
       wm_no,
       wm_name,
-      total_money
+      total_money,
+      pay_way,
+      invoice_code,
+      pay_time,
     } = options;
     this.setData({
       from: {
         id,
         wm_no,
         wm_name,
-        total_money
+        total_money,
+        pay_time
       },
+      invoice_code,
+      pay_way,
     })
     this.getUserPayItemDetail(options.id)
   },
@@ -86,7 +91,7 @@ Page({
       is_return: true
     })
   },
-  // 获取详情接口 
+  // 获取当前缴费记录下的 包含的缴费单数据
   getUserPayItemDetail(i){
     let that = this;
     const id = i;
@@ -94,11 +99,10 @@ Page({
       user_pay_log_id: id,
     }
     getUserPayItemDetail(params).then(res => {
-      let infoData = res.data.list[0];
-      let pay_way = res.data.list[0].pay_way;
+      let infoData = res.data.list; // 当前缴费记录下的 包含的缴费单数据
+      let pay_way = that.data.pay_way;
         this.setData({
           infoData,
-          pay_way,
         })
         const payStatusList = that.data.payStatusList;
         payStatusList.forEach( ele =>{
@@ -308,7 +312,7 @@ Page({
   getUserBluetoolthInfoData(f){
     let that = this;
     const params = {
-      wm_no: that.data.form.wm_no,
+      wm_no: that.data.from.wm_no,
     }
     if( !that.data.is_return ){
       return
@@ -320,10 +324,10 @@ Page({
       const userBluetoolthInfoData = res.data
       console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
-      let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
+      let info = that.data.infoData; // 缴费记录下的缴费单信息
       let user_info = '';
       info.forEach(ele =>{
-        user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
+user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
 `
       })
       let total_water = that.data.total_water;
@@ -377,12 +381,12 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Consumo: ${total_water} (m3)
+${total_water?'Consumo: '+total_water+ '(m3)':''}
 ${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
-TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
+TOTAL A PAGAR  ${that.data.from.total_money} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
 `,
@@ -413,7 +417,7 @@ ${user_info?user_info:''}
 --------------------------------
 `,
       receiptInfo_TOTAL: `
-TOTAL: ${that.data.user_PayFees_info.total_money} KZ
+TOTAL: ${that.data.from.total_money} KZ
 `,
       receiptInfo_Pagamento:`
 Modos de Pagamento
@@ -421,7 +425,7 @@ Modos de Pagamento
       receiptInfo_Modos: `
 Método       Moeda       Total
 --------------------------------
-${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
+${that.data.pay_text}     AOA      ${that.data.from.total_money} KZ
 --------------------------------
 `,
       receiptInfo_Saldo: `
@@ -461,7 +465,7 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
   // 4.修改打印收据状态
   setReceiptStatus() {
     let that = this;
-    setReceiptStatus({id: that.data.user_PayFees_info.id}).then(res => {
+    setReceiptStatus({id: that.data.from.id}).then(res => {
      
     }).catch(res => {
       wx.hideToast()
@@ -470,7 +474,7 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
   // 5.修改发票收据状态
   setInvoiceStatus(){
     let that = this;
-    setInvoiceStatus({id: that.data.user_PayFees_info.id}).then(res => {
+    setInvoiceStatus({id: that.data.from.id}).then(res => {
     
     }).catch(res => {
       wx.hideToast()
