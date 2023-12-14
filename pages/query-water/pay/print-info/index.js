@@ -88,7 +88,7 @@ Page({
         now_time,
         months
       },
-      is_T: is_T?true:false,
+      is_T: is_T == 'true'?true:false,
       payStatusList: arr,
       lang: lang.pay.collectInfo,
       langDialog: lang.dialog,
@@ -590,7 +590,7 @@ Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Nota de Coberanca N° ${userBluetoolthInfoData.user_payment[0].order_no}
+Factura Simplificada N° ${userBluetoolthInfoData.user_payment[0].order_no}
 
 Dados do Cliente
 `,

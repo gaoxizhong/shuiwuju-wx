@@ -129,3 +129,40 @@ export const getUserListLngLat = (data) => {
     data
   })
 }
+
+// 获取我的收款记录
+export const getUserPayLog = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_user_pay_log`,
+    method: 'POST',
+    data
+  })
+}
+// 获取我的收款记录详情
+export const getUserPayItemDetail = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_user_pay_item`,
+    method: 'POST',
+    data
+  })
+}
+// 抄表员提交交接班 
+export const getAdminShift = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_admin_shift`,
+    method: 'POST',
+    data
+  })
+}
+// 抄表员提交交接班 
+export const getAdminShiftData = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_admin_shift_data`,
+    method: 'POST',
+    data
+  })
+}

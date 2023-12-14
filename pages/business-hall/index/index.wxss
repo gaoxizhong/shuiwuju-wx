@@ -64,8 +64,8 @@
 
 .item__status {
   position: absolute;
-  right: 80rpx;
-  bottom: 60rpx;
+  right: 40rpx;
+  top: 20rpx;
   width: max-content;
   /* padding: 16rpx 24rpx; */
   /* letter-spacing: 8rpx; */

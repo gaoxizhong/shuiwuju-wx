@@ -50,7 +50,7 @@ const en_lang = {
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
     printOtherTwo: 'Reabastecimento de recibos',
-    print: 'Nota de Coberanca',
+    print: 'Factura Simplificada',
     invoice: 'Imprimir As facturas',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
@@ -96,6 +96,7 @@ const en_lang = {
 
     water: 'Consumo de água',
     money: 'Valor a pagar',
+    saldo: 'Saldo da conta',
     createTime: 'Hora de leitura',
 
     iconSearch: 'Consulta',
@@ -364,7 +365,7 @@ const en_lang = {
         auth: 'L',
         key: '/img/index/search-pay.png',
         title: 'Leituras',
-        tabberName: 'Nota de cobrança',
+        tabberName: 'Factura Simplificada',
         color: '#fc9c3c',
         url: '/pages/query-water/pay/collect-info/index'
       },

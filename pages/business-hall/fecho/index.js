@@ -1,16 +1,15 @@
 // pages/business-hall/hecho/index.js
 const app = getApp()
 let lang = app.globalData.lang
+const blueToolth = require('../../../utils/bluetoolth')
+
 const {
   wxAsyncApi,
 } = require('../../../utils/util')
 const {
-
+  getAdminShift,getAdminShiftData
 } = require('../../../apis/water')
-import {
-  handleBusinessHallPayBill,
-  handleBusinessHallBillReceipt
-} from '../../../apis/business-hall'
+
 const GBK = require('../../../utils/gbk.min')
 Page({
 
@@ -23,7 +22,7 @@ Page({
     username: '',
     name_error: false,
     printInfo:'', //  打印数据
-    infoDta: null,
+    infoData: null,
   },
 
   /**
@@ -44,7 +43,59 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    this.getAdminShiftData();
+  },
 
+  //获取当前时间
+  handleTimeValue(date) {
+    const _date = date ? new Date(date) : new Date()
+    const year = _date.getFullYear()
+    const month = _date.getMonth() + 1
+    const day = _date.getDate()
+    const hh = _date.getHours()
+    const mm = _date.getMinutes()
+    const ss = _date.getSeconds()
+    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+    return {
+      year,
+      month,
+      day,
+      time,
+      timestamp
+    }
+  },
+  getAdminShiftData(){
+    let that = this;
+    getAdminShiftData({}).then(res => {
+      that.setData({
+        infoData: res.data.list.data[0]
+      })
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  },
+  getAdminShift(){
+    let that = this;
+    let date_time = that.handleTimeValue().time;
+    let params = {
+      date_time,
+    }
+    getAdminShift(params).then(res => {
+      that.setData({
+        infoData: res.data.data
+      })
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
   },
 
   /**
@@ -98,19 +149,39 @@ Page({
   },
   clickPrint(){
     let username = this.data.username;
-    if (!username) {
-      this.setData({
-        name_error : true
-      })
-      return
-    }
+    // if (!username) {
+    //   this.setData({
+    //     name_error : true
+    //   })
+    //   return
+    // }
     // 获取打印信息
-    let infoDta = this.data.infoDta;
+    let infoData = this.data.infoData;
+    let date = this.handleTimeValue();
     this.setData({
       printInfo:`
-收据：*张；  现金：*
+recepção:       ${infoData.receipt_num}张；
+numerário:      ${infoData.receipt_cash}kZ
+transferência:  ${infoData.receipt_transfer_accounts}kZ 
+Cartao:         ${infoData.receipt_pos}kZ
+-------------------------------- 
+
+As facturas:    ${infoData.invoice_num}张；
+numerário:      ${infoData.invoice_cash}kZ 
+transferência:  ${infoData.invoice_transfer_accounts}kZ
+Cartao:         ${infoData.invoice_pos}kZ
+-------------------------------- 
+As facturas:    ${infoData.total_price} kZ
+numerário:      ${infoData.cash_sum}kZ
+transferência:  ${infoData.transfer_accounts_sum}kZ
+Cartao:         ${infoData.pos_sum}kZ
+-------------------------------- 
+
+`,
+      printInfo_data:`
+DATA: ${date.time}
+`,
       
-      `
     })
     this.blueToothPrint();
   },
@@ -161,6 +232,8 @@ Page({
       let info = [
         ...blueToolth.printCommand.clear,
         ...GBK.encode(this.data.printInfo),
+        ...blueToolth.printCommand.center,
+        ...GBK.encode(this.data.printInfo_data),
         ...blueToolth.printCommand.enter
       ]
       console.log('开始打印，api传信息...')

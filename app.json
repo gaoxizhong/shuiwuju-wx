@@ -13,6 +13,7 @@
     "pages/business-hall/index/index",
     "pages/business-hall/historical/index",
     "pages/business-hall/fecho/index",
+    "pages/business-hall/user-pay-info/index",
     "pages/financial-manager/search-account/index",
     "pages/general-manager/query-report/index",
     "pages/admin/employee-certification/index",

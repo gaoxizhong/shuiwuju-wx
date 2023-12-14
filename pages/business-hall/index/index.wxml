@@ -18,9 +18,11 @@
       <block wx:for="{{list}}" wx:key="order_no">
       <view class="item" data-index="{{index}}" bindtap="handleDetails">
         <view class="item__title">
-          {{item.wm_name}} {{item.wm_no}} 
+          {{item.wm_no}} 
         </view>
-
+        <view class="item__money">
+          {{lang.wm_name}}：{{item.meter.wm_name}}
+        </view>
         <view class="item__water">
           {{lang.water}}：{{( item.reading *10000) / 10000}}
         </view>

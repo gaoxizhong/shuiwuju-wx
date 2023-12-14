@@ -1,19 +1,22 @@
 <!--pages/business-hall/index/index.wxml-->
 <view class="container business-hall">
-  <view class="his-box"></view>
+  <wixi-time bindgettime="handleGetTime"></wixi-time>
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="order_no">
-      <view class="item" data-index="{{index}}" bindtap="handleDetails">
-        <view class="item__title"> {{item.wm_name}} </view>
+      <view class="item" data-id="{{item.id}}" data-item="{{item}}" bindtap="handleDetails">
+        <view class="item__title">{{item.wm_name}}</view>
+        <view class="item__title">{{item.wm_no}}</view>
 
-        <view class="item__water">
+        <!-- <view class="item__water">
           {{lang.water}}
-        </view>
-
+        </view> -->
         <view class="item__money">
-          {{lang.money}}：{{item.price}}
+          {{lang.money}}：{{item.total_money}} (KZ)
+        </view>
+        <view class="item__money">
+          {{lang.saldo}}：{{item.after_arrears_money}} (KZ)
         </view>
 
         <view class="item__money">

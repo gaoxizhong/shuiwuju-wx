@@ -25,6 +25,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log(options)
     lang = app.globalData.lang
     const date = this.handleTimeValue()
     const {
@@ -51,7 +52,7 @@ Page({
         last_reading,
         check_time_text: date.time,
         check_time: date.timestamp,
-        is_T,
+        is_T: is_T == 'true'?true:false,
         last_time, // 上次抄表时间
         now_time, // 本次抄表时间
         months

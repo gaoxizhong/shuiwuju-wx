@@ -3,19 +3,19 @@
     <view class="info-box">
       <view>
         <text class="text-1">收据</text>
-        <text class="text-2">*张</text>
+        <text class="text-2">{{ infoData.receipt_num || 0 }}张</text>
       </view>
       <view>
         <text class="text-1">现金</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.receipt_cash || 0 }}</text>
       </view>
       <view>
         <text class="text-1">转账</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.receipt_transfer_accounts || 0 }}</text>
       </view>
       <view>
         <text class="text-1">刷卡</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.receipt_pos || 0 }}</text>
       </view>
     </view>
   </view>
@@ -23,19 +23,19 @@
     <view class="info-box">
       <view>
         <text class="text-1">发票</text>
-        <text class="text-2">*张</text>
+        <text class="text-2">{{infoData.invoice_num || 0 }}张</text>
       </view>
       <view>
         <text class="text-1">现金</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.invoice_cash || 0 }}</text>
       </view>
       <view>
         <text class="text-1">转账</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.invoice_transfer_accounts || 0 }}</text>
       </view>
       <view>
         <text class="text-1">刷卡</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.invoice_pos || 0 }}</text>
       </view>
     </view>
   </view>
@@ -43,19 +43,19 @@
     <view class="info-box">
       <view>
         <text class="text-1">总金额</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.total_price || 0 }}</text>
       </view>
       <view>
         <text class="text-1">现金</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.cash_sum || 0 }}</text>
       </view>
       <view>
         <text class="text-1">转账</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.transfer_accounts_sum || 0 }}</text>
       </view>
       <view>
         <text class="text-1">刷卡</text>
-        <text class="text-2">*</text>
+        <text class="text-2">{{ infoData.pos_sum || 0 }}</text>
       </view>
     </view>
   </view>

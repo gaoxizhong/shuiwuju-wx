@@ -19,30 +19,26 @@
 
 .info-item {
   display: flex;
-  justify-content: space-between;
   font-size: 28rpx;
   padding: 20rpx 32rpx;
 }
 
 .info-item__label {
   font-size: 24rpx;
-  width: auto;
+  flex: 1;
   overflow: hidden;
   color: rgba(69, 90, 100, 0.6);
 }
 
 .info-item__info {
-  flex: 1;
   padding-left: 30rpx;
-  display: flex;
-  justify-content: flex-end;
 }
 .btn{
   display: flex;
   font-size: 28rpx;
 }
 .btn-item{
-  flex: 1;
+  flex: 0.5;
   text-align: center;
   border-top: 1px solid #ebeef5;
   padding: 20rpx;

@@ -94,6 +94,7 @@ const zh_lang = {
 
     water: '用水量',
     money: '缴费金额',
+    saldo: '账户余额',
     createTime: '查询时间',
 
     iconSearch: '用户查询',
