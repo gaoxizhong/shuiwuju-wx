@@ -331,6 +331,20 @@ const en_lang = {
     totalNumber: 'Número da ordem',
     totalMoney: 'Valor a pagar',
   },
+  //交班人
+  fecho: {
+    name: 'nome',
+    operator_name: 'Pessoa de entrega',
+    total_price: 'Valor total',
+    cash: 'dinheiro',
+    transfer_money: 'transferência',
+    swipe_card: 'pos',
+    submit: 'impressão',
+    receipt: 'recepção',
+    invoice: 'As facturas',
+    zhang: 'un',
+    jbsj: 'Horário de turno',
+  },
   // 用水详情
   userWaterInfo: {
     title: 'Informações de comsumir água',

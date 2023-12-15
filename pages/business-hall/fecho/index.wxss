@@ -64,3 +64,9 @@ van-button button{
 .van-field__control {
   font-size: 28rpx !important;
 }
+.jbsj-box{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 30rpx;
+}

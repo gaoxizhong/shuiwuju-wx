@@ -11,7 +11,7 @@ const {
   setReceiptStatus,
   setInvoiceStatus
 } = require('../../../apis/water')
-
+const GBK = require('../../../utils/gbk.min')
 Page({
 
   /**
@@ -169,9 +169,6 @@ Page({
     this.setData({
       print_type: 'receiptInfo'
     })
-    // this.setData({
-    //   invoice_code: res.data.invoice_code,
-    // })
     this.getUserBluetoolthInfoData(this.blueToothPrint);
   },
 
@@ -225,31 +222,33 @@ Page({
   },
   // 开始打印
   handlePrint(p) {
-    let print_type = this.data.print_type;
+    let that = this;
+    let print_type = that.data.print_type;
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
+    console.log(print_type)
     // 发票
     if(print_type == 'invoiceInfo'){
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.invoiceInfo_title),
+        ...GBK.encode(that.data.invoiceInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(this.data.invoiceInfo_title_1),
-        ...GBK.encode(this.data.invoiceInfo_invoice_code),
+        ...GBK.encode(that.data.invoiceInfo_title_1),
+        ...GBK.encode(that.data.invoiceInfo_invoice_code),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_CustomerData),
+        ...GBK.encode(that.data.invoiceInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_historyData_title),
+        ...GBK.encode(that.data.invoiceInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_historyData_info),
+        ...GBK.encode(that.data.invoiceInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_facturacao_title),
+        ...GBK.encode(that.data.invoiceInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.invoiceInfo_facturacao_info),
+        ...GBK.encode(that.data.invoiceInfo_facturacao_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.invoiceInfo_valores),
+        ...GBK.encode(that.data.invoiceInfo_valores),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -259,20 +258,20 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.receiptInfo_title),
+        ...GBK.encode(that.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(this.data.receiptInfo_title_1),
+        ...GBK.encode(that.data.receiptInfo_title_1),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.receiptInfo_historyData),
+        ...GBK.encode(that.data.receiptInfo_historyData),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(this.data.receiptInfo_TOTAL),
+        ...GBK.encode(that.data.receiptInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(this.data.receiptInfo_Pagamento),
+        ...GBK.encode(that.data.receiptInfo_Pagamento),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(this.data.receiptInfo_Modos),
+        ...GBK.encode(that.data.receiptInfo_Modos),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.receiptInfo_Saldo),
+        ...GBK.encode(that.data.receiptInfo_Saldo),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -289,10 +288,7 @@ Page({
           duration: 3000,
         })
         that.setData({
-          paid_total_money: '',
           pay_success: false,
-          pay_way: '',
-          pay_text: '',
         })
         if(print_type == 'receiptInfo'){
           // 4.修改打印收据状态
@@ -325,9 +321,10 @@ Page({
       console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
       let info = that.data.infoData; // 缴费记录下的缴费单信息
+      console.log(info)
       let user_info = '';
       info.forEach(ele =>{
-user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
+user_info += `${ele.cycle_end}   ${ele.user_pay_payment_relation.arrears_money}KZ   ${ele.user_pay_payment_relation.arrears_money}KZ   ${ele.user_pay_payment_relation.pay_money}KZ
 `
       })
       let total_water = that.data.total_water;
@@ -425,7 +422,7 @@ Modos de Pagamento
       receiptInfo_Modos: `
 Método       Moeda       Total
 --------------------------------
-${that.data.pay_text}     AOA      ${that.data.from.total_money} KZ
+${that.data.pay_text}   AOA    ${that.data.from.total_money} KZ
 --------------------------------
 `,
       receiptInfo_Saldo: `

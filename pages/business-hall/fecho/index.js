@@ -17,9 +17,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    lang: lang.userWaterInfo,
+    lang: lang.fecho,
     btnName: lang.btnName,
-    username: '',
+    operator_name: '',
     name_error: false,
     printInfo:'', //  打印数据
     infoData: null,
@@ -43,7 +43,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.getAdminShiftData();
+    this.getAdminShift(0);
   },
 
   //获取当前时间
@@ -65,25 +65,15 @@ Page({
       timestamp
     }
   },
-  getAdminShiftData(){
-    let that = this;
-    getAdminShiftData({}).then(res => {
-      that.setData({
-        infoData: res.data.list.data[0]
-      })
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none',
-        duration: 2000
-      })
-    })
-  },
-  getAdminShift(){
+  getAdminShift(n,op_name){
     let that = this;
     let date_time = that.handleTimeValue().time;
     let params = {
       date_time,
+      type: n,
+    }
+    if(params.type == 1){
+      params.operator_name = op_name;
     }
     getAdminShift(params).then(res => {
       that.setData({
@@ -137,49 +127,49 @@ Page({
   },
   handleInputReading(e) {
     console.log(e)
-    const username = e.detail
+    const operator_name = e.detail
     let name_error = this.data.name_error
-    if (reading) {
+    if (operator_name) {
       name_error = false
     }
     this.setData({
-      username,
+      operator_name,
       name_error
     })
   },
   clickPrint(){
-    let username = this.data.username;
-    // if (!username) {
-    //   this.setData({
-    //     name_error : true
-    //   })
-    //   return
-    // }
+    let operator_name = this.data.operator_name;
+    if (!operator_name) {
+      this.setData({
+        name_error : true
+      })
+      return
+    }
     // 获取打印信息
     let infoData = this.data.infoData;
     let date = this.handleTimeValue();
     this.setData({
       printInfo:`
-recepção:       ${infoData.receipt_num}张；
-numerário:      ${infoData.receipt_cash}kZ
-transferência:  ${infoData.receipt_transfer_accounts}kZ 
-Cartao:         ${infoData.receipt_pos}kZ
--------------------------------- 
-
-As facturas:    ${infoData.invoice_num}张；
-numerário:      ${infoData.invoice_cash}kZ 
-transferência:  ${infoData.invoice_transfer_accounts}kZ
-Cartao:         ${infoData.invoice_pos}kZ
--------------------------------- 
-As facturas:    ${infoData.total_price} kZ
-numerário:      ${infoData.cash_sum}kZ
-transferência:  ${infoData.transfer_accounts_sum}kZ
-Cartao:         ${infoData.pos_sum}kZ
--------------------------------- 
-
+recepcao:          ${infoData.receipt_num} Un
+numerário:         ${infoData.receipt_cash} kZ
+transferência:   ${infoData.receipt_transfer_accounts} kZ 
+Cartao:            ${infoData.receipt_pos} kZ
+--------------------------------
+As facturas:       ${infoData.invoice_num} Un
+numerário:         ${infoData.invoice_cash} kZ 
+transferência:   ${infoData.invoice_transfer_accounts} kZ
+Cartao:            ${infoData.invoice_pos} kZ
+--------------------------------
+As facturas:        ${infoData.total_price} kZ
+numerário:          ${infoData.cash_sum} kZ
+transferência:    ${infoData.transfer_accounts_sum} kZ
+Cartao:             ${infoData.pos_sum} kZ
+--------------------------------
+Pessoa de entrega: ${operator_name}
 `,
       printInfo_data:`
 DATA: ${date.time}
+
 `,
       
     })
@@ -248,11 +238,9 @@ DATA: ${date.time}
             duration: 3000,
           })
           that.setData({
-            paid_total_money: '',
             pay_success: false,
-            pay_way: '',
-            pay_text: '',
           })
+          that.getAdminShift(1,that.data.operator_name);
         },
         onFail(res){
           console.log('打印失败...')

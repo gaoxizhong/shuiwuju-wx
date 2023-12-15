@@ -330,6 +330,20 @@ const zh_lang = {
     totalNumber: '订单数',
     totalMoney: '缴费金额',
   },
+  //交班人
+  fecho: {
+    name: '姓名',
+    operator_name: '交班人',
+    total_price: '总金额',
+    cash: '现金',
+    transfer_money: '转账',
+    swipe_card: '刷卡',
+    submit: '提交打印',
+    receipt: '收据',
+    invoice: '发票',
+    zhang: '张',
+    jbsj: '交班时间'
+  },
   // 用水详情
   userWaterInfo: {
     title: '用水信息',
