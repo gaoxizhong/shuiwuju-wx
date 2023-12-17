@@ -38,12 +38,30 @@ Page({
       {id: 3,text: 'Endereço detalhado'},
       {id: 4,text: 'Nº de Porta'}
     ],
+    is_L: false,
+    is_R: false,
+    payStatusList:[
+      {"text":"Numerário","key":1},
+      {"text":"Cartão Multicaixa","key":2},
+      {"text":"Pagamento bancário","key":3}
+    ]
   },
   // 初始化 监听水表状态
   onLoad() {
     lang = app.globalData.lang
     const _this = this
     const userInfo = app.globalData.userInfo || {}
+    const auth = app.globalData.auth;
+    if(auth.indexOf('L') != -1){
+      this.setData({
+        is_L: true
+      })
+    } 
+    if(auth.indexOf('R') != -1){
+      this.setData({
+        is_R: true
+      })
+    }
     // app.watchBillStatus(_this.getStatusList)
     // this.getStatusList(app.globalData.billStatus)
     this.setData({
@@ -187,6 +205,28 @@ Page({
     return
     wxAsyncApi('navigateTo', {
       url: `/pages/user-water-info/index?data=${data}&source=user`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
+  },
+  goToDayin(e){
+    console.log(e)
+    let item = e.currentTarget.dataset.item;
+    const payStatusList = JSON.stringify(this.data.payStatusList);
+    wxAsyncApi('reLaunch', {
+      url: `/pages/query-water/pay/print-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&order_no=${item.order_no}&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=${item.filePath}&last_reading=${item.last_reading}&up_id=${item.up_id}&check_time_text=${item.updated_at}&payStatusList=${payStatusList}`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
+  },
+  goTojiaofei(e){
+    let item = e.currentTarget.dataset.item;
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-total-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

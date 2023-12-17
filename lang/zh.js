@@ -103,7 +103,9 @@ const zh_lang = {
     iconNoticeText: '暂无停水信息',
     wm_name: '用户名',
     historio: '历史记录',
-    fecho: '交接班'
+    fecho: '交接班',
+    jiaofei: '缴费',
+    dayin: '打印'
   },
   // 新增用户
   addAccount: {

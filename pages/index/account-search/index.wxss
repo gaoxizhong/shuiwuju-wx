@@ -90,3 +90,20 @@
   font-size: 24rpx;
   color: #ccc
 }
+.his-box{
+  width: 100%;
+  border-radius: 10rpx;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  margin-top: 20rpx;
+}
+.his-box van-button{
+  flex: 1;
+  margin: 0 10rpx;
+}
+.his-box van-button .van-button{
+  text-align: center;
+}

@@ -40,8 +40,12 @@
               {{item.created_at}}
             </view>
           </view>
-          <view class="wixi-item__status" style="color: {{item.status === 1 ? '#ee0a24' : '#07c160'}};">
+          <!-- <view class="wixi-item__status" style="color: {{item.status === 1 ? '#ee0a24' : '#07c160'}};">
             {{item.status_text}}
+          </view> -->
+          <view class="his-box">
+            <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="goToDayin">{{ lang.dayin }}</van-button>
+            <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="goTojiaofei">{{ lang.jiaofei }}</van-button>
           </view>
         </view>
       </block>

@@ -105,7 +105,9 @@ const en_lang = {
     iconNoticeText: 'Não há informações de parada de água ainda',
     wm_name: 'Nome do Cliente',
     historio: 'Historio',
-    fecho: 'Fecho'
+    fecho: 'Fecho',
+    jiaofei: 'Pagamento',
+    dayin: 'Imprimir'
   },
   // 新增用户
   addAccount: {
@@ -260,7 +262,7 @@ const en_lang = {
   },
   // 今日收费
   todaySummary: {
-    todayNumber: 'Nota de Coberanca',
+    todayNumber: 'Factura Simplificada',
     todayMoney: 'Valor total',
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
