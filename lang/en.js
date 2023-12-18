@@ -342,7 +342,7 @@ const en_lang = {
     transfer_money: 'transferência',
     swipe_card: 'pos',
     submit: 'impressão',
-    receipt: 'recepção',
+    receipt: 'recibo',
     invoice: 'As facturas',
     zhang: 'un',
     jbsj: 'Horário de turno',

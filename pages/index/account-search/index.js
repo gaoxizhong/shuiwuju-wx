@@ -15,6 +15,7 @@ Page({
   data: {
     lang: lang.index, // 语言
     langDialog: lang.dialog,
+    btnName: lang.btnName,
     wm_no: '', // 水表号、手机号
     status: '', // 状态
 
@@ -215,8 +216,8 @@ Page({
     console.log(e)
     let item = e.currentTarget.dataset.item;
     const payStatusList = JSON.stringify(this.data.payStatusList);
-    wxAsyncApi('reLaunch', {
-      url: `/pages/query-water/pay/print-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&order_no=${item.order_no}&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=${item.filePath}&last_reading=${item.last_reading}&up_id=${item.up_id}&check_time_text=${item.updated_at}&payStatusList=${payStatusList}`,
+    wxAsyncApi('navigateTo', {
+      url: `/pages/query-water/pay/confirm-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&total_water=${0}&reading=${item.last_reading}&imageUrl=''&last_reading=${item.last_reading}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

@@ -5,7 +5,7 @@ import {
   payWaterList
 } from './../../../apis/water'
 const {
-  wxAsyncApi,
+  wxAsyncApi,fmoney
 } = require('./../../../utils/util')
 Page({
 
@@ -129,6 +129,7 @@ Page({
         list,
         total,
         today_bill_count,
+        // today_bill_amount: fmoney(today_bill_amount),
         today_bill_amount,
         today_cash_count,
         today_cash_amount,

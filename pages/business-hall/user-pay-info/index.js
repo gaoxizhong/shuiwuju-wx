@@ -428,6 +428,7 @@ ${that.data.pay_text}   AOA    ${that.data.from.total_money} KZ
       receiptInfo_Saldo: `
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
+Water manager
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador:ISAURA FERNANDOP DA CRUZ

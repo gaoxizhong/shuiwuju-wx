@@ -633,7 +633,9 @@ TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.u
 limite de pagamento: ${this.getMoreDay(15)}`,
       printInfo_valores:`
 Saldo
-${userBluetoolthInfoData.water_meter.user_bal} KZ`,     
+${userBluetoolthInfoData.water_meter.user_bal} KZ
+Water manager
+`,     
       printInfo_time:`
 ${date.time}
 
