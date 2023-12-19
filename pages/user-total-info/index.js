@@ -64,6 +64,7 @@ Page({
     total_water: 0, // 总用水量
     is_return: true,
     invoice_code: '', // 发票号
+    userInfo: {}
   },
 
   /**
@@ -110,11 +111,13 @@ Page({
     // }
     const wm_no = options.wm_no;
     const wm_name = options.wm_name;
+    const userInfo = app.globalData.userInfo || {}
     this.setData({
       wm_no,
       wm_name,
       source,
       status,
+      userInfo,
       // payStatusList: JSON.parse(payStatusList || '[]'),
     })
     this.getArrearsMoneySum(options.wm_no)
@@ -718,7 +721,7 @@ Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
 Este documento nao serve de fatura
 IVA Regime Simplificado
-Utilizador:ISAURA FERNANDOP DA CRUZ
+Utilizador: ${that.data.userInfo.name}
 
 --------------------------------
 *Obrigado e volte sempre!*

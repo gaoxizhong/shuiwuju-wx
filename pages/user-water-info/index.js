@@ -16,6 +16,7 @@ import {
   handleBusinessHallPayBill,
   handleBusinessHallBillReceipt
 } from './../../apis/business-hall'
+
 const GBK = require('./../../utils/gbk.min')
 Page({
 
@@ -92,6 +93,7 @@ Page({
         status = 'yes'
       }
     }
+
     this.setData({
       source,
       form,

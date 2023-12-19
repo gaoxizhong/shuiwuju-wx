@@ -510,14 +510,15 @@ Page({
       let total_water = that.data.form.total_water;
       let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100).toFixed(2); // 污水量
       let sewage_rate_price =  Number(sewage_rate_num * user_type_price.toFixed(2)); // 污水价格
-      let first_step_water = userBluetoolthInfoData.user_payment[0].first_step_water;
-      let first_step_price = userBluetoolthInfoData.user_payment[0].first_step_price;
-      let second_step_water = userBluetoolthInfoData.user_payment[0].second_step_water;
-      let second_step_price = userBluetoolthInfoData.user_payment[0].second_step_price;
+   
+      let first_step_water = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].first_step_water:0;
+      let first_step_price = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].first_step_price:0;
+      let second_step_water = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].second_step_water:0;
+      let second_step_price = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].second_step_price:0;
       let domestico_socio = Number(first_step_water * first_step_price).toFixed(2);
       let domestico_socio_2 = Number(second_step_water * second_step_price).toFixed(2);
 
-      let months = userBluetoolthInfoData.user_payment[0].months; // 月份
+      let months = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].months:0; // 月份
       let T_Fixa = Number(userBluetoolthInfoData.user_type.rent_money * months).toFixed(2);
       let consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
 
@@ -552,18 +553,19 @@ Histórico de Leituras
       invoiceInfo_historyData_info:`
  Data       m3      Leitor
 --------------------------------
-${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].check_date:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].water:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading_user:''}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 -------------------------------- `,
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'+
-'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
-:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
+Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)': total_water + '* ' + user_type_price +'=' + consumo_price}
+${userBluetoolthInfoData.user_type.is_constant == 0?
+'Domestico：' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
++'                  Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'       Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
+:''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
@@ -590,7 +592,7 @@ Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Factura Simplificada N° ${userBluetoolthInfoData.user_payment[0].order_no}
+Factura Simplificada N° ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].order_no:''}
 
 Dados do Cliente
 `,
@@ -611,24 +613,25 @@ Histórico de Leituras
         printInfo_historyData_info:`
    Data       m3      Leitor
 --------------------------------
-${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].reading}   ${userBluetoolthInfoData.user_payment[0].reading_user}
+${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].check_date:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading_user:''}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 -------------------------------- `,
       printInfo_facturacao_title:`   Detalhes de Coberanca`,
       printInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)'+
-'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
-:'Consumo: ' + total_water + '* ' + user_type_price +'=' + consumo_price}
+Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)': total_water + '* ' + user_type_price +'=' + consumo_price}
+${userBluetoolthInfoData.user_type.is_constant == 0?
+'Domestico：' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
++'                  Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'       Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
+:''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%) 
 `,
       printInfo_TOTAL:`
-TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ`,
+TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,
       pagamento_pagamento:`
 limite de pagamento: ${this.getMoreDay(15)}`,
       printInfo_valores:`

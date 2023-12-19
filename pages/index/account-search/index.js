@@ -216,8 +216,10 @@ Page({
     console.log(e)
     let item = e.currentTarget.dataset.item;
     const payStatusList = JSON.stringify(this.data.payStatusList);
-    wxAsyncApi('navigateTo', {
-      url: `/pages/query-water/pay/confirm-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&total_water=${0}&reading=${item.last_reading}&imageUrl=''&last_reading=${item.last_reading}`,
+    // wxAsyncApi('navigateTo', {
+    //   url: `/pages/query-water/pay/confirm-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=''&last_reading=${0}&pageUrl=accountsearch`,
+      wxAsyncApi('reLaunch', {
+        url: `/pages/query-water/pay/print-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&order_no=''&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=''&last_reading=${item.last_reading}&up_id=''&check_time_text=${item.updated_at}&payStatusList=${payStatusList}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

@@ -8,6 +8,9 @@ const {
 const {
   readingPic
 } = require('./../../../../apis/water')
+import {
+  getBusinessHallList,
+} from './../../../../apis/business-hall'
 Page({
 
   /**
@@ -19,6 +22,7 @@ Page({
     form: {},
     active: 1,
     steps: lang.pay.steps,
+    pageUrl:"collectInfo",
   },
 
   /**
@@ -40,6 +44,7 @@ Page({
       last_time, // 上次抄表时间
       now_time, // 本次抄表时间
       months,
+      pageUrl
     } = options
     this.setData({
       form: {
@@ -60,7 +65,11 @@ Page({
       lang: lang.pay.collectInfo,
       btnName: lang.btnName,
       steps: lang.pay.steps,
+      pageUrl
     })
+    if(this.data.pageUrl == 'accountsearch'){
+      this.getListData();
+    }
   },
   //获取当前时间
   handleTimeValue(date) {
@@ -80,6 +89,28 @@ Page({
       time,
       timestamp
     }
+  },
+  getListData() {
+    const params = {
+      wm_no: this.data.form.wm_no,
+      status: '',
+      page: 1,
+      select: this.data.form.wm_no,
+      type: 1
+    }
+    getBusinessHallList(params).then(res => {
+      const dataList = res.data.list.data;
+      if(dataList.length > 0){
+        const form = this.data.form;
+        form.last_reading =  dataList[0].last_reading;
+        form.reading =  dataList[0].reading;
+        form.total_water = Number( Number(form.reading) - Number(form.last_reading) ).toFixed(2)
+        this.setData({
+          form
+        })
+      }
+      
+    })
   },
   // 返回修改信息
   goBack() {
