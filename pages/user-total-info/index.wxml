@@ -96,4 +96,13 @@
       <van-button type="info" plain size="small" bind:click="onCloseResult">{{lang.cancelName}}</van-button>
     </view>
   </van-popup>
+
+  <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" bindtap="cover_layer"></view>
+  <view class="toast-box" wx-if="{{password_layer}}">
+    <view class="pass-title">{{lang.placeholderName}}</view>
+    <van-field value="{{ operator_name }}" required placeholder="{{lang.placeholderName}}" bind:blur="handleNameBlur" bind:change="handleInputReading" error="{{name_error}}" />
+    <van-button type="info" size="small" block='true' bindtap="clickPrint">{{ btnName.submitName }}</van-button>
+  </view>
+
+
 </view>

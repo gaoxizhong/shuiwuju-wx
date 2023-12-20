@@ -64,7 +64,10 @@ Page({
     total_water: 0, // 总用水量
     is_return: true,
     invoice_code: '', // 发票号
-    userInfo: {}
+    userInfo: {},
+    password_layer: false,
+    operator_name:'',
+    name_error: false
   },
 
   /**
@@ -338,8 +341,9 @@ Page({
   //     })
   //   })
   // },
-  // 收据
+  // 收据按钮
   printWaterInfo(){
+    
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
     if (!paid_total_money ) {
@@ -365,11 +369,24 @@ Page({
       return
     }
     this.setData({
+      password_layer: true
+    })
+    return
+  },
+  //  确认姓名
+  clickPrint(){
+    const operator_name = this.data.operator_name
+    if (!operator_name ) {
+      this.setData({
+        name_error: true
+      })
+      return
+    }
+    this.setData({
       print_type: 'receiptInfo'
     })
     this.new_onConfirmPay();
   },
-
   // 发票
   blueToothInvoice(){
     const paid_total_money = this.data.paid_total_money
@@ -721,7 +738,7 @@ Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
 Este documento nao serve de fatura
 IVA Regime Simplificado
-Utilizador: ${that.data.userInfo.name}
+Utilizador: ${that.data.operator_name}
 
 --------------------------------
 *Obrigado e volte sempre!*
@@ -842,7 +859,33 @@ Utilizador: ${that.data.userInfo.name}
   },
   // ======= 拒绝原因的方法  ↑============
 
+  /**蒙板禁止滚动  bug 在开发工具模拟器底层页面上依然可以滚动，手机上不滚动*/
+  myCatchTouch: function () {
+    return
+  },
 
-
-
+  cover_layer(){
+    this.setData({
+      password_layer:false
+    })
+  },
+  handleInputReading(e) {
+    console.log(e)
+    const operator_name = e.detail
+    let name_error = this.data.name_error
+    if (operator_name) {
+      name_error = false
+    }
+    this.setData({
+      operator_name,
+      name_error
+    })
+  },
+  handleNameBlur(e){
+    console.log(e)
+    const operator_name = e.detail.value;
+    this.setData({
+      operator_name,
+    })
+  },
 })
