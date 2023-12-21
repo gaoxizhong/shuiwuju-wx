@@ -68,9 +68,9 @@
     padding-bottom: 20rpx;
 }
 .toast-box {
-    width: 75%;
+    width: 80%;
     height: auto;
-    padding: 20rpx;
+    padding: 30rpx;
     background-color: white;
     opacity: 1;
     position: fixed;
@@ -79,10 +79,11 @@
     transform: translate(-50%,-50%);
     z-index: 9999;
     border: 1rpx solid white;
-    border-radius: 5rpx;
+    border-radius: 6px;
 }
-.van-button--block{
+.toast-box .van-button--block{
   margin-top: 30rpx;
+  padding: 30rpx !important;
 }
 .pass-title {
   width: 100%;
@@ -97,8 +98,24 @@
   background: #f9f9f9;
   width: 100%;
   text-align: left;
+  height: 70rpx !important;
+  line-height: 70rpx !important;
 }
 .toast-box .van-cell{
   padding-left: 10rpx;
   padding-right: 10rpx;
+}
+.pop-box{
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 6px;
+  width: 90%;
+  height: 400rpx;
+  overflow: auto;
+  position: absolute;
+  left: 30rpx;
+  bottom: -300rpx;
+}
+.pop-box>view{
+  padding: 12rpx 10rpx;
 }

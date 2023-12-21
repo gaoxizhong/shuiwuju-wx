@@ -102,6 +102,10 @@
     <view class="pass-title">{{lang.placeholderName}}</view>
     <van-field value="{{ operator_name }}" required placeholder="{{lang.placeholderName}}" bind:blur="handleNameBlur" bind:change="handleInputReading" error="{{name_error}}" />
     <van-button type="info" size="small" block='true' bindtap="clickPrint">{{ btnName.submitName }}</van-button>
+
+    <view class="pop-box" wx:if="{{is_pop && operator_name && operatorNameList.length > 0}}">
+      <view wx:for="{{operatorNameList}}" wx:key="index" data-name="{{item}}" bind:tap="clickoperatorName">{{item}}</view>
+    </view>
   </view>
 
 

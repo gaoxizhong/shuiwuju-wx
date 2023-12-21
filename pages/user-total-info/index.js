@@ -67,7 +67,9 @@ Page({
     userInfo: {},
     password_layer: false,
     operator_name:'',
-    name_error: false
+    name_error: false,
+    operatorNameList: [],
+    is_pop: false
   },
 
   /**
@@ -124,6 +126,14 @@ Page({
       // payStatusList: JSON.parse(payStatusList || '[]'),
     })
     this.getArrearsMoneySum(options.wm_no)
+
+    if(wx.getStorageSync('operatorNameList')){
+      let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
+      console.log(operatorNameList)
+       this.setData({
+         operatorNameList,
+       })
+     }
   },
   onShow(){
     this.setData({
@@ -373,9 +383,14 @@ Page({
     })
     return
   },
+  clickoperatorName(e){
+    this.setData({
+      operator_name: e.currentTarget.dataset.name,
+      is_pop: false,
+    })
+  },
   //  确认姓名
   clickPrint(){
-    const operator_name = this.data.operator_name
     if (!operator_name ) {
       this.setData({
         name_error: true
@@ -599,8 +614,15 @@ Page({
           pay_text: '',
         })
         if(print_type == 'receiptInfo'){
+          let operatorNameList = that.data.operatorNameList;
+          if( operatorNameList.indexOf('operator_name') == -1){
+            operatorNameList.push(that.data.operator_name);
+            wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
+          }
+
           // 4.修改打印收据状态
           that.setReceiptStatus();
+          
         }else{
           // 5.修改发票收据状态
           that.setInvoiceStatus();
@@ -866,7 +888,8 @@ Utilizador: ${that.data.operator_name}
 
   cover_layer(){
     this.setData({
-      password_layer:false
+      password_layer:false,
+      operator_name: '',
     })
   },
   handleInputReading(e) {
@@ -878,7 +901,8 @@ Utilizador: ${that.data.operator_name}
     }
     this.setData({
       operator_name,
-      name_error
+      name_error,
+      is_pop: true
     })
   },
   handleNameBlur(e){
