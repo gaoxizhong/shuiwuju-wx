@@ -38,6 +38,7 @@
         <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
           {{item.status_text}}
         </view>
+        <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete"/>
       </view>
     </block>
     </scroll-view>

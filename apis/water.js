@@ -166,3 +166,12 @@ export const getAdminShiftData = (data) => {
     data
   })
 }
+// 删除缴费单 
+export const delUserPayment = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_del_user_payment`,
+    method: 'POST',
+    data
+  })
+}

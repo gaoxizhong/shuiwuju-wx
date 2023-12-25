@@ -5,6 +5,10 @@ import {
   getBusinessHallList,
 } from './../../../apis/business-hall'
 import {
+  delUserPayment,
+} from './../../../apis/water'
+
+import {
   wxAsyncApi
 } from './../../../utils/util'
 Page({
@@ -238,4 +242,24 @@ Page({
     });
     this.onCloseTypePopup()
   },
+  clickDelete(e){
+    let that = this;
+    let item = e.currentTarget.dataset.item;
+    let list = that.data.list;
+    let index = e.currentTarget.dataset.index;
+    const params = {
+      up_id: item.up_id,
+    }
+    delUserPayment(params).then(res => {
+      wx.showToast({
+        title: lang.message.success,
+        icon: 'none'
+      })
+      list.splice(index);
+      that.setData({
+        list
+      })
+    })
+     console.log(e)
+  }
 })

@@ -61,7 +61,13 @@
 .item__money {
   padding-bottom: 6rpx;
 }
-
+.search-content .list .icon-copy{
+  width: 40rpx;
+  height: 30rpx;
+  position: absolute;
+  right: 20rpx;
+  bottom: 30rpx;
+}
 .item__status {
   position: absolute;
   right: 40rpx;
