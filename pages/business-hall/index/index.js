@@ -17,6 +17,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    userWaterInfo: lang.userWaterInfo,
     lang: lang.index,
     langDialog: lang.dialog,
     btnName: lang.btnName,
@@ -245,21 +246,49 @@ Page({
   clickDelete(e){
     let that = this;
     let item = e.currentTarget.dataset.item;
-    let list = that.data.list;
     let index = e.currentTarget.dataset.index;
+    that.setData({
+      del_selt_info: item,
+      del_selt_index: index,
+      del_pop: true,
+    })
+  },
+  clickDeleteBtn(){
+    let that = this;
+    let del_selt_info = that.data.del_selt_info;
+    let index = that.data.del_selt_index;
+    let list = that.data.list;
     const params = {
-      up_id: item.up_id,
+      up_id: del_selt_info.up_id,
     }
     delUserPayment(params).then(res => {
+      if(res.code == 0){
+        wx.showToast({
+          title: lang.message.success,
+          icon: 'none'
+        })
+        list.splice(index,1);
+        that.setData({
+          list
+        })
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon: 'none'
+        })
+      }
+    }).catch( e =>{
+      console.log(e)
       wx.showToast({
-        title: lang.message.success,
+        title: e.desc,
         icon: 'none'
       })
-      list.splice(index);
-      that.setData({
-        list
-      })
     })
-     console.log(e)
+  },
+  clickdelPop(){
+    this.setData({
+      del_pop: false,
+
+    })
   }
 })

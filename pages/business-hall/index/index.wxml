@@ -38,7 +38,7 @@
         <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
           {{item.status_text}}
         </view>
-        <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete"/>
+        <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" wx:if="{{item.status == 1}}"/>
       </view>
     </block>
     </scroll-view>
@@ -57,3 +57,47 @@
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
   <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
 </van-popup>
+
+
+<view class="delPop-box" wx:if="{{ del_pop }}">
+  <view class="pop-box" catchtap="clickdelPop"></view>
+  <view class="del-centent-box">
+    <view class="del-centent-title">{{userWaterInfo.title_1}}</view>
+    <view class="info">
+      <view class="info-content">
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.wm_no}}</view>
+          <view class="info-item__info">{{del_selt_info.wm_no}}</view>
+        </view>
+        <!-- <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.wm_name}}</view>
+          <view class="info-item__info">{{del_selt_info.meter.wm_name || del_selt_info.wm_name}}</view>
+        </view> -->
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.last_water}}</view>
+          <view class="info-item__info">{{del_selt_info.last_reading}}（m³）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.reading}}</view>
+          <view class="info-item__info">{{del_selt_info.reading}}（m³）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.total_water}}</view>
+          <view class="info-item__info">{{del_selt_info.water}}（m³）</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.createDate}}</view>
+          <view class="info-item__info">{{del_selt_info.created_at}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-item__label">{{userWaterInfo.total_money}}</view>
+          <view class="info-item__info">{{del_selt_info.price}}（KZ）</view>
+        </view>
+
+      </view>
+    </view>
+    <view class="del-btn">
+      <view class="del-btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickDeleteBtn"> {{btnName.deleteName}}</view>
+    </view>
+  </view>
+</view>

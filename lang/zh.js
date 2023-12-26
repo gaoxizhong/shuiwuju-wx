@@ -45,6 +45,7 @@ const zh_lang = {
     updateName: '修改',
     submitName: '确认',
     cancelName: '取消',
+    deleteName: '删除',
     pay: '缴费',
     printOther: '打印收据',
     printOtherTwo: '补开收据',
@@ -349,6 +350,7 @@ const zh_lang = {
   // 用水详情
   userWaterInfo: {
     title: '用水信息',
+    title_1: '缴费单',
     wm_name: '用户名',
     wm_no: '水表号',
     last_water: '初始读数',

@@ -47,6 +47,7 @@ const en_lang = {
     updateName: 'Passo anterior',
     submitName: 'Confirmar',
     cancelName: 'Cancelar',
+    deleteName: 'Apagar',
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
     printOtherTwo: 'Reabastecimento de recibos',
@@ -350,6 +351,7 @@ const en_lang = {
   // 用水详情
   userWaterInfo: {
     title: 'Informações de comsumir água',
+    title_1: 'Factura Simplificada',
     wm_name: 'Nome do Cliente',
     wm_no: 'Dados do contador',
     last_water: 'Leitura anterior',
