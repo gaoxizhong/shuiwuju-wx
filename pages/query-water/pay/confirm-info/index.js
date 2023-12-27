@@ -194,7 +194,6 @@ Page({
     const wm_name = that.data.form.wm_name;
     const reading = that.data.form.reading;
     const total_money = that.data.form.total_money;
-    const total_water = that.data.form.total_water;
     const last_reading = that.data.form.last_reading;
     const check_time = that.data.form.check_time;
     const check_time_text = that.data.form.check_time_text;
@@ -218,6 +217,7 @@ Page({
           icon: 'none'
         })
         const order_no = res.data.data.order_no
+        const total_water = res.data.data.water;
         const payStatusList = JSON.stringify(res.data.pay_way.map(i => ({
           text: i.title,
           key: i.key

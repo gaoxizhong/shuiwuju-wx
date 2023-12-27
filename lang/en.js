@@ -366,7 +366,7 @@ const en_lang = {
     placeholder: 'Por favor, digite',
     pay_type: 'Métodos de Pagamento',
     paid_total_money: 'Valor real pago',
-    placeholderName: 'Preencher o nome do consumidor',
+    placeholderName: 'Preencher o nome do pedágio',
   },
   // 功能列表
   func: {

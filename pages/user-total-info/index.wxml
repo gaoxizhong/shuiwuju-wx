@@ -97,14 +97,16 @@
     </view>
   </van-popup>
 
-  <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" bindtap="cover_layer"></view>
-  <view class="toast-box" wx-if="{{password_layer}}">
+  <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" catchtap="cover_layer"></view>
+  <view wx:if="{{is_pop && operator_name && operatorNameList.length > 0}}" catchtouchmove="myCatchTouch" class="operatorNameList-cover" catchtap="operatorNameList_cover"></view>
+  <view class="toast-box" wx-if="{{password_layer}}" catchtap="operatorNameList_cover">
     <view class="pass-title">{{lang.placeholderName}}</view>
     <van-field value="{{ operator_name }}" required placeholder="{{lang.placeholderName}}" bind:blur="handleNameBlur" bind:change="handleInputReading" error="{{name_error}}" />
-    <van-button type="info" size="small" block='true' bindtap="clickPrint">{{ btnName.submitName }}</van-button>
+    <van-button type="info" size="small" block='true' catchtap="clickPrint">{{ btnName.submitName }}</van-button>
 
+   
     <view class="pop-box" wx:if="{{is_pop && operator_name && operatorNameList.length > 0}}">
-      <view wx:for="{{operatorNameList}}" wx:key="index" data-name="{{item}}" bind:tap="clickoperatorName">{{item}}</view>
+      <view wx:for="{{operatorNameList}}" wx:key="index" data-name="{{item}}" catchtap="clickoperatorName">{{item}}</view>
     </view>
   </view>
 

@@ -269,7 +269,8 @@ Page({
         })
         list.splice(index,1);
         that.setData({
-          list
+          list,
+          del_pop: false,
         })
       }else{
         wx.showToast({

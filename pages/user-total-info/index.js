@@ -391,6 +391,7 @@ Page({
   },
   //  确认姓名
   clickPrint(){
+    let operator_name = this.data.operator_name;
     if (!operator_name ) {
       this.setData({
         name_error: true
@@ -400,6 +401,11 @@ Page({
     this.setData({
       print_type: 'receiptInfo'
     })
+    let operatorNameList = this.data.operatorNameList;
+    if( operatorNameList.indexOf(operator_name) == -1){
+      operatorNameList.push(operator_name);
+      wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
+    }
     this.new_onConfirmPay();
   },
   // 发票
@@ -614,12 +620,6 @@ Page({
           pay_text: '',
         })
         if(print_type == 'receiptInfo'){
-          let operatorNameList = that.data.operatorNameList;
-          if( operatorNameList.indexOf('operator_name') == -1){
-            operatorNameList.push(that.data.operator_name);
-            wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
-          }
-
           // 4.修改打印收据状态
           that.setReceiptStatus();
           
@@ -899,10 +899,18 @@ Utilizador: ${that.data.operator_name}
     if (operator_name) {
       name_error = false
     }
+    let operatorNameList = wx.getStorageSync('operatorNameList') ? JSON.parse(wx.getStorageSync('operatorNameList')) : this.data.operatorNameList;
+
     this.setData({
+      operatorNameList,
       operator_name,
       name_error,
       is_pop: true
+    })
+  },
+  operatorNameList_cover(){
+    this.setData({
+      is_pop: false
     })
   },
   handleNameBlur(e){
