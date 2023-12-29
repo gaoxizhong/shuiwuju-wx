@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 const {
-  wxAsyncApi, 
+  wxAsyncApi,arrEncoderCopy
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
@@ -408,6 +408,7 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
+        // ...arrEncoderCopy(that.data.printInfo_title),
         ...GBK.encode(that.data.printInfo_title),
         ...blueToolth.printCommand.ct_zc,
         ...GBK.encode(that.data.printInfo_title_1),
