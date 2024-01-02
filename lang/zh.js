@@ -201,7 +201,7 @@ const zh_lang = {
         name: '税号/身份证号',
         placeholder: '税号/身份证号',
         type: 'input',
-        type_digit:'number',
+        // type_digit:'number',
         maxlength: 14,
         key: 'user_card',
         required: true

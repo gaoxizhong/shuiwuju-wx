@@ -203,7 +203,7 @@ const en_lang = {
         name: 'NIF/BI',
         placeholder: 'Preencher o NIF/BI',
         type: 'input',
-        type_digit:'number',
+        // type_digit:'number',
         maxlength: 14,
         key: 'user_card',
         required: true

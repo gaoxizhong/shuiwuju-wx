@@ -353,7 +353,11 @@ Page({
   // },
   // 收据按钮
   printWaterInfo(){
-    
+    let str =  `Comunicação`
+    let arr = this.arrEncoderCopy(str)
+    console.log(GBK.encode(str))
+    console.log(arr)
+return
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
     if (!paid_total_money ) {
@@ -920,4 +924,11 @@ Utilizador: ${that.data.operator_name}
       operator_name,
     })
   },
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    const encoder = new TextEncoder('cp860');
+    let arr = [...encoder.encode(data)]
+    return arr
+  }
 })

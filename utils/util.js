@@ -60,17 +60,10 @@ function fmoney(s, n){
 	}
 	return t.split("").reverse().join("") + "." + r;
 }
- // 转二进制 并数组复制
- function arrEncoderCopy(str){
-  let data = str;
-  const encoder = new TextEncoder('cp860');
-  let arr = [...encoder.encode(data)]
-  return arr
- }
+ 
 module.exports = {
   wxAsyncApi,
   debounce,
   throttle,
   fmoney,
-  arrEncoderCopy
 }
