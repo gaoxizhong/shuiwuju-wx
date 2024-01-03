@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 const {
-  wxAsyncApi,arrEncoderCopy
+  wxAsyncApi
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
@@ -14,7 +14,8 @@ const {
   setReceiptStatus,
   setInvoiceStatus
 } = require('./../../../../apis/water')
-const GBK = require('./../../../../utils/gbk.min')
+//只需要引用encoding.js,注意路径
+var encoding = require("./../../../../utils/encoding.js")
 Page({
 
   /**
@@ -310,67 +311,7 @@ Page({
         duration: 30000,
       })
       this.handlePrint(connectDeviceInfo)
-
-      // this.connectBlueToothDevice(connectDeviceInfo)
     }
-  },
-  connectBlueToothDevice({ deviceId, serviceId }) {
-    wx.showToast({
-      title: lang.blueToolth.connectDevice,
-      icon: "none",
-      duration: 30000,
-    })
-    blueToolth.createBLEConnection(deviceId).then(res => {
-      console.log(res)
-      if (res.errMsg && res.errMsg.includes('ok')) {
-        blueToolth.getBLEDeviceServices({
-          deviceId,
-          serviceId
-        }).then(data => {
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectSuccess,
-            icon: "none",
-            duration: 3000,
-          })
-
-          this.setData({
-            printDeviceInfo: data,
-          })
-          this.handlePrint()
-        }).catch((res) => {
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectfail,
-            icon: "none",
-            duration: 3000,
-          })
-          this.setData({
-            printDeviceInfo: null,
-          })
-        })
-      } else {
-        wx.hideToast()
-        this.setData({
-          printDeviceInfo: null,
-        })
-      }
-    }).catch((res) => {
-      wx.hideToast()
-      let msg = ''
-      if (res.errCode) {
-        msg = blueToolth.errorInfo[res.errCode]
-      }
-      msg = msg || res.errMsg.split('fail')[1]
-      wx.showToast({
-        title: msg,
-        icon: "none",
-        duration: 3000,
-      })
-      this.setData({
-        printDeviceInfo: null,
-      })
-    })
   },
   handlePrint(p) {
     let that = this;
@@ -382,22 +323,22 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.invoiceInfo_title),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(that.data.invoiceInfo_title_1),
-        ...GBK.encode(that.data.invoiceInfo_invoice_code),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_invoice_code),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_CustomerData),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_historyData_title),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_historyData_info),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_facturacao_title),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_facturacao_info),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_valores),
+        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -408,34 +349,33 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        // ...arrEncoderCopy(that.data.printInfo_title),
-        ...GBK.encode(that.data.printInfo_title),
+        ...that.arrEncoderCopy(that.data.printInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(that.data.printInfo_title_1),
+        ...that.arrEncoderCopy(that.data.printInfo_title_1),
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.printInfo_Comsumidor),
+        ...that.arrEncoderCopy(that.data.printInfo_Comsumidor),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.printInfo_CustomerData),
+        ...that.arrEncoderCopy(that.data.printInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.printInfo_historyData_title),
+        ...that.arrEncoderCopy(that.data.printInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.printInfo_historyData_info),
+        ...that.arrEncoderCopy(that.data.printInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.printInfo_facturacao_title),
+        ...that.arrEncoderCopy(that.data.printInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.printInfo_facturacao_info),
+        ...that.arrEncoderCopy(that.data.printInfo_facturacao_info),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.printInfo_TOTAL),
+        ...that.arrEncoderCopy(that.data.printInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.pagamento_pagamento),
+        ...that.arrEncoderCopy(that.data.pagamento_pagamento),
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.printInfo_valores),
+        ...that.arrEncoderCopy(that.data.printInfo_valores),
         ...blueToolth.printCommand.ct_zc,
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.printInfo_time),
+        ...that.arrEncoderCopy(that.data.printInfo_time),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -531,7 +471,7 @@ Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
 Atendimento ao Cliente941648993
-Comunicacao de Roturas941648999
+Comunicação de Roturas941648999
 Email info.epasksagmail.com
         `,
         invoiceInfo_invoice_code:`
@@ -552,7 +492,7 @@ Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Histórico de Leituras
       `,
       invoiceInfo_historyData_info:`
- Data       m3      Leitor
+ Data       m³      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].check_date:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].water:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading_user:''}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
@@ -561,11 +501,11 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)': total_water + '* ' + user_type_price +'=' + consumo_price}
+Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 ${userBluetoolthInfoData.user_type.is_constant == 0?
 'Domestico：' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'                  Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'       Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
++'                   Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'    Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
 :''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
@@ -588,7 +528,7 @@ Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
 Atendimento ao Cliente941648993
-Comunicacao de Roturas941648999
+Comunicação de Roturas941648999
 Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
@@ -612,7 +552,7 @@ Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Histórico de Leituras
         `,
         printInfo_historyData_info:`
-   Data       m3      Leitor
+   Data       m³      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].check_date:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading_user:''}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
@@ -621,11 +561,11 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
       printInfo_facturacao_title:`   Detalhes de Coberanca`,
       printInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?'Consumo: '+ total_water + '(m3)': total_water + '* ' + user_type_price +'=' + consumo_price}
+Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 ${userBluetoolthInfoData.user_type.is_constant == 0?
 'Domestico：' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'                  Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'       Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
++'                   Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
++'    Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
 :''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
@@ -723,4 +663,15 @@ ${date.time}
       wx.hideToast()
     })
   },
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
+    // let arr = [...encoder.encode(data)]
+    // console.log(arr)
+    //utf8
+    let inputBuffer = new encoding.TextEncoder().encode(str);
+    let arr = [ ...inputBuffer ]
+    return arr
+  }
 })

@@ -11,7 +11,8 @@ const {
   setReceiptStatus,
   setInvoiceStatus
 } = require('../../../apis/water')
-const GBK = require('../../../utils/gbk.min')
+//只需要引用encoding.js,注意路径
+var encoding = require("../../../utils/encoding.js")
 Page({
 
   /**
@@ -166,18 +167,20 @@ Page({
  
   // 收据
   printWaterInfo(){
-    this.setData({
+    let that = this;
+    that.setData({
       print_type: 'receiptInfo'
     })
-    this.getUserBluetoolthInfoData(this.blueToothPrint);
+    that.getUserBluetoolthInfoData(that.blueToothPrint);
   },
 
   // 发票
   blueToothInvoice(){
-    this.setData({
+    let that = this;
+    that.setData({
       print_type: 'invoiceInfo'
     })
-    this.getUserBluetoolthInfoData(this.blueToothPrint);
+    that.getUserBluetoolthInfoData(that.blueToothPrint);
   },
 
   // 蓝牙设备打印
@@ -233,22 +236,22 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.invoiceInfo_title),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(that.data.invoiceInfo_title_1),
-        ...GBK.encode(that.data.invoiceInfo_invoice_code),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_title_1),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_invoice_code),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_CustomerData),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_CustomerData),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_historyData_title),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_historyData_info),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_facturacao_title),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_title),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.invoiceInfo_facturacao_info),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_info),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.invoiceInfo_valores),
+        ...this.arrEncoderCopy(this.data.invoiceInfo_valores),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -258,20 +261,20 @@ Page({
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.receiptInfo_title),
+        ...this.arrEncoderCopy(this.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(that.data.receiptInfo_title_1),
+        ...this.arrEncoderCopy(this.data.receiptInfo_title_1),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.receiptInfo_historyData),
+        ...this.arrEncoderCopy(this.data.receiptInfo_historyData),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...GBK.encode(that.data.receiptInfo_TOTAL),
+        ...this.arrEncoderCopy(this.data.receiptInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
-        ...GBK.encode(that.data.receiptInfo_Pagamento),
+        ...this.arrEncoderCopy(this.data.receiptInfo_Pagamento),
         ...blueToolth.printCommand.left,
-        ...GBK.encode(that.data.receiptInfo_Modos),
+        ...this.arrEncoderCopy(this.data.receiptInfo_Modos),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(that.data.receiptInfo_Saldo),
+        ...this.arrEncoderCopy(this.data.receiptInfo_Saldo),
         ...blueToolth.printCommand.enter
       ]
     }
@@ -346,7 +349,7 @@ Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
 Atendimento ao Cliente941648993
-Comunicacao de Roturas941648999
+Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
         `,
@@ -369,7 +372,7 @@ Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Histórico de Leituras
       `,
       invoiceInfo_historyData_info:`
- Data       m3      Leitor
+ Data       m³      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
@@ -378,12 +381,12 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-${total_water?'Consumo: '+total_water+ '(m3)':''}
+Consumo: ${total_water} (m³)
 ${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%)
-TOTAL A PAGAR  ${that.data.from.total_money} KZ
+TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
 `,
@@ -484,5 +487,15 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
       showResult: false
     })
   },
-
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
+    // let arr = [...encoder.encode(data)]
+    // console.log(arr)
+    //utf8
+    let inputBuffer = new encoding.TextEncoder().encode(str);
+    let arr = [ ...inputBuffer ]
+    return arr
+  }
 })

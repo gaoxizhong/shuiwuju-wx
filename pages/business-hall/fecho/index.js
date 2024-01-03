@@ -9,8 +9,8 @@ const {
 const {
   getAdminShift,getAdminShiftData
 } = require('../../../apis/water')
-
-const GBK = require('../../../utils/gbk.min')
+//只需要引用encoding.js,注意路径
+var encoding = require("../../../utils/encoding.js")
 Page({
 
   /**
@@ -45,7 +45,17 @@ Page({
   onShow() {
     this.getAdminShift(0);
   },
-
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
+    // let arr = [...encoder.encode(data)]
+    // console.log(arr)
+    //utf8
+    let inputBuffer = new encoding.TextEncoder().encode(str);
+    let arr = [ ...inputBuffer ]
+    return arr
+  },
   //获取当前时间
   handleTimeValue(date) {
     const _date = date ? new Date(date) : new Date()
@@ -123,7 +133,16 @@ Page({
 
   },
   handleReading(e){
-
+    console.log(e)
+     const operator_name = e.detail.value
+     let name_error = this.data.name_error
+     if (operator_name) {
+       name_error = false
+     }
+     this.setData({
+       operator_name,
+       name_error
+     })
   },
   handleInputReading(e) {
     console.log(e)
@@ -221,9 +240,9 @@ DATA: ${date.time}
       // GBK.encode({string}) 解码GBK为一个字节数组
       let info = [
         ...blueToolth.printCommand.clear,
-        ...GBK.encode(this.data.printInfo),
+        ...this.arrEncoderCopy(this.data.printInfo),
         ...blueToolth.printCommand.center,
-        ...GBK.encode(this.data.printInfo_data),
+        ...this.arrEncoderCopy(this.data.printInfo_data),
         ...blueToolth.printCommand.enter
       ]
       console.log('开始打印，api传信息...')
