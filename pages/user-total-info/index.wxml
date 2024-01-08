@@ -112,3 +112,4 @@
 
 
 </view>
+<canvas type="2d" id="shareCanvas" style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;position: absolute;left: 100000px;"></canvas>
