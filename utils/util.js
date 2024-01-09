@@ -60,7 +60,6 @@ function fmoney(s, n){
 	}
 	return t.split("").reverse().join("") + "." + r;
 }
- 
 module.exports = {
   wxAsyncApi,
   debounce,

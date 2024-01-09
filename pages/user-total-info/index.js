@@ -2,11 +2,16 @@
 const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
-const {
-  wxAsyncApi,
-} = require('./../../utils/util')
+const {wxAsyncApi} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
+const {
+  convert4to1,
+  convert8to1,
+  overwriteImageData,
+  getImageCommandArray,
+} = require('./../../utils/imgIrinting')
+
 const {
   payWater,
   printWater,
@@ -33,8 +38,8 @@ Page({
     lang: lang.userWaterInfo,
     btnName: lang.btnName,
     langDialog: lang.dialog,
-    wm_no:'',
-    wm_name:'',
+    wm_no: '',
+    wm_name: '',
     form: {},
 
     status: 'pay',
@@ -50,16 +55,16 @@ Page({
       maxHeight: 100,
       minHeight: 100
     },
-    last_reading:'',
-    last_time:'',
-    arrears_money_sum:'',
+    last_reading: '',
+    last_time: '',
+    arrears_money_sum: '',
     paid_total_money: '',
     no_error: false,
     payStatusList: [],
-    pay_way:'',
-    pay_text:'',
-    receiptInfo:'', //  收据
-    invoiceInfo:'',//  发票
+    pay_way: '',
+    pay_text: '',
+    receiptInfo: '', //  收据
+    invoiceInfo: '', //  发票
     pay_success: false,
     user_PayFees_info: {}, // 缴费记录信息
     user_payment_info: [], // 缴费记录下的缴费单信息
@@ -68,12 +73,12 @@ Page({
     invoice_code: '', // 发票号
     userInfo: {},
     password_layer: false,
-    operator_name:'',
+    operator_name: '',
     name_error: false,
     operatorNameList: [],
     is_pop: false,
     // 打印机纸张宽度，我用的打印几的纸张最大宽度是384，可以修改其他的
-    paperWidth: 384,
+    paperWidth: 260,
     canvasWidth: 1,
     canvasHeight: 1,
     threshold: [200],
@@ -136,22 +141,22 @@ Page({
     })
     this.getArrearsMoneySum(options.wm_no)
 
-    if(wx.getStorageSync('operatorNameList')){
+    if (wx.getStorageSync('operatorNameList')) {
       let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
       console.log(operatorNameList)
-       this.setData({
-         operatorNameList,
-       })
-     }
+      this.setData({
+        operatorNameList,
+      })
+    }
   },
-  onShow(){
+  onShow() {
     this.setData({
       is_return: true
     })
     this.printImg();
   },
   // 新改版  获取用户待缴费金额接口 
-  getArrearsMoneySum(n){
+  getArrearsMoneySum(n) {
     const wm_no = n
     const params = {
       wm_no,
@@ -161,11 +166,11 @@ Page({
         arrears_money_sum,
         last_reading,
         last_time,
-        } = res.data
-        const payWayList = Object.keys(res.data.pay_way).map(i => ({
-          text: res.data.pay_way[i].title,
-          key: res.data.pay_way[i].key
-        }))
+      } = res.data
+      const payWayList = Object.keys(res.data.pay_way).map(i => ({
+        text: res.data.pay_way[i].title,
+        key: res.data.pay_way[i].key
+      }))
       this.setData({
         last_reading,
         last_time,
@@ -182,9 +187,9 @@ Page({
     })
   },
 
-   //输入实缴金额
-   handleInputMoney(e){
-     console.log(e)
+  //输入实缴金额
+  handleInputMoney(e) {
+    console.log(e)
     const paid_total_money = e.detail
     let no_error = this.data.no_error
     if (paid_total_money) {
@@ -204,12 +209,12 @@ Page({
     })
   },
   //  新的确认支付
-  new_onConfirmPay(){
-    let that =  this;
+  new_onConfirmPay() {
+    let that = this;
     let pay_success = that.data.pay_success;
-    if(pay_success){
+    if (pay_success) {
       that.getUserBluetoolthInfoData(that.blueToothPrint);
-    }else{
+    } else {
       let date = that.handleTimeValue();
       const params = {
         wm_no: that.data.wm_no,
@@ -267,8 +272,8 @@ Page({
   // 近n天
   getMoreDay(value) {
     const _date = new Date().getTime();
-    let letenddate = _date + (value*24*60*60*1000);
-    let  _days = new Date(letenddate);
+    let letenddate = _date + (value * 24 * 60 * 60 * 1000);
+    let _days = new Date(letenddate);
     const year = _days.getFullYear()
     const month = _days.getMonth() + 1
     const day = _days.getDate()
@@ -339,7 +344,7 @@ Page({
       })
     })
   },
-  
+
   // printWaterInfo() {
   //   const up_id = this.data.form.up_id
   //   const params = {
@@ -362,10 +367,10 @@ Page({
   //   })
   // },
   // 收据按钮
-  printWaterInfo(){
+  printWaterInfo() {
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
-    if (!paid_total_money ) {
+    if (!paid_total_money) {
       this.setData({
         no_error: true
       })
@@ -376,7 +381,7 @@ Page({
       })
       return
     }
-    if (!pay_text ) {
+    if (!pay_text) {
       this.setData({
         pay_type_error: true
       })
@@ -392,16 +397,16 @@ Page({
     })
     return
   },
-  clickoperatorName(e){
+  clickoperatorName(e) {
     this.setData({
       operator_name: e.currentTarget.dataset.name,
       is_pop: false,
     })
   },
   //  确认姓名
-  clickPrint(){
+  clickPrint() {
     let operator_name = this.data.operator_name;
-    if (!operator_name ) {
+    if (!operator_name) {
       this.setData({
         name_error: true
       })
@@ -411,17 +416,17 @@ Page({
       print_type: 'receiptInfo'
     })
     let operatorNameList = this.data.operatorNameList;
-    if( operatorNameList.indexOf(operator_name) == -1){
+    if (operatorNameList.indexOf(operator_name) == -1) {
       operatorNameList.push(operator_name);
       wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
     }
     this.new_onConfirmPay();
   },
   // 发票
-  blueToothInvoice(){
+  blueToothInvoice() {
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
-    if (!paid_total_money ) {
+    if (!paid_total_money) {
       this.setData({
         no_error: true
       })
@@ -432,7 +437,7 @@ Page({
       })
       return
     }
-    if (!pay_text ) {
+    if (!pay_text) {
       this.setData({
         pay_type_error: true
       })
@@ -489,7 +494,7 @@ Page({
         duration: 30000,
       })
       // this.connectBlueToothDevice(connectDeviceInfo)
-     this.handlePrint(connectDeviceInfo)
+      this.handlePrint(connectDeviceInfo)
     }
   },
   connectBlueToothDevice({
@@ -533,14 +538,14 @@ Page({
           })
         })
       } else {
-      console.log('11')
+        console.log('11')
         wx.hideToast()
         this.setData({
           printDeviceInfo: null,
         })
       }
     }).catch((res) => {
-    console.log('连接蓝牙设备成功'+ res)
+      console.log('连接蓝牙设备成功' + res)
       wx.hideToast()
       let msg = ''
       if (res.errCode) {
@@ -563,7 +568,7 @@ Page({
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
     // 发票
-    if(print_type == 'invoiceInfo'){
+    if (print_type == 'invoiceInfo') {
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
@@ -587,12 +592,12 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
-     //  收据
-    if(print_type == 'receiptInfo'){
+    //  收据
+    if (print_type == 'receiptInfo') {
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
-        // ...this.data.imgArr,
+        ...this.data.imgArr,
         ...blueToolth.printCommand.ct,
         ...this.arrEncoderCopy(this.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
@@ -629,28 +634,28 @@ Page({
           pay_way: '',
           pay_text: '',
         })
-        if(print_type == 'receiptInfo'){
+        if (print_type == 'receiptInfo') {
           // 4.修改打印收据状态
           that.setReceiptStatus();
-          
-        }else{
+
+        } else {
           // 5.修改发票收据状态
           that.setInvoiceStatus();
         }
       },
-      onFail(res){
+      onFail(res) {
         console.log('打印失败...')
         console.log(res)
       }
     });
   },
   // 获取用户打印信息
-  getUserBluetoolthInfoData(f){
+  getUserBluetoolthInfoData(f) {
     let that = this;
     const params = {
       wm_no: that.data.wm_no,
     }
-    if( !that.data.is_return ){
+    if (!that.data.is_return) {
       return
     }
     that.setData({
@@ -662,7 +667,7 @@ Page({
       let date = that.handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let user_info = '';
-      info.forEach(ele =>{
+      info.forEach(ele => {
         user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
 `
       })
@@ -670,17 +675,17 @@ Page({
       let sewage_rate_num = 0; // 污水量
       let sewage_rate_price = 0; // 污水价格 
       let user_type_price = userBluetoolthInfoData.user_type.price;
-      let consumo_price = 0;  // 非阶段计价 水费用展示
-      if(total_water){
+      let consumo_price = 0; // 非阶段计价 水费用展示
+      if (total_water) {
         console.log(total_water)
-        sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100);
+        sewage_rate_num = Number(Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate) / 100);
         sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
-        consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
-      } 
+        consumo_price = Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
+      }
       that.setData({
-      // 发票
-      invoiceInfo_title:`EPASKS-E.P.`,
-      invoiceInfo_title_1:`
+        // 发票
+        invoiceInfo_title: `EPASKS-E.P.`,
+        invoiceInfo_title_1: `
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
@@ -689,11 +694,11 @@ Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
         `,
-        invoiceInfo_invoice_code:`
+        invoiceInfo_invoice_code: `
 Factura/Recibo N° ${that.data.invoice_code}
 
 Dados do Cliente `,
-        invoiceInfo_CustomerData:`
+        invoiceInfo_CustomerData: `
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
 N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
@@ -704,18 +709,18 @@ N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
 
       `,
-      invoiceInfo_historyData_title:`
+        invoiceInfo_historyData_title: `
 Histórico de Leituras
       `,
-      invoiceInfo_historyData_info:`
+        invoiceInfo_historyData_info: `
  Data       m³      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
 -------------------------------- `,
-    invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
-    invoiceInfo_facturacao_info:`
+        invoiceInfo_facturacao_title: `Detalhes de Coberanca`,
+        invoiceInfo_facturacao_info: `
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${total_water} (m³)
 ${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
@@ -726,16 +731,16 @@ TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
 `,
-    invoiceInfo_valores:`
+        invoiceInfo_valores: `
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
 ${date.time}
 
     `,
-      //收据
-      receiptInfo_title:`EPASKS-E.P.`,
-      receiptInfo_title_1:`
+        //收据
+        receiptInfo_title: `EPASKS-E.P.`,
+        receiptInfo_title_1: `
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
@@ -745,26 +750,26 @@ Nome: ${userBluetoolthInfoData.water_meter.wm_name}
 Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 
 `,
-      receiptInfo_historyData:`
+        receiptInfo_historyData: `
 DATA: ${date.time}
  Data    Total    Pend.    Liq.
 --------------------------------
 ${user_info?user_info:''}
 --------------------------------
 `,
-      receiptInfo_TOTAL: `
+        receiptInfo_TOTAL: `
 TOTAL: ${that.data.user_PayFees_info.total_money} KZ
 `,
-      receiptInfo_Pagamento:`
+        receiptInfo_Pagamento: `
 Modos de Pagamento
 `,
-      receiptInfo_Modos: `
+        receiptInfo_Modos: `
 Método       Moeda       Total
 --------------------------------
 ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
 --------------------------------
 `,
-      receiptInfo_Saldo: `
+        receiptInfo_Saldo: `
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
@@ -777,12 +782,12 @@ Utilizador: ${that.data.operator_name}
 
 `,
       })
-      setTimeout(()=>{
+      setTimeout(() => {
         that.setData({
           is_return: true
         })
-      },1000)
-      if (typeof f == 'function'){
+      }, 1000)
+      if (typeof f == 'function') {
         return f()
       }
     }).catch((res) => {
@@ -791,28 +796,32 @@ Utilizador: ${that.data.operator_name}
         icon: 'none',
         duration: 2000
       })
-      setTimeout(()=>{
+      setTimeout(() => {
         that.setData({
           is_return: true
         })
-      },1000)
+      }, 1000)
     })
   },
 
   // 4.修改打印收据状态
   setReceiptStatus() {
     let that = this;
-    setReceiptStatus({id: that.data.user_PayFees_info.id}).then(res => {
-     
+    setReceiptStatus({
+      id: that.data.user_PayFees_info.id
+    }).then(res => {
+
     }).catch(res => {
       wx.hideToast()
     })
   },
   // 5.修改发票收据状态
-  setInvoiceStatus(){
+  setInvoiceStatus() {
     let that = this;
-    setInvoiceStatus({id: that.data.user_PayFees_info.id}).then(res => {
-    
+    setInvoiceStatus({
+      id: that.data.user_PayFees_info.id
+    }).then(res => {
+
     }).catch(res => {
       wx.hideToast()
     })
@@ -896,9 +905,9 @@ Utilizador: ${that.data.operator_name}
     return
   },
 
-  cover_layer(){
+  cover_layer() {
     this.setData({
-      password_layer:false,
+      password_layer: false,
       operator_name: '',
     })
   },
@@ -918,12 +927,12 @@ Utilizador: ${that.data.operator_name}
       is_pop: true
     })
   },
-  operatorNameList_cover(){
+  operatorNameList_cover() {
     this.setData({
       is_pop: false
     })
   },
-  handleNameBlur(e){
+  handleNameBlur(e) {
     console.log(e)
     const operator_name = e.detail.value;
     this.setData({
@@ -931,185 +940,79 @@ Utilizador: ${that.data.operator_name}
     })
   },
   // 转二进制 并数组复制
-  arrEncoderCopy(str){
+  arrEncoderCopy(str) {
     let data = str;
     // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
     // let arr = [...encoder.encode(data)]
     // console.log(arr)
     //utf8
     let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
+    let arr = [...inputBuffer]
     return arr
   },
-  /**
-* overwriteImageData 图片数据转 位图数据
-* @param {object} data
-* {
-        width,//图片宽度
-        height,//图片高度
-        imageData,//Uint8ClampedArray
-        threshold,//阈值, 越大，打印点数越多，图形越黑
-}
-*/
 
-overwriteImageData(data) {
-  console.log(data)
-  function grayPixle(pix) {
-    return pix[0] * 0.299 + pix[1] * 0.587 + pix[2] * 0.114;
-  }
-  let sendWidth = data.width,
-      sendHeight = data.height;
-  const threshold = data.threshold || 180;
-  let sendImageData = new ArrayBuffer((sendWidth * sendHeight) / 8);
-  sendImageData = new Uint8Array(sendImageData);
-  let pix = data.data;
-  const part = [];
-  let index = 0;
-  for (let i = 0; i < pix.length; i += 32) {
-      //横向每8个像素点组成一个字节（8位二进制数）。
-      for (let k = 0; k < 8; k++) {
-          const grayPixle1 = grayPixle(pix.slice(i + k * 4, i + k * 4 + (4 - 1)));
-          //阈值调整
-          if (grayPixle1 > threshold) {
-              //灰度值大于128位   白色 为第k位0不打印
-              part[k] = 0;
-          } else {
-              part[k] = 1;
-          }
-      }
-      let temp = 0;
-      for (let a = 0; a < part.length; a++) {
-          temp += part[a] * Math.pow(2, part.length - 1 - a);
-      }
-      //开始不明白以下算法什么意思，了解了字节才知道，一个字节是8位的二进制数，part这个数组存的0和1就是二进制的0和1，传输到打印的位图数据的一个字节是0-255之间的十进制数，以下是用相权相加法转十进制数，理解了这个就用上面的for循环替代了
-      // const temp =
-      //   part[0] * 128 +
-      //   part[1] * 64 +
-      //   part[2] * 32 +
-      //   part[3] * 16 +
-      //   part[4] * 8 +
-      //   part[5] * 4 +
-      //   part[6] * 2 +
-      //   part[7] * 1;
-      sendImageData[index++] = temp;
-  }
-    return {
-        array: Array.from(sendImageData),
-        width: sendWidth / 8,
-        height: sendHeight,
-    };
-  },
-  /**
- * 获取打印图片的指令
- *
- * @export
- * @param {object} options
- * {
-           lineByLine, // 是否逐行打印，默认true
-    }
-  * @param {object} imageInfo overwriteImageData 得到的位图数据数组和宽高信息
-    {
-        array,
-        width,
-        height
-    }
- */
- getImageCommandArray(imageInfo = {}) {
-  const width = imageInfo.width;
-  const h = imageInfo.height;
-  let arr = imageInfo.array;
-  const xl = width % 256;
-  const xh = (width - xl) / 256;
-  const yl = h % 256;
-  const yh = (h - yl) / 256;
-  //打印图片的十进制指令数组
-  let command = [];
-  let writeArray = [];
-  command = command.concat([29, 118, 48, 0, xl, xh, yl, yh]);
-  writeArray.push(command.concat(arr));
-  return writeArray;
-},
-   // 获取图片
-   async printImg() {
+
+  // 获取图片
+  async printImg() {
     let that = this;
     wx.getImageInfo({
       src: '../../img/epasks-logo.png',
       success: (res) => {
         console.log(res)
-          // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
-          const mw = that.data.paperWidth % 8;
-          const w = mw === 0 ? that.data.paperWidth : that.data.paperWidth - mw;
-          // 等比算出图片的高度
-          const h = Math.floor((res.height * w) / res.width);
-          // 设置canvas宽高
-          that.setData({
-            img: res.path,
-            canvasHeight: h,
-            canvasWidth: w,
+
+        // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
+        const mw = that.data.paperWidth % 8;
+        const w = mw === 0 ? that.data.paperWidth : that.data.paperWidth - mw;
+        // 等比算出图片的高度
+        const h = Math.floor((res.height * w) / res.width);
+        console.log(w)
+        console.log(h)
+        // 设置canvas宽高
+        that.setData({
+          canvasHeight: h,
+          canvasWidth: w,
+        });
+        //这里是重点  新版本的type 2d 获取方法
+        const query = wx.createSelectorQuery();
+        query.select('#shareCanvas')
+          .fields({
+            node: true,
+            size: true
+          })
+          .exec(async (res_exec) => {
+            const canvas = res_exec[0].node;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, w, h); //清空画板
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, w, h);
+            //生成主图
+            const mainImg = canvas.createImage();
+            mainImg.src = '../../img/epasks-logo.png';
+            let mainImgPo = await new Promise((resolve, reject) => {
+              mainImg.onload = () => {
+                resolve(mainImg)
+              }
+              mainImg.onerror = (e) => {
+                reject(e)
+              }
+            });
+            ctx.drawImage(mainImgPo, 0, 0, w, h*3/4);
+            const ctx11 = ctx.getImageData(0, 0, w, h*3/4);
+            // let arr = convert4to1(ctx11.data);
+            // let data = convert8to1(arr);
+            let arrInfo = overwriteImageData(ctx11);
+            let arrInfo2 = getImageCommandArray(arrInfo)
+            console.log(arrInfo2[0])
+            that.setData({
+              imgArr: arrInfo2[0]
+            })
           });
-          //这里是重点  新版本的type 2d 获取方法
-    const query = wx.createSelectorQuery();
-    query.select('#shareCanvas')
-    .fields({ node: true, size: true })
-    .exec(async (res_exec) => {
-      const canvas = res_exec[0].node;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, w/2, h/2); //清空画板
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0, 0, w/2, h/2);
-      //生成主图
-      const mainImg = canvas.createImage();
-      mainImg.src = '../../img/epasks-logo.png';
-      let mainImgPo = await new Promise((resolve, reject) => {
-        mainImg.onload = () => {
-          resolve(mainImg)
-        }
-        mainImg.onerror = (e) => {
-          reject(e)
-        }
-      });
-      ctx.drawImage(mainImgPo, 0, 0, w/2, h/2);
-      const ctx11 = ctx.getImageData(0, 0, w/2, h/2);
-      let arr = that.convert4to1(ctx11.data);
-      let data = that.convert8to1(arr);
-      // let arrInfo = that.overwriteImageData(ctx11);
-      // let arrInfo2 =that.getImageCommandArray(arrInfo)
-      console.log(data)
-      that.setData({
-        imgArr: data
-      })
-    });
       },
       fail: (res) => {
-          console.log('get info fail', res);
-          wx.hideLoading();
+        console.log('get info fail', res);
+        wx.hideLoading();
       },
-  });
-    
+    });
   },
-  //4合1
-  convert4to1(res) {
-    let arr = [];
-		for (let i = 0; i < res.length; i++) {
-			if (i % 4 == 0) {
-				let rule = 0.29900 * res[i] + 0.58700 * res[i + 1] + 0.11400 * res[i + 2];
-				if (rule > 200) {
-					res[i] = 0;
-				} else {
-					res[i] = 1;
-				}
-				arr.push(res[i]);
-			}
-		}
-		return arr;
-  },
-  //8合1
-  convert8to1(arr) {
-    let data = [];
-    for (let k = 0; k < arr.length; k += 8) {
-      let temp = arr[k] * 128 + arr[k + 1] * 64 + arr[k + 2] * 32 + arr[k + 3] * 16 + arr[k + 4] * 8 + arr[k + 5] * 4 + arr[k + 6] * 2 + arr[k + 7] * 1
-      data.push(temp);
-    }
-    return data;
-  }
+
 })
