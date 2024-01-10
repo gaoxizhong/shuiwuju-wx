@@ -1,6 +1,8 @@
 /* pages/user-water-info/index.wxss */
 
-
+page{
+  height: auto;
+}
 .user-water-info {
   background-color: #fff;
   display: flex;
@@ -40,6 +42,7 @@
 .btn{
   display: flex;
   font-size: 28rpx;
+  margin-top: 60rpx;
 }
 .btn-item{
   flex: 0.5;

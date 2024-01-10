@@ -78,7 +78,7 @@ Page({
     operatorNameList: [],
     is_pop: false,
     // 打印机纸张宽度，我用的打印几的纸张最大宽度是384，可以修改其他的
-    paperWidth: 260,
+    paperWidth: 232,
     canvasWidth: 1,
     canvasHeight: 1,
     threshold: [200],
@@ -956,17 +956,15 @@ Utilizador: ${that.data.operator_name}
   async printImg() {
     let that = this;
     wx.getImageInfo({
-      src: '../../img/epasks-logo.png',
+      src: '../../img/epasks-logo1.png',
       success: (res) => {
         console.log(res)
 
         // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
         const mw = that.data.paperWidth % 8;
-        const w = mw === 0 ? that.data.paperWidth : that.data.paperWidth - mw;
+        const w = 116;
         // 等比算出图片的高度
-        const h = Math.floor((res.height * w) / res.width);
-        console.log(w)
-        console.log(h)
+        const h = 116;
         // 设置canvas宽高
         that.setData({
           canvasHeight: h,
@@ -982,12 +980,12 @@ Utilizador: ${that.data.operator_name}
           .exec(async (res_exec) => {
             const canvas = res_exec[0].node;
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, w, h); //清空画板
+            ctx.clearRect(0, 0, w*2, h*2); //清空画板
             ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, w, h);
+            ctx.fillRect(0, 0, w*2, h*2);
             //生成主图
             const mainImg = canvas.createImage();
-            mainImg.src = '../../img/epasks-logo.png';
+            mainImg.src = '../../img/epasks-logo1.png';
             let mainImgPo = await new Promise((resolve, reject) => {
               mainImg.onload = () => {
                 resolve(mainImg)
@@ -996,8 +994,8 @@ Utilizador: ${that.data.operator_name}
                 reject(e)
               }
             });
-            ctx.drawImage(mainImgPo, 0, 0, w, h*3/4);
-            const ctx11 = ctx.getImageData(0, 0, w, h*3/4);
+            ctx.drawImage(mainImgPo, 0, 0, w*2, h*1.1);
+            const ctx11 = ctx.getImageData(0, 0, w*2,h*1.1);
             // let arr = convert4to1(ctx11.data);
             // let data = convert8to1(arr);
             let arrInfo = overwriteImageData(ctx11);
