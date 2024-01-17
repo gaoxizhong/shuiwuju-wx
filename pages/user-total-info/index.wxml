@@ -98,18 +98,21 @@
   </van-popup>
 
   <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" catchtap="cover_layer"></view>
-  <view wx:if="{{is_pop && operator_name && operatorNameList.length > 0}}" catchtouchmove="myCatchTouch" class="operatorNameList-cover" catchtap="operatorNameList_cover"></view>
-  <view class="toast-box" wx-if="{{password_layer}}" catchtap="operatorNameList_cover">
+  <view wx:if="{{ is_operatorLsPop }}" catchtouchmove="myCatchTouch" class="operatorNameList-cover"></view>
+  <view class="toast-box" wx-if="{{password_layer}}" catchtouchmove="myCatchTouch">
     <view class="pass-title">{{lang.placeholderName}}</view>
     <van-field value="{{ operator_name }}" required placeholder="{{lang.placeholderName}}" bind:blur="handleNameBlur" bind:change="handleInputReading" error="{{name_error}}" />
+    <view class="ls-box" catchtap="operatorLs"><text>历史记录</text></view>
     <van-button type="info" size="small" block='true' catchtap="clickPrint">{{ btnName.submitName }}</van-button>
-
-   
-    <view class="pop-box" wx:if="{{is_pop && operator_name && operatorNameList.length > 0}}">
-      <view wx:for="{{operatorNameList}}" wx:key="index" data-name="{{item}}" catchtap="clickoperatorName">{{item}}</view>
+    <!-- 历史记录 -->
+    <view class="pop-box" wx:if="{{ is_operatorLsPop }}">
+      <view class="ls-item">
+        <view class="pop-item-box">
+          <view wx:for="{{operatorNameList}}" wx:key="index" data-name="{{item}}" catchtouchmove="myCatchTouch" catchtap="clickoperatorName">{{item}}</view>
+        </view>
+      </view>
+      <view class="qx-box" catchtap="operatorNameList_cover">{{btnName.cancelName}}</view>
     </view>
   </view>
-
-
 </view>
-<canvas type="2d" id="shareCanvas" style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;position: fixed;bottom: 100000px;"></canvas>
+<canvas type="2d" id="shareCanvas" style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;position: absolute;bottom:10000px;"></canvas>

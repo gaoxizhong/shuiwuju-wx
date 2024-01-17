@@ -19,7 +19,7 @@
         bind:change="handleChange" >
         <van-button slot="button" type="info" size="small" bind:click="getorientation" wx:if="{{item.is_button}}">{{item.orientation}}</van-button>
       </van-field>
-      <!-- 价格类型下拉选择 -->
+      <!-- 共有/独有下拉选择 -->
       <van-field 
         wx:if="{{item.type === 'tot_sim'}}"
         title-width="100%" 
@@ -209,6 +209,7 @@
     id="tot_sim"
       show-toolbar 
       columns="{{ optionsTotSim }}"
+    default-index="{{ totSimIndex }}"
     confirm-button-text="{{langDialog.confirmText}}" 
     cancel-button-text="{{langDialog.cancelText}}" 
     bind:cancel="onCloseTotSim" 

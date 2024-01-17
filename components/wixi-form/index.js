@@ -38,8 +38,29 @@ Component({
       }, {
         values: area2,
       }]
+      let totSimIndex = this.data.totSimIndex; // 默认 下标 1， normal 
+      let optionsTotSim = this.data.optionsTotSim;
+      let newform = this.properties.form;
+      newform.map( (item) =>{
+        if(item.type == 'tot_sim'){
+          item.value_name = optionsTotSim[totSimIndex].value;
+          item.value = optionsTotSim[totSimIndex].text;
+        }
+        if( item.key == 'household_num'){
+          console.log('household_num')
+          if(totSimIndex == 0){ // 不共有 -- normal
+            item.value = '';
+            item.readonly = false;
+          }
+          if(totSimIndex == 1){ // 共有
+            item.value = 1;
+            item.readonly = true;
+          }
+        }
+      })
+      console.log(newform)
       this.setData({
-        wixiForm: this.properties.form || [],
+        wixiForm: newform || [],
         columns,
         langDialog: lang.dialog,
         formatter(type, value) {
@@ -115,14 +136,11 @@ Component({
   ],
     optionsPriceType: [],  // 价格类型
     showTotSim: false, // 共有/独有
-    optionsTotSim:[
-      {
-        text: 'Totalizador',
-        value: 1
-      }, {
-        text: 'Normal',
-        value: 0
-    }],
+    optionsTotSim:[ 
+      {text: 'Totalizador', value: 1},
+      { text: 'Normal', value: 0},
+    ],
+    totSimIndex: 1, // 默认 共有/独有 选项下标
     showSelect: false,
     formIndex: '',
     columnsIndex: [0, 0, 0],

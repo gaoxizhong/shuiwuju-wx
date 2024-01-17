@@ -84,6 +84,7 @@ Page({
     threshold: [200],
     img: '',
     printing: false,
+    is_operatorLsPop: false
   },
 
   /**
@@ -400,7 +401,7 @@ Page({
   clickoperatorName(e) {
     this.setData({
       operator_name: e.currentTarget.dataset.name,
-      is_pop: false,
+      is_operatorLsPop: false,
     })
   },
   //  确认姓名
@@ -421,6 +422,12 @@ Page({
       wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
     }
     this.new_onConfirmPay();
+  },
+  // 点击历史姓名记录
+  operatorLs(){
+    this.setData({
+      is_operatorLsPop: true
+    })
   },
   // 发票
   blueToothInvoice() {
@@ -597,7 +604,7 @@ Page({
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
-        ...this.data.imgArr,
+        // ...this.data.imgArr,
         ...blueToolth.printCommand.ct,
         ...this.arrEncoderCopy(this.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
@@ -929,7 +936,7 @@ Utilizador: ${that.data.operator_name}
   },
   operatorNameList_cover() {
     this.setData({
-      is_pop: false
+      is_operatorLsPop: false
     })
   },
   handleNameBlur(e) {
@@ -956,23 +963,20 @@ Utilizador: ${that.data.operator_name}
   async printImg() {
     let that = this;
     wx.getImageInfo({
-      src: '../../img/epasks-logo1.png',
+      src: 'https://huanbaobi.oss-cn-beijing.aliyuncs.com/wx_shuiwuju/epasks-logo1.png',
       success: (res) => {
-        console.log(res)
-
-        // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
-        const mw = that.data.paperWidth % 8;
-        const w = 116;
-        // 等比算出图片的高度
-        const h = 116;
-        // 设置canvas宽高
-        that.setData({
-          canvasHeight: h,
-          canvasWidth: w,
-        });
-        //这里是重点  新版本的type 2d 获取方法
-        const query = wx.createSelectorQuery();
-        query.select('#shareCanvas')
+        var path = res.path;
+        setTimeout(() => {
+          const w = 116;
+          const h = 120;
+          // 设置canvas宽高
+          that.setData({
+            canvasHeight: w,
+            canvasWidth: h,
+          });
+          //新版本的type 2d 获取方法
+          const query = wx.createSelectorQuery();
+          query.select('#shareCanvas')
           .fields({
             node: true,
             size: true
@@ -980,31 +984,38 @@ Utilizador: ${that.data.operator_name}
           .exec(async (res_exec) => {
             const canvas = res_exec[0].node;
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, w*2, h*2); //清空画板
+            ctx.clearRect(0, 0, w, h); //清空画板
             ctx.fillStyle = '#fff';
-            ctx.fillRect(0, 0, w*2, h*2);
+            ctx.fillRect(0, 0, w, h);
             //生成主图
             const mainImg = canvas.createImage();
-            mainImg.src = '../../img/epasks-logo1.png';
-            let mainImgPo = await new Promise((resolve, reject) => {
-              mainImg.onload = () => {
-                resolve(mainImg)
-              }
-              mainImg.onerror = (e) => {
-                reject(e)
-              }
-            });
-            ctx.drawImage(mainImgPo, 0, 0, w*2, h*1.1);
-            const ctx11 = ctx.getImageData(0, 0, w*2,h*1.1);
+            mainImg.src = res.path;
+            mainImg.onload = (e) => {
+              ctx.drawImage(mainImg, 0, 0,  w, h);
+              const ctx11 = ctx.getImageData(0, 0, w, h);
+              // const ctx11 = ctx.getImageData(0, 0, w*2,h*1.1);
+              let arr = convert4to1(ctx11.data);
+              let data = convert8to1(arr);
+              const cmds = [].concat([29, 118, 48, 0, 35, 0, 100, 0], data, [27, 74, 3], [27, 64]);
+              console.log(cmds);
+            }
+              
+           
             // let arr = convert4to1(ctx11.data);
             // let data = convert8to1(arr);
-            let arrInfo = overwriteImageData(ctx11);
-            let arrInfo2 = getImageCommandArray(arrInfo)
-            console.log(arrInfo2[0])
-            that.setData({
-              imgArr: arrInfo2[0]
-            })
+            // let arrInfo = overwriteImageData(ctx11);
+            // let arrInfo2 = getImageCommandArray(arrInfo)
+            // console.log(arrInfo2[0])
+            // that.setData({
+            //   imgArr: arrInfo2[0]
+            // })
           });
+        }, 200)
+        
+        
+       
+          
+          
       },
       fail: (res) => {
         console.log('get info fail', res);
