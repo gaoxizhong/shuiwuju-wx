@@ -56,7 +56,8 @@ const en_lang = {
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
     selectImg: 'Por favor, selecione uma imagem',
-    selectPop: 'Por favor selecione'
+    selectPop: 'Por favor selecione',
+    his_name: 'Nome da história',
   },
   // 蓝牙
   blueToolth: {

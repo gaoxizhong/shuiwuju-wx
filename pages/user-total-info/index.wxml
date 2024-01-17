@@ -102,7 +102,7 @@
   <view class="toast-box" wx-if="{{password_layer}}" catchtouchmove="myCatchTouch">
     <view class="pass-title">{{lang.placeholderName}}</view>
     <van-field value="{{ operator_name }}" required placeholder="{{lang.placeholderName}}" bind:blur="handleNameBlur" bind:change="handleInputReading" error="{{name_error}}" />
-    <view class="ls-box" catchtap="operatorLs"><text>历史记录</text></view>
+    <view class="ls-box" catchtap="operatorLs"><text>{{btnName.his_name}}</text></view>
     <van-button type="info" size="small" block='true' catchtap="clickPrint">{{ btnName.submitName }}</van-button>
     <!-- 历史记录 -->
     <view class="pop-box" wx:if="{{ is_operatorLsPop }}">

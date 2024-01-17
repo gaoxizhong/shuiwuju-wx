@@ -54,7 +54,9 @@ const zh_lang = {
     agree: '同意',
     disagree: '不同意',
     selectImg: '请选择图片',
-    selectPop: '请选择'
+    selectPop: '请选择',
+    his_name: '历史姓名',
+    
   },
   // 蓝牙
   blueToolth: {
