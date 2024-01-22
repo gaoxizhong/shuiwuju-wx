@@ -53,6 +53,7 @@ const en_lang = {
     printOtherTwo: 'Reabastecimento de recibos',
     print: 'Factura Simplificada',
     invoice: 'Imprimir As facturas',
+    invoice_1: 'Factura/recibo',
     agree: 'Concordo',
     disagree: 'A permissão Bluetooth não é obtida',
     selectImg: 'Por favor, selecione uma imagem',
@@ -359,7 +360,8 @@ const en_lang = {
     reading: 'Leitura do contador',
     last_water_1: 'Leitura O último',
     total_water: 'Consumo de água',
-    total_money: 'Valor a pagar',
+    total_money: 'valor da factura',
+    total_money_1: 'valor da factura',
     createDate: 'Date',
     waterList: 'Fotos',
 

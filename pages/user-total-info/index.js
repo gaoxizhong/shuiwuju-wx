@@ -84,7 +84,8 @@ Page({
     threshold: [200],
     img: '',
     printing: false,
-    is_operatorLsPop: false
+    is_operatorLsPop: false,
+    totIndex: 0, // 默认  选项下标
   },
 
   /**
@@ -100,35 +101,15 @@ Page({
     })
 
     // const payStatusList = options.payWayList
-    const source = options.source
-    let status = ''
+    const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
+    let status = '';
+    if (source === 'search-person') {
+      status = 'pay'
+    }
+    if (source === 'business-hall') {
+      status = 'bank_pay'
+    }
 
-    // if (source === 'search-person') {
-    //   status = 'pay'
-    //   if (form.status !== 1) {
-    //     status = 'print'
-    //   }
-    //   if (form.receipt_status !== 1) {
-    //     status = 'over'
-    //   }
-    // }
-
-    // if (source === 'business-hall') {
-    //   status = 'bank_pay'
-    //   if (form.status !== 1) {
-    //     status = 'print'
-    //   }
-    //   if (form.receipt_status !== 1) {
-    //     status = 'print_two'
-    //   }
-    // }
-
-    // if (source === 'financial-manager') {
-    //   status = 'no'
-    //   if (form.status !== 2) {
-    //     status = 'yes'
-    //   }
-    // }
     const wm_no = options.wm_no;
     const wm_name = options.wm_name;
     const userInfo = app.globalData.userInfo || {}
@@ -158,6 +139,7 @@ Page({
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
+    let that = this;
     const wm_no = n
     const params = {
       wm_no,
@@ -172,13 +154,29 @@ Page({
         text: res.data.pay_way[i].title,
         key: res.data.pay_way[i].key
       }))
-      this.setData({
+      that.setData({
         last_reading,
         last_time,
         arrears_money_sum,
-        // arrears_money_sum: Math.abs(arrears_money_sum),
-        payStatusList: payWayList
       })
+      if (that.data.source == 'search-person') {
+        let payStatusList = [];
+        payStatusList.push(payWayList[1])
+        that.setData({
+          totIndex: 1,
+          payStatusList,
+          pay_way: payStatusList[0].key,
+          pay_text: payStatusList[0].text,
+        })
+      }
+      if (that.data.source == 'business-hall') {
+        that.setData({
+          totIndex: 0,
+          payStatusList: payWayList,
+          pay_way: '',
+          pay_text: '',
+        })
+      }
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -310,7 +308,6 @@ Page({
     this.setData({
       pay_way: key,
       pay_text: text,
-      status: 'print',
       showPay: false,
       no_error: false
     })

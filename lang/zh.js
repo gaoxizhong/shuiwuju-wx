@@ -51,6 +51,7 @@ const zh_lang = {
     printOtherTwo: '补开收据',
     print: '打印缴费单',
     invoice: '打印发票',
+    invoice_1: '打印发票',
     agree: '同意',
     disagree: '不同意',
     selectImg: '请选择图片',
@@ -360,6 +361,7 @@ const zh_lang = {
     last_water_1:'末次读数',
     total_water: '用水量',
     total_money: '应缴金额',
+    total_money_1: '应缴金额',
     createDate: '查询时间',
     waterList: '照片',
 

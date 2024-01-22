@@ -265,6 +265,10 @@ Page({
 
    // 发票
    blueToothInvoice(){
+     wx.navigateTo({
+       url:  `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.wm_name}&source=search-person`,
+     })
+     return
     this.setData({
       print_type: 'invoiceInfo'
     })

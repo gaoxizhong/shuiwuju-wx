@@ -22,7 +22,7 @@
         <view class="info-item__info">{{last_time}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.total_money}}</view>
+        <view class="info-item__label">{{lang.total_money_1}}</view>
         <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
       </view>
       <van-cell-group>
@@ -36,11 +36,6 @@
   </view>
   <view class="btn">
     <block>
-     <!-- 支付 开始 -->
-      <!-- <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
-        {{btnName.pay}}
-      </view> -->
-      <!-- 支付 结束 -->
 
       <!-- 打印 开始-->
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
@@ -48,7 +43,7 @@
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{status === 'pay'}}">
         {{btnName.invoice}}
       </view>
       <!-- 打印发票 -->
@@ -86,7 +81,7 @@
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
-    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}"  bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+    <van-picker id="pay" show-toolbar default-index="{{ totIndex }}" columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}"  bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
   </van-popup>
   <!-- 拒绝原因 -->
   <van-popup show="{{ showResult }}" position="bottom" bind:close="onCloseResult">
