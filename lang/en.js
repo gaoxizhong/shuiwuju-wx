@@ -59,6 +59,7 @@ const en_lang = {
     selectImg: 'Por favor, selecione uma imagem',
     selectPop: 'Por favor selecione',
     his_name: 'Nome da história',
+    fecho: 'Fecho',
   },
   // 蓝牙
   blueToolth: {

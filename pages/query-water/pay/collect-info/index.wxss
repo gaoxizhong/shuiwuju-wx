@@ -65,7 +65,9 @@
 }
 .look-box{
   text-align: right;
-  padding-right: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .look-box view{
   display: inline-block;

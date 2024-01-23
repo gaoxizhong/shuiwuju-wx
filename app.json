@@ -23,7 +23,8 @@
     "pages/user-water-info/index",
     "pages/user-total-info/index",
     "pages/maintenance/maintenance-info/index",
-    "pages/admin/set-lang/index"
+    "pages/admin/set-lang/index",
+    "pages/query-water/fecho/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

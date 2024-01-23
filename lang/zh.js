@@ -57,7 +57,7 @@ const zh_lang = {
     selectImg: '请选择图片',
     selectPop: '请选择',
     his_name: '历史姓名',
-    
+    fecho: '交接班',
   },
   // 蓝牙
   blueToolth: {
