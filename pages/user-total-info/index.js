@@ -342,28 +342,6 @@ Page({
       })
     })
   },
-
-  // printWaterInfo() {
-  //   const up_id = this.data.form.up_id
-  //   const params = {
-  //     up_id,
-  //   }
-  //   printWater(params).then(res => {
-  //     wx.showToast({
-  //       title: lang.message.success,
-  //       icon: 'none'
-  //     })
-  //     this.setData({
-  //       status: 'over',
-  //       showPay: false
-  //     })
-  //   }).catch((res) => {
-  //     wx.showToast({
-  //       title: res.desc,
-  //       icon: 'none'
-  //     })
-  //   })
-  // },
   // 收据按钮
   printWaterInfo() {
     const paid_total_money = this.data.paid_total_money

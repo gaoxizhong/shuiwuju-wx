@@ -339,6 +339,8 @@ const en_lang = {
   },
   //交班人
   fecho: {
+    title: 'Factura Simplificada',
+    price: 'Valor a pagar',
     name: 'nome',
     operator_name: 'Pessoa de entrega',
     total_price: 'Valor total',

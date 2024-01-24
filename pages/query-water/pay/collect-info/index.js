@@ -488,4 +488,14 @@ Page({
     this.onCloseTimeSelect();
     this.waterCount();
   },
+
+  goToFecho(){
+    wxAsyncApi('navigateTo', {
+      url: '/pages/query-water/fecho/index',
+    }).then(res => {
+      // wx.setNavigationBarTitle({
+      //   title: lang.message.fecho,
+      // })
+    })
+  },
 })

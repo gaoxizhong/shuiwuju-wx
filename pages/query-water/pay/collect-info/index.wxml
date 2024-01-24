@@ -11,7 +11,7 @@
       </van-search>
     </view>
     <view class="look-box">
-      <view bindtap="clickFecho" hover-class="hoverClass">{{btnName.fecho}}</view>
+      <view bindtap="goToFecho" hover-class="hoverClass">{{btnName.fecho}}</view>
       <view bindtap="clickLook" hover-class="hoverClass">{{lang.look}}</view>
     </view>
     <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" bind:blur="handleReading" bind:change="handleInputWmNo" label="{{lang.wm_no}}" model:value="{{ wm_no }}" placeholder="{{lang.placeholder}}" /> -->

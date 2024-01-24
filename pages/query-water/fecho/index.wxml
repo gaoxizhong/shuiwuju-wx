@@ -2,20 +2,24 @@
   <view class="view-box">
     <view class="info-box">
       <view>
+        <text class="text-1">{{ lang.title }}</text>
+        <text class="text-2">{{ infoData.user_payment_count || 0 }}</text>
+      </view>
+      <view>
+        <text class="text-1">{{ lang.price }}</text>
+        <text class="text-2">{{ infoData.price_sum || 0 }}</text>
+      </view>
+    </view>
+  </view>
+  <view class="view-box">
+    <view class="info-box">
+      <view>
         <text class="text-1">{{ lang.receipt }}</text>
         <text class="text-2">{{ infoData.receipt_num || 0 }} {{ lang.zhang }}</text>
       </view>
       <view>
-        <text class="text-1">{{ lang.cash }}</text>
-        <text class="text-2">{{ infoData.receipt_cash || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.transfer_money }}</text>
-        <text class="text-2">{{ infoData.receipt_transfer_accounts || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.swipe_card }}</text>
-        <text class="text-2">{{ infoData.receipt_pos || 0 }}</text>
+        <text class="text-1">{{ lang.price }}</text>
+        <text class="text-2">{{ infoData.receipt_total_price || 0 }}</text>
       </view>
     </view>
   </view>
@@ -26,39 +30,12 @@
         <text class="text-2">{{infoData.invoice_num || 0 }} {{ lang.zhang }}</text>
       </view>
       <view>
-        <text class="text-1">{{ lang.cash }}</text>
-        <text class="text-2">{{ infoData.invoice_cash || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.transfer_money }}</text>
-        <text class="text-2">{{ infoData.invoice_transfer_accounts || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.swipe_card }}</text>
-        <text class="text-2">{{ infoData.invoice_pos || 0 }}</text>
+        <text class="text-1">{{ lang.price }}</text>
+        <text class="text-2">{{ infoData.invoice_total_price || 0 }}</text>
       </view>
     </view>
   </view>
-  <view class="view-box">
-    <view class="info-box">
-      <view>
-        <text class="text-1">{{ lang.total_price }}</text>
-        <text class="text-2">{{ infoData.total_price || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.cash }}</text>
-        <text class="text-2">{{ infoData.cash_sum || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.transfer_money }}</text>
-        <text class="text-2">{{ infoData.transfer_accounts_sum || 0 }}</text>
-      </view>
-      <view>
-        <text class="text-1">{{ lang.swipe_card }}</text>
-        <text class="text-2">{{ infoData.pos_sum || 0 }}</text>
-      </view>
-    </view>
-  </view>
+
   <!-- <view class="jbsj-box">
     <text>{{ lang.jbsj }}：</text>
     <text>{{ infoData.etime }}</text>

@@ -338,16 +338,18 @@ const zh_lang = {
   },
   //交班人
   fecho: {
-    name: '姓名',
-    operator_name: '交班人',
+    title: '缴费单',
+    receipt: '收据',
+    invoice: '发票',
+    price: '金额',
     total_price: '总金额',
     cash: '现金',
     transfer_money: '转账',
     swipe_card: '刷卡',
-    submit: '提交打印',
-    receipt: '收据',
-    invoice: '发票',
     zhang: '张',
+    name: '姓名',
+    operator_name: '交班人',
+    submit: '提交打印',
     jbsj: '交班时间'
   },
   // 用水详情
