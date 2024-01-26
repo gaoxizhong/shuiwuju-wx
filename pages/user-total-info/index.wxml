@@ -25,6 +25,9 @@
         <view class="info-item__label">{{lang.total_money_1}}</view>
         <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
       </view>
+      <van-cell-group wx:if="{{source === 'search-person'}}">
+        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" error="{{descontos_error}}" bind:blur="handBlurdescontos"  bind:change="handleInputdescontos" label="{{lang.descontos}}  (KZ)" model:value="{{ descontos }}" placeholder="{{lang.descontos}}" />
+      </van-cell-group>
       <van-cell-group>
         <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:blur="handleReading"  bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
       </van-cell-group>
@@ -37,13 +40,13 @@
   <view class="btn">
     <block>
 
-      <!-- 打印 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
+      <!-- 打印收据 开始-->
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{source != 'search-person'}}">
         {{btnName.printOther}}
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{status === 'pay'}}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{source === 'search-person'}}">
         {{btnName.invoice}}
       </view>
       <!-- 打印发票 -->

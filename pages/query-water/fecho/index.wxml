@@ -3,7 +3,7 @@
     <view class="info-box">
       <view>
         <text class="text-1">{{ lang.title }}</text>
-        <text class="text-2">{{ infoData.user_payment_count || 0 }}</text>
+        <text class="text-2">{{ infoData.user_payment_count || 0 }} {{ lang.zhang }}</text>
       </view>
       <view>
         <text class="text-1">{{ lang.price }}</text>
@@ -11,7 +11,7 @@
       </view>
     </view>
   </view>
-  <view class="view-box">
+  <!-- <view class="view-box">
     <view class="info-box">
       <view>
         <text class="text-1">{{ lang.receipt }}</text>
@@ -22,7 +22,7 @@
         <text class="text-2">{{ infoData.receipt_total_price || 0 }}</text>
       </view>
     </view>
-  </view>
+  </view> -->
   <view class="view-box">
     <view class="info-box">
       <view>

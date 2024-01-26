@@ -169,20 +169,14 @@ Page({
     let date = this.handleTimeValue();
     this.setData({
       printInfo:`
-recepcao:          ${infoData.receipt_num} Un
-numerário:         ${infoData.receipt_cash} kZ
-transferência:   ${infoData.receipt_transfer_accounts} kZ 
-Cartao:            ${infoData.receipt_pos} kZ
+Factura Simplificada:     ${infoData.user_payment_count} Un
+Valor a pagar:      ${infoData.price_sum} kZ
 --------------------------------
-As facturas:       ${infoData.invoice_num} Un
-numerário:         ${infoData.invoice_cash} kZ 
-transferência:   ${infoData.invoice_transfer_accounts} kZ
-Cartao:            ${infoData.invoice_pos} kZ
+recibo:                  ${infoData.receipt_num} Un
+Valor a pagar:       ${infoData.receipt_total_price} kZ 
 --------------------------------
-As facturas:        ${infoData.total_price} kZ
-numerário:          ${infoData.cash_sum} kZ
-transferência:    ${infoData.transfer_accounts_sum} kZ
-Cartao:             ${infoData.pos_sum} kZ
+As facturas:           ${infoData.invoice_num} Un
+Valor a pagar:         ${infoData.invoice_total_price} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
 `,

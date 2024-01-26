@@ -59,7 +59,9 @@ Page({
     last_time: '',
     arrears_money_sum: '',
     paid_total_money: '',
+    descontos:'',
     no_error: false,
+    descontos_error: false,
     payStatusList: [],
     pay_way: '',
     pay_text: '',
@@ -185,7 +187,12 @@ Page({
       })
     })
   },
-
+  handleInputdescontos(e){
+    const descontos = e.detail
+    this.setData({
+      descontos,
+    })
+  },
   //输入实缴金额
   handleInputMoney(e) {
     console.log(e)
@@ -197,6 +204,12 @@ Page({
     this.setData({
       paid_total_money,
       no_error
+    })
+  },
+  handBlurdescontos(e){
+    const descontos = e.detail.value;
+    this.setData({
+      descontos,
     })
   },
   // 失焦赋值
@@ -220,6 +233,9 @@ Page({
         total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
         pay_time: date.time
+      }
+      if(that.data.source == 'search-person'){
+        params.descontos = that.data.params;
       }
       new_payWater(params).then(res => {
         that.setData({
@@ -310,36 +326,6 @@ Page({
       pay_text: text,
       showPay: false,
       no_error: false
-    })
-    return
-    const up_id = this.data.form.up_id
-    const source = this.data.source
-    const params = {
-      up_id,
-      pay_way: key
-    }
-    let api = () => {}
-    if (source === 'search-person') {
-      //查表员 现金/pos机子
-      api = payWater
-    } else if (source === 'business-hall') {
-      //营业厅 银行支付
-      api = handleBusinessHallPayBill
-    }
-    api(params).then(res => {
-      wx.showToast({
-        title: lang.message.success,
-        icon: 'none'
-      })
-      this.setData({
-        status: 'print',
-        showPay: false
-      })
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none'
-      })
     })
   },
   // 收据按钮
@@ -599,6 +585,14 @@ Page({
       ]
     }
     console.log('开始打印，api传信息...')
+    let n = 1;
+    this.writeBLECharacteristicValue(p,info,n);
+  },
+  writeBLECharacteristicValue(data,i,n){
+    let p = data;
+    let info = i;
+    let num = n; 
+    let that = this;
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
@@ -616,14 +610,21 @@ Page({
           pay_way: '',
           pay_text: '',
         })
+        let print_type = that.data.print_type;
+        //打印收据
         if (print_type == 'receiptInfo') {
-          // 4.修改打印收据状态
-          that.setReceiptStatus();
-
+          num++;
+          if(num <= 2){
+            that.writeBLECharacteristicValue(p,i,num);
+          }else{
+            // 4.修改打印收据状态
+            that.setReceiptStatus();
+          }
         } else {
           // 5.修改发票收据状态
           that.setInvoiceStatus();
         }
+       
       },
       onFail(res) {
         console.log('打印失败...')

@@ -342,7 +342,7 @@ const en_lang = {
     title: 'Factura Simplificada',
     price: 'Valor a pagar',
     name: 'nome',
-    operator_name: 'Pessoa de entrega',
+    operator_name: 'nome do leitor',
     total_price: 'Valor total',
     cash: 'dinheiro',
     transfer_money: 'transferência',
@@ -372,6 +372,7 @@ const en_lang = {
     placeholder: 'Por favor, digite',
     pay_type: 'Métodos de Pagamento',
     paid_total_money: 'Valor real pago',
+    descontos:'Desconto',
     placeholderName: 'Preencher o nome do pedágio',
   },
   // 功能列表

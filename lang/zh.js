@@ -371,6 +371,7 @@ const zh_lang = {
     placeholder: '请输入',
     pay_type: '支付方式',
     paid_total_money: '实缴金额',
+    descontos:'折扣',
     placeholderName: '请输入姓名',
   },
   // 功能列表
