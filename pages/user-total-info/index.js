@@ -59,7 +59,7 @@ Page({
     last_time: '',
     arrears_money_sum: '',
     paid_total_money: '',
-    descontos:'',
+    discount_money: 0, // 优惠价格
     no_error: false,
     descontos_error: false,
     payStatusList: [],
@@ -188,9 +188,9 @@ Page({
     })
   },
   handleInputdescontos(e){
-    const descontos = e.detail
+    const discount_money = e.detail
     this.setData({
-      descontos,
+      discount_money,
     })
   },
   //输入实缴金额
@@ -207,9 +207,9 @@ Page({
     })
   },
   handBlurdescontos(e){
-    const descontos = e.detail.value;
+    const discount_money = e.detail.value;
     this.setData({
-      descontos,
+      discount_money,
     })
   },
   // 失焦赋值
@@ -232,10 +232,8 @@ Page({
         wm_no: that.data.wm_no,
         total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
-        pay_time: date.time
-      }
-      if(that.data.source == 'search-person'){
-        params.descontos = that.data.params;
+        pay_time: date.time,
+        discount_money: that.data.discount_money
       }
       new_payWater(params).then(res => {
         that.setData({
@@ -973,7 +971,6 @@ Utilizador: ${that.data.operator_name}
               let arr = convert4to1(ctx11.data);
               let data = convert8to1(arr);
               const cmds = [].concat([29, 118, 48, 0, 35, 0, 100, 0], data, [27, 74, 3], [27, 64]);
-              console.log(cmds);
             }
               
            

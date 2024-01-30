@@ -25,8 +25,8 @@
         <view class="info-item__label">{{lang.total_money_1}}</view>
         <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
       </view>
-      <van-cell-group wx:if="{{source === 'search-person'}}">
-        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" error="{{descontos_error}}" bind:blur="handBlurdescontos"  bind:change="handleInputdescontos" label="{{lang.descontos}}  (KZ)" model:value="{{ descontos }}" placeholder="{{lang.descontos}}" />
+      <van-cell-group wx:if="{{source != 'search-person'}}">
+        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" error="{{descontos_error}}" bind:blur="handBlurdescontos"  bind:change="handleInputdescontos" label="{{lang.descontos}}  (KZ)" model:value="{{ discount_money }}" placeholder="{{lang.descontos}}" />
       </van-cell-group>
       <van-cell-group>
         <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:blur="handleReading"  bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
