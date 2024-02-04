@@ -2,6 +2,30 @@
 page {
   height: 100%;
 }
+.container-tabbox{
+  width: 100%;
+  display: flex;
+}
+.container-tabbox>view{
+  flex: 1;
+  text-align: center;
+  background: #fff;
+  margin-bottom: 10rpx;
+  padding: 20rpx 0;
+  position: relative;
+}
+.container-tabbox>view.active::before{
+    content: '';
+    background: #ee0a24;
+    border-radius: 3px;
+    bottom: 0;
+    height: 3px;
+    left: 50%;
+    position: absolute;
+    width: 40px;
+    transform: translateX(-50%);
+    transition: 0.3s;
+}
 
 van-tabs {
   height: 100%;

@@ -18,7 +18,6 @@ Page({
     langDialog: lang.dialog,
 
     pay_way: '1',
-
     stas: {},
     list: [],
     payWayList: [],
@@ -35,7 +34,12 @@ Page({
     isScroll: true,
     loading: lang.message.scrollLoading
   },
-
+  clicktab(n){
+    console.log(n)
+    this.setData({
+      pay_way: n.currentTarget.dataset.index
+    })
+  },
   /**
    * 生命周期函数--监听页面显示
    */
@@ -54,6 +58,7 @@ Page({
   },
   onChange(e) {
     const pay_way = e.detail.name
+    console.log(pay_way)
     this.setData({
       pay_way,
       wm_no: '',
@@ -153,6 +158,7 @@ Page({
     })
   },
   handleSelectItem(e) {
+    console.log(e)
     const {
       index,
       value
