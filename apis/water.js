@@ -71,6 +71,14 @@ export const payWaterList = (data) => {
     data
   })
 }
+export const getAdminList = (data) =>{
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_admin_statis`,
+    method: 'POST',
+    data
+  })
+}
 
 // 获取待缴费金额接口
 export const getArrearsMoneySum = (data) => {

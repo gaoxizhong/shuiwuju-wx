@@ -34,12 +34,6 @@ Page({
     isScroll: true,
     loading: lang.message.scrollLoading
   },
-  clicktab(n){
-    console.log(n)
-    this.setData({
-      pay_way: n.currentTarget.dataset.index
-    })
-  },
   /**
    * 生命周期函数--监听页面显示
    */

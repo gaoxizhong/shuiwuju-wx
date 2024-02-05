@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  payWaterList
+  payWaterList,getAdminList
 } from './../../../apis/water'
 const {
   wxAsyncApi,fmoney
@@ -38,11 +38,13 @@ Page({
 
     wm_no: '',
     status: '',
-
+    admin_name:'', // 管理员搜索字段
     show: false,
     selectIndex: 0, // 状态索引
     isScroll: false,
-    loading: lang.message.scrollLoading
+    loading: lang.message.scrollLoading,
+    title_active: 1,
+    adminlList: [],
   },
 
   /**
@@ -53,6 +55,7 @@ Page({
     const stime = this.data.startTime
     const etime = this.data.endTime
     this.setData({
+      adminlList: [{},{}],
       list: [],
       page: 1,
       total: 0,
@@ -62,21 +65,37 @@ Page({
       langDialog: lang.dialog,
       loading: lang.message.scrollLoading
     })
-    if (stime && etime) {
+    if(this.data.title_active == 1){
       this.getList()
+    }else{
+      this.getadminList();
     }
 
   },
+  // 管理员 input 事件
+  handleChangeAdminName(e) {
+    const value = e.detail
+    this.setData({
+      admin_name: value,
+    })
+  },
+  // 管理员搜索事件
+  onAdminNameSearch(){
+
+  },
+  // 水表用户 input 事件
   handleChangeInput(e) {
     const value = e.detail
     this.setData({
       wm_no: value,
     })
   },
+  // 水表用户搜索事件
   onSearch() {
     this.getList()
   },
   handleGetTime(e) {
+    console.log(e)
     const {
       endDate,
       endTime,
@@ -88,13 +107,33 @@ Page({
       endTime,
       startDate,
       startTime,
+      adminlList:[{},{}],
       list: [],
       page: 1,
       total: 0,
       isScroll: true,
       loading: ''
     })
-    this.getList()
+    if(this.data.title_active == 1){
+      this.getList()
+    }else{
+      this.getadminList();
+    }
+  },
+  //
+  getadminList(){
+    const params = {
+      page: this.data.page,
+      stime: this.data.startTime,
+      etime: this.data.endTime,
+      select: this.data.admin_name,
+    }
+    getAdminList(params).then(res => {
+
+      const data = res.data.list.data || []
+      const adminList = this.data.adminList.concat(data)
+      const total = res.data.list.total
+    }).catch(res => {})
   },
   getList() {
     const params = {
@@ -199,4 +238,19 @@ Page({
     this.onClosePopup()
     this.getList()
   },
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      adminlList: [],
+      list: [],
+      page: 1,
+      total: 0,
+      isScroll: true,
+      lang: lang.todaySummary,
+      langIndex: lang.index,
+      langDialog: lang.dialog,
+      loading: lang.message.scrollLoading,
+      title_active,
+    })
+  }
 })

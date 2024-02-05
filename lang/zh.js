@@ -272,6 +272,10 @@ const zh_lang = {
     itemWater: '用水量',
     itemMoney: '缴费金额',
     num: '个',
+    tabs_1: {
+      one: '用户',
+      two: '管理员',
+    },
   },
   // 上报维修
   reportRepair: {

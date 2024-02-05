@@ -28,7 +28,6 @@ page {
 }
 
 van-tabs {
-  height: 100%;
   display: flex;
   flex-direction: column;
 }

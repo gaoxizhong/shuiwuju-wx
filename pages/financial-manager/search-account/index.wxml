@@ -2,10 +2,6 @@
 
 
 <view class="container search-account">
-  <view class="container-tabbox">
-    <view class="active"  data-index="1" bind:tap="clicktab">1</view>
-    <view data-index="2" bind:tap="clicktab">2</view>
-  </view>
   <van-tabs active="{{ pay_way }}" bind:change="onChange">
     <van-tab title="{{lang.tabs.one}}" name="1">
       <view class="now">
@@ -155,7 +151,7 @@
       </view>
     </van-tab>
     <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
-      <van-picker id="select" show-toolbar default-index="{{ pay_way }}" columns="{{ payWayList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+      <van-picker id="select" show-toolbar  columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
     </van-popup>
   </van-tabs>
 </view>

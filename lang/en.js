@@ -273,6 +273,10 @@ const en_lang = {
     itemWater: 'Consumo de água',
     itemMoney: 'Valor a pagar',
     num: 'un',
+    tabs_1: {
+      one: '用户',
+      two: '管理员',
+    },
   },
   // 上报维修
   reportRepair: {
