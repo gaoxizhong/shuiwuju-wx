@@ -75,37 +75,35 @@
         <van-button bind:click="onAdminNameSearch" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
       </view>
     </van-search>
-    <view class="search-content {{!adminlList.length ? 'no-data' : ''}}" style="margin-top: 10rpx;">
-      <van-empty wx:if="{{!adminlList.length}}" image="search" description="{{'暂无数据'}}" />
+    <view class="search-content {{!adminList.length ? 'no-data' : ''}}" style="margin-top: 10rpx;">
+      <van-empty wx:if="{{!adminList.length}}" image="search" description="{{'暂无数据'}}" />
       <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
-        <block wx:for="{{adminlList}}" wx:key="no">
-          <view class="tody-summary-item-2" data-index="{{index}}" bindtap="handleDetails">
-            <view class="item__title">{{item.name}}</view>
+        <block wx:for="{{adminList}}" wx:key="no">
+          <view class="tody-summary-item-2" data-index="{{index}}">
+            <view class="item__title">{{item.admin_name}}</view>
             <view class="tody-summary-total">
               <view class="important-data" style="margin-right: 8rpx;">
                 <text>{{lang.todayNumber}}</text>
                 <view class="important-data-font">
-                  {{today_bill_count}}（{{ lang.num }}）
+                  {{item.user_payment_count}}（{{ lang.num }}）
                 </view>
               </view>
               <view class="important-data">
-                <text>{{lang.todayMoney}}</text>
+                <text>{{lang.invoice}}</text>
                 <view class="important-data-font">
-                  {{today_bill_amount}}（KZ）
+                  {{item.invoice_num}}（{{ lang.num }}）
                 </view>
               </view>
               <view class="general-data" style="margin-right: 8rpx;">
-                <text>{{lang.cash}}</text>
+                <text>{{lang.receipt}}</text>
                 <view class="general-data-font">
-                  <tex> {{today_cash_count}}（{{ lang.num }}） </tex>
-                  <tex> {{today_cash_amount}}（KZ） </tex>
+                  <tex> {{ item.receipt_num }}（{{ lang.num }}）</tex>
                 </view>
               </view>
               <view class="general-data">
-                <text>{{lang.pos}}</text>
+                <text>{{lang.todayMoney}}</text>
                 <view class="general-data-font">
-                  <tex> {{today_card_count}}（{{ lang.num }}） </tex>
-                  <tex> {{today_card_amount}}（KZ） </tex>
+                  <tex> {{ item.total_price }}（KZ） </tex>
                 </view>
               </view>
             </view>

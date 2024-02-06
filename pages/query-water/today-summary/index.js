@@ -44,7 +44,7 @@ Page({
     isScroll: false,
     loading: lang.message.scrollLoading,
     title_active: 1,
-    adminlList: [],
+    adminList: [],
   },
 
   /**
@@ -55,7 +55,7 @@ Page({
     const stime = this.data.startTime
     const etime = this.data.endTime
     this.setData({
-      adminlList: [{},{}],
+      adminList: [],
       list: [],
       page: 1,
       total: 0,
@@ -81,7 +81,20 @@ Page({
   },
   // 管理员搜索事件
   onAdminNameSearch(){
-
+    this.setData({
+      adminList: [],
+      list: [],
+      wm_no: '',
+      admin_name:'', // 管理员搜索字段
+      page: 1,
+      total: 0,
+      isScroll: true,
+      lang: lang.todaySummary,
+      langIndex: lang.index,
+      langDialog: lang.dialog,
+      loading: lang.message.scrollLoading
+    })
+    this.getadminList()
   },
   // 水表用户 input 事件
   handleChangeInput(e) {
@@ -92,6 +105,19 @@ Page({
   },
   // 水表用户搜索事件
   onSearch() {
+    this.setData({
+      adminList: [],
+      list: [],
+      wm_no: '',
+      admin_name:'', // 管理员搜索字段
+      page: 1,
+      total: 0,
+      isScroll: true,
+      lang: lang.todaySummary,
+      langIndex: lang.index,
+      langDialog: lang.dialog,
+      loading: lang.message.scrollLoading
+    })
     this.getList()
   },
   handleGetTime(e) {
@@ -107,7 +133,7 @@ Page({
       endTime,
       startDate,
       startTime,
-      adminlList:[{},{}],
+      adminlList:[],
       list: [],
       page: 1,
       total: 0,
@@ -130,9 +156,13 @@ Page({
     }
     getAdminList(params).then(res => {
 
-      const data = res.data.list.data || []
+      const data = res.data.data || []
       const adminList = this.data.adminList.concat(data)
-      const total = res.data.list.total
+      // const total = res.data.list.total
+      this.setData({
+        adminList,
+        // total
+      })
     }).catch(res => {})
   },
   getList() {
@@ -241,8 +271,10 @@ Page({
   onChange(e){
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
-      adminlList: [],
+      adminList: [],
       list: [],
+      wm_no: '',
+      admin_name:'', // 管理员搜索字段
       page: 1,
       total: 0,
       isScroll: true,

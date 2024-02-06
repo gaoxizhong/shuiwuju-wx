@@ -267,6 +267,8 @@ const zh_lang = {
   todaySummary: {
     todayNumber: '缴费单',
     todayMoney: '金额总数',
+    invoice: '发票',
+    receipt: '收据',
     cash: '现金',
     pos: 'POS机',
     itemWater: '用水量',

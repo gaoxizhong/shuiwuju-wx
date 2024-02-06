@@ -268,14 +268,16 @@ const en_lang = {
   todaySummary: {
     todayNumber: 'Factura Simplificada',
     todayMoney: 'Valor total',
+    invoice: 'As facturas',
+    receipt: 'recibo',
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
     itemWater: 'Consumo de água',
     itemMoney: 'Valor a pagar',
     num: 'un',
     tabs_1: {
-      one: '用户',
-      two: '管理员',
+      one: 'utilizador',
+      two: 'administrador',
     },
   },
   // 上报维修
