@@ -99,7 +99,7 @@ page {
 }
 .tody-summary-item-2{
   position: relative;
-  padding: 20rpx 0;
+  padding: 20rpx;
   font-size: 28rpx;
   border-bottom: 1px solid #ececec;
 }
@@ -141,7 +141,6 @@ page {
   background-color: #fff;
   flex-direction: column;
   display: flex;
-  padding: 20rpx;
 }
 
 .no-data {
