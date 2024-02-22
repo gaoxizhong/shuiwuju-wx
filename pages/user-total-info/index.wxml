@@ -40,7 +40,7 @@
   <view class="btn">
     <block>
 
-      <!-- 打印收据 开始-->
+      <!-- 打印收据 开始 抄表员不显示收据--> 
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{source != 'search-person'}}">
         {{btnName.printOther}}
       </view>

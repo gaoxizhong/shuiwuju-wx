@@ -68,8 +68,11 @@ page{
   /* width: 100%; */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
+}
+.box-btn .text{
+  text-align: center;
 }
 .box-btn .icon {
   margin: 6rpx;

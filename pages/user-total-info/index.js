@@ -75,6 +75,7 @@ Page({
     invoice_code: '', // 发票号
     userInfo: {},
     password_layer: false,
+    is_operatorLsPop: false,
     operator_name: '',
     name_error: false,
     operatorNameList: [],
@@ -86,7 +87,6 @@ Page({
     threshold: [200],
     img: '',
     printing: false,
-    is_operatorLsPop: false,
     totIndex: 0, // 默认  选项下标
   },
 
@@ -644,7 +644,6 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
-      console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let user_info = '';
@@ -658,7 +657,6 @@ Page({
       let user_type_price = userBluetoolthInfoData.user_type.price;
       let consumo_price = 0; // 非阶段计价 水费用展示
       if (total_water) {
-        console.log(total_water)
         sewage_rate_num = Number(Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate) / 100);
         sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
         consumo_price = Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示

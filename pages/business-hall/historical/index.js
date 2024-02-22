@@ -102,7 +102,7 @@ Page({
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;
     wxAsyncApi('navigateTo', {
-      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&invoice_code=${item.invoice_code}`,
+      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&invoice_code=${item.invoice_code}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

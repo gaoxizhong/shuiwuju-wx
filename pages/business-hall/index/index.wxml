@@ -69,10 +69,6 @@
           <view class="info-item__label">{{userWaterInfo.wm_no}}</view>
           <view class="info-item__info">{{del_selt_info.wm_no}}</view>
         </view>
-        <!-- <view class="info-item">
-          <view class="info-item__label">{{userWaterInfo.wm_name}}</view>
-          <view class="info-item__info">{{del_selt_info.meter.wm_name || del_selt_info.wm_name}}</view>
-        </view> -->
         <view class="info-item">
           <view class="info-item__label">{{userWaterInfo.last_water}}</view>
           <view class="info-item__info">{{del_selt_info.last_reading}}（m³）</view>

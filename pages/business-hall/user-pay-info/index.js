@@ -52,6 +52,12 @@ Page({
     total_water: 0, // 总用水量
     is_return: true,
     invoice_code: '', // 发票号
+    source: '',
+    password_layer: false,
+    operator_name: '',
+    name_error: false,
+    operatorNameList: [],
+    is_operatorLsPop: false,
   },
 
   /**
@@ -73,6 +79,7 @@ Page({
       pay_way,
       invoice_code,
       pay_time,
+      source, // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     } = options;
     this.setData({
       from: {
@@ -80,10 +87,11 @@ Page({
         wm_no,
         wm_name,
         total_money,
-        pay_time
+        pay_time,
       },
       invoice_code,
       pay_way,
+      source
     })
     this.getUserPayItemDetail(options.id)
   },
@@ -132,9 +140,6 @@ Page({
     const ss = _date.getSeconds()
     const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
     const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
-    console.log(time)
-    console.log(timestamp)
-
     return {
       year,
       month,
@@ -171,9 +176,78 @@ Page({
     that.setData({
       print_type: 'receiptInfo'
     })
+    this.setData({
+      password_layer: true
+    })
+    return
+    // that.getUserBluetoolthInfoData(that.blueToothPrint);
+  },
+  clickoperatorName(e) {
+    this.setData({
+      operator_name: e.currentTarget.dataset.name,
+      is_operatorLsPop: false,
+    })
+  },
+   //  确认姓名
+   clickPrint() {
+     let that = this;
+    let operator_name = that.data.operator_name;
+    if (!operator_name) {
+      that.setData({
+        name_error: true
+      })
+      return
+    }
+    that.setData({
+      print_type: 'receiptInfo'
+    })
+    let operatorNameList = that.data.operatorNameList;
+    if (operatorNameList.indexOf(operator_name) == -1) {
+      operatorNameList.push(operator_name);
+      wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
+    }
     that.getUserBluetoolthInfoData(that.blueToothPrint);
   },
+   // 点击历史姓名记录
+   operatorLs(){
+    this.setData({
+      is_operatorLsPop: true
+    })
+  },
+  cover_layer() {
+    this.setData({
+      password_layer: false,
+      operator_name: '',
+    })
+  },
+  handleInputReading(e) {
+    console.log(e)
+    const operator_name = e.detail
+    let name_error = this.data.name_error
+    if (operator_name) {
+      name_error = false
+    }
+    let operatorNameList = wx.getStorageSync('operatorNameList') ? JSON.parse(wx.getStorageSync('operatorNameList')) : this.data.operatorNameList;
 
+    this.setData({
+      operatorNameList,
+      operator_name,
+      name_error,
+      is_pop: true
+    })
+  },
+  operatorNameList_cover() {
+    this.setData({
+      is_operatorLsPop: false
+    })
+  },
+  handleNameBlur(e) {
+    console.log(e)
+    const operator_name = e.detail.value;
+    this.setData({
+      operator_name,
+    })
+  },
   // 发票
   blueToothInvoice(){
     let that = this;
@@ -229,56 +303,38 @@ Page({
     let print_type = that.data.print_type;
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
-    console.log(print_type)
-    // 发票
-    if(print_type == 'invoiceInfo'){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_title_1),
-        ...this.arrEncoderCopy(this.data.invoiceInfo_invoice_code),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_title),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_info),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_title),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_info),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_valores),
-        ...blueToolth.printCommand.enter
-      ]
-    }
      //  收据
     if(print_type == 'receiptInfo'){
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title),
+        ...that.arrEncoderCopy(that.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title_1),
+        ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
         ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_historyData),
+        ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_TOTAL),
+        ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Pagamento),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
         ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Modos),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
         ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Saldo),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
         ...blueToolth.printCommand.enter
       ]
     }
     console.log('开始打印，api传信息...')
+    let n = 1;
+    that.writeBLECharacteristicValue(p,info,n);
+  },
+  writeBLECharacteristicValue(data,i,n){
+    let p = data;
+    let info = i;
+    let num = n; 
+    let that = this;
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
@@ -293,15 +349,23 @@ Page({
         that.setData({
           pay_success: false,
         })
-        if(print_type == 'receiptInfo'){
-          // 4.修改打印收据状态
-          that.setReceiptStatus();
-        }else{
+        let print_type = that.data.print_type;
+        //打印收据
+        if (print_type == 'receiptInfo') {
+          num++;
+          if(num <= 2){
+            that.writeBLECharacteristicValue(p,i,num);
+          }else{
+            // 4.修改打印收据状态
+            that.setReceiptStatus();
+          }
+        } else {
           // 5.修改发票收据状态
           that.setInvoiceStatus();
         }
+       
       },
-      onFail(res){
+      onFail(res) {
         console.log('打印失败...')
         console.log(res)
       }
@@ -321,82 +385,25 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
-      console.log(userBluetoolthInfoData)
       let date = that.handleTimeValue();
       let info = that.data.infoData; // 缴费记录下的缴费单信息
-      console.log(info)
       let user_info = '';
-      info.forEach(ele =>{
-user_info += `${ele.cycle_end}   ${ele.user_pay_payment_relation.arrears_money}KZ   ${ele.user_pay_payment_relation.arrears_money}KZ   ${ele.user_pay_payment_relation.pay_money}KZ
+      info.forEach(ele => {
+        user_info += `${ ele.check_date }   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.price}KZ
 `
       })
+      console.log(user_info)
       let total_water = that.data.total_water;
       let sewage_rate_num = 0; // 污水量
       let sewage_rate_price = 0; // 污水价格 
       let user_type_price = userBluetoolthInfoData.user_type.price;
       let consumo_price = 0;  // 非阶段计价 水费用展示
       if(total_water){
-        console.log(total_water)
         sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100);
         sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
         consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
       }
       that.setData({
-      // 发票
-      invoiceInfo_title:`EPASKS-E.P.`,
-      invoiceInfo_title_1:`
-Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
-Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
-NIF:5601022917
-Atendimento ao Cliente941648993
-Comunicação de Roturas941648999
-Email info.epasksagmail.com
-
-        `,
-        invoiceInfo_invoice_code:`
-Factura/Recibo N° ${that.data.invoice_code}
-
-Dados do Cliente `,
-        invoiceInfo_CustomerData:`
-Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
-N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
-N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
-NIF: ${userBluetoolthInfoData.water_meter.user_card}
-EMAIL: ${userBluetoolthInfoData.water_meter.email}
-Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
-N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
-Giro: ${userBluetoolthInfoData.water_meter.area_code}
-
-      `,
-      invoiceInfo_historyData_title:`
-Histórico de Leituras
-      `,
-      invoiceInfo_historyData_info:`
- Data       m³      Leitor
---------------------------------
-${userBluetoolthInfoData.user_payment[0].check_date}   ${userBluetoolthInfoData.user_payment[0].water}   ${userBluetoolthInfoData.user_payment[0].reading_user}
-${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].water:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
-${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].water:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
--------------------------------- `,
-    invoiceInfo_facturacao_title:`Detalhes de Coberanca`,
-    invoiceInfo_facturacao_info:`
-Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
-Consumo: ${total_water} (m³)
-${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
-Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
-IVA(0%)
-TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
-
-limite de pagamento: ${this.getMoreDay(15)}
-`,
-    invoiceInfo_valores:`
-Saldo
-${userBluetoolthInfoData.water_meter.user_bal} KZ
-Water manager
-${date.time}
-
-    `,
       //收据
       receiptInfo_title:`EPASKS-E.P.`,
       receiptInfo_title_1:`
@@ -434,7 +441,7 @@ Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
 Este documento nao serve de fatura
 IVA Regime Simplificado
-Utilizador:ISAURA FERNANDOP DA CRUZ
+Utilizador: ${that.data.operator_name}
 
 --------------------------------
 *Obrigado e volte sempre!*
@@ -447,6 +454,7 @@ Utilizador:ISAURA FERNANDOP DA CRUZ
         })
       },1000)
       if (typeof f == 'function'){
+        console.log('f()')
         return f()
       }
     }).catch((res) => {

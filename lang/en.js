@@ -402,15 +402,15 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/today-summary.png',
-        title: 'Impressos',
-        tabberName: 'Impressos',
+        title: 'Relatorios',
+        tabberName: 'Relatorios',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },
       {
         auth: 'L',
         key: '/img/index/report-pepair.png',
-        title: 'Manutenção',
+        title: 'Ocorrencias',
         tabberName: 'Mautenção e Reparação',
         color: '#58cab4',
         url: '/pages/query-water/report-repair/index'
@@ -418,7 +418,7 @@ const en_lang = {
       {
         auth: 'C',
         key: '/img/index/maintenance.png',
-        title: 'Extratos',
+        title: 'Relatorio de Ocorrencias',
         tabberName: 'Tavefas de Revisão',
         color: '#fc9c3c',
         url: '/pages/maintenance/maintenance/index'
