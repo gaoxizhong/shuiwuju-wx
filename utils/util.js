@@ -60,9 +60,23 @@ function fmoney(s, n){
 	}
 	return t.split("").reverse().join("") + "." + r;
 }
+  // 判断当前时间是否在时间段内
+function judgmentData(s,e){
+  const now = new Date(); // 当前时间
+  const start = new Date(s); // 定义的开始时间
+  const end = new Date(e); // 定义的结束时间
+  if (now >= start && now <= end) {
+    console.log('当前时间在时间段内');
+    return true
+  } else {
+    console.log('当前时间不在时间段内');
+    return false
+  }
+}
 module.exports = {
   wxAsyncApi,
   debounce,
   throttle,
   fmoney,
+  judgmentData
 }
