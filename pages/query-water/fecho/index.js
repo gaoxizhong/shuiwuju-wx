@@ -179,6 +179,7 @@ As facturas:           ${infoData.invoice_num} Un
 Valor a pagar:         ${infoData.invoice_total_price} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
+0000007/01180000/AGT/2023
 `,
       printInfo_data:`
 DATA: ${date.time}

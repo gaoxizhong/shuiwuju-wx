@@ -185,6 +185,7 @@ transferência:    ${infoData.transfer_accounts_sum} kZ
 Cartao:             ${infoData.pos_sum} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
+0000007/01180000/AGT/2023
 `,
       printInfo_data:`
 DATA: ${date.time}

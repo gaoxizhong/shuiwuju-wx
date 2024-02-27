@@ -60,7 +60,33 @@ function fmoney(s, n){
 	}
 	return t.split("").reverse().join("") + "." + r;
 }
-  // 判断当前时间是否在时间段内
+  //获取当前时间
+function handleTimeValue(date) {
+    const _date = date ? new Date(date) : new Date();
+    const year = _date.getFullYear();
+    const month = _date.getMonth() + 1;
+    const day = _date.getDate();
+    const hh = _date.getHours();
+    const mm = _date.getMinutes();
+    const ss = _date.getSeconds();
+    // 使用Intl.DateTimeFormat对象 转换为星期
+    const options = { weekday: 'long' };
+    const rq = new Intl.DateTimeFormat('zh-CN', options).format(date);
+
+    const dayTime = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`
+    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+    return {
+      year,
+      month,
+      day,
+      time,
+      dayTime,
+      rq,
+      timestamp
+    }
+  }
+// 判断当前时间是否在时间段内
 function judgmentData(s,e){
   const now = new Date(); // 当前时间
   const start = new Date(s); // 定义的开始时间
@@ -78,5 +104,6 @@ module.exports = {
   debounce,
   throttle,
   fmoney,
-  judgmentData
+  judgmentData,
+  handleTimeValue
 }

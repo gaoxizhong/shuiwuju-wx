@@ -3,7 +3,7 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
 const {
-  wxAsyncApi,
+  wxAsyncApi,judgmentData,handleTimeValue
 } = require('../../../utils/util')
 const {
   getUserPayItemDetail,
@@ -129,25 +129,6 @@ Page({
       })
     })
   },
-  //获取当前时间
-  handleTimeValue(date) {
-    const _date = date ? new Date(date) : new Date()
-    const year = _date.getFullYear()
-    const month = _date.getMonth() + 1
-    const day = _date.getDate()
-    const hh = _date.getHours()
-    const mm = _date.getMinutes()
-    const ss = _date.getSeconds()
-    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
-    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
-    return {
-      year,
-      month,
-      day,
-      time,
-      timestamp
-    }
-  },
   // 近n天
   getMoreDay(value) {
     const _date = new Date().getTime();
@@ -170,9 +151,32 @@ Page({
     return `${YY}-${MM < 10 ? '0' + MM : MM}-${DD < 10 ? '0' + DD : DD} ${hh < 10 ? '0' + hh : hh}:${mm < 10 ? '0' + mm : mm}:${ss < 10 ? '0' + ss : ss}`
   },
  
-  // 收据
+  // 收据---收银员
   printWaterInfo(){
     let that = this;
+    const dayTime = handleTimeValue().dayTime;
+    const rq = handleTimeValue().rq;
+    let s = '';
+    let e = '';
+    if(rq == '星期六'){
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 14:00:00`;
+    }else if(rq == '星期日'){
+      s = `${dayTime} 00:00:00`;
+      e = `${dayTime} 00:00:01`;
+    }else{
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 16:00:00`;
+    }
+    const is_judgmentData = judgmentData(s,e);
+    if(!is_judgmentData){
+      wx.showToast({
+        title: lang.message.businessHours,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
     that.setData({
       print_type: 'receiptInfo'
     })
@@ -251,6 +255,29 @@ Page({
   // 发票
   blueToothInvoice(){
     let that = this;
+    const dayTime = handleTimeValue().dayTime;
+    const rq = handleTimeValue().rq;
+    let s = '';
+    let e = '';
+    if(rq == '星期六'){
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 14:00:00`;
+    }else if(rq == '星期日'){
+      s = `${dayTime} 00:00:00`;
+      e = `${dayTime} 00:00:01`;
+    }else{
+      s = `${dayTime} 06:00:00`;
+      e = `${dayTime} 15:00:00`;
+    }
+    const is_judgmentData = judgmentData(s,e);
+    if(!is_judgmentData){
+      wx.showToast({
+        title: lang.message.businessHours,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
     that.setData({
       print_type: 'invoiceInfo'
     })
@@ -385,7 +412,7 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
-      let date = that.handleTimeValue();
+      let date = handleTimeValue();
       let info = that.data.infoData; // 缴费记录下的缴费单信息
       let user_info = '';
       info.forEach(ele => {
@@ -439,6 +466,7 @@ ${that.data.pay_text}   AOA    ${that.data.from.total_money} KZ
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
+0000007/01180000/AGT/2023
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}

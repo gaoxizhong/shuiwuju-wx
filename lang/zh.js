@@ -31,7 +31,8 @@ const zh_lang = {
     fail: '操作失败',
     formWarning: '请输入完整的信息',
     info: '详情',
-    deviceName: '设备权限'
+    deviceName: '设备权限',
+    businessHours:'非营业时间',
   },
   // 弹框
   dialog: {

@@ -33,7 +33,8 @@ const en_lang = {
     info: 'Detalhes',
     deviceName: 'Permissões para dispositivos',
     historio: 'Historio',
-    fecho: 'Fecho'
+    fecho: 'Fecho',
+    businessHours:'Fora da área comercial',
   },
   // 弹框
   dialog: {

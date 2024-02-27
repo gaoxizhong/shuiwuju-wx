@@ -3,7 +3,7 @@ const app = getApp()
 let lang = app.globalData.lang
 const pages = getCurrentPages()
 const {
-  wxAsyncApi,
+  wxAsyncApi,judgmentData,handleTimeValue
 } = require('./../../../../utils/util')
 const {
   readingPic
@@ -31,7 +31,7 @@ Page({
   onLoad(options) {
     console.log(options)
     lang = app.globalData.lang
-    const date = this.handleTimeValue()
+    const date = handleTimeValue()
     const {
       imageUrl,
       reading,
@@ -71,26 +71,6 @@ Page({
       this.getListData();
     }
   },
-  //获取当前时间
-  handleTimeValue(date) {
-    const _date = date ? new Date(date) : new Date()
-    const year = _date.getFullYear()
-    const month = _date.getMonth() + 1
-    const day = _date.getDate()
-    const hh = _date.getHours()
-    const mm = _date.getMinutes()
-    const ss = _date.getSeconds()
-    const dayTime = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`
-    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
-    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
-    console.log(time)
-    return {
-      dayTime,
-      time,
-      timestamp
-    }
-  },
-
   getListData() {
     const params = {
       wm_no: this.data.form.wm_no,
@@ -136,6 +116,30 @@ Page({
     const months = that.data.form.months;
     const baseUrl = app.globalData.baseUrl;
     const token = wx.getStorageSync('token')
+
+    const dayTime = handleTimeValue().dayTime;
+   const rq = handleTimeValue().rq;
+    let s = '';
+    let e = '';
+    if(rq == '星期六'){
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 14:00:00`;
+    }else if(rq == '星期日'){
+      s = `${dayTime} 00:00:00`;
+      e = `${dayTime} 00:00:01`;
+    }else{
+      s = `${dayTime} 06:00:00`;
+      e = `${dayTime} 15:00:00`;
+    }
+    const is_judgmentData = judgmentData(s,e);
+    if(!is_judgmentData){
+      wx.showToast({
+        title: lang.message.businessHours,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
     let params = {
       wm_no,
       reading: Number(reading),

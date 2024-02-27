@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
-const {wxAsyncApi} = require('./../../utils/util')
+const {wxAsyncApi,judgmentData,handleTimeValue} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 const {
@@ -227,7 +227,7 @@ Page({
     if (pay_success) {
       that.getUserBluetoolthInfoData(that.blueToothPrint);
     } else {
-      let date = that.handleTimeValue();
+      let date = handleTimeValue();
       const params = {
         wm_no: that.data.wm_no,
         total_money: that.data.paid_total_money,
@@ -260,28 +260,7 @@ Page({
 
 
   },
-  //获取当前时间
-  handleTimeValue(date) {
-    const _date = date ? new Date(date) : new Date()
-    const year = _date.getFullYear()
-    const month = _date.getMonth() + 1
-    const day = _date.getDate()
-    const hh = _date.getHours()
-    const mm = _date.getMinutes()
-    const ss = _date.getSeconds()
-    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
-    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
-    console.log(time)
-    console.log(timestamp)
 
-    return {
-      year,
-      month,
-      day,
-      time,
-      timestamp
-    }
-  },
   // 近n天
   getMoreDay(value) {
     const _date = new Date().getTime();
@@ -326,8 +305,33 @@ Page({
       no_error: false
     })
   },
-  // 收据按钮
+  // 收据按钮 ---  收银员
   printWaterInfo() {
+    const dayTime = handleTimeValue().dayTime;
+    const rq = handleTimeValue().rq;
+    let s = '';
+    let e = '';
+    if(rq == '星期六'){
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 14:00:00`;
+    }else if(rq == '星期日'){
+      s = `${dayTime} 00:00:00`;
+      e = `${dayTime} 00:00:01`;
+    }else{
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 16:00:00`;
+    }
+    
+    const is_judgmentData = judgmentData(s,e);
+    if(!is_judgmentData){
+      wx.showToast({
+        title: lang.message.businessHours,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
+
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
     if (!paid_total_money) {
@@ -390,6 +394,29 @@ Page({
   },
   // 发票
   blueToothInvoice() {
+    const dayTime = handleTimeValue().dayTime;
+    const rq = handleTimeValue().rq;
+    let s = '';
+    let e = '';
+    if(rq == '星期六'){
+      s = `${dayTime} 07:00:00`;
+      e = `${dayTime} 14:00:00`;
+    }else if(rq == '星期日'){
+      s = `${dayTime} 00:00:00`;
+      e = `${dayTime} 00:00:01`;
+    }else{
+      s = `${dayTime} 06:00:00`;
+      e = `${dayTime} 15:00:00`;
+    }
+    const is_judgmentData = judgmentData(s,e);
+    if(!is_judgmentData){
+      wx.showToast({
+        title: lang.message.businessHours,
+        duration: 2000,
+        icon: 'none'
+      })
+      return
+    }
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
     if (!paid_total_money) {
@@ -644,7 +671,7 @@ Page({
     })
     getUserBluetoolthInfoData(params).then(res => {
       const userBluetoolthInfoData = res.data
-      let date = that.handleTimeValue();
+      let date = handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let user_info = '';
       info.forEach(ele => {
@@ -714,6 +741,7 @@ limite de pagamento: ${this.getMoreDay(15)}
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
+0000007/01180000/AGT/2023
 ${date.time}
 
     `,
@@ -752,6 +780,7 @@ ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
+0000007/01180000/AGT/2023
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}
