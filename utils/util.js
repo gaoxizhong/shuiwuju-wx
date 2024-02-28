@@ -69,10 +69,6 @@ function handleTimeValue(date) {
     const hh = _date.getHours();
     const mm = _date.getMinutes();
     const ss = _date.getSeconds();
-    // 使用Intl.DateTimeFormat对象 转换为星期
-    const options = { weekday: 'long' };
-    const rq = new Intl.DateTimeFormat('zh-CN', options).format(date);
-
     const dayTime = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`
     const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
     const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
@@ -82,7 +78,6 @@ function handleTimeValue(date) {
       day,
       time,
       dayTime,
-      rq,
       timestamp
     }
   }

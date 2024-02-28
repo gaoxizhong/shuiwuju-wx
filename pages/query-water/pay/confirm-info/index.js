@@ -118,7 +118,8 @@ Page({
     const token = wx.getStorageSync('token')
 
     const dayTime = handleTimeValue().dayTime;
-   const rq = handleTimeValue().rq;
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const rq = weekdays[new Date().getDay()];
     let s = '';
     let e = '';
     if(rq == '星期六'){

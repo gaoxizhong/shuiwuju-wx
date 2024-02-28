@@ -1,5 +1,8 @@
 // pages/query-water/status/print-info/index.js
 const app = getApp()
+console.log(1111)
+console.log(new Date().getDay())
+
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {wxAsyncApi,judgmentData,handleTimeValue} = require('./../../utils/util')
@@ -308,7 +311,8 @@ Page({
   // 收据按钮 ---  收银员
   printWaterInfo() {
     const dayTime = handleTimeValue().dayTime;
-    const rq = handleTimeValue().rq;
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const rq = weekdays[new Date().getDay()];
     let s = '';
     let e = '';
     if(rq == '星期六'){
@@ -395,7 +399,8 @@ Page({
   // 发票
   blueToothInvoice() {
     const dayTime = handleTimeValue().dayTime;
-    const rq = handleTimeValue().rq;
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const rq = weekdays[new Date().getDay()];
     let s = '';
     let e = '';
     if(rq == '星期六'){
