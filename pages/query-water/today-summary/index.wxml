@@ -70,11 +70,11 @@
   <!-- 管理员  开始 -->
   <view class="page-box" wx:if="{{ title_active == 2 }}">
     <wixi-time bindgettime="handleGetTime"></wixi-time>
-    <van-search value="{{ admin_name }}" style="margin-top: 10rpx;" placeholder="{{langIndex.searchBar}}" use-action-slot bind:change="handleChangeAdminName" bind:search="onAdminNameSearch">
+    <!-- <van-search value="{{ admin_name }}" style="margin-top: 10rpx;" placeholder="{{langIndex.searchBar}}" use-action-slot bind:change="handleChangeAdminName" bind:search="onAdminNameSearch">
       <view class="icon" slot="action">
         <van-button bind:click="onAdminNameSearch" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
       </view>
-    </van-search>
+    </van-search> -->
     <view class="search-content {{!adminList.length ? 'no-data' : ''}}" style="margin-top: 10rpx;">
       <van-empty wx:if="{{!adminList.length}}" image="search" description="{{'暂无数据'}}" />
       <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">

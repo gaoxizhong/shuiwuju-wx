@@ -66,7 +66,7 @@ Page({
       loading: lang.message.scrollLoading
     })
     if(this.data.title_active == 1){
-      // this.getList()
+      this.getList()
     }else{
       this.getadminList();
     }
@@ -141,7 +141,7 @@ Page({
       loading: ''
     })
     if(this.data.title_active == 1){
-      // this.getList()
+      this.getList()
     }else{
       this.getadminList();
     }
