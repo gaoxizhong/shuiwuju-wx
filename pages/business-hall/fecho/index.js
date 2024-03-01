@@ -235,38 +235,38 @@ DATA: ${date.time}
      this.handlePrint(connectDeviceInfo)
     }
   },
-    // 开始打印
-    handlePrint(p) {
-      let print_type = this.data.print_type;
-      // GBK.encode({string}) 解码GBK为一个字节数组
-      let info = [
-        ...blueToolth.printCommand.clear,
-        ...this.arrEncoderCopy(this.data.printInfo),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.printInfo_data),
-        ...blueToolth.printCommand.enter
-      ]
-      console.log('开始打印，api传信息...')
-      blueToolth.writeBLECharacteristicValue({
-        ...p,
-        value: new Uint8Array(info).buffer,
-        lasterSuccess() {
-          console.log('打印成功...')
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "none",
-            duration: 3000,
-          })
-          that.setData({
-            pay_success: false,
-          })
-          that.getAdminShift(1,that.data.operator_name);
-        },
-        onFail(res){
-          console.log('打印失败...')
-          console.log(res)
-        }
-      });
-    },
+  // 开始打印
+  handlePrint(p) {
+    let print_type = this.data.print_type;
+    // GBK.encode({string}) 解码GBK为一个字节数组
+    let info = [
+      ...blueToolth.printCommand.clear,
+      ...this.arrEncoderCopy(this.data.printInfo),
+      ...blueToolth.printCommand.center,
+      ...this.arrEncoderCopy(this.data.printInfo_data),
+      ...blueToolth.printCommand.enter
+    ]
+    console.log('开始打印，api传信息...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        console.log('打印成功...')
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: "none",
+          duration: 3000,
+        })
+        that.setData({
+          pay_success: false,
+        })
+        that.getAdminShift(1,that.data.operator_name);
+      },
+      onFail(res){
+        console.log('打印失败...')
+        console.log(res)
+      }
+    });
+  },
 
 })

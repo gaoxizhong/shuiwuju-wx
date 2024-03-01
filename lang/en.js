@@ -61,6 +61,7 @@ const en_lang = {
     selectPop: 'Por favor selecione',
     his_name: 'Nome da história',
     fecho: 'Fecho',
+    cadastrar: 'Imprimir',
   },
   // 蓝牙
   blueToolth: {

@@ -446,7 +446,7 @@ Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 
 `,
       receiptInfo_historyData:`
-DATA: ${date.time}
+DATA: ${that.data.from.pay_time}
  Data    Total    Pend.    Liq.
 --------------------------------
 ${user_info?user_info:''}

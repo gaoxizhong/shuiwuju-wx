@@ -2,6 +2,8 @@
 // 获取应用实例
 const app = getApp()
 let lang = app.globalData.lang
+const blueToolth = require('../../../utils/bluetoolth')
+
 import {
   searchWaterList
 } from '../../../apis/home'
@@ -45,14 +47,16 @@ Page({
       {"text":"Numerário","key":1},
       {"text":"Cartão Multicaixa","key":2},
       {"text":"Pagamento bancário","key":3}
-    ]
+    ],
+    printInfo: ''
   },
   // 初始化 监听水表状态
   onLoad() {
     lang = app.globalData.lang
     const _this = this
-    const userInfo = app.globalData.userInfo || {}
-    const auth = app.globalData.auth;
+    const userInfo = JSON.stringify(app.globalData.userInfo)
+    console.log(userInfo)
+    const auth = app.globalData.auth; 
     if(auth.indexOf('L') != -1){
       this.setData({
         is_L: true
@@ -235,5 +239,95 @@ Page({
         title: lang.message.info,
       })
     })
-  }
+  },
+
+  // 打印信息
+  imprimirInfo(e){
+    let that = this;
+    console.log(e)
+    let item = e.currentTarget.dataset.item;
+    return
+    // 获取信息
+    that.setData({
+      printInfo:`
+${item.wm_no}
+Totalizador/Normal: ${item.is_share == 1?'Totalizador':'Normal'}
+Unidades: ${item.household_num}
+Localidade: ${item.area1} ${item.area2} ${item.area3} ${item.wm_address}
+Nº de Porta: ${item.house_number}
+Giro/Zona: ${item.area_code}
+
+`
+    })
+    that.blueToothPrint();
+  },
+    // 蓝牙设备打印
+    blueToothPrint() {
+      const connectStorage = wx.getStorageSync('connectDevice')
+      const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+      console.log(connectDeviceInfo)
+      const lang = getApp().globalData.lang
+      if (!connectDeviceInfo) {
+        wx.showModal({
+          title: lang.blueToolth.noConnect,
+          content: lang.blueToolth.noConnectWarning,
+          cancelText: lang.blueToolth.cancelText,
+          confirmText: lang.blueToolth.confirmText,
+          complete: (res) => {
+            if (res.confirm) {
+              wxAsyncApi('navigateTo', {
+                url: `/pages/admin/bluetooth/index?origin=page`,
+              }).then(res => {
+                wx.setNavigationBarTitle({
+                  title: lang.blueToolth.title,
+                })
+              })
+            }
+            if (res.cancel) {
+              wx.showToast({
+                title: lang.blueToolth.cancel,
+                icon: "none",
+              })
+            }
+          }
+        })
+      } else {
+        console.log('已连接。。。')
+        wx.showToast({
+          title: lang.blueToolth.connectDevice,
+          icon: "none",
+          duration: 30000,
+        })
+       this.handlePrint(connectDeviceInfo)
+      }
+    },
+    // 开始打印
+    handlePrint(p) {
+      // GBK.encode({string}) 解码GBK为一个字节数组
+      let info = [
+        ...blueToolth.printCommand.clear,
+        ...this.arrEncoderCopy(this.data.printInfo),
+        ...blueToolth.printCommand.enter
+      ]
+      console.log('开始打印，api传信息...')
+      blueToolth.writeBLECharacteristicValue({
+        ...p,
+        value: new Uint8Array(info).buffer,
+        lasterSuccess() {
+          console.log('打印成功...')
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "none",
+            duration: 3000,
+          })
+          that.setData({
+            pay_success: false,
+          })
+        },
+        onFail(res){
+          console.log('打印失败...')
+          console.log(res)
+        }
+      });
+    },
 })

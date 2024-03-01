@@ -27,7 +27,7 @@ App({
     this.appLogin()
   },
   globalData: {
-    userInfo: null,
+    userInfo: {},
     lang: null,
     tabberList: [],
     auth: [],

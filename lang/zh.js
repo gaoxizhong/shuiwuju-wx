@@ -59,6 +59,7 @@ const zh_lang = {
     selectPop: '请选择',
     his_name: '历史姓名',
     fecho: '交接班',
+    cadastrar: '打印',
   },
   // 蓝牙
   blueToolth: {

@@ -49,7 +49,7 @@
 
 .wixi-item {
   position: relative;
-  padding: 20rpx;
+  padding: 20rpx 0;
   font-size: 28rpx;
   border-bottom: 1px solid #ebedf0;
 }
@@ -57,6 +57,9 @@
 .wixi-item_title {
   font-weight: 600;
   padding-bottom: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .wixi-item_i {
@@ -106,4 +109,9 @@
 }
 .his-box van-button .van-button{
   text-align: center;
+}
+.cadastrar-btn{
+  display: inline-block;
+  line-height: normal;
+  font-weight: 100;
 }
