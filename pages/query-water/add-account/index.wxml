@@ -9,3 +9,16 @@
     </view>
   </view>
 </view>
+<view class="pop-box" wx:if="{{is_true}}"></view>
+<view class="content-box" wx:if="{{is_true}}">
+  <view class="content-title">{{lang.addAccount.im_title}}</view>
+  <view class="content-btn-box">
+    <view class="btn-items">
+      <view class="btn-items-1" bind:tap="clickNO">{{lang.addAccount.no}}</view>
+    </view>
+    <view class="btn-items">
+      <view class="btn-items-2" bind:tap="clickYES">{{lang.addAccount.submit}}</view>
+    </view>
+  </view>
+</view>
+

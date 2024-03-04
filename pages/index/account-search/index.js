@@ -3,7 +3,8 @@
 const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
-
+//只需要引用encoding.js,注意路径
+var encoding = require("./../../../utils/encoding.js")
 import {
   searchWaterList
 } from '../../../apis/home'
@@ -48,7 +49,8 @@ Page({
       {"text":"Cartão Multicaixa","key":2},
       {"text":"Pagamento bancário","key":3}
     ],
-    printInfo: ''
+    printInfo: '',
+    optionsPriceType: []
   },
   // 初始化 监听水表状态
   onLoad() {
@@ -74,6 +76,15 @@ Page({
       langDialog: lang.dialog,
       userInfo
     })
+     // 获取价格类型
+     let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
+     let list = fbUserType.map(i => ({
+       text: i.type_name,
+       value: i.id
+     }))
+     this.setData({
+       optionsPriceType: list
+     })
   },
   onShow() {
     
@@ -244,20 +255,49 @@ Page({
   // 打印信息
   imprimirInfo(e){
     let that = this;
-    console.log(e)
     let item = e.currentTarget.dataset.item;
-    return
+    let optionsPriceType = that.data.optionsPriceType;
+    let user_type_id = item.user_type_id;
+    let type = null;
+    optionsPriceType.forEach( ele =>{
+      if(ele.value == user_type_id){
+        type = ele.text
+      }
+    })
     // 获取信息
     that.setData({
+      title:`EPASKS-E.P.`,
+      title_1:`
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
+NIF:5601022917
+Atendimento ao Cliente941648993
+Comunicação de Roturas941648999
+Email info.epasksagmail.com
+        `,
       printInfo:`
-${item.wm_no}
+N° Contador: ${item.wm_no}
 Totalizador/Normal: ${item.is_share == 1?'Totalizador':'Normal'}
 Unidades: ${item.household_num}
 Localidade: ${item.area1} ${item.area2} ${item.area3} ${item.wm_address}
 Nº de Porta: ${item.house_number}
 Giro/Zona: ${item.area_code}
+Leitura anterior: ${item.last_reading}kZ
+Data de Registo: ${item.last_time}
+Categoria: ${item.type}
+Agua Residuais: ${item.sewage_rate}%
+Comsumidor: ${item.wm_name}
+NIF: ${item.user_card}
+Telefone: ${item.wm_name}
+EMAIL: ${item.email}
 
-`
+`,
+valores:`
+Water manager
+0000007/01180000/AGT/2023
+${item.last_time}
+
+    `
     })
     that.blueToothPrint();
   },
@@ -306,7 +346,15 @@ Giro/Zona: ${item.area_code}
       // GBK.encode({string}) 解码GBK为一个字节数组
       let info = [
         ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...this.arrEncoderCopy(this.data.title),
+        ...blueToolth.printCommand.ct_zc,
+        ...this.arrEncoderCopy(this.data.title_1),
+        ...blueToolth.printCommand.left,
         ...this.arrEncoderCopy(this.data.printInfo),
+        ...blueToolth.printCommand.center,
+        ...this.arrEncoderCopy(this.data.valores),
         ...blueToolth.printCommand.enter
       ]
       console.log('开始打印，api传信息...')
@@ -330,4 +378,15 @@ Giro/Zona: ${item.area_code}
         }
       });
     },
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
+    // let arr = [...encoder.encode(data)]
+    // console.log(arr)
+    //utf8
+    let inputBuffer = new encoding.TextEncoder().encode(str);
+    let arr = [ ...inputBuffer ]
+    return arr
+  }
 })

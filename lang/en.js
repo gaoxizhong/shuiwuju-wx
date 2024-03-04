@@ -228,7 +228,9 @@ const en_lang = {
         required: false
       },
     ],
-    submit: 'Confirmar'
+    submit: 'Confirmar',
+    im_title:'As informações são impressas?',
+    no: 'não',
   },
   // 查表缴费
   pay: {

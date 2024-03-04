@@ -227,7 +227,9 @@ const zh_lang = {
         required: false
       },
     ],
-    submit: '确认'
+    submit: '确认',
+    im_title:'是否打印用户信息?',
+    no: '否',
   },
   // 查表缴费
   pay: {
