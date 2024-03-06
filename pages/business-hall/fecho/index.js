@@ -23,6 +23,10 @@ Page({
     name_error: false,
     printInfo:'', //  打印数据
     infoData: null,
+    total_price: 0,
+    cash_sum: 0,
+    pos_sum: 0,
+    transfer_accounts_sum: 0,
   },
 
   /**
@@ -86,8 +90,16 @@ Page({
       params.operator_name = op_name;
     }
     getAdminShift(params).then(res => {
+      let total_price = Number(res.data.data.receipt_num) + Number(res.data.data.invoice_num); // 总数
+      let cash_sum = Number(res.data.data.receipt_cash) + Number(res.data.data.invoice_cash);
+      let pos_sum = Number(res.data.data.receipt_pos) + Number(res.data.data.invoice_pos);
+      let transfer_accounts_sum = Number(res.data.data.receipt_transfer_accounts) + Number(res.data.data.invoice_transfer_accounts);
       that.setData({
-        infoData: res.data.data
+        infoData: res.data.data,
+        total_price,
+        cash_sum: cash_sum,
+        pos_sum: pos_sum,
+        transfer_accounts_sum: transfer_accounts_sum,
       })
     }).catch((res) => {
       wx.showToast({
@@ -169,20 +181,20 @@ Page({
     let date = this.handleTimeValue();
     this.setData({
       printInfo:`
-recepcao:          ${infoData.receipt_num} Un
-numerário:         ${infoData.receipt_cash} kZ
-transferência:   ${infoData.receipt_transfer_accounts} kZ 
-Cartao:            ${infoData.receipt_pos} kZ
+Recibo:            ${infoData.receipt_num} Un
+Numerário:         ${infoData.receipt_cash} kZ
+Cartão Multicaixa: ${infoData.receipt_pos} kZ
+Transferência:     ${infoData.receipt_transfer_accounts} kZ 
 --------------------------------
-As facturas:       ${infoData.invoice_num} Un
-numerário:         ${infoData.invoice_cash} kZ 
-transferência:   ${infoData.invoice_transfer_accounts} kZ
-Cartao:            ${infoData.invoice_pos} kZ
+Facura/recibo:     ${infoData.invoice_num} Un
+Numerário:         ${infoData.invoice_cash} kZ 
+Cartão Multicaixa: ${infoData.invoice_pos} kZ
+Transferência:     ${infoData.invoice_transfer_accounts} kZ
 --------------------------------
-As facturas:        ${infoData.total_price} kZ
-numerário:          ${infoData.cash_sum} kZ
-transferência:    ${infoData.transfer_accounts_sum} kZ
-Cartao:             ${infoData.pos_sum} kZ
+Total:             ${this.data.total_price} Un
+Numerário:         ${this.data.cash_sum} kZ
+Cartão Multicaixa: ${this.data.pos_sum} kZ
+Transferência:     ${this.data.transfer_accounts_sum} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
 0000007/01180000/AGT/2023

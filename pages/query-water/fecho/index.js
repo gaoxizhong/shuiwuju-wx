@@ -175,7 +175,7 @@ Valor a pagar:      ${infoData.price_sum} kZ
 recibo:                  ${infoData.receipt_num} Un
 Valor a pagar:       ${infoData.receipt_total_price} kZ 
 --------------------------------
-As facturas:           ${infoData.invoice_num} Un
+Facura/recibo:           ${infoData.invoice_num} Un
 Valor a pagar:         ${infoData.invoice_total_price} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}

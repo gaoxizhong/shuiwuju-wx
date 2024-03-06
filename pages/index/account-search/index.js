@@ -258,12 +258,13 @@ Page({
     let item = e.currentTarget.dataset.item;
     let optionsPriceType = that.data.optionsPriceType;
     let user_type_id = item.user_type_id;
-    let type = null;
+    let type = '';
     optionsPriceType.forEach( ele =>{
       if(ele.value == user_type_id){
         type = ele.text
       }
     })
+    console.log(type)
     // 获取信息
     that.setData({
       title:`EPASKS-E.P.`,
@@ -284,11 +285,11 @@ Nº de Porta: ${item.house_number}
 Giro/Zona: ${item.area_code}
 Leitura anterior: ${item.last_reading}kZ
 Data de Registo: ${item.last_time}
-Categoria: ${item.type}
+Categoria: ${type}
 Agua Residuais: ${item.sewage_rate}%
 Comsumidor: ${item.wm_name}
 NIF: ${item.user_card}
-Telefone: ${item.wm_name}
+Telefone: ${item.wm_phone}
 EMAIL: ${item.email}
 
 `,

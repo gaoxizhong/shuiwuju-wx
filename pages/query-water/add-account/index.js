@@ -125,12 +125,13 @@ Page({
     // 获取价格类型
     let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
     let user_type_id = info_data.user_type_id;
-    let type = null;
+    let type = '';
     fbUserType.forEach( ele =>{
       if(ele.id == user_type_id){
         type = ele.type_name
       }
     })
+    console.log(type)
         // 获取信息
     that.setData({
       title:`EPASKS-E.P.`,
@@ -151,11 +152,11 @@ Nº de Porta: ${info_data.house_number}
 Giro/Zona: ${info_data.area_code}
 Leitura anterior: ${info_data.last_reading}kZ
 Data de Registo: ${info_data.last_time}
-Categoria: ${info_data.type}
+Categoria: ${type}
 Agua Residuais: ${info_data.sewage_rate}%
 Comsumidor: ${info_data.wm_name}
 NIF: ${info_data.user_card}
-Telefone: ${info_data.wm_name}
+Telefone: ${info_data.wm_phone}
 EMAIL: ${info_data.email}
 
 `,

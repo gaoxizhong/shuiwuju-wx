@@ -10,18 +10,20 @@ page{
 }
 .info-box{
   width: 100%;
-  height: 100rpx;
+  height: 120rpx;
   font-size: 28rpx;
   display: flex;
   align-items: center;
   color: #666;
+  padding-top: 20rpx;
 }
 .info-box>view{
-  flex: 1;
+  min-width: 170rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  padding: 0 10rpx;
 }
 .info-box>view .text-1{
   font-size: 30rpx;
@@ -69,4 +71,28 @@ van-button button{
   align-items: center;
   justify-content: space-between;
   margin-top: 30rpx;
+}
+.title-box{
+  padding-bottom: 16rpx;
+  position: relative;
+}
+.title-box::after{
+  content: '';
+  width: 100%;
+  height: 1px;
+  transform: scaleY(0.5);
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background: #a8a8a8;
+}
+.title-box .text-1{
+  padding-left: 10rpx;
+}
+.title-box .text-2{
+  padding-left: 20rpx;
+  font-weight: 600;
+}
+.KZ-size{
+  font-size: 24rpx;
 }
