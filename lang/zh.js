@@ -360,7 +360,8 @@ const zh_lang = {
     name: '姓名',
     operator_name: '交班人',
     submit: '提交打印',
-    jbsj: '交班时间'
+    jbsj: '交班时间',
+    actual_amount:'实收金额'
   },
   // 用水详情
   userWaterInfo: {

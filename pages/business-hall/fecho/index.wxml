@@ -62,6 +62,13 @@
       </view>
     </view>
   </view>
+  <view class="input-box info-box-1" style="margin-top: 20rpx;">
+    <view class="info-box-title">{{ lang.actual_amount }}:</view>
+    <view style="flex: 1;margin-left: 10px;">
+      <van-field value="{{ actual_amount }}" placeholder="{{ lang.actual_amount }}" bind:blur="handleBluractual_amount" bind:change="handleInputactual_amount"  />
+    </view>
+    
+  </view>
   <!-- <view class="jbsj-box">
     <text>{{ lang.jbsj }}：</text>
     <text>{{ infoData.etime }}</text>

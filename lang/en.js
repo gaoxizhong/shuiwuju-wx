@@ -362,6 +362,7 @@ const en_lang = {
     invoice: 'Facura/Recibo',
     zhang: 'un',
     jbsj: 'Horário de turno',
+    actual_amount:'Valor Declarado'
   },
   // 用水详情
   userWaterInfo: {

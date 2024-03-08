@@ -8,7 +8,7 @@ const {
   wxAsyncApi,
 } = require('./../../../utils/util')
 import {
-  addAccount
+  addAccount,fbUserType
 } from './../../../apis/water'
 const blueToolth = require('./../../../utils/bluetoolth')
 //只需要引用encoding.js,注意路径
@@ -43,6 +43,15 @@ Page({
       lang: getLang(),
     })
     console.log(this.data.lang)
+    // 获取价格类型
+    this.getFbUserType();
+  },
+   // 获取价格类型
+   getFbUserType() {
+    fbUserType({}).then(res => {
+      let list = JSON.stringify(res.data.data);
+      wx.setStorageSync('fbUserType',list)
+    }).catch((res) => {})
   },
   getFormInfo() {
     let that = this;
@@ -58,36 +67,35 @@ Page({
     }
     const data = wixiForm.getFormData()
     if (data) {
-      let wm_no = data.wm_no;
-      let str = wm_no.substring(0,3);
-      console.log(str)
-      if(data.user_type_id == 8){
-        if(str !== '777'){
-          wx.showToast({
-            title: 'Serie do Contador: 777 início',
-            icon: 'none'
-          })
-          return
-        }
-      }
-      if(data.user_type_id == 9){
-        if(str !== '888'){
-          wx.showToast({
-            title: 'Serie do Contador: 888 início',
-            icon: 'none'
-          })
-          return
-        }
-      }
-      if(data.user_type_id == 10){
-        if(str !== '999'){
-          wx.showToast({
-            title: 'Serie do Contador: 999 início',
-            icon: 'none'
-          })
-          return
-        }
-      }
+      // let wm_no = data.wm_no;
+      // let str = wm_no.substring(0,3);
+      // if(data.user_type_id == 8){
+      //   if(str !== '777'){
+      //     wx.showToast({
+      //       title: 'Serie do Contador: 777 início',
+      //       icon: 'none'
+      //     })
+      //     return
+      //   }
+      // }
+      // if(data.user_type_id == 9){
+      //   if(str !== '888'){
+      //     wx.showToast({
+      //       title: 'Serie do Contador: 888 início',
+      //       icon: 'none'
+      //     })
+      //     return
+      //   }
+      // }
+      // if(data.user_type_id == 10){
+      //   if(str !== '999'){
+      //     wx.showToast({
+      //       title: 'Serie do Contador: 999 início',
+      //       icon: 'none'
+      //     })
+      //     return
+      //   }
+      // }
       if(!data.latitude){
         wx.showToast({
           title: 'Clique para localizar',

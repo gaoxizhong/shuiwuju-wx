@@ -27,6 +27,7 @@ Page({
     cash_sum: 0,
     pos_sum: 0,
     transfer_accounts_sum: 0,
+    actual_amount: ''
   },
 
   /**
@@ -79,7 +80,7 @@ Page({
       timestamp
     }
   },
-  getAdminShift(n,op_name){
+  getAdminShift(n,op_name,actual){
     let that = this;
     let date_time = that.handleTimeValue().time;
     let params = {
@@ -88,6 +89,7 @@ Page({
     }
     if(params.type == 1){
       params.operator_name = op_name;
+      params.payment_sum = actual
     }
     getAdminShift(params).then(res => {
       let total_price = Number(res.data.data.receipt_num) + Number(res.data.data.invoice_num); // 总数
@@ -168,6 +170,18 @@ Page({
       name_error
     })
   },
+  handleBluractual_amount(e){
+     const actual_amount = e.detail.value
+     this.setData({
+      actual_amount,
+     })
+  },
+  handleInputactual_amount(e) {
+    const actual_amount = e.detail
+    this.setData({
+      actual_amount,
+    })
+  },
   clickPrint(){
     let operator_name = this.data.operator_name;
     if (!operator_name) {
@@ -196,6 +210,7 @@ Numerário:         ${this.data.cash_sum} kZ
 Cartão Multicaixa: ${this.data.pos_sum} kZ
 Transferência:     ${this.data.transfer_accounts_sum} kZ
 --------------------------------
+${this.data.actual_amount?'Valor Declarado:   '+ this.data.actual_amount +'KZ': ''}
 Pessoa de entrega: ${operator_name}
 0000007/01180000/AGT/2023
 `,
@@ -272,7 +287,7 @@ DATA: ${date.time}
         that.setData({
           pay_success: false,
         })
-        that.getAdminShift(1,that.data.operator_name);
+        that.getAdminShift(1,that.data.operator_name,that.data.actual_amount);
       },
       onFail(res){
         console.log('打印失败...')

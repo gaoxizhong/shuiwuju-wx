@@ -25,6 +25,13 @@ page{
   align-items: center;
   padding: 0 10rpx;
 }
+.info-box-1{
+  display: flex;
+  align-items: center;
+} 
+.info-box-title{
+  width: auto;
+}
 .info-box>view .text-1{
   font-size: 30rpx;
   color: #333;
