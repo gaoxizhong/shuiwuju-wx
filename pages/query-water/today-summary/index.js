@@ -165,7 +165,9 @@ Page({
       })
     }).catch(res => {})
   },
+  // 个人数据---//缴费单列表
   getList() {
+    let that = this;
     const params = {
       page: this.data.page,
       stime: this.data.startTime,
@@ -173,12 +175,13 @@ Page({
       wm_no: this.data.wm_no,
       status: this.data.status
     }
+
     payWaterList(params).then(res => {
       const data = res.data.list.data || []
-      const list = this.data.list.concat(data)
+      const list = that.data.list.concat(data)
       const total = res.data.list.total
       const {
-        today_bill_count,
+        today_bill_count,  //用户数据 缴费单数
         today_bill_amount,
         today_cash_count,
         today_cash_amount,
@@ -189,21 +192,21 @@ Page({
         text: i.title,
         key: i.key
       }))
+
       const statusList = Object.keys(res.data.status).map(i => ({
         text: res.data.status[i],
         key: i
       }))
       statusList.unshift(lang.allOptions)
-      this.setData({
+      that.setData({
         list,
         total,
         today_bill_count,
-        // today_bill_amount: fmoney(today_bill_amount),
-        today_bill_amount: today_bill_amount.toFixed(2),
         today_cash_count,
-        today_cash_amount: today_cash_amount.toFixed(2),
         today_card_count,
-        today_card_amount: today_card_amount.toFixed(2),
+        today_card_amount: Number(today_card_amount).toFixed(2),
+        today_bill_amount: Number(today_bill_amount).toFixed(2),
+        today_cash_amount: Number(today_cash_amount).toFixed(2),
         payWayList,
         statusList,
         isScroll: true,

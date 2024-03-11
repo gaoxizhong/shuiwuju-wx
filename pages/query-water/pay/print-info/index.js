@@ -506,11 +506,6 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
     invoiceInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
-${userBluetoolthInfoData.user_type.is_constant == 0?
-'Domestico: ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'                   Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'   Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
-:''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%)
@@ -567,11 +562,6 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
       printInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
-${userBluetoolthInfoData.user_type.is_constant == 0?
-'Domestico: ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) )
-+'                   Domestico socil: '+ first_step_water + '*'+ first_step_price +' = ' + domestico_socio 
-+'   Domestico 2: '+ second_step_water + '* ' + second_step_price + ' = ' + domestico_socio_2
-:''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 IVA(0%) 
