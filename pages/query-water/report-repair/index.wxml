@@ -1,5 +1,13 @@
 <!--pages/query-water/report-repair/index.wxml-->
+
 <view class="container report-repair">
+  <view class="search-bar">
+    <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.searchBar}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+      </view>
+    </van-search>
+  </view>
   <scroll-view scroll-y class="report-repair-content">
     <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type}}" value="{{ typeLabel }}" error="{{type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onOpen" />
 
