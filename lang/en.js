@@ -315,6 +315,7 @@ const en_lang = {
     placeholder: 'Por favor, digite',
     type: 'Tipo de falha',
     remark: 'Situação',
+    btnName: "Pesquisar",
   },
   // 维修
   maintenance: {

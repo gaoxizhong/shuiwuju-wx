@@ -156,7 +156,10 @@ Page({
     }
     getAdminList(params).then(res => {
 
-      const data = res.data.data || []
+      const data = res.data.data || [];
+      data.forEach(ele =>{
+        ele.total_price = fmoney(Number(ele.total_price),2)
+      })
       const adminList = this.data.adminList.concat(data)
       // const total = res.data.list.total
       this.setData({
@@ -177,7 +180,10 @@ Page({
     }
 
     payWaterList(params).then(res => {
-      const data = res.data.list.data || []
+      let data = res.data.list.data || [];
+      data.forEach(ele =>{
+        ele.price = fmoney(Number(ele.price),2)
+      })
       const list = that.data.list.concat(data)
       const total = res.data.list.total
       const {

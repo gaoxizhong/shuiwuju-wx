@@ -12,7 +12,7 @@ import {
   isAdmin
 } from '../../../apis/admin'
 const {
-  wxAsyncApi
+  wxAsyncApi,fmoney
 } = require('../../../utils/util')
 Page({
   data: {
@@ -174,6 +174,9 @@ Page({
         data,
         per_page,
       } = res.data
+      data.forEach(ele =>{
+        ele.user_bal = fmoney(Number(ele.user_bal),2)
+      })
       const list = this.data.list.concat(data || [])
       this.setData({
         total,

@@ -9,7 +9,7 @@ import {
 } from './../../../apis/water'
 
 import {
-  wxAsyncApi
+  wxAsyncApi,fmoney
 } from './../../../utils/util'
 Page({
 
@@ -99,7 +99,11 @@ Page({
     }
     console.log(params)
     getBusinessHallList(params).then(res => {
-      const list = this.data.list.concat(res.data.list.data || [])
+      const data = res.data.list.data || [];
+      data.forEach(ele =>{
+        ele.price = fmoney(Number(ele.price),2)
+      })
+      const list = this.data.list.concat(data)
       const total = res.data.list.total || 0
       const status = res.data.status
       const statusList = Object.keys(status).map(i => ({

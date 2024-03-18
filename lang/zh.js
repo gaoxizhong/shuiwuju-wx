@@ -314,6 +314,7 @@ const zh_lang = {
     placeholder: '请输入',
     type: '维修类型',
     remark: '情况',
+    btnName: "搜索",
   },
   // 维修
   maintenance: {
