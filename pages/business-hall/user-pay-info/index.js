@@ -3,7 +3,7 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
 const {
-  wxAsyncApi,judgmentData,handleTimeValue
+  wxAsyncApi,judgmentData,handleTimeValue,fmoney
 } = require('../../../utils/util')
 const {
   getUserPayItemDetail,
@@ -79,6 +79,7 @@ Page({
       pay_way,
       invoice_code,
       pay_time,
+      discount_money,
       source, // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     } = options;
     this.setData({
@@ -88,6 +89,7 @@ Page({
         wm_name,
         total_money,
         pay_time,
+        discount_money
       },
       invoice_code,
       pay_way,

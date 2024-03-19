@@ -5,7 +5,7 @@ import {
   getUserPayLog,
 } from './../../../apis/water'
 import {
-  wxAsyncApi
+  wxAsyncApi,fmoney
 } from './../../../utils/util'
 Page({
 
@@ -72,7 +72,12 @@ Page({
       etime: this.data.endTime,
     }
     getUserPayLog(params).then(res => {
-      const list = this.data.list.concat(res.data.list.data || [])
+      const data = res.data.list.data || [];
+      data.forEach(ele =>{
+        ele.total_money = fmoney(Number(ele.total_money),2);
+        ele.after_arrears_money = fmoney(Number(ele.after_arrears_money),2);
+      })
+      const list = this.data.list.concat(data)
       const total = res.data.list.total || 0
       this.setData({
         list,
@@ -102,7 +107,7 @@ Page({
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;
     wxAsyncApi('navigateTo', {
-      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&invoice_code=${item.invoice_code}&source=business-hall`,
+      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&discount_money=${item.discount_money}&invoice_code=${item.invoice_code}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,
