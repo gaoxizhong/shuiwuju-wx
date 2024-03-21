@@ -4,6 +4,9 @@ let lang = app.globalData.lang
 const {
   wxAsyncApi,
 } = require('./../../../utils/util')
+import {
+  isAdmin
+} from './../../../apis/admin'
 Page({
 
   /**
@@ -32,7 +35,29 @@ Page({
     autosize: {
       maxHeight: 140,
       minHeight: 140
-    }
+    },
+    // 搜索用户功能 ↓
+    selectIndex: 0,
+    type_show: false,
+    list: [],
+    statusList: [
+      {id: 1,text: 'Dados do contador'}, // 水表号
+      {id: 2,text: 'Nome de usuário'},  // 用户名
+      {id: 3,text: 'Endereço detalhado'}, // 用户地址
+      {id: 4,text: 'Nº de Porta'}  // 门牌号
+    ],
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
+    select_value:'', // 查询内容
+    payWayList: [],
+    radio: 0,
+    selectradio_info:{},
+    dialog_show: false,
+    page: 1,
+    radioList:[],
+    select_value:'', // 查询内容
+    type_seach: 'seach', // type - - 选类型  seach 输入
+    // 搜索用户功能 ↑
+
   },
 
   /**
@@ -56,6 +81,73 @@ Page({
       langMessage: lang.message,
       langDialog: lang.dialog,
       btnName: lang.btnName,
+    })
+  },
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select_value: value,
+    })
+  },
+  //搜索 失焦赋值 
+  handlesearchReading(e) {
+    const select_value = e.detail.value;
+    this.setData({
+      select_value,
+      // type_seach: 'type'
+    })
+  },
+  // 搜索事件
+  handleSearchInfo() {
+    let that = this;
+    that.setData({
+      page: 1,
+      radioList: []
+    })
+    that.getlist();
+  },
+  getlist(){
+    let that = this;
+    let p = {
+      select: this.data.select_value,
+      type: this.data.select_type,
+      page: this.data.page,
+    }
+    wx.showLoading({
+      title: lang.message.loading,
+    })
+    isAdmin(p).then(res => {
+      wx.hideLoading();
+      if(res.code == 200){
+        const radioList = this.data.radioList.concat(res.data.data || [])
+        if(radioList.length > 0){
+          this.setData({
+            dialog_show: true
+          })
+        }else{
+          wx.showToast({
+            title: this.data.lang.noData,
+            icon:'none'
+          })
+        }
+        this.setData({
+          radioList,
+        })
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon:'none'
+        })
+      }
+     
+      // this.waterCount()
+    }).catch(e =>{
+      wx.hideLoading();
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon:'none'
+      })
     })
   },
   addWaterImage() {
@@ -112,14 +204,14 @@ Page({
     const type = e.detail.value.key
     const typeLabel = e.detail.value.text
 
-    const form = this.data.form
-    form.forEach(i => {
-      if (i.key === 'wm_no') {
-        i.required = (type === '1')
-      } else {
-        i.required = (type !== '1')
-      }
-    })
+    // const form = this.data.form
+    // form.forEach(i => {
+    //   if (i.key === 'wm_no') {
+    //     i.required = (type === '1')
+    //   } else {
+    //     i.required = (type !== '1')
+    //   }
+    // })
     this.setData({
       type,
       type_error: false,
@@ -207,5 +299,75 @@ Page({
       })
     }
 
-  }
+  },
+  onShowPopup() {
+    const select = this.selectComponent('#select')
+    select && select.setColumnIndex(0, this.data.selectIndex)
+    this.setData({
+      type_show: true
+    })
+  },
+  onClosePopup() {
+    this.setData({
+      type_show: false
+    })
+  },
+  handleSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    console.log(e.detail)
+    this.setData({
+      selectIndex: index,
+      select_type: value.id,
+      // type_seach: 'seach',
+      page: 1,
+      select_value: '',
+      radioList: []
+    });
+    this.onClosePopup()
+  },
+  bindscrolltolower(){
+    console.log('底部')
+    let page = this.data.page;
+    page += 1
+    this.setData({
+      page,
+    })
+    this.getlist()
+  },
+  onClose_dialog(){
+    if(!this.data.radio){
+      this.setData({ 
+        dialog_show: false,
+        selectradio_info: {},
+       });
+      return
+    }else{
+      this.setData({ 
+        dialog_show: false,
+        wm_no_error:false
+       });
+    }
+  },
+  onChange(event) {
+    console.log(event)
+    this.setData({
+      radio: event.detail,
+    });
+  },
+  onClick(event) {
+    const { name } = event.currentTarget.dataset;
+    const form = this.data.form;
+    form[0].value = event.currentTarget.dataset.item.wm_no;
+    this.setData({
+      form,
+      radio: name,
+      wm_no: event.currentTarget.dataset.item.wm_no,
+      selectradio_info: event.currentTarget.dataset.item,
+    })
+   
+    console.log(form)
+  },
 })

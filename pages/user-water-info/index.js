@@ -3,7 +3,7 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {
-  wxAsyncApi,
+  wxAsyncApi,fmoney
 } = require('./../../utils/util')
 const {
   payWater,
@@ -93,7 +93,7 @@ Page({
         status = 'yes'
       }
     }
-
+    form.price = fmoney(form.price,2);
     this.setData({
       source,
       form,

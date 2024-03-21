@@ -46,7 +46,7 @@
           </view> -->
           <view class="his-box">
             <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="goToDayin">{{ btnName.print }}</van-button>
-            <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="goTojiaofei">{{ btnName.invoice }}</van-button>
+            <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="goTojiaofei">{{ btnName.printOther1 }}</van-button>
           </view>
 
         </view>

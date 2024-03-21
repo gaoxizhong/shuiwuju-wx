@@ -49,6 +49,7 @@ const zh_lang = {
     deleteName: '删除',
     pay: '缴费',
     printOther: '打印收据',
+    printOther1: '打印收据',
     printOtherTwo: '补开收据',
     print: '打印缴费单',
     invoice: '打印发票',

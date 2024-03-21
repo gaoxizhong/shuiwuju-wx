@@ -51,6 +51,7 @@ const en_lang = {
     deleteName: 'Apagar',
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
+    printOther1: 'Impressäo de Recibo',
     printOtherTwo: 'Reabastecimento de recibos',
     print: 'Factura Simplificada',
     invoice: 'Imprimir As facturas',
