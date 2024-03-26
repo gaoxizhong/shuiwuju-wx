@@ -58,7 +58,6 @@ Component({
           }
         }
       })
-      console.log(newform)
       this.setData({
         wixiForm: newform || [],
         columns,
@@ -85,7 +84,6 @@ Component({
       this.setData({
         optionsPriceType: list
       })
-      console.log(this.data.optionsPriceType)
     },
 
   },
@@ -326,7 +324,9 @@ Component({
         if (i.type === 'area') {
           const confirmValue = this.data.confirmValue
           i.key.split(',').forEach((j, index) => {
-            params[j] = confirmValue[index]
+            if(confirmValue[index]){
+              params[j] = confirmValue[index]
+            }
           })
         } else {
           if(i.type === 'tot_sim' || i.type === 'priceType' || i.type === 'sewage' ){

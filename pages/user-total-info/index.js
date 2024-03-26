@@ -1,11 +1,10 @@
 // pages/query-water/status/print-info/index.js
 const app = getApp()
-console.log(1111)
 console.log(new Date().getDay())
 
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
-const {wxAsyncApi,judgmentData,handleTimeValue} = require('./../../utils/util')
+const {wxAsyncApi,fmoney,judgmentData,handleTimeValue} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 const {
@@ -140,7 +139,7 @@ Page({
     this.setData({
       is_return: true
     })
-    this.printImg();
+    // this.printImg();
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
@@ -155,33 +154,36 @@ Page({
         last_reading,
         last_time,
       } = res.data
-      const payWayList = Object.keys(res.data.pay_way).map(i => ({
-        text: res.data.pay_way[i].title,
-        key: res.data.pay_way[i].key
-      }))
       that.setData({
         last_reading,
         last_time,
-        arrears_money_sum,
+        arrears_money_sum: fmoney(arrears_money_sum,2),
       })
-      if (that.data.source == 'search-person') {
-        let payStatusList = [];
-        payStatusList.push(payWayList[1])
-        that.setData({
-          totIndex: 1,
-          payStatusList,
-          pay_way: payStatusList[0].key,
-          pay_text: payStatusList[0].text,
-        })
+      if(that.data.payStatusList.length <= 0){
+        const payWayList = Object.keys(res.data.pay_way).map(i => ({
+          text: res.data.pay_way[i].title,
+          key: res.data.pay_way[i].key
+        }))
+        if (that.data.source == 'search-person') {
+          let payStatusList = [];
+          payStatusList.push(payWayList[1])
+          that.setData({
+            totIndex: 1,
+            payStatusList,
+            pay_way: payStatusList[0].key,
+            pay_text: payStatusList[0].text,
+          })
+        }
+        if (that.data.source == 'business-hall') {
+          that.setData({
+            totIndex: 0,
+            payStatusList: payWayList,
+            pay_way: '',
+            pay_text: '',
+          })
+        }
       }
-      if (that.data.source == 'business-hall') {
-        that.setData({
-          totIndex: 0,
-          payStatusList: payWayList,
-          pay_way: '',
-          pay_text: '',
-        })
-      }
+      
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -251,6 +253,7 @@ Page({
           total_water: res.data.total_water, // 总用水量
           invoice_code: res.data.invoice_code,
         })
+        //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
         that.getUserBluetoolthInfoData(that.blueToothPrint);
       }).catch((res) => {
@@ -297,6 +300,7 @@ Page({
     })
   },
   onConfirmPay(e) {
+    console.log(e)
     const {
       text,
       key
@@ -665,6 +669,7 @@ Page({
   // 获取用户打印信息
   getUserBluetoolthInfoData(f) {
     let that = this;
+    console.log(that.data.pay_text)
     const params = {
       wm_no: that.data.wm_no,
     }
@@ -768,6 +773,7 @@ DATA: ${date.time}
 --------------------------------
 ${user_info?user_info:''}
 --------------------------------
+Desconto: ${that.data.discount_money} KZ
 `,
         receiptInfo_TOTAL: `
 TOTAL: ${that.data.user_PayFees_info.total_money} KZ

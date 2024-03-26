@@ -9,6 +9,8 @@
     </van-search>
   </view>
   <scroll-view scroll-y class="report-repair-content">
+    <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type1}}" value="{{ typeLabel_1 }}" error="{{type1_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onType1Open" />
+
     <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type}}" value="{{ typeLabel }}" error="{{type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onOpen" />
 
     <wixi-form id="report-repair-form" form="{{form}}"></wixi-form>
@@ -29,19 +31,25 @@
     </van-field>
     <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.remark}}" value="{{ report_note }}" type="textarea" autosize="{{size}}" placeholder="{{lang.placeholder}}" error="{{report_note_error}}" bind:change="handleInputReportNote" />
   </scroll-view>
+   <!-- 选择投诉/申请弹窗 -->
+  <van-popup show="{{ show_1 }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns_1 }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
+  </van-popup>
+   <!-- 选择类型弹窗 -->
   <van-popup show="{{ show }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseSelect">
     <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns }}" bind:confirm="onConfirmSelect" bind:cancel="onCloseSelect" />
   </van-popup>
+  <!-- 提交按钮 -->
   <view class="btn">
     <view class="btn-item" bindtap="handleReportRepair">
       {{btnName.submitName}}
     </view>
   </view>
    <!-- 用户搜索 选择类型弹窗 -->
-
-  <van-popup show="{{ type_show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+   <van-popup show="{{ type1_show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
     <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
   </van-popup>
+
 
    <!-- 用户搜索 选择信息弹窗 -->
    <van-dialog use-slot theme='round-button' closeOnClickOverlay='true' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"

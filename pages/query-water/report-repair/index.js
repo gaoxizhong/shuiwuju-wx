@@ -24,13 +24,21 @@ Page({
     showAddImg: true,
     waterList: [],
     form: [],
+    type1_error: false,
+    type1:'', // 投诉或者申请 key
+    typeLabel_1: '', // 投诉或者申请 text
+    show_1:false,
+    columns_1: [],
     type_error: false,
     type: '',
     typeLabel: '',
     report_note_error: false,
     report_note: '',
     show: false,
-    columns: [],
+    columns_1: [
+      {key: 1,text: 'Reclamacao'},  //投诉
+      {key: 2,text: 'Pidido'},   //申请
+    ],
     image_error: false,
     autosize: {
       maxHeight: 140,
@@ -57,7 +65,9 @@ Page({
     select_value:'', // 查询内容
     type_seach: 'seach', // type - - 选类型  seach 输入
     // 搜索用户功能 ↑
-
+    area1: '',
+    area2: '',
+    area3: '',
   },
 
   /**
@@ -190,6 +200,16 @@ Page({
       report_note
     })
   },
+  onType1Open() {
+    this.setData({
+      show_1: true
+    })
+  },
+  onCloseType1Select() {
+    this.setData({
+      show_1: false
+    })
+  },
   onOpen() {
     this.setData({
       show: true
@@ -200,18 +220,30 @@ Page({
       show: false
     })
   },
+    // 弹窗选择维修类型
+    onConfirmType1Select(e) {
+      const type1 = e.detail.value.key
+      const typeLabel_1 = e.detail.value.text
+      this.setData({
+        type1,
+        type1_error: false,
+        typeLabel_1,
+      })
+      this.onCloseType1Select();
+    },
+  // 弹窗选择维修类型
   onConfirmSelect(e) {
     const type = e.detail.value.key
     const typeLabel = e.detail.value.text
 
-    // const form = this.data.form
-    // form.forEach(i => {
-    //   if (i.key === 'wm_no') {
-    //     i.required = (type === '1')
-    //   } else {
-    //     i.required = (type !== '1')
-    //   }
-    // })
+    const form = this.data.form
+    form.forEach(i => {
+      if (i.key === 'wm_no') {
+        i.required = (type === '1')
+      } else {
+        i.required = (type !== '1')
+      }
+    })
     this.setData({
       type,
       type_error: false,
@@ -220,15 +252,23 @@ Page({
     })
     this.onCloseSelect()
   },
+  // 点击提交按钮
   handleReportRepair() {
     const wixiForm = this.selectComponent('#report-repair-form')
     const type = this.data.type
+    const type1 = this.data.type1
     const report_note = this.data.report_note
     const waterList = this.data.waterList
     if (!wixiForm) {
       return
     }
     const data = wixiForm.getFormData()
+    if (!type1) {
+      this.setData({
+        type1_error: true
+      })
+
+    }
     if (!type) {
       this.setData({
         type_error: true
@@ -245,21 +285,26 @@ Page({
         report_note_error: true
       })
     }
+    console.log(type)
+    console.log(waterList)
+    console.log(report_note)
     if (data && type && waterList && report_note) {
       const baseUrl = getApp().globalData.baseUrl
       const token = wx.getStorageSync('token')
       const params = {
         report_note,
+        type1,
         type,
       }
       if (type === '1') {
         params.wm_no = data.wm_no
       } else {
-        params.area1 = data.area1
-        params.area2 = data.area2
-        params.area3 = data.area3
+        params.area1 = this.data.area1?this.data.area1:data.area1
+        params.area2 = this.data.area2?this.data.area2:data.area2
+        params.area3 = this.data.area3?this.data.area3:data.area3
         params.address = data.wm_address
       }
+      console.log(params)
       wx.uploadFile({
         filePath: waterList.length ? waterList[0].tempFilePath : '',
         name: 'report_pic',
@@ -358,10 +403,16 @@ Page({
     });
   },
   onClick(event) {
+    console.log(event)
+    const item = event.currentTarget.dataset.item;
     const { name } = event.currentTarget.dataset;
     const form = this.data.form;
-    form[0].value = event.currentTarget.dataset.item.wm_no;
+    form[0].value = item.wm_no;
+    form[1].value = item.area1 +','+ item.area2 +','+ item.area3;
     this.setData({
+      area1: item.area1,
+      area2: item.area2,
+      area3: item.area3,
       form,
       radio: name,
       wm_no: event.currentTarget.dataset.item.wm_no,

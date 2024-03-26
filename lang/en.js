@@ -314,6 +314,7 @@ const en_lang = {
     ],
     photo: 'Fotos',
     placeholder: 'Por favor, digite',
+    type1:'RECLAMACAO/PIDIDO',
     type: 'Tipo de falha',
     remark: 'Situação',
     btnName: "Pesquisar",
@@ -322,6 +323,10 @@ const en_lang = {
   maintenance: {
     phone: 'Telefone',
     location: 'Localidade',
+    comNumber: 'Número de reclamações',
+    comresNumber: 'Número de reclamações resolvidas',
+    reqNumber: 'Quantidade de pedidos',
+    reqresNumber: 'Número de pedidos concluídos',
     info: {
       title: 'Informações de reparação',
       status: 'Status',

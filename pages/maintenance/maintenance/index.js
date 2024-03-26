@@ -16,7 +16,6 @@ Page({
     lang: lang.maintenance,
     langIndex: lang.index,
     langDialog: lang.dialog,
-
     wm_no: '',
     status: '',
 

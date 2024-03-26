@@ -313,7 +313,8 @@ const zh_lang = {
     ],
     photo: '照片',
     placeholder: '请输入',
-    type: '维修类型',
+    type1:'投诉/申请',
+    type: '类型',
     remark: '情况',
     btnName: "搜索",
   },
@@ -321,6 +322,10 @@ const zh_lang = {
   maintenance: {
     phone: '电话号码',
     location: '地址',
+    comNumber: '投诉数量',
+    comresNumber: '投诉解决数量',
+    reqNumber: '请求数量',
+    reqresNumber: '请求完成数量',
     info: {
       title: '维修信息',
       status: '状态',
