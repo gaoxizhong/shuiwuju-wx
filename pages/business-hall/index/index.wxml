@@ -11,6 +11,7 @@
   <view class="his-box">
     <van-button type="info" size="small" block='true' bindtap="goToHistorio">{{ lang.historio }}</van-button>
     <van-button type="info" size="small" block='true' bindtap="goToFecho">{{ lang.fecho }}</van-button>
+    <van-button type="info" size="small" block='true' bindtap="goToOther">{{ lang.other }}</van-button>
   </view>
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />

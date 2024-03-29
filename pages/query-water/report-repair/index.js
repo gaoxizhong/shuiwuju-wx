@@ -24,11 +24,10 @@ Page({
     showAddImg: true,
     waterList: [],
     form: [],
-    type1_error: false,
-    type1:'', // 投诉或者申请 key
+    parent_type_error: false,
+    parent_type:'', // 投诉或者申请 key
     typeLabel_1: '', // 投诉或者申请 text
     show_1:false,
-    columns_1: [],
     type_error: false,
     type: '',
     typeLabel: '',
@@ -36,8 +35,8 @@ Page({
     report_note: '',
     show: false,
     columns_1: [
-      {key: 1,text: 'Reclamacao'},  //投诉
-      {key: 2,text: 'Pidido'},   //申请
+      {key: 1,text: 'Pidido'},  //投诉
+      {key: 2,text: 'Reclamacao'},   //申请
     ],
     image_error: false,
     autosize: {
@@ -222,11 +221,11 @@ Page({
   },
     // 弹窗选择维修类型
     onConfirmType1Select(e) {
-      const type1 = e.detail.value.key
+      const parent_type = e.detail.value.key
       const typeLabel_1 = e.detail.value.text
       this.setData({
-        type1,
-        type1_error: false,
+        parent_type,
+        parent_type_error: false,
         typeLabel_1,
       })
       this.onCloseType1Select();
@@ -252,20 +251,40 @@ Page({
     })
     this.onCloseSelect()
   },
+ //获取当前时间
+ handleTimeValue(date) {
+  const _date = date ? new Date(date) : new Date()
+  const year = _date.getFullYear()
+  const month = _date.getMonth() + 1
+  const day = _date.getDate()
+  const hh = _date.getHours()
+  const mm = _date.getMinutes()
+  const ss = _date.getSeconds()
+  const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+  const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+  return {
+    year,
+    month,
+    day,
+    time,
+    timestamp
+  }
+},
+
   // 点击提交按钮
   handleReportRepair() {
     const wixiForm = this.selectComponent('#report-repair-form')
     const type = this.data.type
-    const type1 = this.data.type1
+    const parent_type = this.data.parent_type
     const report_note = this.data.report_note
     const waterList = this.data.waterList
     if (!wixiForm) {
       return
     }
     const data = wixiForm.getFormData()
-    if (!type1) {
+    if (!parent_type) {
       this.setData({
-        type1_error: true
+        parent_type_error: true
       })
 
     }
@@ -285,15 +304,14 @@ Page({
         report_note_error: true
       })
     }
-    console.log(type)
-    console.log(waterList)
-    console.log(report_note)
     if (data && type && waterList && report_note) {
-      const baseUrl = getApp().globalData.baseUrl
-      const token = wx.getStorageSync('token')
+      const baseUrl = getApp().globalData.baseUrl;
+      const token = wx.getStorageSync('token');
+      let report_date = that.handleTimeValue().time;
       const params = {
+        report_date,
         report_note,
-        type1,
+        parent_type,
         type,
       }
       if (type === '1') {

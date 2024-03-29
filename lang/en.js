@@ -97,15 +97,12 @@ const en_lang = {
     lang: 'Línguas',
     searchBar: 'Digite Dados do contador',
     btnName: "Pesquisar",
-
     descriptionEmpty: 'Pesquisar Dados',
     noEmpty: 'Dados não disponíveis ainda',
-
     water: 'Consumo de água',
     money: 'Valor a pagar',
     saldo: 'Saldo da conta',
     createTime: 'Hora de leitura',
-
     iconSearch: 'Consulta',
     iconFunc: 'Função',
     iconNotice: 'Anúncio de parada de água',
@@ -113,6 +110,7 @@ const en_lang = {
     wm_name: 'Nome do Cliente',
     historio: 'Historio',
     fecho: 'Fecho',
+    other: 'outros',
     jiaofei: 'Pagamento',
     dayin: 'Imprimir'
   },
@@ -314,7 +312,7 @@ const en_lang = {
     ],
     photo: 'Fotos',
     placeholder: 'Por favor, digite',
-    type1:'RECLAMACAO/PIDIDO',
+    parent_type:'RECLAMACAO/PIDIDO',
     type: 'Tipo de falha',
     remark: 'Situação',
     btnName: "Pesquisar",

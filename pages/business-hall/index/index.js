@@ -183,6 +183,16 @@ Page({
       })
     })
   },
+  // 点击其他发票按钮
+  goToOther(){
+    wxAsyncApi('navigateTo', {
+      url: '/pages/query-water/other-invoices/index',
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.fecho,
+      })
+    })
+  },
   onShowPopup() {
     const select = this.selectComponent('#select')
     select && select.setColumnIndex(0, this.data.selectIndex)

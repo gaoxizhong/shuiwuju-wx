@@ -95,15 +95,12 @@ const zh_lang = {
     lang: '语言',
     searchBar: '请输入水表号',
     btnName: "搜索",
-
     descriptionEmpty: '搜索数据',
     noEmpty: '暂无数据',
-
     water: '用水量',
     money: '缴费金额',
     saldo: '账户余额',
     createTime: '查询时间',
-
     iconSearch: '用户查询',
     iconFunc: '功能',
     iconNotice: '停水公告',
@@ -111,6 +108,7 @@ const zh_lang = {
     wm_name: '用户名',
     historio: '历史记录',
     fecho: '交接班',
+    other: '其他',
     jiaofei: '缴费',
     dayin: '打印'
   },
@@ -313,7 +311,7 @@ const zh_lang = {
     ],
     photo: '照片',
     placeholder: '请输入',
-    type1:'投诉/申请',
+    parent_type:'投诉/申请',
     type: '类型',
     remark: '情况',
     btnName: "搜索",
