@@ -2,7 +2,10 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  getMaintenanceList
+  getMaintenanceList, // 所有列表
+  getMyMaintenanceList, // 我的维修列表
+  getRepairAllStatis, //维修投诉总数据统计
+  getMyRepairAllStatis, // 我的维修投诉总数据统计
 } from './../../../apis/maintenance'
 import {
   wxAsyncApi 
@@ -52,14 +55,22 @@ Page({
       langIndex: lang.index,
       langDialog: lang.dialog,
     })
-    this.getListData()
+    if (this.title_active == 1){
+      // 所有
+      this.getMaintenanceList();
+      this.getRepairAllStatis();
+    }
+    if (this.title_active == 2){
+      // 我的
+      this.getMyMaintenanceList();
+      this.getMyRepairAllStatis();
+    }
   },
-  // 获取列表详情
-  getListData() {
+  // 获取所有维修列表
+  getMaintenanceList() {
     const areas = app.globalData.area
     const params = {
-      wm_no: this.data.wm_no,
-      status: this.data.status,
+      status: this.data.status, // 1、待处理 
       page: this.data.page
     }
     getMaintenanceList(params).then(res => {
