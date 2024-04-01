@@ -4,11 +4,11 @@ let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
 
 const {
-  wxAsyncApi,
+  wxAsyncApi,fmoney
 } = require('../../../utils/util')
-const {
-  getAdminShift,getAdminShiftData
-} = require('../../../apis/water')
+import {
+  isAdmin
+} from '../../../apis/admin'
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
 Page({
@@ -17,7 +17,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-    lang: lang.fecho,
+    userWaterInfo: lang.userWaterInfo,
+    lang: lang.index,
+    langDialog: lang.dialog,
     btnName: lang.btnName,
     operator_name: '',
     name_error: false,
@@ -27,7 +29,39 @@ Page({
     cash_sum: 0,
     pos_sum: 0,
     transfer_accounts_sum: 0,
-    actual_amount: ''
+    actual_amount: '',
+    Type_statusList: [
+      {id: 1,text: 'Dados do contador'}, // 水表号
+      {id: 2,text: 'Nome de usuário'},  // 用户名
+      {id: 3,text: 'Endereço detalhado'}, // 用户地址
+      {id: 4,text: 'Nº de Porta'}  // 门牌号
+    ],
+    type_seach: 'type', // type - - 选类型  seach 输入
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
+    select_value:'', // 查询内容
+    radioList: [],
+    selectTypeIndex: 0,
+    page: 1,
+    selectradio_info:{},
+    dialog_show: false,
+    typeLabel_1: '', // 打印发票的种类 text
+    parent_type_error: false,
+    seltTypeInfo:{}, // 选择的打印种类
+    show_1:false,
+    columns_1: [ // 打印发票的种类列表
+      {key: 1,text: 'Contador 20',amount:60000.00},
+      {key: 2,text: 'Contador 50',amount:85000.00},  
+      {key: 3,text: 'Contrato Doméstico',amount:6500.00},  
+      {key: 4,text: 'Contrato não doméstico',amount:10000.00},  
+      {key: 5,text: 'Multa por Violação de Instalação',amount:160000.00},  
+      {key: 6,text: 'Taxa de Vistoria',amount:1000.00},  
+      {key: 7,text: 'Taxa de Activação do Sistema',amount:2000.00},  
+      {key: 8,text: 'Taxa de Alteração do Contrato',amount:1000.00},  
+      {key: 9,text: 'Taxa de Corte e Religação',amount:10870.00},  
+      {key: 10,text: 'Taxa de Dissociação',amount:50000.00},  
+      {key: 11,text: 'Taxa de Nova ligação 25mm',amount:80000.00},  
+      {key: 12,text: 'Taxa de Nova ligação 50mm',amount:105000.00},  
+    ],
   },
 
   /**
@@ -48,7 +82,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    this.getAdminShift(0);
+    
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str){
@@ -80,38 +114,6 @@ Page({
       timestamp
     }
   },
-  getAdminShift(n,op_name,actual){
-    let that = this;
-    let date_time = that.handleTimeValue().time;
-    let params = {
-      date_time,
-      type: n,
-    }
-    if(params.type == 1){
-      params.operator_name = op_name;
-      params.payment_sum = actual
-    }
-    getAdminShift(params).then(res => {
-      let total_price = Number(res.data.data.receipt_num) + Number(res.data.data.invoice_num); // 总数
-      let cash_sum = Number(res.data.data.receipt_cash) + Number(res.data.data.invoice_cash);
-      let pos_sum = Number(res.data.data.receipt_pos) + Number(res.data.data.invoice_pos);
-      let transfer_accounts_sum = Number(res.data.data.receipt_transfer_accounts) + Number(res.data.data.invoice_transfer_accounts);
-      that.setData({
-        infoData: res.data.data,
-        total_price,
-        cash_sum: cash_sum,
-        pos_sum: pos_sum,
-        transfer_accounts_sum: transfer_accounts_sum,
-      })
-    }).catch((res) => {
-      wx.showToast({
-        title: res.desc,
-        icon: 'none',
-        duration: 2000
-      })
-    })
-  },
-
   /**
    * 生命周期函数--监听页面隐藏
    */
@@ -146,66 +148,233 @@ Page({
   onShareAppMessage() {
 
   },
-  handleReading(e){
-    console.log(e)
-     const operator_name = e.detail.value
-     let name_error = this.data.name_error
-     if (operator_name) {
-       name_error = false
-     }
-     this.setData({
-       operator_name,
-       name_error
-     })
+  onShowTypePopup() {
+    console.log('#Type_select')
+    const select = this.selectComponent('#Type_select')
+    select && select.setColumnIndex(0, this.data.selectTypeIndex)
+    this.setData({
+      Type_show: true
+    })
   },
-  handleInputReading(e) {
+  onCloseTypePopup() {
+    this.setData({
+      Type_show: false
+    })
+  },
+  // 点击搜索类型--弹窗确认按钮
+  handleTypeSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    console.log(e.detail)
+    this.setData({
+      selectTypeIndex: index,
+      select_type: value.id,
+      type_seach: 'seach',
+      page: 1,
+      select_value: '',
+      radioList: []
+    });
+    this.onCloseTypePopup()
+  },
+  // 点击搜索类型--弹窗关闭按钮
+  onCloseTypePopup() {
+    this.setData({
+      Type_show: false
+    })
+  },
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select_value: value,
+    })
+  },
+  // 失焦赋值
+  handleReading(e) {
     console.log(e)
-    const operator_name = e.detail
-    let name_error = this.data.name_error
-    if (operator_name) {
-      name_error = false
+    const select_value = e.detail.value;
+    this.setData({
+      select_value,
+      type_seach: 'type'
+    })
+  },
+  handleSearchInfo() {
+    this.setData({
+      page: 1,
+      list: [],
+      isScroll: true,
+      loading: ''
+    })
+    this.getlist()
+  },
+  getlist(){
+    let that = this;
+    let p = {
+      select: this.data.select_value,
+      type: this.data.select_type,
+      page: this.data.page,
+    }
+    wx.showLoading({
+      title: lang.message.loading,
+    })
+    isAdmin(p).then(res => {
+      wx.hideLoading();
+      if(res.code == 200){
+        const radioList = this.data.radioList.concat(res.data.data || [])
+        if(radioList.length > 0){
+          this.setData({
+            dialog_show: true
+          })
+        }else{
+          wx.showToast({
+            title: this.data.lang.noData,
+            icon:'none'
+          })
+        }
+        this.setData({
+          radioList,
+        })
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon:'none'
+        })
+      }
+     
+      // this.waterCount()
+    }).catch(e =>{
+      wx.hideLoading();
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon:'none'
+      })
+    })
+  },
+  // 关闭选择用户弹窗
+  onClose_dialog(){
+    if(!this.data.radio){
+      this.setData({ 
+        dialog_show: false,
+        selectradio_info: {},
+       });
+      return
+    }else{
+      this.setData({ 
+        dialog_show: false,
+        wm_no_error:false
+       });
+    }
+  },
+  // 用户弹窗
+  onChange(event) {
+    console.log(event)
+    this.setData({
+      radio: event.detail,
+    });
+  },
+  // 选择用户弹窗  确认按钮
+  onClick(event) {
+    console.log(event)
+    const { name } = event.currentTarget.dataset;
+    let user_type_id =  event.currentTarget.dataset.item.user_type_id;
+    if (user_type_id == 8 || user_type_id == 9 || user_type_id == 10){
+      this.setData({
+        is_T: true,
+        selectradio_info: event.currentTarget.dataset.item,
+      })
+      let time = new Date().getTime();
+      this.getNowTime(time);
+    }else{
+      this.setData({
+        is_T: false,
+        selectradio_info: event.currentTarget.dataset.item,
+      })
     }
     this.setData({
-      operator_name,
-      name_error
-    })
+      radio: name,
+    });
   },
-  handleBluractual_amount(e){
-     const actual_amount = e.detail.value
-     this.setData({
-      actual_amount,
-     })
-  },
-  handleInputactual_amount(e) {
-    const actual_amount = e.detail
+  // 打印类型
+  onType1Open() {
     this.setData({
-      actual_amount,
+      show_1: true
     })
   },
+  // 打印类型 弹窗关闭按钮
+  onCloseType1Select() {
+    this.setData({
+      show_1: false
+    })
+  },
+  // 弹窗选择打印类型
+  onConfirmType1Select(e) {
+    const typeLabel_1 = e.detail.value.text
+    this.setData({
+      parent_type_error: false,
+      typeLabel_1,
+      seltTypeInfo: e.detail.value,
+    })
+    this.onCloseType1Select();
+  },
+
   clickPrint(){
-    let operator_name = this.data.operator_name;
-    if (!operator_name) {
+    let selectradio_info = this.data.selectradio_info;
+    let seltTypeInfo = this.data.seltTypeInfo;
+    if (!selectradio_info.wm_no) {
       this.setData({
-        name_error : true
+        wm_no_error : true
+      })
+      return
+    }
+    if (!seltTypeInfo) {
+      this.setData({
+        parent_type_error : true
       })
       return
     }
     // 获取打印信息
-    let infoData = this.data.infoData;
+
     let date = this.handleTimeValue();
     this.setData({
-      printInfo:`
+      invoiceInfo_title: `EPASKS-E.P.`,
+      invoiceInfo_title_1: `
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
+NIF:5601022917
+Atendimento ao Cliente941648993
+Comunicação de Roturas941648999
+Email info.epasksagmail.com
 
+Dados do Cliente
+      `,
+      invoiceInfo_CustomerData: `
+Comsumidor: ${selectradio_info.wm_name}
+N° do Cliente: ${selectradio_info.user_code}
+N° Contador: ${selectradio_info.wm_no}
+NIF: ${selectradio_info.user_card}
+EMAIL: ${selectradio_info.email}
+Endereco detalhado: ${selectradio_info.wm_address}
+N° da Porta: ${selectradio_info.house_number}
+Giro: ${selectradio_info.area_code}
+
+Espécies: ${seltTypeInfo.text}
+Montante: ${fmoney(seltTypeInfo.amount,2)} KZ
+
+      `,
+
+      invoiceInfo_valores: `
+Water manager
 0000007/01180000/AGT/2023
-`,
-      printInfo_data:`
-DATA: ${date.time}
+${date.time}
 
-`,
+    `,
       
     })
     this.blueToothPrint();
   },
+
   // 蓝牙设备打印
   blueToothPrint() {
     const connectStorage = wx.getStorageSync('connectDevice')
@@ -252,9 +421,15 @@ DATA: ${date.time}
     // GBK.encode({string}) 解码GBK为一个字节数组
     let info = [
       ...blueToolth.printCommand.clear,
-      ...this.arrEncoderCopy(this.data.printInfo),
       ...blueToolth.printCommand.center,
-      ...this.arrEncoderCopy(this.data.printInfo_data),
+      ...blueToolth.printCommand.ct,
+      ...this.arrEncoderCopy(this.data.invoiceInfo_title),
+      ...blueToolth.printCommand.ct_zc,
+      ...this.arrEncoderCopy(this.data.invoiceInfo_title_1),
+      ...blueToolth.printCommand.left,
+      ...this.arrEncoderCopy(this.data.invoiceInfo_CustomerData),
+      ...blueToolth.printCommand.center,
+      ...this.arrEncoderCopy(this.data.invoiceInfo_valores),
       ...blueToolth.printCommand.enter
     ]
     console.log('开始打印，api传信息...')
@@ -271,7 +446,6 @@ DATA: ${date.time}
         that.setData({
           pay_success: false,
         })
-        that.getAdminShift(1,that.data.operator_name,that.data.actual_amount);
       },
       onFail(res){
         console.log('打印失败...')

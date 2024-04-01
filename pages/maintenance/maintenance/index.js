@@ -31,6 +31,10 @@ Page({
 
     loading: lang.message.scrollLoading,
     isScroll: false,
+
+
+    // 新改
+    title_active: 1,
   },
 
 
@@ -50,6 +54,7 @@ Page({
     })
     this.getListData()
   },
+  // 获取列表详情
   getListData() {
     const areas = app.globalData.area
     const params = {
@@ -89,6 +94,7 @@ Page({
       })
     })
   },
+  // 滚动底部加载更多
   addListData() {
     let page = this.data.page
     const total = this.data.total
@@ -107,49 +113,7 @@ Page({
       })
     }
   },
-  handleChangeInput(e) {
-    const value = e.detail
-    this.setData({
-      wm_no: value,
-    })
-  },
-  handleSearchInfo() {
-    this.setData({
-      page: 1,
-      list: [],
-      isScroll: true,
-      loading: ''
-    })
-    this.getListData()
-  },
-  onShowPopup() {
-    const select = this.selectComponent('#select')
-    select && select.setColumnIndex(0, this.data.selectIndex)
-    this.setData({
-      show: true
-    })
-  },
-  onClosePopup() {
-    this.setData({
-      show: false
-    })
-  },
-  handleSelectItem(e) {
-    const {
-      index,
-      value
-    } = e.detail;
-    this.setData({
-      selectIndex: index,
-      status: value.key,
-      page: 1,
-      list: [],
-      isScroll: true,
-      loading: ''
-    });
-    this.onClosePopup()
-    this.getListData()
-  },
+  // 点击列表项
   handleDetails(e) {
     const index = e.currentTarget.dataset.index
     const data = JSON.stringify(this.data.list[index])
@@ -161,4 +125,17 @@ Page({
       })
     })
   },
+
+
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      adminList: [],
+      list: [],
+      page: 1,
+      total: 0,
+      isScroll: true,
+      title_active,
+    })
+  }
 })

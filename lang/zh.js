@@ -106,11 +106,16 @@ const zh_lang = {
     iconNotice: '停水公告',
     iconNoticeText: '暂无停水信息',
     wm_name: '用户名',
+    wm_no:'水表号',
     historio: '历史记录',
     fecho: '交接班',
     other: '其他',
     jiaofei: '缴费',
-    dayin: '打印'
+    dayin: '打印',
+    placeholder: '请输入',
+    selecione: '请选择',
+    location: '地址',
+    parent_type:'种类'
   },
   // 新增用户
   addAccount: {
@@ -335,7 +340,11 @@ const zh_lang = {
       report_pic: '照片',
       report_note: '情况',
       placeholder: "请输入"
-    }
+    },
+    tabs_1: {
+      one: '全部',
+      two: '我的',
+    },
   },
   // 营业厅
   businessHall: {

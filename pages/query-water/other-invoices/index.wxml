@@ -1,2 +1,52 @@
-<!--pages/query-water/other-invoices/index.wxml-->
-<text>pages/query-water/other-invoices/index.wxml</text>
+<view class="container search-pay">
+  <view class="search-bar">
+    <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+      </view>
+    </van-search>
+  </view>
+  <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
+
+  <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_name}}" model:value="{{ selectradio_info.wm_name }}" readonly placeholder="{{lang.wm_name}}" />
+
+  <view class="add-box">
+    <view class="add-title">{{lang.location}}</view>
+    <view class="add-label {{selectradio_info.area2?'':'placeholder'}}" >{{selectradio_info.area2?selectradio_info.area2:lang.location}} {{selectradio_info.wm_address}} {{selectradio_info.area_code}} {{selectradio_info.house_number}}</view>
+  </view>
+
+  <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.parent_type}}" value="{{ typeLabel_1 }}" error="{{parent_type_error}}" placeholder="{{lang.selecione}}" bind:click-input="onType1Open" />
+
+  <view class="btn">
+    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPrint" >
+      {{btnName.pay}}
+    </view>
+  </view>
+</view>
+
+<!-- 搜索前类型选择 弹窗 -->
+<van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
+  <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
+</van-popup>
+
+  <!-- 选择信息弹窗 -->
+  <van-dialog use-slot theme='round-button' closeOnClickOverlay='true' confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}"  bind:close="onClose_dialog"
+  bind:getuserinfo="getdialogInfo">
+    <view class="dialog-pay-content">
+      <scroll-view scroll-y bindscrolltolower="bindscrolltolower">
+        <van-radio-group value="{{ radio }}" bind:change="onChange">
+          <van-cell-group>
+            <van-cell title="{{item.wm_name}}  {{item.wm_no}}" label="{{item.area2}} {{item.wm_address}} {{item.area_code}} {{item.house_number}}"  clickable data-name="{{item.wm_id}}"  data-item="{{item}}" bind:click="onClick" wx:for="{{radioList}}" wx:key="index">
+              <van-radio slot="right-icon" name="{{item.wm_id}}" />
+            </van-cell>
+          </van-cell-group>
+        </van-radio-group>
+      </scroll-view>
+    </view>
+ 
+  </van-dialog>
+
+  <!-- 打印发票的种类弹窗 -->
+  <van-popup show="{{ show_1 }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns_1 }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
+  </van-popup>

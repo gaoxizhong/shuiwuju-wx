@@ -108,11 +108,16 @@ const en_lang = {
     iconNotice: 'Anúncio de parada de água',
     iconNoticeText: 'Não há informações de parada de água ainda',
     wm_name: 'Nome do Cliente',
+    wm_no:'Dados do contador',
     historio: 'Historio',
     fecho: 'Fecho',
     other: 'outros',
     jiaofei: 'Pagamento',
-    dayin: 'Imprimir'
+    dayin: 'Imprimir',
+    placeholder: 'Por favor, digite',
+    selecione: 'Por favor selecione',
+    location: 'Localidade',
+    parent_type:'Espécies'
   },
   // 新增用户
   addAccount: {
@@ -336,7 +341,11 @@ const en_lang = {
       report_pic: 'Fotos',
       report_note: 'Situação',
       placeholder: "Por favor insira"
-    }
+    },
+    tabs_1: {
+      one: 'Todos',
+      two: 'O meu',
+    },
   },
   // 营业厅
   businessHall: {

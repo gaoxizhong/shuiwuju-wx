@@ -1,1 +1,47 @@
-/* pages/query-water/other-invoices/index.wxss */
+.search-pay {
+  background-color: #fff;
+}
+.container {
+  margin: 20rpx;
+  height: calc(100% - 40rpx);
+  display: flex;
+  flex-direction: column;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+.search-bar {
+  width: 100%;
+  overflow: hidden;
+  padding-right: 20rpx;
+}
+.dialog-pay-content{
+  height: 680rpx;
+}
+.dialog-pay-content scroll-view{
+  height: 100%;
+}
+.add-box{
+  padding: 20rpx 30rpx;
+}
+.add-label{
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #ececec;
+}
+.add-label.placeholder{
+  color: #cfcfcf;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+  margin-top: 30px;
+  padding: 0 30rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}
+.van-search__action{
+  margin-left: 20rpx;
+}

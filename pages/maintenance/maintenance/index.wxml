@@ -1,13 +1,9 @@
 <!--pages/maintenance/maintenance/index.wxml-->
+<view class="container-tabbox">
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_1.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_1.two}}</view>
+</view>
 <view class="container maintenance">
-  <view class="search-bar">
-    <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
-      <view class="icon" slot="action">
-        <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
-        <van-icon name="ellipsis" bind:tap="onShowPopup" />
-      </view>
-    </van-search>
-  </view>
   <!-- 统计模块 ↓ -->
   <!-- <view class="tody-summary-total">
     <view class="general-data" style="margin-right: 8rpx;">
@@ -61,8 +57,4 @@
       </block>
     </scroll-view>
   </view>
-
-  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
-    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
-  </van-popup>
 </view>
