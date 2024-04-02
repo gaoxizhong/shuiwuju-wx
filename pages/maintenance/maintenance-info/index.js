@@ -35,6 +35,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    console.log(options)
     lang = app.globalData.lang
     const data = JSON.parse(options.data)
     let status = 'doing'

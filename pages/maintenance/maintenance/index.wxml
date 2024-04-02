@@ -3,34 +3,35 @@
   <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_1.one}}</view>
   <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_1.two}}</view>
 </view>
+
 <view class="container maintenance">
   <!-- 统计模块 ↓ -->
-  <!-- <view class="tody-summary-total">
+  <view class="tody-summary-total">
     <view class="general-data" style="margin-right: 8rpx;">
       <text>{{lang.comNumber}}</text>
       <view class="important-data-font">
-        {{today_bill_count}}（{{ lang.num }}）
+        {{all_complain_num}}
       </view>
     </view>
     <view class="general-data">
       <text>{{lang.comresNumber}}</text>
       <view class="important-data-font">
-        {{today_bill_amount}}（{{ lang.num }}）
+        {{all_complain_finish_num}}
       </view>
     </view>
     <view class="general-data" style="margin-right: 8rpx;">
       <text>{{lang.reqNumber}}</text>
       <view class="general-data-font">
-        <tex> {{today_cash_count}}（{{ lang.num }}） </tex>
+        <tex> {{all_repair_num}}</tex>
       </view>
     </view>
     <view class="general-data">
       <text>{{lang.reqresNumber}}</text>
       <view class="general-data-font">
-        <tex> {{today_card_count}}（{{ lang.num }}） </tex>
+        <tex> {{all_repair_finish_num}}</tex>
       </view>
     </view>
-  </view> -->
+  </view>
   <!-- 统计模块 ↑ -->
 
   <view class="search-content {{!list.length ? 'no-data' : ''}}">

@@ -327,8 +327,8 @@ const zh_lang = {
     location: '地址',
     comNumber: '投诉数量',
     comresNumber: '投诉解决数量',
-    reqNumber: '请求数量',
-    reqresNumber: '请求完成数量',
+    reqNumber: '维修数量',
+    reqresNumber: '维修完成数量',
     info: {
       title: '维修信息',
       status: '状态',
