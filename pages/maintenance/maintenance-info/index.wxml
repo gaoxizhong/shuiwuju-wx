@@ -41,7 +41,7 @@
     </view>
   </view>
   <view class="btn">
-    <view wx:if="{{status === 'doing'}}" class="btn-item" bindtap="openRepairDone">
+    <view wx:if="{{status === 'doing'}}" class="btn-item" bindtap="{{title_active == '1'?'repairAssig':'openRepairDone'}}">
       {{btnName.submitName}}
     </view>
   </view>

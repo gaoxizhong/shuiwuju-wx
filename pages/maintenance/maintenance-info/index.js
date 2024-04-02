@@ -4,6 +4,10 @@ let lang = app.globalData.lang
 import {
   wxAsyncApi
 } from './../../../utils/util'
+import {
+  handleRepairAssig, //手动分配维修/投诉单给相关人员
+  getRepairUserList,  // 获取维修人员列表
+} from './../../../apis/maintenance'
 Page({
 
   /**
@@ -28,7 +32,8 @@ Page({
     autosize: {
       maxHeight: 80,
       minHeight: 80
-    }
+    },
+    title_active:'', // 1、全部 2、个人
   },
 
   /**
@@ -47,9 +52,15 @@ Page({
       status,
       lang: lang.maintenance.info,
       btnName: lang.btnName,
+      title_active: options.title_active
     })
+    this.getRepairUserList();
   },
-
+   // 点击详情页面 -- 确认按钮  1、情况下管理员分配任务
+  repairAssig(){
+    
+  },
+  // 点击详情页面 -- 确认按钮  2、情况下
   openRepairDone() {
     this.setData({
       show: true,
