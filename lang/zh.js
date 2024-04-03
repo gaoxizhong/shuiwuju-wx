@@ -329,6 +329,11 @@ const zh_lang = {
     comresNumber: '投诉解决数量',
     reqNumber: '维修数量',
     reqresNumber: '维修完成数量',
+    repairUser: '分配人员', 
+    selectPop: "请选择",
+    distribution: "分配状态",
+    distribution_1: "已分配",
+    distribution_2: "未分配",
     info: {
       title: '维修信息',
       status: '状态',

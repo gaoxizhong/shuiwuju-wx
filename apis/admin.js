@@ -21,3 +21,21 @@ export const isAdmin = (data) => {
     data
   })
 }
+// 获取收费及目标
+export const getTrPriceList = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_price_list`,
+    method: 'POST',
+    data
+  })
+}
+// 创建收费账单
+export const createPayDemandNote = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_create_pay_demand_note`,
+    method: 'POST',
+    data
+  })
+}

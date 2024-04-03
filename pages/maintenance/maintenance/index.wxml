@@ -50,10 +50,13 @@
           <view class="item__money">
             {{lang.location}}：{{item.area }} {{item.address}}
           </view>
-
+          <view class="item__do_uid">
+            {{ lang.distribution }}: <text style="padding-left:10rpx;color:{{item.do_uid > 0 ? 'green': '#ff0000' }};">{{ item.do_uid > 0 ? lang.distribution_1: lang.distribution_2  }}</text>
+          </view>
           <view class="item__status {{item.status === 1? 'item--no' : 'item--success'}}">
             {{item.status_text}}
           </view>
+          
         </view>
       </block>
     </scroll-view>

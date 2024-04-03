@@ -2,52 +2,67 @@
 <view class="container maintenance-info">
   <view class="info">
     <view class="info-label">
-      {{lang.title}}
+      {{lang.info.title}}
     </view>
     <view class="info-content">
       <view class="info-item">
-        <view class="info-item__label">{{lang.status}}</view>
+        <view class="info-item__label">{{lang.info.status}}</view>
         <view class="info-item__info">{{form.status_text}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.name}}</view>
+        <view class="info-item__label">{{lang.info.name}}</view>
         <view class="info-item__info">{{form.type === 1 ? form.meter.wm_name: form.report_user.name}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.wm_no}}</view>
+        <view class="info-item__label">{{lang.info.wm_no}}</view>
         <view class="info-item__info">{{form.meter ? form.meter.wm_no : ''}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.area}}</view>
+        <view class="info-item__label">{{lang.info.area}}</view>
         <view class="info-item__info">{{form.area}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.address}}</view>
+        <view class="info-item__label">{{lang.info.address}}</view>
         <view class="info-item__info">{{form.address}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.phone}}</view>
+        <view class="info-item__label">{{lang.info.phone}}</view>
         <view class="info-item__info">{{form.type === 1 ? form.meter.wm_phone: form.report_user.mobile}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.report_pic}}</view>
+        <view class="info-item__label">{{lang.info.report_pic}}</view>
         <van-image width="200" height="140" fit="cover" src="{{form.report_pic}}" />
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.report_note}}</view>
+        <view class="info-item__label">{{lang.info.report_note}}</view>
         <view class="info-item__info">{{form.report_note}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.distribution}}</view>
+        <view class="info-item__info">
+          <text style="padding-left:10rpx;color:{{form.do_uid > 0 ? 'green': '#ff0000' }};">{{ form.do_uid > 0 ? lang.distribution_1: lang.distribution_2  }}</text>
+        </view>
+      </view>
+      
+      <view class="info-item" wx:if="{{title_active == '1' && is_admin}}">
+        <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.repairUser}}" value="{{ repairUserLabel }}" error="{{parent_type_error}}" placeholder="{{lang.selectPop}}" bind:click-input="onType1Open" />
       </view>
 
     </view>
   </view>
-  <view class="btn">
-    <view wx:if="{{status === 'doing'}}" class="btn-item" bindtap="{{title_active == '1'?'repairAssig':'openRepairDone'}}">
+  <view class="btn"  wx:if="{{title_active == '1' && is_admin}}">
+    <view class="btn-item" bindtap="repairAssig">
+      {{btnName.submitName}}
+    </view>
+  </view>
+  <view class="btn" wx:else>
+    <view wx:if="{{status === 'doing' && my_wm_id == form.do_uid}}" class="btn-item" bindtap="openRepairDone">
       {{btnName.submitName}}
     </view>
   </view>
   <!-- 完成维修 -->
   <van-popup show="{{ show }}" position="bottom"  bind:close="onCloseRepairDone">
-    <van-field label="{{lang.report_pic}}" type="textarea" autosize="{{autosizeimg}}" custom-style="flex-direction: column;" title-width="100%" required error="{{done_pic_error}}" error-message="{{done_pic_error ? btnName.selectImg : ''}}">
+    <van-field label="{{lang.info.report_pic}}" type="textarea" autosize="{{autosizeimg}}" custom-style="flex-direction: column;" title-width="100%" required error="{{done_pic_error}}" error-message="{{done_pic_error ? btnName.selectImg : ''}}">
       <view slot="input">
         <block wx:if="{{done_pic}}">
           <view class="van-img-item">
@@ -68,5 +83,9 @@
       <van-button type="info" size="small" bind:click="handleInfoStatus" style="margin-right: 20rpx;">确定</van-button>
       <van-button type="info" plain size="small" bind:click="onCloseRepairDone">取消</van-button>
     </view>
+  </van-popup>
+
+  <van-popup show="{{ show_repairUser }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ repairUserList }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
   </van-popup>
 </view>

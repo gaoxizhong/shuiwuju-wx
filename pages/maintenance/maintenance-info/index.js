@@ -14,8 +14,10 @@ Page({
    * 页面的初始数据
    */
   data: {
-    lang: lang.maintenance.info,
+    lang: lang.maintenance,
+    langDialog: lang.dialog,
     btnName: lang.btnName,
+    message: lang.message,
     form: {},
     status: 'doing',
     show: false,
@@ -34,31 +36,118 @@ Page({
       minHeight: 80
     },
     title_active:'', // 1、全部 2、个人
+    show_repairUser: false,
+    repairUserList: [],
+    repairUsererror: false,
+    repairUserLabel:'',
+    seltTypeInfo: {},
+    is_admin: false,
+    my_wm_id:'', // 本人系统id
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    console.log(options)
-    lang = app.globalData.lang
+    const auth = app.globalData.auth;
+    if(auth.indexOf('DG') != -1 || auth.indexOf('CT') != -1  || auth.indexOf('R') != -1){
+      // 找到角色
+      this.setData({
+        is_admin: true,
+      })
+    }else{
+      this.setData({
+        is_admin: false,
+      })
+    }
+   
     const data = JSON.parse(options.data)
     let status = 'doing'
     if (data.status !== 1) {
       status = 'done'
     }
+    // 本人系统id
+    let my_wm_id = app.globalData.wm_id;
     this.setData({
       form: data,
       status,
-      lang: lang.maintenance.info,
       btnName: lang.btnName,
-      title_active: options.title_active
+      title_active: options.title_active,
+      my_wm_id
     })
+    console.log(my_wm_id)
+    console.log(data.do_uid) 
+    if(data.do_user){
+      this.setData({
+        repairUserLabel: data.do_user.name 
+      })
+    }
+    // 获取分配人员列表
     this.getRepairUserList();
+  },
+  getRepairUserList(){
+    getRepairUserList({}).then(res => {
+      if(res.code == 200){
+        let data = res.data.list;
+        let repairUserList = [];
+        data.forEach( ele =>{
+          repairUserList.push({
+            admin_id: ele.admin_id,
+            model_id: ele.model_id,
+            text: ele.name
+          });
+        })
+      
+        this.setData({
+          repairUserList
+        })
+      }
+    })
   },
    // 点击详情页面 -- 确认按钮  1、情况下管理员分配任务
   repairAssig(){
-    
+    let that = this;
+    let seltTypeInfo = that.data.seltTypeInfo;
+    let p ={
+      do_uid: seltTypeInfo.admin_id,
+      wmr_id: that.data.form.wmr_id
+    }
+    handleRepairAssig(p).then( res =>{
+      if(res.code == 200){
+        wx.showToast({
+          title: that.data.message.success,
+          duration: 2000,
+          icon: 'none'
+        })
+          let form = that.data.form;
+          form.do_uid = p.do_uid;
+        that.setData({
+          repairUserLabel:'',
+          seltTypeInfo: {},
+          form,
+        })
+        
+        setTimeout( () =>{
+          wx.navigateBack({
+            delta: 1
+          })
+        })
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    }).catch(e =>{
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+
   },
   // 点击详情页面 -- 确认按钮  2、情况下
   openRepairDone() {
@@ -144,7 +233,7 @@ Page({
           const data = JSON.parse(res.data)
           if (data.code === 200) {
             wx.showToast({
-              title: "操作成功",
+              title: _this.data.message.success,
               duration: 2000,
               icon: 'none'
             })
@@ -158,5 +247,28 @@ Page({
         }
       })
     }
-  }
+  },
+  // 点击选择人员分配
+  onType1Open() {
+    this.setData({
+      show_repairUser: true
+    })
+  },
+    // 打印类型 弹窗关闭按钮
+    onCloseType1Select() {
+      this.setData({
+        show_repairUser: false
+      })
+    },
+    // 弹窗选择打印类型
+    onConfirmType1Select(e) {
+      const repairUserLabel = e.detail.value.text
+      console.log(e)
+      this.setData({
+        repairUsererror: false,
+        repairUserLabel,
+        seltTypeInfo: e.detail.value,
+      })
+      this.onCloseType1Select();
+    },
 })

@@ -330,6 +330,11 @@ const en_lang = {
     comresNumber: 'Número de reclamações resolvidas',
     reqNumber: 'Quantidade de pedidos',
     reqresNumber: 'Número de pedidos concluídos',
+    repairUser: 'distribuição', 
+    selectPop: 'Por favor selecione',
+    distribution: "Status da atribuição",
+    distribution_1: "Já foi atribuído",
+    distribution_2: "Não atribuído",
     info: {
       title: 'Informações de reparação',
       status: 'Status',

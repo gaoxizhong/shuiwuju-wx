@@ -19,7 +19,7 @@
 
   <view class="btn">
     <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPrint" >
-      {{btnName.pay}}
+      {{btnName.cadastrar}}
     </view>
   </view>
 </view>

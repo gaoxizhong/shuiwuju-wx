@@ -7,7 +7,9 @@ const {
   wxAsyncApi,fmoney
 } = require('../../../utils/util')
 import {
-  isAdmin
+  isAdmin,
+  getTrPriceList, //获取收费及目标
+  createPayDemandNote, // 创建收费账单
 } from '../../../apis/admin'
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
@@ -48,27 +50,14 @@ Page({
     parent_type_error: false,
     seltTypeInfo:{}, // 选择的打印种类
     show_1:false,
-    columns_1: [ // 打印发票的种类列表
-      {key: 1,text: 'Contador 20',amount:60000.00},
-      {key: 2,text: 'Contador 50',amount:85000.00},  
-      {key: 3,text: 'Contrato Doméstico',amount:6500.00},  
-      {key: 4,text: 'Contrato não doméstico',amount:10000.00},  
-      {key: 5,text: 'Multa por Violação de Instalação',amount:160000.00},  
-      {key: 6,text: 'Taxa de Vistoria',amount:1000.00},  
-      {key: 7,text: 'Taxa de Activação do Sistema',amount:2000.00},  
-      {key: 8,text: 'Taxa de Alteração do Contrato',amount:1000.00},  
-      {key: 9,text: 'Taxa de Corte e Religação',amount:10870.00},  
-      {key: 10,text: 'Taxa de Dissociação',amount:50000.00},  
-      {key: 11,text: 'Taxa de Nova ligação 25mm',amount:80000.00},  
-      {key: 12,text: 'Taxa de Nova ligação 50mm',amount:105000.00},  
-    ],
+    columns_1: [], // 打印发票的种类列表
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-
+    this.getTrPriceList();
   },
 
   /**
@@ -148,6 +137,25 @@ Page({
   onShareAppMessage() {
 
   },
+   //获取收费及目标
+  getTrPriceList(){
+    getTrPriceList({}).then(res => {
+      if(res.code == 200){
+        let data = res.data.data;
+        let columns_1 = [];
+        data.forEach( ele =>{
+          columns_1.push({
+            id: ele.id,
+            amount: ele.price,
+            text: ele.name
+          });
+        })
+        this.setData({
+          columns_1
+        })
+      }
+    })
+  },
   onShowTypePopup() {
     console.log('#Type_select')
     const select = this.selectComponent('#Type_select')
@@ -161,6 +169,7 @@ Page({
       Type_show: false
     })
   },
+
   // 点击搜索类型--弹窗确认按钮
   handleTypeSelectItem(e) {
     const {
@@ -446,6 +455,7 @@ ${date.time}
         that.setData({
           pay_success: false,
         })
+        that.createPayDemandNote();
       },
       onFail(res){
         console.log('打印失败...')
@@ -453,5 +463,22 @@ ${date.time}
       }
     });
   },
+  createPayDemandNote(){
+    let that = this;
+    let selectradio_info = that.data.selectradio_info; // 选择的用户
+    let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
+    let date = this.handleTimeValue();
 
+    let p = {
+      wm_id: selectradio_info.wm_id,
+      price_list_id: seltTypeInfo.id,
+      total_money: seltTypeInfo.amount,
+      deta_time: date.time,
+    }
+    createPayDemandNote(p).then( res =>{
+
+    }).catch( e =>{
+      console.log(e)
+    })
+  }
 })
