@@ -50,6 +50,9 @@ Page({
    */
   onLoad(options) {
     const auth = app.globalData.auth;
+    console.log(auth.some((ele) =>{
+      return ele == 'DG'
+    }))
     if(auth.indexOf('DG') != -1 || auth.indexOf('CT') != -1  || auth.indexOf('R') != -1){
       // 找到角色
       this.setData({
@@ -75,8 +78,6 @@ Page({
       title_active: options.title_active,
       my_wm_id
     })
-    console.log(my_wm_id)
-    console.log(data.do_uid) 
     if(data.do_user){
       this.setData({
         repairUserLabel: data.do_user.name 
