@@ -297,7 +297,7 @@ Component({
       const year = date.getFullYear()
       const month = date.getMonth() + 1
       const day = date.getDate()
-      item.value = `${year}-${month > 10 ? month : '0' + month}-${day > 10 ? day : '0' + day}`
+      item.value = `${year}-${month > 10 ? month : '0' + month}-${day > 9 ? day : '0' + day}`
       if (item.required) {
         item.error = false
       }
