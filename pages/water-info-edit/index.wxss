@@ -1,0 +1,80 @@
+/* pages/maintenance/search-pay/index.wxss */
+
+.search-pay {
+  background-color: #fff;
+}
+
+.search-pay-content {
+  flex: 1;
+  overflow: hidden;
+}
+.dialog-pay-content{
+  height: 680rpx;
+}
+.dialog-pay-content scroll-view{
+  height: 100%;
+}
+.van-img {
+  display: flex;
+  width: 100%;
+}
+
+.van-img-item {
+  position: relative;
+}
+
+.img-close {
+  position: absolute;
+  color: #ee0a24;
+  right: 0rpx;
+  top: 0;
+  font-size: 32rpx;
+}
+
+.add-img {
+  border: 1px dotted #cfcfcf;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30rpx;
+  height: 160rpx;
+  width: 160rpx;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}
+.search-bar {
+  width: 100%;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.icon {
+  padding-right: 20rpx;
+}
+
+.icon-btn {
+  margin: 0rpx 20rpx;
+}
+.look-box{
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.look-box view{
+  display: inline-block;
+  padding: 6rpx 30rpx;
+  font-size: 26rpx;
+  color: #1989fa;
+}
+.hoverClass{
+  opacity: 0.8;
+}

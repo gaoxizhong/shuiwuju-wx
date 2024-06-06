@@ -382,6 +382,14 @@ const zh_lang = {
     jbsj: '交班时间',
     actual_amount:'实收金额'
   },
+  // 用户水表信息修改
+  waterInfoEdit: {
+    wm_name: '用户名',
+    wm_no: '水表号',
+    last_water: '末次读数',
+    last_time: '末次时间',
+    user_type: '水表类型',
+  },
   // 用水详情
   userWaterInfo: {
     title: '用水信息',

@@ -13,7 +13,11 @@
       <block wx:for="{{list}}" wx:key="index">
         <view class="wixi-item" data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">
           <view class="wixi-item_title">
-            <text>{{item.wm_no}}</text>
+            <view class="view-box">
+              <text class="text-t">{{item.wm_no}}</text>
+              <image src="/img/vol-icon-xg.png" mode="widthFix" class="text-x" wx:if="{{ is_L }}" data-item="{{item}}" bindtap="goToEdit"/>
+            </view>
+
             <van-button type="info" size="small" block='true' data-item="{{item}}" bindtap="imprimirInfo" class="cadastrar-btn">{{ btnName.cadastrar }}</van-button>
           </view>
           <view class="wixi-item_i">

@@ -59,14 +59,15 @@ Page({
     const userInfo = JSON.stringify(app.globalData.userInfo)
     console.log(userInfo)
     const auth = app.globalData.auth; 
+    console.log(auth)
     if(auth.indexOf('L') != -1){
       this.setData({
-        is_L: true
+        is_L: true, // 抄表员
       })
     } 
     if(auth.indexOf('R') != -1){
       this.setData({
-        is_R: true
+        is_R: true // 收银员
       })
     }
     // app.watchBillStatus(_this.getStatusList)
@@ -217,6 +218,18 @@ Page({
         loading: lang.message.noMoreEmpty,
       })
     }
+  },
+  // 点击修改
+  goToEdit(e){
+    let item = e.currentTarget.dataset.item;
+    const data = JSON.stringify(item);
+    wxAsyncApi('navigateTo', {
+      url: `/pages/water-info-edit/index?data=${data}`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
   },
   handleDetails(e) {
     const index = e.currentTarget.dataset.index

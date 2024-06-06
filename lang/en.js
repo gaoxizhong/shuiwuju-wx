@@ -383,6 +383,14 @@ const en_lang = {
     jbsj: 'Horário de turno',
     actual_amount:'Valor Declarado'
   },
+   // 用户水表信息修改
+   waterInfoEdit: {
+    wm_name: 'Nome do Cliente',
+    wm_no: 'Dados do contador',
+    last_water: 'Leitura O último',
+    last_time: 'Date',
+    user_type: 'Categoria Tarifaria',
+  },
   // 用水详情
   userWaterInfo: {
     title: 'Informações de comsumir água',

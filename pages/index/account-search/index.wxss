@@ -43,25 +43,34 @@
 .wixi-list {
   flex: 1;
   overflow: hidden;
-  padding: 20rpx 20rpx 0rpx 20rpx;
   box-sizing: border-box;
 }
 
 .wixi-item {
   position: relative;
-  padding: 20rpx 0;
+  padding: 20rpx;
   font-size: 28rpx;
   border-bottom: 1px solid #ebedf0;
 }
 
 .wixi-item_title {
-  font-weight: 600;
   padding-bottom: 10rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
+.wixi-item_title .view-box{
+  display: flex;
+  align-items: center;
+}
+.wixi-item_title .view-box .text-t{
+  font-weight: 600;
+}
+.wixi-item_title .view-box .text-x{
+  padding-left: 20rpx;
+  width: 28rpx;
+  height: 28rpx;
+}
 .wixi-item_i {
   display: flex;
   padding-bottom: 6rpx;

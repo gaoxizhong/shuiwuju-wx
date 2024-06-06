@@ -25,7 +25,8 @@
     "pages/maintenance/maintenance-info/index",
     "pages/admin/set-lang/index",
     "pages/query-water/fecho/index",
-    "pages/query-water/other-invoices/index"
+    "pages/query-water/other-invoices/index",
+    "pages/water-info-edit/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

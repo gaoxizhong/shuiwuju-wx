@@ -1,0 +1,50 @@
+<!--pages/query-water/pay/collect-info/index.wxml-->
+<view class="container search-pay">
+  <scroll-view scroll-y class="search-pay-content">
+    <!-- 水表号 -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_no}}" model:value="{{ form.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
+
+    <!-- 上次抄表时间 -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{ lang.last_time }}" value="{{ form.last_time }}" readonly placeholder="" />
+
+    <!-- 最后读数 -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.last_water}}" error="{{reading_error}}" value="{{ last_water }}" placeholder="{{lang.last_water}}" />
+
+    <!-- 水表类型 -->
+    <van-field title-width="100%" required readonly="true" custom-style="flex-direction: column;"  label="{{lang.user_type}}" 
+      value="{{ user_type }}"  placeholder="{{ lang.user_type }}"  bind:click-input="onPriceType" />
+
+  </scroll-view>
+  <view class="btn">
+    <view class="btn-item" bindtap="toConfirmInfo">
+      {{btnName.submitName}}
+    </view>
+  </view>
+
+
+    <!-- 价格类型 -->
+    <van-popup show="{{ showPriceType }}" safe-area-tab-bar position="bottom" bind:close="onClosePriceType" round>
+    <van-picker
+     id="priceType"
+      show-toolbar 
+      columns="{{ optionsPriceType }}"
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onClosePriceType" 
+     bind:confirm="handlePriceType" />
+  </van-popup>
+
+  <!-- 时间 -->
+  <van-popup show="{{ showSelectTime }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseTimeSelect">
+    <van-datetime-picker
+      id="wixi-date"
+      type="date"
+      value="{{ currentDate }}"
+      formatter="{{ formatter }}"
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="handleGetTime"
+      bind:cancel="onCloseTimeSelect"
+    />
+  </van-popup>
+</view>
