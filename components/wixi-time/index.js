@@ -155,8 +155,12 @@ Component({
           endTime: time,
           endDate: date,
         })
-        this.onEndClose()
+        this.onEndClose();
       }
+      this.setData({
+        active: null
+      })
+      this.setTime();
     },
     // 点击便捷时间选择
     handleClickTime(e) {

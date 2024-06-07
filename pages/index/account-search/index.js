@@ -88,7 +88,7 @@ Page({
      })
   },
   onShow() {
-    
+    this.handleSearchInfo();
   },
   getStatusList(values) {
     const statusList = Object.keys(values).map(i => ({
@@ -166,7 +166,7 @@ Page({
       // status: this.data.status,
       // page: this.data.page
       select: this.data.select_value,
-      type: this.data.select_type,
+      type: this.data.select_type?this.data.select_type:1,
       page: this.data.page,
     }
     isAdmin(params).then(res => {

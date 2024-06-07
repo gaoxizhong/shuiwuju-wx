@@ -1,17 +1,20 @@
 // pages/water-info-edit/index.js
 const app = getApp()
 let lang = app.globalData.lang
+const {editWater} = require('./../../apis/business-hall')
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    lang: lang.waterInfoEdit,
+    label: lang.waterInfoEdit,
     langDialog: lang.dialog,
     btnName: lang.btnName,
     form: {},
+    wm_name: '',
     last_water: '',
+    last_time: '',
     user_type: '',
     user_type_id: null,
     showSelectTime: false,
@@ -50,11 +53,13 @@ Page({
       }
     })
     this.setData({
-      lang: lang.waterInfoEdit,
+      label: lang.waterInfoEdit,
       langDialog: lang.dialog,
       btnName: lang.btnName,
       form,
-      last_water: form.last_reading,
+      wm_name: form.wm_name,
+      last_water: Number(form.last_reading).toFixed(0),
+      last_time: form.last_time,
       optionsPriceType: list,
       user_type: type,
       user_type_id,
@@ -62,12 +67,10 @@ Page({
     console.log(form)
 
   },
-  onOpenTimeSelect(e) {
-    const index = e.currentTarget.dataset.index
-    const value = this.data.wixiForm[index].value || ''
+  onOpenTimeSelect() {
+    const value = this.data.last_time;
     this.setData({
       showSelectTime: true,
-      formIndex: e.currentTarget.dataset.index,
       currentDate: value ? new Date(value).getTime() : new Date().getTime()
     })
   },
@@ -82,7 +85,11 @@ Page({
     const year = date.getFullYear()
     const month = date.getMonth() + 1
     const day = date.getDate()
-    // item.value = `${year}-${month > 10 ? month : '0' + month}-${day > 9 ? day : '0' + day}`
+    const value = `${year}-${month > 10 ? month : '0' + month}-${day > 9 ? day : '0' + day}`
+    this.setData({
+      showSelectTime: false,
+      last_time: value
+    })
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -112,12 +119,50 @@ Page({
     console.log(e)
     this.setData({
       showPriceType: true,
-      formIndex: e.currentTarget.dataset.index,
     })
+  },
+  handlePriceType(e){
+    console.log(e)
+    this.setData({
+      user_type: e.detail.value.text,
+      user_type_id: e.detail.value.value
+    })
+    this.onClosePriceType();
   },
   onClosePriceType() {
     this.setData({
       showPriceType: false
+    })
+  },
+  submitBtn(){
+    let that = this;
+    let form = that.data.form;
+    let p = {
+      wm_id: form.wm_id,
+      wm_no:  form.wm_no,
+      wm_name:  that.data.wm_name,
+      last_time: that.data.last_time,
+      last_reading: that.data.last_water,
+      user_type_id: that.data.user_type_id,
+    }
+    editWater(p).then(res =>{
+      if(res.code == 200){
+        wx.showToast({
+          title: lang.message.success,
+        })
+        setTimeout( () =>{
+          wx.navigateBack({
+            delta: 1
+          })
+        },1500)
+      }else{
+        wx.showToast({
+          title: res.desc,
+          icon: 'none'
+        })
+      }
+    }).catch(e =>{
+      console.log(e)
     })
   },
   /**

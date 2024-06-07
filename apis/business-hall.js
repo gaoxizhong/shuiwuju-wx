@@ -32,3 +32,12 @@ export const handleBusinessHallBillReceipt = (data) => {
     data
   })
 }
+// 修改水表信息
+export const editWater = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_update_water_meter`,
+    method: 'POST',
+    data
+  })
+}

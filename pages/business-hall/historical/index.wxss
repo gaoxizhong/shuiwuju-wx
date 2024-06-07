@@ -39,14 +39,19 @@
   padding: 20rpx 0rpx 0rpx 20rpx;
   box-sizing: border-box;
 }
-
 .item {
   position: relative;
   padding: 20rpx;
   font-size: 28rpx;
   border-bottom: 1px solid #f1f1f1;
 }
-
+.search-content .list .icon-copy{
+  width: 40rpx;
+  height: 30rpx;
+  position: absolute;
+  right: 20rpx;
+  bottom: 30rpx;
+}
 .item__title {
   font-weight: 600;
   padding-bottom: 10rpx;

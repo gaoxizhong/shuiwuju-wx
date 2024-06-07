@@ -147,6 +147,16 @@ export const getUserPayLog = (data) => {
     data
   })
 }
+// 删除我的收款记录
+export const delUserPayLog = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_del_user_pay_log`,
+    method: 'POST',
+    data
+  })
+}
+
 // 获取我的收款记录详情
 export const getUserPayItemDetail = (data) => {
   const baseUrl = getApp().globalData.baseUrl

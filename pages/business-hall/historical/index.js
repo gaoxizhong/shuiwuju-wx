@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  getUserPayLog,
+  getUserPayLog,delUserPayLog
 } from './../../../apis/water'
 import {
   wxAsyncApi,fmoney
@@ -23,6 +23,8 @@ Page({
     list: [],
     stime: '', // 开始时间
     etime: '', // 结束时间
+    del_selt_info: {},
+    del_selt_index: null,
   },
   /**
    * 生命周期函数--监听页面显示
@@ -121,5 +123,42 @@ Page({
   // 点击交班按钮
   goToFecho(){
   
+  },
+  // 点击列表删除 icon
+  clickDelete(e){
+    let that = this;
+    let item = e.currentTarget.dataset.item;
+    let index = e.currentTarget.dataset.index;
+    let list = that.data.list;
+    wx.showModal({
+      title: lang.historical.title,
+      content: lang.historical.content,
+      cancelText: lang.historical.cancelText,
+      confirmText: lang.historical.confirmText,
+      complete: (res) => {
+        if (res.confirm) {
+          console.log(item)
+          delUserPayLog({
+            user_pay_log_id: item.id
+          }).then( res =>{
+            if(res.code == 200){
+              wx.showToast({
+                title: lang.message.success,
+              })
+              list.splice(index,1);
+              that.setData({
+                list,
+              })
+            }else{
+              wx.showToast({
+                title: res.desc,
+                icon: 'none'
+              })
+            }
+          })
+        }
+      }
+    })
+    
   },
 })

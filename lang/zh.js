@@ -90,6 +90,13 @@ const zh_lang = {
     month: "月",
     day: "日",
   },
+  // 历史记录
+  historical: {
+    title: '提示',
+    content: '确认删除？',
+    cancelText: '取消',
+    confirmText: '确认',
+  },
   // 首页
   index: {
     lang: '语言',
@@ -115,7 +122,7 @@ const zh_lang = {
     placeholder: '请输入',
     selecione: '请选择',
     location: '地址',
-    parent_type:'种类'
+    parent_type:'种类',
   },
   // 新增用户
   addAccount: {

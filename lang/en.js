@@ -92,6 +92,13 @@ const en_lang = {
     month: "Mês",
     day: "Dia",
   },
+  // 历史记录
+  historical: {
+    title: 'Dica',
+    content: 'Apagar sim não ?',
+    cancelText: 'No',
+    confirmText: 'Ok',
+  },
   // 首页
   index: {
     lang: 'Línguas',
