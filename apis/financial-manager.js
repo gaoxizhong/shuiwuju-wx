@@ -21,3 +21,22 @@ export const handleCheckBill = (data) => {
     data
   })
 }
+
+// 获取所有缴费单记录
+export const getAllUserPayLog = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/jc/jc_user_pay_log`,
+    method: 'POST',
+    data
+  })
+}
+// 删除缴费单的记录
+export const delAllUserPayLog = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/jc/jc_del_user_pay_log`,
+    method: 'POST',
+    data
+  })
+}

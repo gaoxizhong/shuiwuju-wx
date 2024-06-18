@@ -17,7 +17,7 @@
           <view class="item__money">
             {{lang.createTime}}：{{item.created_at}}
           </view>
-          <!-- <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" /> -->
+          <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" />
         </view>
       </block>
     </scroll-view>

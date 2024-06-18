@@ -15,6 +15,7 @@
     "pages/business-hall/fecho/index",
     "pages/business-hall/user-pay-info/index",
     "pages/financial-manager/search-account/index",
+    "pages/financial-manager/bill-payment/index",
     "pages/general-manager/query-report/index",
     "pages/admin/employee-certification/index",
     "pages/admin/bluetooth/index",

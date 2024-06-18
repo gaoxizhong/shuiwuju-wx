@@ -471,12 +471,19 @@ const zh_lang = {
         url: '/pages/financial-manager/search-account/index'
       },
       {
-        auth: 'DG',
-        key: '/img/index/gm-query-report.png',
-        title: '查看报告',
+        auth: 'GC',
+        key: '/img/index/search.png',
+        title: '缴费单',
         color: '#6cbcfc',
-        url: '/pages/general-manager/query-report/index'
+        url: '/pages/financial-manager/bill-payment/index'
       },
+      // {
+      //   auth: 'DG',
+      //   key: '/img/index/gm-query-report.png',
+      //   title: '查看报告',
+      //   color: '#6cbcfc',
+      //   url: '/pages/general-manager/query-report/index'
+      // },
       // addAccount: ['新增用户', '/pages/query-water/add-account/index'],
       // searchPay: ['查表缴费', '/pages/query-water/pay/collect-info/index'],
       // todaySummary: ['今日收费', '/pages/query-water/today-summary/index'],

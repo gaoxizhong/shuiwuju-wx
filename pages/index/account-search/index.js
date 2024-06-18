@@ -44,6 +44,7 @@ Page({
     ],
     is_L: false,
     is_R: false,
+    is_GC: false,
     payStatusList:[
       {"text":"Numerário","key":1},
       {"text":"Cartão Multicaixa","key":2},
@@ -60,6 +61,11 @@ Page({
     console.log(userInfo)
     const auth = app.globalData.auth; 
     console.log(auth)
+    if(auth.indexOf('GC') != -1){
+      this.setData({
+        is_GC: true,
+      })
+    } 
     if(auth.indexOf('L') != -1){
       this.setData({
         is_L: true, // 抄表员

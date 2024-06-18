@@ -478,6 +478,13 @@ const en_lang = {
         color: '#6cbcfc',
         url: '/pages/financial-manager/search-account/index'
       },
+      {
+        auth: 'GC',
+        key: '/img/index/search.png',
+        title: 'Factura Simplificada',
+        color: '#6cbcfc',
+        url: '/pages/financial-manager/bill-payment/index'
+      },
       // {
       //   auth: 'DG',
       //   key: '/img/index/gm-query-report.png',
