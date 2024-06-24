@@ -2,7 +2,7 @@
 <view class="container search-pay">
   <scroll-view scroll-y class="search-pay-content">
     <!-- 水表号 -->
-    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{label.wm_no}}" model:value="{{ form.wm_no }}" readonly placeholder="{{label.wm_no}}" />
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{label.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{label.wm_no}}" />
 
     <!-- 用户名 -->
     <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_name}}" model:value="{{ wm_name }}"  placeholder="{{label.wm_name}}" required bind:change="handleChangeName" />

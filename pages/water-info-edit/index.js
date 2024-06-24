@@ -12,6 +12,7 @@ Page({
     langDialog: lang.dialog,
     btnName: lang.btnName,
     form: {},
+    wm_no: '',
     wm_name: '',
     last_water: '',
     last_time: '',
@@ -58,6 +59,7 @@ Page({
       btnName: lang.btnName,
       form,
       wm_name: form.wm_name,
+      wm_no: form.wm_no,
       last_water: Number(form.last_reading).toFixed(0),
       last_time: form.last_time,
       optionsPriceType: list,
@@ -139,7 +141,7 @@ Page({
     let form = that.data.form;
     let p = {
       wm_id: form.wm_id,
-      wm_no:  form.wm_no,
+      wm_no:  that.data.wm_no,
       wm_name:  that.data.wm_name,
       last_time: that.data.last_time,
       last_reading: that.data.last_water,
@@ -163,6 +165,10 @@ Page({
       }
     }).catch(e =>{
       console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon: 'none'
+      })
     })
   },
   /**
