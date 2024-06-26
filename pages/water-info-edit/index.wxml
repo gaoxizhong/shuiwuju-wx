@@ -2,10 +2,35 @@
 <view class="container search-pay">
   <scroll-view scroll-y class="search-pay-content">
     <!-- 水表号 -->
-    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{label.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{label.wm_no}}" />
-
+    <van-field custom-style="flex-direction: column;" title-width="100%" required label="{{label.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{label.wm_no}}" />
     <!-- 用户名 -->
     <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_name}}" model:value="{{ wm_name }}"  placeholder="{{label.wm_name}}" required bind:change="handleChangeName" />
+
+    <!-- 共有/独有下拉选择 -->
+    <van-field title-width="100%" required readonly="true" custom-style="flex-direction: column;" label="{{label.is_share}}" 
+    model:value="{{ is_share_value }}" placeholder="{{label.is_share}}" bind:click-input="onTotSim" />
+
+    <!-- 户数 -->
+    <van-field custom-style="flex-direction: column;" type="number" required readonly="{{household_readonly}}" title-width="100%" label="{{label.household_num}}" model:value="{{ household_num }}"  placeholder="{{label.household_num}}" />
+
+    <!-- 地区选择 -->
+   <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" label="{{label.area}}" 
+      model:value="{{ areavalue }}" 
+      placeholder="{{label.area_placeholder}}" 
+      bind:click-input="onOpenSelect"
+    ></van-field>
+
+    <!-- 详细地址 -->
+    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_address}}" model:value="{{ wm_address }}"  placeholder="{{label.wm_address}}" required />
+
+    <!-- 门牌号 -->
+    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.house_number}}" model:value="{{ house_number }}"  placeholder="{{label.house_number}}" required />
+
+    <!-- 分区选择 -->
+    <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" 
+      label="{{label.area_code}}" model:value="{{ area_code }}" placeholder="{{label.area_code}}" 
+      bind:click-input="onarea_code" 
+    />
 
     <!-- 时间选择 -->
     <van-field type = 'date' title-width="100%" custom-style="flex-direction: column;" readonly label="{{label.last_time }}" value="{{ last_time }} "placeholder="{{label.last_time}}" bind:click-input="onOpenTimeSelect"
@@ -13,9 +38,16 @@
     <!-- 最后读数 -->
     <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{label.last_water}}" error="{{reading_error}}" model:value="{{ last_water }}" placeholder="{{label.last_water}}" />
 
+    <!-- 税号/身份证号 -->
+    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.user_card}}" model:value="{{ user_card }}"  placeholder="{{label.user_card}}" required bind:change="handleChangeuser_card" />
+
+    <!-- 手机号 -->
+    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_phone}}" model:value="{{ wm_phone }}"  placeholder="{{label.wm_phone}}" required bind:change="handleChangewm_phone" />
+
     <!-- 水表类型 -->
     <van-field title-width="100%" required readonly="true" custom-style="flex-direction: column;"  label="{{label.user_type}}" 
       value="{{ user_type }}"  placeholder="{{ label.user_type }}"  bind:click-input="onPriceType" />
+
 
   </scroll-view>
   <view class="btn">
@@ -25,8 +57,8 @@
   </view>
 
 
-    <!-- 价格类型 -->
-    <van-popup show="{{ showPriceType }}" safe-area-tab-bar position="bottom" bind:close="onClosePriceType" round>
+  <!-- 价格类型 弹窗-->
+  <van-popup show="{{ showPriceType }}" safe-area-tab-bar position="bottom" bind:close="onClosePriceType" round>
     <van-picker
      id="priceType"
       show-toolbar 
@@ -37,7 +69,7 @@
      bind:confirm="handlePriceType" />
   </van-popup>
 
-  <!-- 时间 -->
+  <!-- 时间 弹窗-->
   <van-popup show="{{ showSelectTime }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseTimeSelect">
     <van-datetime-picker
       id="wixi-date"
@@ -50,4 +82,34 @@
       bind:cancel="onCloseTimeSelect"
     />
   </van-popup>
+
+  <!-- 共有/独有 弹窗-->
+  <van-popup show="{{ showTotSim }}" safe-area-tab-bar position="bottom" bind:close="onCloseTotSim" round>
+    <van-picker id="tot_sim" show-toolbar columns="{{ optionsTotSim }}"
+    default-index="{{ totSimIndex }}"
+    confirm-button-text="{{langDialog.confirmText}}" 
+    cancel-button-text="{{langDialog.cancelText}}" 
+    bind:cancel="onCloseTotSim" 
+    bind:confirm="handleTotSim" />
+  </van-popup>
+
+  <!-- 地区 弹窗-->
+  <van-popup show="{{ showSelect }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseSelect">
+    <van-picker id="wixi-area" show-toolbar  columns="{{ columns }}" 
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="onConfirmSelect" 
+      bind:cancel="onCloseSelect" 
+      bind:change="onChangeSelect" />
+  </van-popup>
+  <!-- 分区 弹窗-->
+  <van-popup show="{{ showarea_code }}" safe-area-tab-bar position="bottom" bind:close="onClosearea_code" round>
+    <van-picker id="area_code" show-toolbar columns="{{ optionsarea_code }}"
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onClosearea_code" 
+     bind:confirm="handlearea_code" />
+  </van-popup>
+
+
 </view>

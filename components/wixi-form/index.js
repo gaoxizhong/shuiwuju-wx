@@ -130,8 +130,7 @@ Component({
     },{ 
       text: 'D',
       value: 'D'
-    }
-  ],
+    }],
     optionsPriceType: [],  // 价格类型
     showTotSim: false, // 共有/独有
     optionsTotSim:[ 
@@ -263,9 +262,9 @@ Component({
         if (_index === 0) {
           confirmValue[_index] = area[i].id
         } else if (_index === 1) {
-          confirmValue[_index] = area[index[_index - 1]].areas[i].id
+          confirmValue[_index] = area[index[0]].areas[i].id
         } else {
-          confirmValue[_index] = area[index[_index - 2]].areas[index[_index - 1]].id
+          confirmValue[_index] = area[index[0]].areas[index[1]].areas[i].id
         }
       })
       this.setData({

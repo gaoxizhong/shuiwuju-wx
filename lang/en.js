@@ -397,6 +397,16 @@ const en_lang = {
     last_water: 'Leitura O último',
     last_time: 'Date',
     user_type: 'Categoria Tarifaria',
+    user_card: 'NIF/BI',
+    wm_phone: 'Telefone',
+    is_share: 'Totalizador/Normal',
+    household_num: 'Unidades',
+    area: 'Localidade',
+    area_placeholder: 'Escolha Localidade',
+    wm_address: 'Endereço detalhado',
+    house_number: 'Nº de Porta',
+    area_code: 'Giro/Zona',
+
   },
   // 用水详情
   userWaterInfo: {

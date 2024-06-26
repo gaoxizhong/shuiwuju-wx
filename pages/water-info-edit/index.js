@@ -17,8 +17,41 @@ Page({
     last_water: '',
     last_time: '',
     user_type: '',
+    user_card: '',
+    wm_phone: '',
+    is_share: 0,
+    household_num: 1,
+    household_readonly: true,
     user_type_id: null,
     showSelectTime: false,
+    showTotSim: false, // 共有/独有
+    optionsTotSim:[ 
+      { text: 'Normal', value: 0},
+      {text: 'Totalizador', value: 1},
+    ],
+    totSimIndex: 0, // 默认 共有/独有 选项下标
+    is_share_value: '',
+    areavalue: '', // 地区
+    showSelect: false,  // 地区弹窗
+    columns: [],
+    columnsIndex: [0, 0, 0],
+    confirmIndex: [0, 0, 0],
+    confirmValue: [0, 0, 0],
+    wm_address: '', //详细地址
+    house_number: '', //门牌号
+    area_code: '', // 分区，
+    showarea_code: false,
+    optionsarea_code:[
+      { text: '1',value: 1 }, 
+      { text: '2',value: 2 },
+      { text: '3', value: 3 }, 
+      { text: '4', value: 4 },
+      { text: '5', value: 5 }, 
+      { text: 'A', value: 'A' },
+      { text: 'B', value: 'B' },
+      { text: 'C', value: 'C' },
+      { text: 'D', value: 'D' }
+    ],
     currentDate: new Date().getTime(),
     formatter(type, value) {
       if (type === 'year') {
@@ -40,6 +73,7 @@ Page({
   onLoad(options) {
     lang = app.globalData.lang;
     const form = JSON.parse(options.data);
+    console.log(form)
     // 获取价格类型
     let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
     let list = fbUserType.map(i => ({
@@ -53,6 +87,22 @@ Page({
         type = ele.text
       }
     })
+    let is_share_value = '';
+    let is_share = form.is_share;
+    let optionsTotSim = this.data.optionsTotSim;
+    optionsTotSim.forEach( ele =>{
+      if(ele.value == is_share){
+        is_share_value = ele.text;
+      }
+    })
+    if(is_share == 1){
+      this.setData({
+        household_readonly: false
+      })
+    }
+    let optionsarea_code = this.data.optionsarea_code;
+    let area_code = form.area_code;
+
     this.setData({
       label: lang.waterInfoEdit,
       langDialog: lang.dialog,
@@ -65,9 +115,61 @@ Page({
       optionsPriceType: list,
       user_type: type,
       user_type_id,
+      user_card: form.user_card,
+      wm_phone: form.wm_phone,
+      is_share: form.is_share,
+      is_share_value,
+      totSimIndex: form.is_share,
+      household_num: form.household_num,
+      areavalue: form.area1 + form.area2 + form.area3,
+      wm_address: form.wm_address,
+      house_number: form.house_number,
+      area_code : form.area_code,
     })
-    console.log(form)
+    const area = app.globalData.area;
+    console.log(area)
+    const values1 = area.map(i => i.name); // 省
+    const values2 = area[0].areas.map(i => i.name);  // 市
+    const values3 = area[0].areas[0].areas.map(i => i.name); // 区
+    let a_1 = '';
+    let a_2 = '';
+    let a_3 = '';
+    let item_1 = [];
+    let item_2 = [];
+    area.forEach(ele =>{
+      if(ele.name == form.area1){
+        a_1 = ele.id;
+        item_1 = ele.areas;
+      }
+    })
+    item_1.forEach(ele =>{
+      if(ele.name == form.area2){
+        a_2 = ele.id;
+        item_2 = ele.areas;
+      }
+    })
+    item_2.forEach(ele =>{
+      if(ele.name == form.area3){
+        a_3 = ele.id;
+      }
+    })
+    console.log(a_1);
+    console.log(a_2);
+    console.log(a_3);
+    const columns = [{
+      values: values1,
+    }, {
+      values: values2,
+    }, {
+      values: values3,
+    }]
 
+    this.setData({
+      columns,
+      area1: a_1,
+      area2: a_2,
+      area3: a_3,
+    })
   },
   onOpenTimeSelect() {
     const value = this.data.last_time;
@@ -123,6 +225,7 @@ Page({
       showPriceType: true,
     })
   },
+  // 价格类型弹窗确认
   handlePriceType(e){
     console.log(e)
     this.setData({
@@ -136,6 +239,152 @@ Page({
       showPriceType: false
     })
   },
+  // 共有、独有
+  handleTotSim(e){
+    if(e.detail.value.value == 0){ // 不共有
+      this.setData({
+        household_readonly: true,
+      })
+    }
+    if(e.detail.value.value == 1){ // 共有
+      this.setData({
+        household_readonly: false,
+      })
+    }
+    this.setData({
+      is_share: e.detail.value.value,
+      totSimIndex: e.detail.index,
+      is_share_value: e.detail.value.text,
+    })
+    this.onCloseTotSim();
+  },
+  onTotSim(e){
+    console.log(e)
+    this.setData({
+      showTotSim: true,
+    })
+  },
+  onCloseTotSim() {
+    this.setData({
+      showTotSim: false
+    })
+  },
+  // 地区
+  onOpenSelect(e) {
+    const area = app.globalData.area
+    const picker = this.selectComponent('#wixi-area')
+    const confirmIndex = this.data.confirmIndex
+    if (picker) {
+      confirmIndex.forEach((i, index) => {
+        if (index === 0) {
+          picker.setColumnValues(1, area[i].areas.map(i => i.name));
+        } else if (index === 1) {
+          picker.setColumnValues(2, area[confirmIndex[index - 1]].areas[i].areas.map(i => i.name));
+        } else {
+          setTimeout(() => {
+            picker.setColumnIndex(index, i)
+          }, 200)
+        }
+        picker.setColumnIndex(index, i)
+      })
+    }
+    this.setData({
+      showSelect: true,
+      formIndex: e.currentTarget.dataset.index,
+      columnsIndex: [...confirmIndex]
+    })
+  },
+  onChangeSelect(e) {
+    const area = app.globalData.area
+    const {
+      picker,
+      index,
+      value
+    } = e.detail;
+    if (index === 0) {
+      const indexValue = value[index]
+      const _columnsIndex = area.findIndex(i => i.name = indexValue)
+      const columnsIndex = [_columnsIndex, 0, 0]
+      this.setData({
+        columnsIndex
+      })
+      // const _index = area[0].areas.findIndex(i => i.name === value[index])
+      picker.setColumnValues(1, area[_columnsIndex].areas.map(i => i.name));
+      picker.setColumnValues(2, area[_columnsIndex].areas[0].areas.map(i => i.name));
+    } else if (index === 1) {
+      const columnsIndex = this.data.columnsIndex
+      const _index = area[columnsIndex[0]].areas.findIndex(i => i.name === value[index])
+      columnsIndex[1] = _index
+      columnsIndex[2] = 0
+      this.setData({
+        columnsIndex
+      })
+      picker.setColumnValues(2, area[columnsIndex[0]].areas[_index].areas.map(i => i.name));
+    }
+
+  },
+  onConfirmSelect(e) {
+    const {
+      index,
+      value
+    } = e.detail
+    console.log(e)
+    const area = app.globalData.area;
+    const confirmValue = this.data.confirmValue;
+    const areavalue = value.join(',');
+    console.log(area)
+    index.forEach((i, _index) => {
+      if (_index === 0) {
+        confirmValue[_index] = area[i].id
+      } else if (_index === 1) {
+        confirmValue[_index] = area[index[0]].areas[i].id
+      } else {
+        confirmValue[_index] = area[index[0]].areas[index[1]].areas[i].id
+      }
+    })
+    this.setData({
+      confirmIndex: index,
+      confirmValue,
+      area1: confirmValue[0],
+      area2: confirmValue[1],
+      area3: confirmValue[2],
+      areavalue,
+    })
+    this.onCloseSelect();
+  },
+  onCloseSelect() {
+    this.setData({
+      showSelect: false
+    })
+  },
+
+  // 分区
+  onarea_code(e){
+    this.setData({
+      showarea_code: true,
+    })
+  },
+  onClosearea_code() {
+    this.setData({
+      showarea_code: false
+    })
+  },
+  handlearea_code(e){
+    console.log(e)
+    const optionsarea_code = optionsarea_code;
+    return
+
+    item.value = e.detail.value.text
+    item.value_name = e.detail.value.value
+    if (item.required) {
+      item.error = false
+    }
+    this.setData({
+      wixiForm: form
+    })
+    this.onClosearea_code()
+  },
+
   submitBtn(){
     let that = this;
     let form = that.data.form;
@@ -146,6 +395,16 @@ Page({
       last_time: that.data.last_time,
       last_reading: that.data.last_water,
       user_type_id: that.data.user_type_id,
+      user_card: that.data.user_card,
+      wm_phone: that.data.wm_phone,
+      is_share: that.data.is_share,
+      household_num: that.data.household_num,
+      area1: that.data.area1,
+      area2: that.data.area2,
+      area3: that.data.area3,
+      wm_address: that.data.wm_address,
+      house_number:  that.data.house_number,
+
     }
     editWater(p).then(res =>{
       if(res.code == 200){

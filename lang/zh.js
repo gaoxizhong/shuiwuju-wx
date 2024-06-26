@@ -396,6 +396,16 @@ const zh_lang = {
     last_water: '末次读数',
     last_time: '末次时间',
     user_type: '水表类型',
+    user_card: '税号/身份证号',
+    wm_phone: '电话号码',
+    is_share: '共有/私有',
+    household_num: '户数',
+    area: '地区',
+    area_placeholder: '请选择地区',
+    wm_address: '详情地址',
+    house_number: '门牌号',
+    area_code: '分区',
+    
   },
   // 用水详情
   userWaterInfo: {
