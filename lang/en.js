@@ -406,6 +406,8 @@ const en_lang = {
     wm_address: 'Endereço detalhado',
     house_number: 'Nº de Porta',
     area_code: 'Giro/Zona',
+    sewage_rate: 'Agua Residuais',
+    email: 'Email',
 
   },
   // 用水详情
@@ -429,6 +431,7 @@ const en_lang = {
     paid_total_money: 'Valor real pago',
     descontos:'Desconto',
     placeholderName: 'Preencher o nome do pedágio',
+    check_num: 'N* do Cheque',
   },
   // 功能列表
   func: {

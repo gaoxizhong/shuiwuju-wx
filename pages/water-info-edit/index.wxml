@@ -31,22 +31,30 @@
       label="{{label.area_code}}" model:value="{{ area_code }}" placeholder="{{label.area_code}}" 
       bind:click-input="onarea_code" 
     />
+    <!-- 最后读数 -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{label.last_water}}" error="{{reading_error}}" model:value="{{ last_water }}" placeholder="{{label.last_water}}" />
 
     <!-- 时间选择 -->
     <van-field type = 'date' title-width="100%" custom-style="flex-direction: column;" readonly label="{{label.last_time }}" value="{{ last_time }} "placeholder="{{label.last_time}}" bind:click-input="onOpenTimeSelect"
       ></van-field>
-    <!-- 最后读数 -->
-    <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{label.last_water}}" error="{{reading_error}}" model:value="{{ last_water }}" placeholder="{{label.last_water}}" />
+    <!-- 水表类型 -->
+    <van-field title-width="100%" required readonly="true" custom-style="flex-direction: column;"  label="{{label.user_type}}" 
+      value="{{ user_type }}"  placeholder="{{ label.user_type }}"  bind:click-input="onPriceType" />
+    
+    <!-- 污水下拉选择 -->
+    <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" label="{{label.sewage_rate}}" model:value="{{ sewage_rate_value }}" placeholder="{{label.sewage_rate}}" 
+      bind:click-input="onSewage" 
+    />
+
 
     <!-- 税号/身份证号 -->
     <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.user_card}}" model:value="{{ user_card }}"  placeholder="{{label.user_card}}" required bind:change="handleChangeuser_card" />
 
     <!-- 手机号 -->
-    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_phone}}" model:value="{{ wm_phone }}"  placeholder="{{label.wm_phone}}" required bind:change="handleChangewm_phone" />
+    <van-field  type ='number' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_phone}}" model:value="{{ wm_phone }}"  placeholder="{{label.wm_phone}}" required bind:change="handleChangewm_phone" />
 
-    <!-- 水表类型 -->
-    <van-field title-width="100%" required readonly="true" custom-style="flex-direction: column;"  label="{{label.user_type}}" 
-      value="{{ user_type }}"  placeholder="{{ label.user_type }}"  bind:click-input="onPriceType" />
+    <!-- 邮箱 -->
+    <van-field  type ='text' title-width="100%" custom-style="flex-direction: column;" label="{{label.email}}" model:value="{{ email }}"  placeholder="{{label.email}}" />
 
 
   </scroll-view>
@@ -111,5 +119,13 @@
      bind:confirm="handlearea_code" />
   </van-popup>
 
+  <!-- 污水 弹窗-->
+  <van-popup show="{{ showSewage }}" safe-area-tab-bar position="bottom" bind:close="onCloseSewage" round>
+    <van-picker id="sewage" show-toolbar columns="{{ optionsSewage }}" 
+     confirm-button-text="{{langDialog.confirmText}}" 
+     cancel-button-text="{{langDialog.cancelText}}" 
+     bind:cancel="onCloseSewage" 
+     bind:confirm="handleSewage" />
+  </van-popup>
 
 </view>

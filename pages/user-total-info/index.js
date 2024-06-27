@@ -90,6 +90,8 @@ Page({
     img: '',
     printing: false,
     totIndex: 0, // 默认  选项下标
+    showCheck: false,
+    check_num: ''
   },
 
   /**
@@ -238,7 +240,10 @@ Page({
         total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
         pay_time: date.time,
-        discount_money: that.data.discount_money
+        discount_money: that.data.discount_money,
+      }
+      if(params.pay_way == 4){
+        params.check_num = that.data.check_num;
       }
       new_payWater(params).then(res => {
         that.setData({
@@ -305,6 +310,15 @@ Page({
       text,
       key
     } = e.detail.value
+    if(key == 3){
+      this.setData({
+        showCheck: true
+      })
+    }else{
+      this.setData({
+        showCheck: false
+      })
+    }
     this.setData({
       pay_way: key,
       pay_text: text,
@@ -340,8 +354,8 @@ Page({
       return
     }
 
-    const paid_total_money = this.data.paid_total_money
-    const pay_text = this.data.pay_text
+    const paid_total_money = this.data.paid_total_money;
+    const pay_text = this.data.pay_text;
     if (!paid_total_money) {
       this.setData({
         no_error: true
@@ -353,6 +367,7 @@ Page({
       })
       return
     }
+
     if (!pay_text) {
       this.setData({
         pay_type_error: true
@@ -364,6 +379,24 @@ Page({
       })
       return
     }
+
+    const pay_way = this.data.pay_way;
+    const check_num = this.data.check_num;
+
+    if (pay_way == 4) {
+      if(!check_num || check_num == ''){
+        this.setData({
+          check_num_error: true
+        })
+        wx.showToast({
+          title: lang.message.formWarning,
+          duration: 2000,
+          icon: 'none'
+        })
+        return
+      }
+    }
+
     this.setData({
       password_layer: true
     })

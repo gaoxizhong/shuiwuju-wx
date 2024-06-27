@@ -405,7 +405,9 @@ const zh_lang = {
     wm_address: '详情地址',
     house_number: '门牌号',
     area_code: '分区',
-    
+    sewage_rate: '是否有污水',
+    email: '邮箱',
+
   },
   // 用水详情
   userWaterInfo: {
@@ -428,6 +430,7 @@ const zh_lang = {
     paid_total_money: '实缴金额',
     descontos:'折扣',
     placeholderName: '请输入姓名',
+    check_num: '支票编码',
   },
   // 功能列表
   func: {

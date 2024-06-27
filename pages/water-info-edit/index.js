@@ -52,6 +52,14 @@ Page({
       { text: 'C', value: 'C' },
       { text: 'D', value: 'D' }
     ],
+    sewage_rate_value:'', // 污水
+    showSewage: false, // 是否污水
+    sewage_rate: '', // 选中的值
+    optionsSewage: [
+      { text: 'Sim',value: 1 }, 
+      { text: 'No',value: 0 }
+    ],
+    email:'',
     currentDate: new Date().getTime(),
     formatter(type, value) {
       if (type === 'year') {
@@ -103,6 +111,20 @@ Page({
     let optionsarea_code = this.data.optionsarea_code;
     let area_code = form.area_code;
 
+    // 污水
+    let sewage_text = form.sewage_rate;
+    let optionsSewage = this.data.optionsSewage;
+    if(sewage_text == 80){
+      this.setData({
+        sewage_rate: 1,
+        sewage_rate_value: 'Sim'
+      })
+    }else{
+      this.setData({
+        sewage_rate: 0,
+        sewage_rate_value: 'No'
+      })
+    }
     this.setData({
       label: lang.waterInfoEdit,
       langDialog: lang.dialog,
@@ -124,7 +146,8 @@ Page({
       areavalue: form.area1 + form.area2 + form.area3,
       wm_address: form.wm_address,
       house_number: form.house_number,
-      area_code : form.area_code,
+      area_code: form.area_code,
+      email: form.email,
     })
     const area = app.globalData.area;
     console.log(area)
@@ -370,21 +393,31 @@ Page({
     })
   },
   handlearea_code(e){
-    console.log(e)
-    const optionsarea_code = optionsarea_code;
-    return
-
-    item.value = e.detail.value.text
-    item.value_name = e.detail.value.value
-    if (item.required) {
-      item.error = false
-    }
     this.setData({
-      wixiForm: form
+      area_code: e.detail.value.value
     })
     this.onClosearea_code()
   },
-
+    // 有无污水
+    onSewage(e){
+      this.setData({
+        showSewage: true,
+      })
+    },
+    onCloseSewage() {
+      this.setData({
+        showSewage: false
+      })
+    },
+    handleSewage(e){
+      let text = e.detail.value.text;
+      let value = e.detail.value.value;
+      this.setData({
+        sewage_rate_value: text,
+        sewage_rate: value,
+      })
+      this.onCloseSewage();
+    },
   submitBtn(){
     let that = this;
     let form = that.data.form;
@@ -404,7 +437,9 @@ Page({
       area3: that.data.area3,
       wm_address: that.data.wm_address,
       house_number:  that.data.house_number,
-
+      area_code:  that.data.area_code,
+      sewage_rate: that.data.sewage_rate,
+      email: that.data.email,
     }
     editWater(p).then(res =>{
       if(res.code == 200){
