@@ -430,7 +430,7 @@ const zh_lang = {
     paid_total_money: '实缴金额',
     descontos:'折扣',
     placeholderName: '请输入姓名',
-    check_num: '支票编码',
+    cheque_number: '支票编码',
   },
   // 功能列表
   func: {

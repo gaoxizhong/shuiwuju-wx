@@ -431,7 +431,7 @@ const en_lang = {
     paid_total_money: 'Valor real pago',
     descontos:'Desconto',
     placeholderName: 'Preencher o nome do pedágio',
-    check_num: 'N* do Cheque',
+    cheque_number: 'N* do Cheque',
   },
   // 功能列表
   func: {

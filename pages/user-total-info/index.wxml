@@ -37,7 +37,7 @@
         </van-cell-group>
         <van-cell-group>
 
-        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{ check_num_error }}" label="{{lang.check_num}}" model:value="{{ check_num }}" placeholder="{{lang.check_num}}" wx:if="{{ showCheck }}" />
+        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{ check_num_error }}" label="{{lang.cheque_number}}" model:value="{{ cheque_number }}" placeholder="{{lang.cheque_number}}" wx:if="{{ showCheck }}" />
         
       </van-cell-group>
     </view>

@@ -91,7 +91,7 @@ Page({
     printing: false,
     totIndex: 0, // 默认  选项下标
     showCheck: false,
-    check_num: ''
+    cheque_number: ''
   },
 
   /**
@@ -182,6 +182,7 @@ Page({
             payStatusList: payWayList,
             pay_way: '',
             pay_text: '',
+            cheque_number: '',
           })
         }
       }
@@ -243,7 +244,7 @@ Page({
         discount_money: that.data.discount_money,
       }
       if(params.pay_way == 4){
-        params.check_num = that.data.check_num;
+        params.cheque_number = that.data.cheque_number;
       }
       new_payWater(params).then(res => {
         that.setData({
@@ -310,7 +311,7 @@ Page({
       text,
       key
     } = e.detail.value
-    if(key == 3){
+    if(key == 4){
       this.setData({
         showCheck: true
       })
@@ -381,10 +382,10 @@ Page({
     }
 
     const pay_way = this.data.pay_way;
-    const check_num = this.data.check_num;
+    const cheque_number = this.data.cheque_number;
 
     if (pay_way == 4) {
-      if(!check_num || check_num == ''){
+      if(!cheque_number || cheque_number == ''){
         this.setData({
           check_num_error: true
         })
@@ -676,6 +677,7 @@ Page({
           pay_success: false,
           pay_way: '',
           pay_text: '',
+          cheque_number: '',
         })
         let print_type = that.data.print_type;
         //打印收据
@@ -819,6 +821,7 @@ Método       Moeda       Total
 --------------------------------
 ${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
 --------------------------------
+${that.data.pay_way == 4?"N* do Cheque: " +that.data.cheque_number : ''}
 `,
         receiptInfo_Saldo: `
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
