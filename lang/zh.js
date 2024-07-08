@@ -123,6 +123,7 @@ const zh_lang = {
     selecione: '请选择',
     location: '地址',
     parent_type:'种类',
+    parent_price: '价格'
   },
   // 新增用户
   addAccount: {

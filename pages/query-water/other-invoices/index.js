@@ -324,6 +324,8 @@ Page({
       parent_type_error: false,
       typeLabel_1,
       seltTypeInfo: e.detail.value,
+      showCheck: true,
+      amount: fmoney(Number(e.detail.value.amount),2),
     })
     this.onCloseType1Select();
   },

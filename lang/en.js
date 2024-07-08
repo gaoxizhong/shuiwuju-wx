@@ -124,7 +124,8 @@ const en_lang = {
     placeholder: 'Por favor, digite',
     selecione: 'Por favor selecione',
     location: 'Localidade',
-    parent_type:'Espécies'
+    parent_type:'Espécies',
+    parent_price: 'Valor a pagar'
   },
   // 新增用户
   addAccount: {

@@ -17,6 +17,8 @@
 
   <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.parent_type}}" value="{{ typeLabel_1 }}" error="{{parent_type_error}}" placeholder="{{lang.selecione}}" bind:click-input="onType1Open" />
 
+  <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly label="{{ lang.parent_price + '（KZ）' }}" value="{{ amount }}" wx:if="{{ showCheck }}" />
+
   <view class="btn">
     <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPrint" >
       {{btnName.cadastrar}}
