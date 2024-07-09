@@ -51,6 +51,7 @@ Page({
     seltTypeInfo:{}, // 选择的打印种类
     show_1:false,
     columns_1: [], // 打印发票的种类列表
+    title_active: 1,
   },
 
   /**
@@ -71,7 +72,21 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    
+    this.setData({
+      userWaterInfo: lang.userWaterInfo,
+      lang: lang.index,
+      langDialog: lang.dialog,
+      btnName: lang.btnName,
+    })
+  },
+  onTabChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      page: 1,
+      total: 0,
+      isScroll: true,
+      title_active,
+    })
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str){

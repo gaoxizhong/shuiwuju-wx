@@ -125,7 +125,11 @@ const en_lang = {
     selecione: 'Por favor selecione',
     location: 'Localidade',
     parent_type:'Espécies',
-    parent_price: 'Valor a pagar'
+    parent_price: 'Valor a pagar',
+    tabs_1: {
+      one: 'Facturação',
+      two: 'Pagamento',
+    },
   },
   // 新增用户
   addAccount: {

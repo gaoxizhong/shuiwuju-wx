@@ -13,6 +13,9 @@
   width: 100%;
   overflow: hidden;
   padding-right: 20rpx;
+  padding-bottom: 20rpx;
+  background: #fff;
+  margin-top: 20rpx;
 }
 .dialog-pay-content{
   height: 680rpx;
@@ -44,4 +47,27 @@
 }
 .van-search__action{
   margin-left: 20rpx;
+}
+.container-tabbox{
+  width: 100%;
+  display: flex;
+}
+.container-tabbox>view{
+  flex: 1;
+  text-align: center;
+  background: #fff;
+  padding: 20rpx 0;
+  position: relative;
+}
+.container-tabbox>view.active::before{
+    content: '';
+    background: #ee0a24;
+    border-radius: 3px;
+    bottom: 0;
+    height: 3px;
+    left: 50%;
+    position: absolute;
+    width: 40px;
+    transform: translateX(-50%);
+    transition: 0.3s;
 }
