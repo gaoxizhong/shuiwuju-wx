@@ -39,3 +39,13 @@ export const createPayDemandNote = (data) => {
     data
   })
 }
+
+// 收费项目列表
+export const getDemandNoteList = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_get_demand_note_list`,
+    method: 'POST',
+    data
+  })
+}

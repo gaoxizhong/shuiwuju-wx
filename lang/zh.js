@@ -128,6 +128,10 @@ const zh_lang = {
       one: '用户',
       two: '管理员',
     },
+    tabs_2: {
+      one: '发票',
+      two: '缴费单',
+    },
   },
   // 新增用户
   addAccount: {

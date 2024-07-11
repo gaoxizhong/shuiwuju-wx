@@ -1,0 +1,159 @@
+/* pages/user-water-info/index.wxss */
+
+/* page{
+  height: auto;
+} */
+.user-water-info {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.info-label {
+  padding: 20rpx 32rpx;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 28rpx;
+  padding: 20rpx 32rpx;
+}
+
+.info-item__label {
+  font-size: 24rpx;
+  width: auto;
+  overflow: hidden;
+  color: rgba(69, 90, 100, 0.6);
+}
+
+.info-item__info {
+  flex: 1;
+  padding-left: 30rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+  margin-top: 60rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
+}
+
+.over {
+  flex: 1;
+}
+.cover {
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  position: fixed;
+  background-color: black;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 997;
+}
+.operatorNameList-cover{
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  position: fixed;
+  background-color: black;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 998;
+}
+.toast-box {
+    height: auto;
+    padding-bottom: 20rpx;
+}
+
+.toast-box {
+    width: 80%;
+    height: auto;
+    padding: 30rpx;
+    background-color: white;
+    opacity: 1;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 999;
+    border: 1rpx solid white;
+    border-radius: 6px;
+}
+.toast-box .van-button--block{
+  margin-top: 30rpx;
+  padding: 30rpx !important;
+}
+.toast-box .ls-box{
+  width: 100%;
+  text-align: right;
+  font-size: 28rpx;
+  color: #1989fa;
+  padding-top: 12rpx;
+}
+.pass-title {
+  width: 100%;
+  padding-top: 20rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+.toast-box .van-field__control:empty+.van-field__control{
+  padding-left: 20rpx;
+  background: #f9f9f9;
+  width: 100%;
+  text-align: left;
+  height: 70rpx !important;
+  line-height: 70rpx !important;
+}
+.toast-box .van-cell{
+  padding-left: 10rpx;
+  padding-right: 10rpx;
+}
+.pop-box{
+  background: #fff;
+  padding: 34rpx 10rpx 10rpx 10rpx;
+  border-radius: 6px;
+  width: 90%;
+  height: 400rpx;
+  position: absolute;
+  left: 30rpx;
+  bottom: -236rpx;
+  border: 1px solid #d0d0d0;
+}
+.ls-item{
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.pop-box .qx-box{
+  font-size: 28rpx;
+  padding: 8rpx 10px;
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  color: #ff0000;
+}
+.pop-box .pop-item-box{
+  width: 100%;
+}
+.pop-item-box>view{
+  padding: 14rpx 20rpx;
+  border-bottom: 1px solid #d0d0d059;
+}

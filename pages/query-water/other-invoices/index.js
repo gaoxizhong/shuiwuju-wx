@@ -10,6 +10,7 @@ import {
   isAdmin,
   getTrPriceList, //获取收费及目标
   createPayDemandNote, // 创建收费账单
+  getDemandNoteList, // 订单列表
 } from '../../../apis/admin'
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
@@ -44,14 +45,17 @@ Page({
     radioList: [],
     selectTypeIndex: 0,
     page: 1,
-    selectradio_info:{},
+    selectradio_info: null,
     dialog_show: false,
     typeLabel_1: '', // 打印发票的种类 text
-    parent_type_error: false,
     seltTypeInfo:{}, // 选择的打印种类
-    show_1:false,
     columns_1: [], // 打印发票的种类列表
+    parent_type_error: false,
+    show_1:false,
+
     title_active: 1,
+    demandNoteList: [],// 收费项目订单列表
+    page_demandNote: 1,
   },
 
   /**
@@ -82,11 +86,14 @@ Page({
   onTabChange(e){
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
-      page: 1,
-      total: 0,
-      isScroll: true,
       title_active,
+      page_demandNote: 1,
+      demandNoteList: [],// 收费项目订单列表
     })
+    if(title_active == 2 && this.data.selectradio_info){
+      // 收费项目列表
+      this.getDemandNoteList();
+    }
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str){
@@ -223,6 +230,7 @@ Page({
       type_seach: 'type'
     })
   },
+  // 搜索按钮
   handleSearchInfo() {
     this.setData({
       page: 1,
@@ -230,8 +238,9 @@ Page({
       isScroll: true,
       loading: ''
     })
-    this.getlist()
+    this.getlist();
   },
+  // 获取用户列表
   getlist(){
     let that = this;
     let p = {
@@ -276,6 +285,50 @@ Page({
       })
     })
   },
+  // 收费项目列表
+  getDemandNoteList(){
+    let that = this;
+    let p = {
+      wm_id: this.data.selectradio_info.wm_id,
+      wm_no: this.data.selectradio_info.wm_no,
+      page: this.data.page_demandNote,
+    }
+    getDemandNoteList(p).then( res =>{
+      if(res.code == 200){
+        let data = res.data.data.data;
+        let columns_1 = that.data.columns_1;// 打印发票的种类列表
+        console.log(columns_1)
+        data.forEach(ele =>{
+          columns_1.forEach( item =>{
+            if(ele.price_list_id == item.id){
+              ele.price_name = item.text
+            }
+          })
+        })
+        let list = that.data.demandNoteList.concat(data);
+        that.setData({
+          demandNoteList: list,
+        })
+        console.log(that.data.demandNoteList)
+      }
+    })
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // 关闭选择用户弹窗
   onClose_dialog(){
     if(!this.data.radio){
@@ -302,23 +355,18 @@ Page({
   onClick(event) {
     console.log(event)
     const { name } = event.currentTarget.dataset;
-    let user_type_id =  event.currentTarget.dataset.item.user_type_id;
-    if (user_type_id == 8 || user_type_id == 9 || user_type_id == 10){
-      this.setData({
-        is_T: true,
-        selectradio_info: event.currentTarget.dataset.item,
-      })
-      let time = new Date().getTime();
-      this.getNowTime(time);
-    }else{
-      this.setData({
-        is_T: false,
-        selectradio_info: event.currentTarget.dataset.item,
-      })
-    }
     this.setData({
+      selectradio_info: event.currentTarget.dataset.item,
       radio: name,
     });
+    if(this.data.title_active == 2){
+      this.setData({
+        page_demandNote: 1,
+        demandNoteList: [],
+      })
+      // 收费项目列表
+      this.getDemandNoteList();
+    }
   },
   // 打印类型
   onType1Open() {
@@ -443,19 +491,20 @@ ${date.time}
   },
   // 开始打印
   handlePrint(p) {
-    let print_type = this.data.print_type;
+    let that = this;
+    let print_type = that.data.print_type;
     // GBK.encode({string}) 解码GBK为一个字节数组
     let info = [
       ...blueToolth.printCommand.clear,
       ...blueToolth.printCommand.center,
       ...blueToolth.printCommand.ct,
-      ...this.arrEncoderCopy(this.data.invoiceInfo_title),
+      ...that.arrEncoderCopy(that.data.invoiceInfo_title),
       ...blueToolth.printCommand.ct_zc,
-      ...this.arrEncoderCopy(this.data.invoiceInfo_title_1),
+      ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
       ...blueToolth.printCommand.left,
-      ...this.arrEncoderCopy(this.data.invoiceInfo_CustomerData),
+      ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
       ...blueToolth.printCommand.center,
-      ...this.arrEncoderCopy(this.data.invoiceInfo_valores),
+      ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
       ...blueToolth.printCommand.enter
     ]
     console.log('开始打印，api传信息...')
@@ -490,12 +539,23 @@ ${date.time}
       wm_id: selectradio_info.wm_id,
       price_list_id: seltTypeInfo.id,
       total_money: seltTypeInfo.amount,
-      deta_time: date.time,
+      date_time: date.time,
     }
     createPayDemandNote(p).then( res =>{
 
     }).catch( e =>{
       console.log(e)
     })
-  }
+  },
+  handleDetails(e) {
+    const item = e.currentTarget.dataset.item;
+    const data = JSON.stringify(item)
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-parenType-info/index?data=${data}&source=business-hall`,
+    }).then(res => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
+  },
 })

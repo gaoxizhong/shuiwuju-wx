@@ -71,3 +71,38 @@
     transform: translateX(-50%);
     transition: 0.3s;
 }
+.search-content {
+  border-radius: 10rpx;
+  flex: 1;
+  overflow: hidden;
+  margin-top: 20rpx;
+  background-color: #fff;
+  flex-direction: column;
+  display: flex;
+}
+.search-content .list {
+  flex: 1;
+  overflow: hidden;
+  padding: 20rpx 0rpx 0rpx 20rpx;
+  box-sizing: border-box;
+}
+.search-content .list .item {
+  position: relative;
+  padding: 20rpx;
+  font-size: 28rpx;
+}
+.search-content .list .item__title {
+  font-weight: 600;
+  padding-bottom: 10rpx;
+}
+.item__water, .item__money {
+  padding-bottom: 6rpx;
+}
+.item__status {
+  position: absolute;
+  right: 40rpx;
+  top: 20rpx;
+  width: max-content;
+  font-size: 24rpx;
+  font-weight: 600;
+}

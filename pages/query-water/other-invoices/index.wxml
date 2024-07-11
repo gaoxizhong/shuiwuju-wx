@@ -1,6 +1,6 @@
 <view class="container-tabbox">
-  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_1.one}}</view>
-  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_1.two}}</view>
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_2.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_2.two}}</view>
 </view>
 <view class="search-bar">
   <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
@@ -32,32 +32,28 @@
 </view>
 
 <!-- 缴费列表 -->
-<view class="container search-pay" wx:if="{{ title_active == 2 }}">
-  <view>列表</view>
-  <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+<view class="container search-pay search-content" wx:if="{{ title_active == 2 }}">
+  <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
   <scroll-view wx:else scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
-    <block wx:for="{{list}}" wx:key="{{index}}">
-      <view class="item" data-index="{{index}}" bindtap="handleDetails">
+    <block wx:for="{{demandNoteList}}" wx:key="{{index}}">
+      <view class="item" data-item="{{item}}" bindtap="handleDetails">
         <view class="item__title">
-          {{item.wm_no}} 
+          {{item.water_meter.wm_no}} 
         </view>
         <view class="item__money">
-          {{lang.wm_name}}：{{item.meter.wm_name}}
+          {{lang.wm_name}}：{{item.water_meter.wm_name}}
         </view>
         <view class="item__water">
-          {{lang.water}}：{{( item.reading *10000) / 10000}}
+          {{lang.parent_type}}：{{ item.price_name }}
         </view>
-
         <view class="item__money">
-          {{lang.money}}：{{item.price}}
+          {{lang.money}}：{{item.total_money}} (KZ)
         </view>
-
         <view class="item__money">
           {{lang.createTime}}：{{item.created_at}}
         </view>
-
-        <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
-          {{item.status_text}}
+        <view class="item__status" style="color: {{item.pay_status === 0 ? 'red' : 'green'}};">
+          {{ item.pay_status === 0 ? 'A pagar' : 'Confirmado' }}
         </view>
       </view>
     </block>

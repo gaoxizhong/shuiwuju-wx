@@ -130,6 +130,10 @@ const en_lang = {
       one: 'Facturação',
       two: 'Pagamento',
     },
+    tabs_2: {
+      one: 'Facura',
+      two: 'Factura Simplificada',
+    },
   },
   // 新增用户
   addAccount: {

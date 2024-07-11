@@ -27,7 +27,8 @@
     "pages/admin/set-lang/index",
     "pages/query-water/fecho/index",
     "pages/query-water/other-invoices/index",
-    "pages/water-info-edit/index"
+    "pages/water-info-edit/index",
+    "pages/user-parenType-info/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
