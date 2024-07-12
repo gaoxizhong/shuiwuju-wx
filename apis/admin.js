@@ -49,3 +49,21 @@ export const getDemandNoteList = (data) => {
     data
   })
 }
+//  收费项目缴费
+export const payDemandNote= (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_pay_demand_note`,
+    method: 'POST',
+    data
+  })
+}
+//  修改缴费项目收据的开发票状态'
+export const setBillInvoiceCode= (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_bill_invoice_code`,
+    method: 'POST',
+    data
+  })
+}

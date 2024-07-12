@@ -134,6 +134,10 @@ const en_lang = {
       one: 'Facura',
       two: 'Factura Simplificada',
     },
+    pay_type: 'Métodos de Pagamento',
+    cheque_number: 'N* do Cheque',
+    placeholderName: 'Preencher o nome do pedágio',
+
   },
   // 新增用户
   addAccount: {

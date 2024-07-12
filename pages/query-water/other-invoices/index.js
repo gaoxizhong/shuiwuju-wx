@@ -86,11 +86,16 @@ Page({
   onTabChange(e){
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
+      select_value:'',
+      page: 1,
+      radioList: [],
+      selectTypeIndex: 0,
+      selectradio_info: null,
       title_active,
       page_demandNote: 1,
       demandNoteList: [],// 收费项目订单列表
     })
-    if(title_active == 2 && this.data.selectradio_info){
+    if(title_active == 2){
       // 收费项目列表
       this.getDemandNoteList();
     }
@@ -236,7 +241,10 @@ Page({
       page: 1,
       list: [],
       isScroll: true,
-      loading: ''
+      loading: '',
+      radioList: [],
+      selectradio_info: null,
+      radio: '',
     })
     this.getlist();
   },
@@ -289,9 +297,12 @@ Page({
   getDemandNoteList(){
     let that = this;
     let p = {
-      wm_id: this.data.selectradio_info.wm_id,
-      wm_no: this.data.selectradio_info.wm_no,
       page: this.data.page_demandNote,
+    }
+    let selectradio_info = this.data.selectradio_info;
+    if(selectradio_info){
+      p.wm_id = selectradio_info.wm_id;
+      p.wm_no = selectradio_info.wm_no;
     }
     getDemandNoteList(p).then( res =>{
       if(res.code == 200){
@@ -334,7 +345,6 @@ Page({
     if(!this.data.radio){
       this.setData({ 
         dialog_show: false,
-        selectradio_info: {},
        });
       return
     }else{
@@ -357,6 +367,7 @@ Page({
     const { name } = event.currentTarget.dataset;
     this.setData({
       selectradio_info: event.currentTarget.dataset.item,
+      select_value: event.currentTarget.dataset.item.wm_no,
       radio: name,
     });
     if(this.data.title_active == 2){

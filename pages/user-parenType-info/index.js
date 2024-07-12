@@ -14,10 +14,12 @@ const {
 
 const {
   getArrearsMoneySum,
-  new_payWater,
+  getUserBluetoolthInfoData,
   setReceiptStatus,
-  setInvoiceStatus
 } = require('./../../apis/water')
+const {
+  payDemandNote,setBillInvoiceCode
+} = require('./../../apis/admin')
 const GBK = require('./../../utils/gbk.min')
 Page({
 
@@ -75,7 +77,8 @@ Page({
     totIndex: 0, // 默认  选项下标
     showCheck: false,
     cheque_number: '',
-    itemInfo: null
+    itemInfo: null,
+    total_money: 0
   },
 
   /**
@@ -91,7 +94,7 @@ Page({
     })
     const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     const itemInfo = JSON.parse(options.data);
-    console.log(itemInfo)
+    const total_money = JSON.parse(options.data).total_money;
     const userInfo = app.globalData.userInfo || {}
     this.setData({
       wm_no: itemInfo.water_meter.wm_no,
@@ -99,9 +102,9 @@ Page({
       source,
       userInfo,
       itemInfo,
+      total_money: fmoney(total_money,2),
     })
     this.getArrearsMoneySum(options.wm_no)
-
     if (wx.getStorageSync('operatorNameList')) {
       let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
       console.log(operatorNameList)
@@ -139,25 +142,13 @@ Page({
           text: res.data.pay_way[i].title,
           key: res.data.pay_way[i].key
         }))
-        if (that.data.source == 'search-person') {
-          let payStatusList = [];
-          payStatusList.push(payWayList[1])
-          that.setData({
-            totIndex: 1,
-            payStatusList,
-            pay_way: payStatusList[0].key,
-            pay_text: payStatusList[0].text,
-          })
-        }
-        if (that.data.source == 'business-hall') {
-          that.setData({
-            totIndex: 0,
-            payStatusList: payWayList,
-            pay_way: '',
-            pay_text: '',
-            cheque_number: '',
-          })
-        }
+        that.setData({
+          totIndex: 0,
+          payStatusList: payWayList,
+          pay_way: '',
+          pay_text: '',
+          cheque_number: '',
+        })
       }
       
     }).catch((res) => {
@@ -190,8 +181,8 @@ Page({
       paid_total_money,
     })
   },
-  //  新的确认支付
-  new_onConfirmPay() {
+  //  缴费
+  payDemandNote() {
     let that = this;
     let pay_success = that.data.pay_success;
     if (pay_success) {
@@ -199,15 +190,16 @@ Page({
     } else {
       let date = handleTimeValue();
       const params = {
-        wm_no: that.data.wm_no,
-        total_money: that.data.paid_total_money,
+        wm_id: that.data.itemInfo.wm_id,
+        total_money: that.data.itemInfo.total_money,
         pay_way: that.data.pay_way,
-        pay_time: date.time,
+        date_time: date.time,
+        demand_note_id: that.data.itemInfo.id
       }
       if(params.pay_way == 4){
         params.cheque_number = that.data.cheque_number;
       }
-      new_payWater(params).then(res => {
+      payDemandNote(params).then(res => {
         that.setData({
           status: 'print',
           showPay: false,
@@ -307,19 +299,7 @@ Page({
       return
     }
 
-    const paid_total_money = this.data.paid_total_money;
     const pay_text = this.data.pay_text;
-    if (!paid_total_money) {
-      this.setData({
-        no_error: true
-      })
-      wx.showToast({
-        title: lang.message.formWarning,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
 
     if (!pay_text) {
       this.setData({
@@ -378,7 +358,7 @@ Page({
       operatorNameList.push(operator_name);
       wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
     }
-    this.new_onConfirmPay();
+    this.payDemandNote();
   },
   // 点击历史姓名记录
   operatorLs(){
@@ -543,27 +523,17 @@ Page({
           duration: 3000,
         })
         that.setData({
-          paid_total_money: '',
           pay_success: false,
           pay_way: '',
           pay_text: '',
           cheque_number: '',
         })
-        let print_type = that.data.print_type;
-        //打印收据
-        if (print_type == 'receiptInfo') {
-          num++;
-          if(num <= 2){
-            that.writeBLECharacteristicValue(p,i,num);
-          }else{
-            // 4.修改打印收据状态
-            that.setReceiptStatus();
-          }
-        } else {
-          // 5.修改发票收据状态
-          that.setInvoiceStatus();
-        }
-       
+         // 5.修改发票收据状态
+         that.setBillInvoiceCode();
+        //  num++;
+        //  if(num <= 2){
+        //    that.writeBLECharacteristicValue(p,i,num);
+        //  }
       },
       onFail(res) {
         console.log('打印失败...')
@@ -571,13 +541,20 @@ Page({
       }
     });
   },
+
   // 获取用户打印信息
   getUserBluetoolthInfoData(f) {
     let that = this;
-    console.log(that.data.pay_text)
+    let itemInfo = that.data.itemInfo;
+    if (!that.data.is_return) {
+      return
+    }
     that.setData({
       is_return: false
     })
+    getUserBluetoolthInfoData({wm_no:itemInfo.water_meter.wm_no}).then(res => {
+      const userBluetoolthInfoData = res.data;
+      let date = handleTimeValue();
       that.setData({
         //收据
         receiptInfo_title: `EPASKS-E.P.`,
@@ -585,9 +562,9 @@ Page({
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
-Recibo N° ${that.data.invoice_code}
-ORIGINAL
+Dados do Cliente
 Nome: ${userBluetoolthInfoData.water_meter.wm_name}
+N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 
 `,
@@ -600,7 +577,7 @@ Modos de Pagamento
         receiptInfo_Modos: `
 Método       Moeda       Total
 --------------------------------
-${that.data.pay_text}     AOA      ${that.data.user_PayFees_info.total_money} KZ
+${that.data.pay_text}     AOA      ${that.data.total_money} KZ
 --------------------------------
 ${that.data.pay_way == 4?"N* do Cheque: " +that.data.cheque_number : ''}
 `,
@@ -626,24 +603,16 @@ Utilizador: ${that.data.operator_name}
       if (typeof f == 'function') {
         return f()
       }
-  },
-
-  // 4.修改打印收据状态
-  setReceiptStatus() {
-    let that = this;
-    setReceiptStatus({
-      id: that.data.user_PayFees_info.id
-    }).then(res => {
-
-    }).catch(res => {
-      wx.hideToast()
-    })
+    });
+    
+      
   },
   // 5.修改发票收据状态
-  setInvoiceStatus() {
+  setBillInvoiceCode() {
     let that = this;
-    setInvoiceStatus({
-      id: that.data.user_PayFees_info.id
+    setBillInvoiceCode({
+      wm_id: that.data.itemInfo.wm_id,
+      demand_note_id: that.data.itemInfo.id,
     }).then(res => {
 
     }).catch(res => {

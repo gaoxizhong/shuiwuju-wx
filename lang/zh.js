@@ -132,6 +132,10 @@ const zh_lang = {
       one: '发票',
       two: '缴费单',
     },
+    pay_type: '支付方式',
+    cheque_number: '支票编码',
+    placeholderName: '请输入姓名',
+
   },
   // 新增用户
   addAccount: {

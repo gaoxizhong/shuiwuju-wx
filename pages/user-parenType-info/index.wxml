@@ -23,7 +23,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.money}}</view>
-        <view class="info-item__info">{{itemInfo.total_money}}（KZ）</view>
+        <view class="info-item__info">{{total_money}}（KZ）</view>
       </view>
       <!-- 优惠 -->
       <!-- <van-cell-group>
@@ -41,17 +41,11 @@
   </view>
   <view class="btn">
     <block>
-
       <!-- 打印收据 开始 抄表员 search-person不显示收据--> 
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{source != 'search-person'}}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
         {{btnName.printOther}}
       </view>
       <!-- 打印 结束-->
-      <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{source === 'search-person'}}">
-        {{btnName.invoice}}
-      </view>
-      <!-- 打印发票 -->
     </block>
   </view>
   <!-- 缴费 -->
