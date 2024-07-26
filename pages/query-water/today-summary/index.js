@@ -65,12 +65,6 @@ Page({
       langDialog: lang.dialog,
       loading: lang.message.scrollLoading
     })
-    if(this.data.title_active == 1){
-      this.getList()
-    }else{
-      this.getadminList();
-    }
-
   },
   // 管理员 input 事件
   handleChangeAdminName(e) {

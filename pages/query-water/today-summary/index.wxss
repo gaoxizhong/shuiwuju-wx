@@ -96,12 +96,15 @@ page {
   position: relative;
   padding: 20rpx;
   font-size: 28rpx;
+  background: #fff;
 }
 .tody-summary-item-2{
   position: relative;
   padding: 20rpx;
   font-size: 28rpx;
   border-bottom: 1px solid #ececec;
+  margin-top: 20rpx;
+  background: #fff;
 }
 .item__title {
   font-weight: 600;
@@ -138,7 +141,6 @@ page {
   border-radius: 10rpx;
   flex: 1;
   overflow: hidden;
-  background-color: #fff;
   flex-direction: column;
   display: flex;
 }

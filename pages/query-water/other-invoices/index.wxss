@@ -1,14 +1,6 @@
 .search-pay {
   background-color: #fff;
 }
-.container {
-  margin: 20rpx;
-  height: calc(100% - 40rpx);
-  display: flex;
-  flex-direction: column;
-  border-radius: 10rpx;
-  overflow: hidden;
-}
 .search-bar {
   width: 100%;
   overflow: hidden;

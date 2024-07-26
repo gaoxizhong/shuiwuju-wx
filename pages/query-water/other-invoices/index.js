@@ -56,6 +56,8 @@ Page({
     title_active: 1,
     demandNoteList: [],// 收费项目订单列表
     page_demandNote: 1,
+    isScroll: true,
+    total: 0
   },
 
   /**
@@ -319,6 +321,7 @@ Page({
         let list = that.data.demandNoteList.concat(data);
         that.setData({
           demandNoteList: list,
+          total: res.data.data.total
         })
         console.log(that.data.demandNoteList)
       }
@@ -557,6 +560,24 @@ ${date.time}
     }).catch( e =>{
       console.log(e)
     })
+  },
+  addListData() {
+    console.log(1)
+    let page = this.data.page
+    const total = this.data.total
+    if (total >= page * 15) {
+      page += 1
+      this.setData({
+        page,
+        loading: `${lang.message.loading}...`,
+        isScroll: false,
+      })
+      this.getDemandNoteList()
+    } else {
+      this.setData({
+        loading: lang.message.noMoreEmpty,
+      })
+    }
   },
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;

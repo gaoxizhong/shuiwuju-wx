@@ -32,9 +32,9 @@
 </view>
 
 <!-- 缴费列表 -->
-<view class="container search-pay search-content" wx:if="{{ title_active == 2 }}">
+<view class="search-pay search-content" wx:if="{{ title_active == 2 }}">
   <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
-  <scroll-view wx:else scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+  <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
     <block wx:for="{{demandNoteList}}" wx:key="{{index}}">
       <view class="item" data-item="{{item}}" bindtap="handleDetails">
         <view class="item__title">

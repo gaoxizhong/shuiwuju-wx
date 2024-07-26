@@ -302,6 +302,10 @@ const en_lang = {
     pos: 'Cartão Multicaixa',
     itemWater: 'Consumo de água',
     itemMoney: 'Valor a pagar',
+    user_pay_demand_note_count: 'Factura Simplificada',
+    pay_demand_note_count: 'Facura/Recibo',
+    user_pay_demand_note_total_money_sum: 'Valor total',
+    pay_demand_note_total_money_sum: 'Valor a pagar',
     num: 'un',
     tabs_1: {
       one: 'Utilizador',

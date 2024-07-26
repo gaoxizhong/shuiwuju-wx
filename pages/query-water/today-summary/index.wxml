@@ -107,6 +107,33 @@
                 </view>
               </view>
             </view>
+            <view>收费项目：</view>
+            <view class="tody-summary-total">
+              <view class="important-data" style="margin-right: 8rpx;">
+                <text>{{lang.user_pay_demand_note_count}}</text>
+                <view class="important-data-font">
+                  {{item.pay_demand_note_data.user_pay_demand_note_count}}（{{ lang.num }}）
+                </view>
+              </view>
+              <view class="important-data">
+                <text>{{lang.pay_demand_note_count}}</text>
+                <view class="important-data-font">
+                  {{item.pay_demand_note_data.pay_demand_note_count}}（{{ lang.num }}）
+                </view>
+              </view>
+              <view class="general-data" style="margin-right: 8rpx;">
+                <text>{{lang.user_pay_demand_note_total_money_sum}}</text>
+                <view class="general-data-font">
+                  <tex> {{ item.pay_demand_note_data.user_pay_demand_note_total_money_sum }}（KZ）</tex>
+                </view>
+              </view>
+              <view class="general-data">
+                <text>{{lang.pay_demand_note_total_money_sum}}</text>
+                <view class="general-data-font">
+                  <tex> {{ item.pay_demand_note_data.pay_demand_note_total_money_sum }}（KZ） </tex>
+                </view>
+              </view>
+            </view>
           </view>
         </block>
       </scroll-view>

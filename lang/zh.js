@@ -301,6 +301,10 @@ const zh_lang = {
     pos: 'POS机',
     itemWater: '用水量',
     itemMoney: '缴费金额',
+    user_pay_demand_note_count: '收据数量',
+    pay_demand_note_count: '收据收费数量',
+    user_pay_demand_note_total_money_sum: '收据总金额',
+    pay_demand_note_total_money_sum: '收费总金额',
     num: '个',
     tabs_1: {
       one: '用户',
