@@ -131,7 +131,7 @@ const en_lang = {
       two: 'Pagamento',
     },
     tabs_2: {
-      one: 'Facura',
+      one: 'Factura',
       two: 'Factura Simplificada',
     },
     pay_type: 'Métodos de Pagamento',
@@ -296,14 +296,14 @@ const en_lang = {
   todaySummary: {
     todayNumber: 'Factura Simplificada',
     todayMoney: 'Valor total',
-    invoice: 'Facura/Recibo',
+    invoice: 'Factura/Recibo',
     receipt: 'Recibo',
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
     itemWater: 'Consumo de água',
     itemMoney: 'Valor a pagar',
     user_pay_demand_note_count: 'Factura Simplificada',
-    pay_demand_note_count: 'Facura/Recibo',
+    pay_demand_note_count: 'Factura/Recibo',
     user_pay_demand_note_total_money_sum: 'Valor total',
     pay_demand_note_total_money_sum: 'Valor a pagar',
     num: 'un',
@@ -311,6 +311,8 @@ const en_lang = {
       one: 'Utilizador',
       two: 'Administrador',
     },
+    other: 'Outros itens carregados',
+
   },
   // 上报维修
   reportRepair: {
@@ -402,7 +404,7 @@ const en_lang = {
     swipe_card: 'Cartão Multicaixa',
     submit: 'Impressão',
     receipt: 'Recibo',
-    invoice: 'Facura/Recibo',
+    invoice: 'Factura/Recibo',
     zhang: 'un',
     jbsj: 'Horário de turno',
     actual_amount:'Valor Declarado'

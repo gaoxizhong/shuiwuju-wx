@@ -84,8 +84,9 @@
             <view class="tody-summary-total">
               <view class="important-data" style="margin-right: 8rpx;">
                 <text>{{lang.todayNumber}}</text>
-                <view class="important-data-font">
-                  {{item.user_payment_count}}（{{ lang.num }}）
+                <view class="general-data-font">
+                  <tex> {{item.user_payment_count}}（{{ lang.num }}） </tex>
+                  <tex> {{item.price_sum}}（KZ） </tex>
                 </view>
               </view>
               <view class="important-data">
@@ -107,7 +108,7 @@
                 </view>
               </view>
             </view>
-            <view>收费项目：</view>
+            <view>{{ lang.other }}：</view>
             <view class="tody-summary-total">
               <view class="important-data" style="margin-right: 8rpx;">
                 <text>{{lang.user_pay_demand_note_count}}</text>

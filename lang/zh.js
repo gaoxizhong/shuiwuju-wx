@@ -310,6 +310,7 @@ const zh_lang = {
       one: '用户',
       two: '管理员',
     },
+    other: '其他发票类',
   },
   // 上报维修
   reportRepair: {
