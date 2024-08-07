@@ -25,6 +25,18 @@ Page({
     etime: '', // 结束时间
     del_selt_info: {},
     del_selt_index: null,
+
+    type_seach: 'type', // type - - 选类型  seach 输入
+    select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
+    select_value:'', // 查询内容
+    Type_statusList: [
+      {id: 1,text: 'Dados do contador'},
+      {id: 2,text: 'Nome de usuário'},
+      {id: 3,text: 'Endereço detalhado'},
+      {id: 4,text: 'Nº de Porta'}
+    ],
+    selectTypeIndex: 0,
+    Type_show: false,
   },
   /**
    * 生命周期函数--监听页面显示
@@ -45,6 +57,21 @@ Page({
     if (stime && etime) {
       this.getListData()
     }
+  },
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select_value: value,
+    })
+  },
+  // 失焦赋值
+  handleReading(e) {
+    console.log(e)
+    const select_value = e.detail.value;
+    this.setData({
+      select_value,
+      type_seach: 'type'
+    })
   },
   handleGetTime(e) {
     console.log(e)

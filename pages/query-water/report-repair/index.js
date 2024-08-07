@@ -273,6 +273,7 @@ Page({
 
   // 点击提交按钮
   handleReportRepair() {
+    let that = this;
     const wixiForm = this.selectComponent('#report-repair-form')
     const type = this.data.type
     const parent_type = this.data.parent_type

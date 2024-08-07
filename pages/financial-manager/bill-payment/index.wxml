@@ -1,5 +1,12 @@
 <!--pages/business-hall/index/index.wxml-->
 <view class="container business-hall">
+  <view class="search-bar">
+    <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{ lang.btnName }}</van-button>
+      </view>
+    </van-search>
+  </view>
   <wixi-time bindgettime="handleGetTime"></wixi-time>
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
