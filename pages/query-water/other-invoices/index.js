@@ -570,7 +570,6 @@ ${date.time}
       this.setData({
         page,
         loading: `${lang.message.loading}...`,
-        isScroll: false,
       })
       this.getDemandNoteList()
     } else {

@@ -41,6 +41,34 @@
       </view>
     </view>
   </view>
+   <!-- 其他收费种类 -->
+   <view class="view-box">
+   <view class="or-title">{{ lang.other }}:</view>
+    <view class="title-box or-box">
+      <view class="or-item">
+        <text class="text-1">{{ lang.receipt }}：</text>
+        <text class="text-2">{{infoData.demand_note_receipt_num }} {{ lang.zhang }}</text>
+      </view>
+      <view class="or-item">
+        <text class="text-1">{{ lang.invoice }}：</text>
+        <text class="text-2">{{infoData.demand_note_invoice_num }} {{ lang.zhang }}</text>
+      </view>
+    </view>
+    <view class="info-box">
+      <view>
+        <text class="text-1">{{ lang.cash }}</text>
+        <text class="text-2">{{ infoData.demand_note_cash_sum }} <text class="KZ-size">KZ</text></text>
+      </view>
+      <view style="flex: 1;">
+        <text class="text-1">{{ lang.swipe_card }}</text>
+        <text class="text-2">{{ infoData.demand_note_pos_sum }} <text class="KZ-size">KZ</text></text>
+      </view>
+      <view>
+        <text class="text-1">{{ lang.transfer_money }}</text>
+        <text class="text-2">{{ infoData.demand_note_transfer_accounts_sum }} <text class="KZ-size">KZ</text></text>
+      </view>
+    </view>
+  </view>
   <!-- 总计 -->
   <view class="view-box">
     <view class="title-box">

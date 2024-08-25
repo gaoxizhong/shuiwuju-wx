@@ -92,10 +92,10 @@ Page({
       params.payment_sum = actual
     }
     getAdminShift(params).then(res => {
-      let total_price = Number(res.data.data.receipt_num) + Number(res.data.data.invoice_num); // 总数
-      let cash_sum = Number(res.data.data.receipt_cash) + Number(res.data.data.invoice_cash);
-      let pos_sum = Number(res.data.data.receipt_pos) + Number(res.data.data.invoice_pos);
-      let transfer_accounts_sum = Number(res.data.data.receipt_transfer_accounts) + Number(res.data.data.invoice_transfer_accounts);
+      let total_price = Number(res.data.data.receipt_num) + Number(res.data.data.invoice_num)+Number(res.data.data.demand_note_receipt_num)+Number(res.data.data.demand_note_invoice_num); // 总数
+      let cash_sum = Number(res.data.data.cash_sum);
+      let pos_sum = Number(res.data.data.pos_sum);
+      let transfer_accounts_sum = Number(res.data.data.transfer_accounts_sum);
       that.setData({
         infoData: res.data.data,
         total_price,
@@ -204,6 +204,13 @@ Facura/recibo:     ${infoData.invoice_num} Un
 Numerário:         ${infoData.invoice_cash} kZ 
 Cartão Multicaixa: ${infoData.invoice_pos} kZ
 Transferência:     ${infoData.invoice_transfer_accounts} kZ
+--------------------------------
+Outros itens carregados:
+Recibo:            ${infoData.demand_note_receipt_num} Un
+Facura/recibo:     ${infoData.demand_note_invoice_num} Un
+Numerário:         ${infoData.demand_note_cash_sum} kZ 
+Cartão Multicaixa: ${infoData.demand_note_pos_sum} kZ
+Transferência:     ${infoData.demand_note_transfer_accounts_sum} kZ
 --------------------------------
 Total:             ${this.data.total_price} Un
 Numerário:         ${this.data.cash_sum} kZ

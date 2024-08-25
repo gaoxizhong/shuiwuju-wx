@@ -73,6 +73,41 @@ Page({
       type_seach: 'type'
     })
   },
+  onShowTypePopup() {
+    console.log('#Type_select')
+    const select = this.selectComponent('#Type_select')
+    select && select.setColumnIndex(0, this.data.selectTypeIndex)
+    this.setData({
+      Type_show: true
+    })
+  },
+  onCloseTypePopup() {
+    this.setData({
+      Type_show: false
+    })
+  },
+  handleTypeSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    console.log(e.detail)
+    this.setData({
+      selectTypeIndex: index,
+      select_type: value.id,
+      type_seach: 'seach'
+    });
+    this.onCloseTypePopup()
+  },
+  handleSearchInfo() {
+    this.setData({
+      page: 1,
+      list: [],
+      isScroll: true,
+      loading: ''
+    })
+    this.getListData()
+  },
   handleGetTime(e) {
     console.log(e)
     const {
@@ -96,9 +131,12 @@ Page({
   },
   getListData() {
     const params = {
-      page: this.data.page,
       stime: this.data.startTime,
       etime: this.data.endTime,
+      wm_no: this.data.wm_no,
+      page: this.data.page,
+      select: this.data.select_value,
+      type: this.data.select_type
     }
     getAllUserPayLog(params).then(res => {
       const data = res.data.list.data || [];
@@ -188,4 +226,5 @@ Page({
     })
     
   },
+
 })

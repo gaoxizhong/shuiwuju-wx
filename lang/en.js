@@ -407,7 +407,8 @@ const en_lang = {
     invoice: 'Factura/Recibo',
     zhang: 'un',
     jbsj: 'Horário de turno',
-    actual_amount:'Valor Declarado'
+    actual_amount:'Valor Declarado',
+    other: 'Outros itens carregados',
   },
    // 用户水表信息修改
    waterInfoEdit: {

@@ -47,6 +47,7 @@ page{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-bottom: 80rpx;
 }
 .footer-box .input-box{
   flex: 1;
@@ -102,4 +103,17 @@ van-button button{
 }
 .KZ-size{
   font-size: 24rpx;
+}
+.or-box{
+  display: flex;
+  align-items: center;
+}
+.or-item{
+  width: auto;
+  display: flex;
+  align-items: center;
+  padding-right: 20rpx;
+}
+.or-title{
+  padding-bottom: 20rpx;
 }

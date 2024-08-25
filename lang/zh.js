@@ -405,7 +405,9 @@ const zh_lang = {
     operator_name: '交班人',
     submit: '提交打印',
     jbsj: '交班时间',
-    actual_amount:'实收金额'
+    actual_amount:'实收金额',
+    other: '其他发票类',
+
   },
   // 用户水表信息修改
   waterInfoEdit: {
