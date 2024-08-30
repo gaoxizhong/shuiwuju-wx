@@ -185,6 +185,7 @@ Page({
             cheque_number: '',
           })
         }
+        console.log(that.data.payStatusList)
       }
       
     }).catch((res) => {

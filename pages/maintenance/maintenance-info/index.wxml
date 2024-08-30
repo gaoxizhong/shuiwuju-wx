@@ -78,7 +78,7 @@
         
       </view>
     </van-field>
-    <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.report_note}}" value="{{ done_note }}" type="textarea" autosize="{{autosize}}" placeholder="{{lang.placeholder}}" error="{{done_note_error}}"  bind:change="handleInputCheckDetail" />
+    <van-field custom-style="flex-direction: column;" required title-width="100%" label="{{lang.info.report_note}}" value="{{ done_note }}" type="textarea" autosize="{{autosize}}" placeholder="{{lang.placeholder}}" error="{{done_note_error}}"  bind:change="handleInputCheckDetail" />
     <view style="margin: 20rpx;text-align: right;">
       <van-button type="info" size="small" bind:click="handleInfoStatus" style="margin-right: 20rpx;">确定</van-button>
       <van-button type="info" plain size="small" bind:click="onCloseRepairDone">取消</van-button>

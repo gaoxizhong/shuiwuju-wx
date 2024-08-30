@@ -86,6 +86,23 @@ Page({
     // 获取分配人员列表
     this.getRepairUserList();
   },
+    //获取当前时间
+    handleTimeValue(date) {
+      const _date = date ? new Date(date) : new Date()
+      const year = _date.getFullYear()
+      const month = _date.getMonth() + 1
+      const day = _date.getDate()
+      const hh = _date.getHours()
+      const mm = _date.getMinutes()
+      const ss = _date.getSeconds()
+      const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+      return {
+        year,
+        month,
+        day,
+        time,
+      }
+    },
   getRepairUserList(){
     getRepairUserList({}).then(res => {
       if(res.code == 200){
@@ -218,7 +235,8 @@ Page({
     if (flag) {
       const baseUrl = app.globalData.baseUrl
       const token = wx.getStorageSync('token')
-      const _this = this
+      const _this = this;
+      let done_date = _this.handleTimeValue().time;
       wx.uploadFile({
         filePath: done_pic,
         name: 'done_pic',
@@ -229,6 +247,7 @@ Page({
         formData: {
           wmr_id,
           done_note,
+          done_date
         },
         success(res) {
           const data = JSON.parse(res.data)
@@ -241,6 +260,11 @@ Page({
             _this.setData({
               show: false
             })
+            setTimeout( () =>{
+              wx.navigateBack({
+                delta: 1
+              })
+            },1500)
           }
 
         },

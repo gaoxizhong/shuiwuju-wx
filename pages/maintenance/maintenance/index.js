@@ -192,7 +192,7 @@ Page({
         loading: `${lang.message.loading}...`,
         isScroll: false,
       })
-      this.getListData()
+      this.getMaintenanceList()
     } else {
       this.setData({
         loading: lang.message.noMoreEmpty,
@@ -202,6 +202,7 @@ Page({
   // 点击列表项
   handleDetails(e) {
     const index = e.currentTarget.dataset.index;
+    console.log(this.data.list[index])
     const data = JSON.stringify(this.data.list[index]);
     let title_active = this.data.title_active;
     wxAsyncApi('navigateTo', {
