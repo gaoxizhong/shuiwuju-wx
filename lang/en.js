@@ -370,7 +370,7 @@ const en_lang = {
       address: 'Endereço detalhado',
       phone: 'Telefone',
       report_pic: 'Fotos',
-      report_note: 'Situação',
+      report_note: 'Resolução',
       placeholder: "Por favor insira"
     },
     tabs_1: {

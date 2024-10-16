@@ -31,7 +31,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.report_pic}}</view>
-        <van-image width="200" height="140" fit="cover" src="{{form.report_pic}}" />
+        <van-image width="200" height="140" fit="cover" src="{{form.report_pic}}"  data-report_pic="{{form.report_pic}}" bindtap="previewImage" />
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.report_note}}</view>
@@ -88,4 +88,12 @@
   <van-popup show="{{ show_repairUser }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
     <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ repairUserList }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
   </van-popup>
+
+
+  <view class="layer" wx:if="{{swiper_shop}}" bindtap='closePic'>
+  <view class="cover"></view>
+  <view class="con">
+    <image src='{{report_pic}}' mode="widthFix"></image>
+  </view>
+</view>
 </view>

@@ -321,7 +321,7 @@ Page({
         params.area1 = this.data.area1?this.data.area1:data.area1
         params.area2 = this.data.area2?this.data.area2:data.area2
         params.area3 = this.data.area3?this.data.area3:data.area3
-        params.address = data.wm_address
+        params.address = this.data.wm_address?this.data.wm_address:data.wm_address
       }
       console.log(params)
       wx.uploadFile({
@@ -428,10 +428,12 @@ Page({
     const form = this.data.form;
     form[0].value = item.wm_no;
     form[1].value = item.area1 +','+ item.area2 +','+ item.area3;
+    form[2].value = item.wm_address;
     this.setData({
       area1: item.area1,
       area2: item.area2,
       area3: item.area3,
+      wm_address: item.wm_address,
       form,
       radio: name,
       wm_no: event.currentTarget.dataset.item.wm_no,

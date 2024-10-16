@@ -296,4 +296,17 @@ Page({
       })
       this.onCloseType1Select();
     },
+    previewImage(e){
+      console.log(e)
+      let that = this;
+      that.setData({
+        report_pic:e.currentTarget.dataset.report_pic,
+        swiper_shop:true
+      })
+    },
+    closePic(){
+      this.setData({
+        swiper_shop: false
+      })
+    }
 })
