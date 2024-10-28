@@ -498,7 +498,7 @@ const en_lang = {
       {
         auth: 'R',
         key: '/img/index/business-hall.png',
-        title: 'Caixa',
+        title: 'Nota de Credito',
         tabberName: 'Pagamento e recibo',
         color: '#58cab4',
         url: '/pages/business-hall/index/index',
@@ -514,7 +514,7 @@ const en_lang = {
       {
         auth: 'GC',
         key: '/img/index/search.png',
-        title: 'Factura Simplificada',
+        title: 'Nota de debito',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },
