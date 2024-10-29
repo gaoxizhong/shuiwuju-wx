@@ -37,6 +37,7 @@ Page({
     ],
     selectTypeIndex: 0,
     Type_show: false,
+    title_active: 1
   },
   /**
    * 生命周期函数--监听页面显示
@@ -226,5 +227,16 @@ Page({
     })
     
   },
-
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      // adminList: [],
+      // list: [],
+      // wm_no: '',
+      // admin_name:'',
+      // page: 1,
+      // total: 0,
+      title_active,
+    })
+  }
 })

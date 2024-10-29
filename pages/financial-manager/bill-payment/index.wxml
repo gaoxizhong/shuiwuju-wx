@@ -1,5 +1,11 @@
 <!--pages/business-hall/index/index.wxml-->
+<view class="container-tabbox">
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_1.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_1.two}}</view>
+</view>
+
 <view class="container business-hall">
+
   <view class="search-bar">
     <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
       <view class="icon"  slot="action">
