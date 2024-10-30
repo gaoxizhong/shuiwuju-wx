@@ -40,3 +40,12 @@ export const delAllUserPayLog = (data) => {
     data
   })
 }
+// 获取删除缴费单的记录
+export const getDelAllUserPayLog = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/jc/jc_get_del_user_pay_log_list`,
+    method: 'get',
+    data
+  })
+}

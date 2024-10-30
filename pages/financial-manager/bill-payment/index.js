@@ -2,10 +2,10 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  getAllUserPayLog,delAllUserPayLog
+  getAllUserPayLog,delAllUserPayLog,getDelAllUserPayLog
 } from './../../../apis/financial-manager'
 import {
-  wxAsyncApi,fmoney
+  wxAsyncApi,fmoney,handleTimeValue
 } from './../../../utils/util'
 Page({
 
@@ -37,7 +37,8 @@ Page({
     ],
     selectTypeIndex: 0,
     Type_show: false,
-    title_active: 1
+    title_active: 1,
+    delList: [],  // 删除记录
   },
   /**
    * 生命周期函数--监听页面显示
@@ -52,6 +53,8 @@ Page({
       loading: '',
       isScroll: true,
       list: [],
+      title_active: 1,
+      delList: [],  // 删除记录
       lang: lang.index,
       langDialog: lang.dialog,
     })
@@ -205,7 +208,8 @@ Page({
         if (res.confirm) {
           console.log(item)
           delAllUserPayLog({
-            user_pay_log_id: item.id
+            user_pay_log_id: item.id,
+            del_data_time: handleTimeValue().time
           }).then( res =>{
             if(res.code == 200){
               wx.showToast({
@@ -237,6 +241,17 @@ Page({
       // page: 1,
       // total: 0,
       title_active,
+    })
+    if(title_active == 2){
+      this.getDelAllUserPayLog();
+    }
+  },
+  getDelAllUserPayLog(){
+    let that = this;
+    getDelAllUserPayLog().then( res =>{
+
+    }).catch( e=>{
+      console.log(e)
     })
   }
 })

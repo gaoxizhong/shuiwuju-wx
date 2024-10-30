@@ -1,12 +1,13 @@
 <!--pages/business-hall/index/index.wxml-->
 <view class="container-tabbox">
-  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_1.one}}</view>
-  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_1.two}}</view>
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_3.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_3.two}}</view>
 </view>
 
 <view class="container business-hall">
-
-  <view class="search-bar">
+<!-- 缴费单记录 -->
+<view class="page-box" wx:if="{{ title_active == 1 }}">
+ <view class="search-bar">
     <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
       <view class="icon"  slot="action">
         <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{ lang.btnName }}</van-button>
@@ -36,6 +37,36 @@
     </scroll-view>
     <!-- <view class="loading">{{loading}}</view> -->
   </view>
+</view>
+
+<view class="page-box" wx:if="{{ title_active == 2 }}">
+  <!-- <wixi-time bindgettime="handleGetTime"></wixi-time> -->
+  <view class="search-content {{!delList.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!delList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{delList}}" wx:key="order_no">
+        <view class="item" data-id="{{item.id}}" data-item="{{item}}" bindtap="handleDetails">
+          <view class="item__title">{{item.wm_name}}</view>
+          <view class="item__title">{{item.wm_no}}</view>
+          <view class="item__money">
+            {{lang.money}}：{{item.total_money}} (KZ)
+          </view>
+          <view class="item__money">
+            {{lang.saldo}}：{{item.after_arrears_money}} (KZ)
+          </view>
+          <view class="item__money">
+            {{lang.createTime}}：{{item.created_at}}
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+    <!-- <view class="loading">{{loading}}</view> -->
+  </view>
+</view>
+
+
+ 
+
 
 </view>
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
