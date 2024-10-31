@@ -40,9 +40,9 @@
 </view>
 
 <view class="page-box" wx:if="{{ title_active == 2 }}">
-  <!-- <wixi-time bindgettime="handleGetTime"></wixi-time> -->
-  <view class="search-content {{!delList.length ? 'no-data' : ''}}">
-    <van-empty wx:if="{{!delList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+  <wixi-time bindgettime="handleGetTime"></wixi-time>
+  <view class="search-content {{!delPayLogList.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!delPayLogList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{delList}}" wx:key="order_no">
         <view class="item" data-id="{{item.id}}" data-item="{{item}}" bindtap="handleDetails">

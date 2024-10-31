@@ -45,7 +45,7 @@ export const getDelAllUserPayLog = (data) => {
   const baseUrl = getApp().globalData.baseUrl
   return httpRequest({
     url: `${baseUrl}/api/wx/jc/jc_get_del_user_pay_log_list`,
-    method: 'get',
+    method: 'post',
     data
   })
 }

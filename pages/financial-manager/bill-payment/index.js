@@ -54,13 +54,13 @@ Page({
       isScroll: true,
       list: [],
       title_active: 1,
-      delList: [],  // 删除记录
+      delPayLogList: [], // 删除记录
       lang: lang.index,
       langDialog: lang.dialog,
     })
-    if (stime && etime) {
-      this.getListData()
-    }
+    // if (stime && etime) {
+    //   this.getListData()
+    // }
   },
   handleChangeInput(e) {
     const value = e.detail
@@ -107,10 +107,15 @@ Page({
     this.setData({
       page: 1,
       list: [],
+      delPayLogList: [],
       isScroll: true,
       loading: ''
     })
-    this.getListData()
+    if(this.title_active == 1){
+      this.getListData();
+    }else{
+      this.getDelAllUserPayLog();
+    }
   },
   handleGetTime(e) {
     console.log(e)
@@ -126,12 +131,17 @@ Page({
       startDate,
       startTime,
       list: [],
+      delPayLogList: [],
       page: 1,
       total: 0,
       isScroll: true,
       loading: ''
     })
-    this.getListData()
+    if(this.title_active == 1){
+      this.getListData();
+    }else{
+      this.getDelAllUserPayLog();
+    }
   },
   getListData() {
     const params = {
@@ -248,8 +258,24 @@ Page({
   },
   getDelAllUserPayLog(){
     let that = this;
-    getDelAllUserPayLog().then( res =>{
-
+    const params = {
+      stime: this.data.startTime,
+      etime: this.data.endTime,
+      wm_no: this.data.wm_no,
+      page: this.data.page,
+      select: this.data.select_value,
+      type: this.data.select_type
+    }
+    getDelAllUserPayLog(params).then( res =>{
+      const data = res.data.list.data || [];
+      data.forEach(ele =>{
+        ele.total_money = fmoney(Number(ele.total_money),2);
+        ele.after_arrears_money = fmoney(Number(ele.after_arrears_money),2);
+      })
+      const delPayLogList = this.data.delPayLogList.concat(data)
+      this.setData({
+        delPayLogList,
+      })
     }).catch( e=>{
       console.log(e)
     })
