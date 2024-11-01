@@ -259,8 +259,8 @@ Page({
   getDelAllUserPayLog(){
     let that = this;
     const params = {
-      stime: this.data.startTime,
-      etime: this.data.endTime,
+      stime: this.data.startTime + ' 00:00:00',
+      etime: this.data.endTime + ' 23:59:59',
       wm_no: this.data.wm_no,
       page: this.data.page,
       select: this.data.select_value,

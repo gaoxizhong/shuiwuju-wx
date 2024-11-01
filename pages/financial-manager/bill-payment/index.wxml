@@ -44,7 +44,7 @@
   <view class="search-content {{!delPayLogList.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!delPayLogList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
-      <block wx:for="{{delList}}" wx:key="order_no">
+      <block wx:for="{{delPayLogList}}" wx:key="order_no">
         <view class="item" data-id="{{item.id}}" data-item="{{item}}" bindtap="handleDetails">
           <view class="item__title">{{item.wm_name}}</view>
           <view class="item__title">{{item.wm_no}}</view>
