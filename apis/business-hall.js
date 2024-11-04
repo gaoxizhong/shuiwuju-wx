@@ -12,7 +12,15 @@ export const getBusinessHallList = (data) => {
     data
   })
 }
-
+// 获取删除缴费单记录 
+export const getDelUserPaymentList = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_get_del_user_payment_list`,
+    method: 'POST',
+    data
+  })
+}
 // 确认缴费
 export const handleBusinessHallPayBill = (data) => {
   const baseUrl = getApp().globalData.baseUrl

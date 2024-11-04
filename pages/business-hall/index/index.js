@@ -2,7 +2,7 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  getBusinessHallList,
+  getBusinessHallList,getDelUserPaymentList
 } from './../../../apis/business-hall'
 import {
   delUserPayment,
@@ -48,6 +48,8 @@ Page({
     selectTypeIndex: 0,
     Type_show: false,
     type_seach: 'type', // type - - 选类型  seach 输入
+    title_active: 1,
+    delPayLogList: [],
   },
   /**
    * 生命周期函数--监听页面显示
@@ -61,6 +63,9 @@ Page({
       list: [],
       lang: lang.index,
       langDialog: lang.dialog,
+      title_active: 1,
+      delPayLogList: [],
+
     })
     this.getListData()
   },
@@ -304,6 +309,70 @@ Page({
     this.setData({
       del_pop: false,
 
+    })
+  },
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      list: [],
+      wm_no: '',
+      admin_name:'',
+      page: 1,
+      total: 0,
+      title_active,
+    })
+    if(title_active == 1){
+      this.getListData();
+    }
+    if(title_active == 2){
+      this.getDelUserPaymentList();
+    }
+  },
+  getDelUserPaymentList(){
+    let that = this;
+    const params = {
+      wm_no: this.data.wm_no,
+      page: this.data.page,
+      select: this.data.select_value,
+      type: this.data.select_type,
+      status: this.data.status
+    }
+    getDelUserPaymentList(params).then( res =>{
+      const data = res.data.list.data || [];
+      data.forEach(ele =>{
+        ele.price = fmoney(Number(ele.price),2)
+      })
+      const list = this.data.list.concat(data)
+      const total = res.data.list.total || 0
+      const status = res.data.status
+      const statusList = Object.keys(status).map(i => ({
+        text: status[i],
+        key: i
+      }))
+      statusList.unshift(lang.allOptions)
+      const payWayList = res.data.pay_way.map(i => ({
+        text: i.title,
+        key: i.key
+      }))
+      this.setData({
+        list,
+        total,
+        statusList,
+        payWayList,
+        isScroll: true,
+        loading: total > list.length ? lang.message.scrollLoading : lang.message.noMoreEmpty
+      })
+      if(this.data.wm_no){
+        this.setData({
+          is_seach: true
+        })
+      }else{
+        this.setData({
+          is_seach: false
+        })
+      }
+    }).catch( e=>{
+      console.log(e)
     })
   }
 })

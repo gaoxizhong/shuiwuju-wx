@@ -244,12 +244,12 @@ Page({
   onChange(e){
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
-      // adminList: [],
-      // list: [],
-      // wm_no: '',
-      // admin_name:'',
-      // page: 1,
-      // total: 0,
+      delPayLogList: [],
+      list: [],
+      wm_no: '',
+      admin_name:'',
+      page: 1,
+      total: 0,
       title_active,
     })
     if(title_active == 2){

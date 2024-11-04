@@ -1,6 +1,10 @@
 <!--pages/business-hall/index/index.wxml-->
+<view class="container-tabbox">
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_3.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_3.two}}</view>
+</view>
 <view class="container business-hall">
-  <view class="search-bar">
+  <view class="search-bar"  wx:if="{{ title_active == 1 }}">
     <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
       <view class="icon"  slot="action">
         <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
@@ -8,17 +12,17 @@
       </view>
     </van-search>
   </view>
-  <view class="his-box">
+  <view class="his-box" wx:if="{{ title_active == 1 }}">
     <van-button type="info" size="small" block='true' bindtap="goToHistorio">{{ lang.historio }}</van-button>
     <van-button type="info" size="small" block='true' bindtap="goToFecho">{{ lang.fecho }}</van-button>
     <van-button type="info" size="small" block='true' bindtap="goToOther">{{ lang.other }}</van-button>
   </view>
   
-  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+  <view class="search-content" style="margin-top:{{ title_active == 1?20:0}}rpx;">
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="order_no">
-        <view class="item" data-index="{{index}}" bindtap="handleDetails">
+        <view class="item" data-index="{{index}}" bindtap="{{ title_active == 1?'handleDetails':'' }}">
           <view class="item__title">
             {{item.wm_no}} 
           </view>
@@ -40,11 +44,11 @@
           <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
             {{item.status_text}}
           </view>
-          <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" wx:if="{{item.status == 1}}"/>
+          <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" wx:if="{{item.status == 1 && title_active == 1}}"/>
         </view>
       </block>
     </scroll-view>
-    <view class="loading">{{loading}}</view>
+    <view class="loading"  wx:if="{{ title_active == 1 }}">{{loading}}</view>
   </view>
   <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
     <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
