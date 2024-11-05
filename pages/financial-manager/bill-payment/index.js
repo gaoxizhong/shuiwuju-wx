@@ -111,13 +111,15 @@ Page({
       isScroll: true,
       loading: ''
     })
-    if(this.title_active == 1){
-      this.getListData();
-    }else{
-      this.getDelAllUserPayLog();
-    }
+    this.getListData();
+    // if(this.title_active == 1){
+    //   this.getListData();
+    // }else{
+    //   this.getDelAllUserPayLog();
+    // }
   },
   handleGetTime(e) {
+    let that = this;
     console.log(e)
     const {
       endDate,
@@ -125,7 +127,7 @@ Page({
       startDate,
       startTime,
     } = e.detail
-    this.setData({
+    that.setData({
       endDate,
       endTime,
       startDate,
@@ -137,7 +139,7 @@ Page({
       isScroll: true,
       loading: ''
     })
-    if(this.title_active == 1){
+    if(this.data.title_active == 1){
       this.getListData();
     }else{
       this.getDelAllUserPayLog();
@@ -242,6 +244,7 @@ Page({
     
   },
   onChange(e){
+    console.log(e)
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
       delPayLogList: [],

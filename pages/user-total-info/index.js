@@ -453,14 +453,14 @@ Page({
       e = `${dayTime} 15:00:00`;
     }
     const is_judgmentData = judgmentData(s,e);
-    if(!is_judgmentData){
-      wx.showToast({
-        title: lang.message.businessHours,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
+    // if(!is_judgmentData){
+    //   wx.showToast({
+    //     title: lang.message.businessHours,
+    //     duration: 2000,
+    //     icon: 'none'
+    //   })
+    //   return
+    // }
     const paid_total_money = this.data.paid_total_money
     const pay_text = this.data.pay_text
     if (!paid_total_money) {

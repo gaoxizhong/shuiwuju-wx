@@ -133,14 +133,14 @@ Page({
       e = `${dayTime} 15:00:00`;
     }
     const is_judgmentData = judgmentData(s,e);
-    if(!is_judgmentData){
-      wx.showToast({
-        title: lang.message.businessHours,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
+    // if(!is_judgmentData){
+    //   wx.showToast({
+    //     title: lang.message.businessHours,
+    //     duration: 2000,
+    //     icon: 'none'
+    //   })
+    //   return
+    // }
     let params = {
       wm_no,
       reading: Number(reading),
