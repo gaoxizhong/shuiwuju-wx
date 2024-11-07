@@ -778,7 +778,7 @@ Consumo: ${total_water} (m³)
 ${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
-IVA(0%)
+IVA(0%) M04
 TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}

@@ -508,7 +508,7 @@ Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.u
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
-IVA(0%)
+IVA(0%) M04
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:0} KZ
 
 limite de pagamento: ${this.getMoreDay(15)}
@@ -564,7 +564,7 @@ Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.u
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
-IVA(0%) 
+IVA(0%) M04
 `,
       printInfo_TOTAL:`
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,
