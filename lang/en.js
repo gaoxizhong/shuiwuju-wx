@@ -135,8 +135,12 @@ const en_lang = {
       two: 'Factura Simplificada',
     },
     tabs_3: {
-      one: '缴费记录',
-      two: '删除记录',
+      one: 'Nota de debito',
+      two: 'Anuado',
+    },
+    tabs_4: {
+      one: 'Conta correnta',
+      two: 'Anuado',
     },
     pay_type: 'Métodos de Pagamento',
     cheque_number: 'N* do Cheque',

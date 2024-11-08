@@ -1,7 +1,7 @@
 <!--pages/business-hall/index/index.wxml-->
 <view class="container-tabbox">
-  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_3.one}}</view>
-  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_3.two}}</view>
+  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.tabs_4.one}}</view>
+  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.tabs_4.two}}</view>
 </view>
 <view class="container business-hall">
   <view class="search-bar"  wx:if="{{ title_active == 1 }}">
