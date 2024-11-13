@@ -56,7 +56,7 @@
     </view>
   </view>
   <view class="btn" wx:else>
-    <view wx:if="{{status === 'doing' && my_wm_id == form.do_uid}}" class="btn-item" bindtap="openRepairDone">
+    <view wx:if="{{ status === 'doing' }}" class="btn-item" bindtap="openRepairDone">
       {{btnName.submitName}}
     </view>
   </view>
