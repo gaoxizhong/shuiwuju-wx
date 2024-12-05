@@ -991,9 +991,12 @@ Utilizador: ${that.data.operator_name}
   handleNameBlur(e) {
     console.log(e)
     const operator_name = e.detail.value;
-    this.setData({
-      operator_name,
-    })
+  
+  },
+  handleNameBlur(e) {
+    console.log(e)
+    const operator_name = e.detail.value;
+    
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str) {
