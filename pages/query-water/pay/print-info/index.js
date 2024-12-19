@@ -466,7 +466,8 @@ Page({
       let months = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].months:0; // 月份
       let T_Fixa = Number(userBluetoolthInfoData.user_type.rent_money * months).toFixed(2);
       let consumo_price =Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
-
+      let household_num = userBluetoolthInfoData.water_meter.household_num; // 供用水表户数；
+      let average_pairce = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price/household_num.toFixed(2) : userBluetoolthInfoData.water_meter.user_bal/household_num.toFixed(2);  // 平均户数费用
       this.setData({
       // 发票
       invoiceInfo_title:`EPASKS-E.P.`,
@@ -564,7 +565,11 @@ Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.u
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
+Totalizador/Normal: ${userBluetoolthInfoData.water_meter.is_share ? 'Totalizador':'Normal' }
+Unidades: ${userBluetoolthInfoData.water_meter.household_num }    
+${userBluetoolthInfoData.water_meter.is_share?'O custo médio: ' +average_pairce +'KZ':'' }
 IVA(0%) M04
+
 `,
       printInfo_TOTAL:`
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,
