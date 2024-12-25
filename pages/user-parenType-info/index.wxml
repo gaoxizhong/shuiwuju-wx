@@ -26,9 +26,9 @@
         <view class="info-item__info">{{total_money}}（KZ）</view>
       </view>
       <!-- 优惠 -->
-      <!-- <van-cell-group>
+      <van-cell-group>
         <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:blur="handleReading"  bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
-      </van-cell-group> -->
+      </van-cell-group>
       <van-cell-group>
         <van-field custom-style="flex-direction: column;" title-width="100%" readonly required error="{{pay_type_error}}" label="{{lang.pay_type}}" model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}" bindtap="showPayPopup"/>
       </van-cell-group>

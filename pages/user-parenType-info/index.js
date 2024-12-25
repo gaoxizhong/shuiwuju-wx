@@ -49,7 +49,6 @@ Page({
     last_reading: '',
     last_time: '',
     arrears_money_sum: '',
-    paid_total_money: '',
     no_error: false,
     payStatusList: [],
     pay_way: '',
@@ -78,7 +77,8 @@ Page({
     showCheck: false,
     cheque_number: '',
     itemInfo: null,
-    total_money: 0
+    total_money: 0,
+    paid_total_money: 0
   },
 
   /**
@@ -103,6 +103,7 @@ Page({
       userInfo,
       itemInfo,
       total_money: fmoney(total_money,2),
+      paid_total_money: JSON.parse(options.data).total_money
     })
     this.getArrearsMoneySum(options.wm_no)
     if (wx.getStorageSync('operatorNameList')) {
@@ -191,7 +192,7 @@ Page({
       let date = handleTimeValue();
       const params = {
         wm_id: that.data.itemInfo.wm_id,
-        total_money: that.data.itemInfo.total_money,
+        total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
         date_time: date.time,
         demand_note_id: that.data.itemInfo.id
@@ -289,15 +290,7 @@ Page({
       e = `${dayTime} 16:00:00`;
     }
     
-    const is_judgmentData = judgmentData(s,e);
-    if(!is_judgmentData){
-      wx.showToast({
-        title: lang.message.businessHours,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
+
 
     const pay_text = this.data.pay_text;
 

@@ -145,6 +145,7 @@ const en_lang = {
     pay_type: 'Métodos de Pagamento',
     cheque_number: 'N* do Cheque',
     placeholderName: 'Preencher o nome do pedágio',
+    paid_total_money: 'Valor real pago',
 
   },
   // 新增用户

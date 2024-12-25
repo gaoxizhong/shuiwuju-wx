@@ -143,7 +143,7 @@ const zh_lang = {
     pay_type: '支付方式',
     cheque_number: '支票编码',
     placeholderName: '请输入姓名',
-
+    paid_total_money: '实缴金额',
   },
   // 新增用户
   addAccount: {
