@@ -51,6 +51,8 @@ Page({
     seltTypeInfo:{}, // 选择的打印种类
     columns_1: [], // 打印发票的种类列表
     parent_type_error: false,
+    amount_error: false,
+    amount: '',
     show_1:false,
 
     title_active: 1,
@@ -171,7 +173,7 @@ Page({
     getTrPriceList({}).then(res => {
       if(res.code == 200){
         let data = res.data.data;
-        let columns_1 = [];
+        let columns_1 = this.data.columns_1;
         data.forEach( ele =>{
           columns_1.push({
             id: ele.id,
@@ -402,7 +404,7 @@ Page({
       typeLabel_1,
       seltTypeInfo: e.detail.value,
       showCheck: true,
-      amount: fmoney(Number(e.detail.value.amount),2),
+      amount: e.detail.value.amount?fmoney(Number(e.detail.value.amount),2) : '',
     })
     this.onCloseType1Select();
   },
@@ -410,6 +412,7 @@ Page({
   clickPrint(){
     let selectradio_info = this.data.selectradio_info;
     let seltTypeInfo = this.data.seltTypeInfo;
+    let amount = seltTypeInfo.id == 15 ? this.data.amount : seltTypeInfo.amount;
     if (!selectradio_info.wm_no) {
       this.setData({
         wm_no_error : true
@@ -419,6 +422,12 @@ Page({
     if (!seltTypeInfo) {
       this.setData({
         parent_type_error : true
+      })
+      return
+    }
+    if (!amount) {
+      this.setData({
+        amount_error : true
       })
       return
     }
@@ -448,7 +457,7 @@ N° da Porta: ${selectradio_info.house_number}
 Giro: ${selectradio_info.area_code}
 
 Espécies: ${seltTypeInfo.text}
-Montante: ${fmoney(seltTypeInfo.amount,2)} KZ
+Montante: ${fmoney(amount,2)} KZ
 
       `,
 
@@ -547,12 +556,13 @@ ${date.time}
     let that = this;
     let selectradio_info = that.data.selectradio_info; // 选择的用户
     let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
+    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
     let date = this.handleTimeValue();
-
+    
     let p = {
       wm_id: selectradio_info.wm_id,
       price_list_id: seltTypeInfo.id,
-      total_money: seltTypeInfo.amount,
+      total_money: total_money,
       date_time: date.time,
     }
     createPayDemandNote(p).then( res =>{
