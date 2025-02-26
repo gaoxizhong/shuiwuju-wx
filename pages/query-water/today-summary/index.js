@@ -66,6 +66,28 @@ Page({
       loading: lang.message.scrollLoading
     })
   },
+  handleSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    this.setData({
+      selectIndex: index,
+      status: value.key,
+      page: 1,
+
+      isScroll: true,
+      loading: ''
+    });
+    this.onClosePopup()
+    this.getList()
+  },
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      title_active,
+    })
+  },
   // 管理员 input 事件
   handleChangeAdminName(e) {
     const value = e.detail
@@ -127,11 +149,17 @@ Page({
       endTime,
       startDate,
       startTime,
-      adminlList:[],
+      adminList:[],
       list: [],
+      wm_no: '',
+      admin_name:'', // 管理员搜索字段
       page: 1,
       total: 0,
       isScroll: true,
+      lang: lang.todaySummary,
+      langIndex: lang.index,
+      langDialog: lang.dialog,
+      loading: lang.message.scrollLoading,
       loading: ''
     })
     if(this.data.title_active == 1){
@@ -152,9 +180,25 @@ Page({
 
       const data = res.data.data || [];
       data.forEach(ele =>{
-        ele.total_price = fmoney(Number(ele.total_price),2)
+        ele.total_price = Number(ele.total_price)
       })
       const adminList = this.data.adminList.concat(data)
+      console.log(adminList)
+      let a = 0;
+      let b = 0;
+      let c = 0;
+      let d = 0;
+
+      adminList.forEach(ele=>{
+        a += ele.user_payment_count
+        b += ele.invoice_num
+        c += ele.receipt_num
+        d += Number(ele.total_price)
+      })
+      console.log('缴费单:',a)
+      console.log('发票数:',b)
+      console.log('收据数:',c)
+      console.log('总额度:',d)
       // const total = res.data.list.total
       this.setData({
         adminList,
@@ -255,37 +299,5 @@ Page({
       show: false
     })
   },
-  handleSelectItem(e) {
-    const {
-      index,
-      value
-    } = e.detail;
-    this.setData({
-      selectIndex: index,
-      status: value.key,
-      page: 1,
 
-      isScroll: true,
-      loading: ''
-    });
-    this.onClosePopup()
-    this.getList()
-  },
-  onChange(e){
-    let title_active = Number(e.currentTarget.dataset.index)
-    this.setData({
-      adminList: [],
-      list: [],
-      wm_no: '',
-      admin_name:'', // 管理员搜索字段
-      page: 1,
-      total: 0,
-      isScroll: true,
-      lang: lang.todaySummary,
-      langIndex: lang.index,
-      langDialog: lang.dialog,
-      loading: lang.message.scrollLoading,
-      title_active,
-    })
-  }
 })

@@ -1,0 +1,32 @@
+<!--pages/user-water-info/index.wxml-->
+<view class="container user-water-info">
+  <view class="info">
+    <view class="info-label">
+      {{lang.title}}
+    </view>
+    <view class="info-content">
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_no}}</view>
+        <view class="info-item__info">{{form.wm_no}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_name}}</view>
+        <view class="info-item__info">{{form.meter.wm_name || form.wm_name}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.last_water}}</view>
+        <view class="info-item__info">{{form.last_reading}}（m³）</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.createDate}}</view>
+        <view class="info-item__info">{{form.created_at}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.total_money}}</view>
+        <view class="info-item__info">{{form.user_bal}}（KZ）</view>
+      </view>
+
+    </view>
+  </view>
+
+</view>

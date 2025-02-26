@@ -240,9 +240,8 @@ Page({
   handleDetails(e) {
     const index = e.currentTarget.dataset.index
     const data = JSON.stringify(this.data.list[index])
-    return
     wxAsyncApi('navigateTo', {
-      url: `/pages/user-water-info/index?data=${data}&source=user`,
+      url: `/pages/userInfoDetails/index?data=${data}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,
