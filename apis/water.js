@@ -193,3 +193,12 @@ export const delUserPayment = (data) => {
     data
   })
 }
+// 获取列表选项详情
+export const getFbuserStatis = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_user_statis`,
+    method: 'POST',
+    data
+  })
+}

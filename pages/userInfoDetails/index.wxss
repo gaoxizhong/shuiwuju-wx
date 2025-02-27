@@ -1,15 +1,36 @@
 /* pages/user-water-info/index.wxss */
 
-
-.user-water-info {
-  background-color: #fff;
+.index {
+  padding: 10rpx 20rpx;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
-
-.info {
+.user-water-info {
+  display: flex;
+  flex-direction: column;
+}
+.search-content {
+  border-radius: 10rpx;
   flex: 1;
   overflow: hidden;
+  margin-top: 10rpx;
+  background-color: #fff;
+  flex-direction: column;
+  display: flex;
+}
+.no-data {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.wixi-list {
+  overflow: hidden;
+  box-sizing: border-box;
+  height: 100%;
+}
+.info {
+  background: #fff;
 }
 
 .info-label {
@@ -21,7 +42,8 @@
   display: flex;
   justify-content: space-between;
   font-size: 28rpx;
-  padding: 20rpx 32rpx;
+  padding: 10rpx 32rpx;
+  box-sizing: border-box;
 }
 
 .info-item__label {
@@ -40,14 +62,26 @@
 .btn{
   display: flex;
   font-size: 28rpx;
+  padding-bottom: 20rpx;
 }
 .btn-item{
   flex: 1;
   text-align: center;
   border-top: 1px solid #ebeef5;
   padding: 20rpx;
+  border-radius: 6px;
 }
 
 .over {
   flex: 1;
+}
+.btn{
+  display: flex;
+  font-size: 28rpx;
+}
+.btn-item{
+  flex: 1;
+  text-align: center;
+  border-top: 1px solid #ebeef5;
+  padding: 20rpx;
 }
