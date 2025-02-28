@@ -2,9 +2,11 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {
-  wxAsyncApi,fmoney
+  wxAsyncApi,fmoney,handleTimeValue
 } = require('./../../utils/util')
 const GBK = require('./../../utils/gbk.min')
+//只需要引用encoding.js,注意路径
+var encoding = require("./../../utils/encoding.js")
 import {
   getFbuserStatis,
 } from './../../apis/water'
@@ -137,12 +139,15 @@ Page({
   onShareAppMessage() {
 
   },
+  
   // 打印信息
   imprimirInfo(){
     let that = this;
     let item = that.data.form;
     let water_mater_pay_log_list = item.water_mater_pay_log_list; //缴费(支付)记录
     let log_list = '';
+    let date_time = handleTimeValue().time;
+
     water_mater_pay_log_list.forEach((ele,index) => {
       log_list +=`${ ele.pay_time }     ${ele.total_money}KZ
 `
@@ -161,23 +166,26 @@ Email info.epasksagmail.com
       printInfo:`
 N° Contador: ${item.water_mater.wm_no}
 Comsumidor: ${item.water_mater.wm_name}
+Localidade: ${item.water_mater.area1} ${item.water_mater.area2} ${item.water_mater.area3} ${item.water_mater.wm_address}
 NIF: ${item.water_mater.user_card}
 Telefone: ${item.water_mater.wm_phone}
-Leitura anterior: ${item.water_mater.last_reading}kZ
+EMAIL: ${item.email}
+Leitura anterior: ${item.water_mater.last_reading} (m³)
+Valor da factura: ${item.user_bal} KZ
 `,
 print_order_info: `
-${that.data.stime} - ${that.data.etime}
+${that.data.startTime} - ${that.data.endTime}
 Registro de pagamentos:
 --------------------------------
 ${log_list?log_list:''}
 --------------------------------
 Total: ${item.user_pay_log_total_money_sum} KZ
-Total em atraso: ${item.user_pay_log_total_money_sum} KZ
+Total em atraso: ${item.water_mater_arrears_money_sum} KZ
 `,
 valores:`
 Water manager
 0000007/01180000/AGT/2023
-${item.last_time}
+DATA: ${date_time}
 
     `
     })
@@ -235,6 +243,7 @@ ${item.last_time}
       ...this.arrEncoderCopy(this.data.title_1),
       ...blueToolth.printCommand.left,
       ...this.arrEncoderCopy(this.data.printInfo),
+      ...this.arrEncoderCopy(this.data.print_order_info),
       ...blueToolth.printCommand.center,
       ...this.arrEncoderCopy(this.data.valores),
       ...blueToolth.printCommand.enter

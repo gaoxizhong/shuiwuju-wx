@@ -29,6 +29,15 @@
           </view>
 
         </view>
+        <view class="jfjl-box">
+          <view class="jfjl-title">{{lang.jfjl}}：</view>
+          <block wx:for="{{form.water_mater_pay_log_list}}" wx:key="index">
+            <view class="jfjl-list">
+              <view>{{item.pay_time}}</view>
+              <view>{{item.total_money}} KZ</view>
+            </view>
+          </block>
+        </view>
     </scroll-view>
     
   </view>

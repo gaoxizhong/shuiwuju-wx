@@ -85,3 +85,23 @@
   border-top: 1px solid #ebeef5;
   padding: 20rpx;
 }
+.info-content{
+  border-bottom: 1px solid #ebeef5;
+}
+.jfjl-box{
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+}
+.jfjl-title{
+  padding-bottom: 10rpx;
+  box-sizing: border-box;
+}
+.jfjl-list{
+  font-size: 28rpx;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1px solid #ebeef5;
+}

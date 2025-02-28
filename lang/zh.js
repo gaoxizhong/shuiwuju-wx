@@ -459,6 +459,8 @@ const zh_lang = {
     descontos:'折扣',
     placeholderName: '请输入姓名',
     cheque_number: '支票编码',
+    jfjl: '缴费记录',
+
   },
   // 功能列表
   func: {

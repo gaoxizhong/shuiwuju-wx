@@ -461,6 +461,7 @@ const en_lang = {
     descontos:'Desconto',
     placeholderName: 'Preencher o nome do pedágio',
     cheque_number: 'N* do Cheque',
+    jfjl: 'Registro de pagamentos',
   },
   // 功能列表
   func: {

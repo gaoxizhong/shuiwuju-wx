@@ -304,7 +304,7 @@ Unidades: ${item.household_num}
 Localidade: ${item.area1} ${item.area2} ${item.area3} ${item.wm_address}
 Nº de Porta: ${item.house_number}
 Giro/Zona: ${item.area_code}
-Leitura anterior: ${item.last_reading}kZ
+Leitura anterior: ${item.last_reading}
 Data de Registo: ${item.last_time}
 Categoria: ${type}
 Agua Residuais: ${item.sewage_rate}%
