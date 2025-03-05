@@ -170,7 +170,7 @@ EMAIL: ${info_data.email}
 `,
 valores:`
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 ${info_data.last_time}
 
     `

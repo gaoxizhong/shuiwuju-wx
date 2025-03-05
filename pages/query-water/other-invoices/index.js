@@ -463,7 +463,7 @@ Montante: ${fmoney(amount,2)} KZ
 
       invoiceInfo_valores: `
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 ${date.time}
 
     `,

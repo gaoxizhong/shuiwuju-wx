@@ -470,7 +470,7 @@ ${that.data.pay_text}   AOA    ${that.data.from.total_money} KZ
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}

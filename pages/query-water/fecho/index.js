@@ -179,7 +179,7 @@ Facura/recibo:           ${infoData.invoice_num} Un
 Valor a pagar:         ${infoData.invoice_total_price} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 `,
       printInfo_data:`
 DATA: ${date.time}

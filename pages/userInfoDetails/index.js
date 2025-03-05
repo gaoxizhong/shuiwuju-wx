@@ -184,7 +184,7 @@ Total em atraso: ${item.water_mater_arrears_money_sum} KZ
 `,
 valores:`
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 DATA: ${date_time}
 
     `

@@ -518,7 +518,7 @@ limite de pagamento: ${this.getMoreDay(15)}
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 ${date.time}
 
     `,
@@ -579,7 +579,7 @@ limite de pagamento: ${this.getMoreDay(15)}`,
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 `,     
       printInfo_time:`
 ${date.time}

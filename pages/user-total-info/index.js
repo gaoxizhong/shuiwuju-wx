@@ -787,7 +787,7 @@ limite de pagamento: ${this.getMoreDay(15)}
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 ${date.time}
 
     `,
@@ -828,7 +828,7 @@ ${that.data.pay_way == 4?"N* do Cheque: " +that.data.cheque_number : ''}
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
-0000007/01180000/AGT/2023
+Processado por programaválido n31.1/AGT20
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}

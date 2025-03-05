@@ -316,7 +316,7 @@ EMAIL: ${item.email}
 `,
 valores:`
 Water manager
-0000007/01180000/AGT/2023
+
 ${item.last_time}
 
     `
