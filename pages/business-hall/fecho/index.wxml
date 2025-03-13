@@ -71,9 +71,15 @@
   </view>
   <!-- 总计 -->
   <view class="view-box">
-    <view class="title-box">
-      <text class="text-1">{{ lang.total_price }}：</text>
-      <text class="text-2">{{ total_price || 0 }} un</text>
+    <view class="title-box or-box">
+      <view class="or-item">
+        <text class="text-1">{{ lang.total_price }}：</text>
+        <text class="text-2">{{total_price }} {{ lang.zhang }}</text>
+      </view>
+      <view class="or-item">
+        <text class="text-1">{{ lang.money_zk }}：</text>
+        <text class="text-2">{{ discount_money_sum }} KZ</text>
+      </view>
     </view>
     <view class="info-box">
       <view>

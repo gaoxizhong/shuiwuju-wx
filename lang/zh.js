@@ -407,6 +407,7 @@ const zh_lang = {
     total_price: '总金额',
     cash: '现金',
     transfer_money: '转账',
+    money_zk: '折扣',
     swipe_card: '刷卡',
     zhang: '张',
     name: '姓名',

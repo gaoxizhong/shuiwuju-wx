@@ -410,6 +410,7 @@ const en_lang = {
     total_price: 'Total',
     cash: 'Numerário',
     transfer_money: 'Transferência',
+    money_zk: 'Desconto',
     swipe_card: 'Cartão Multicaixa',
     submit: 'Impressão',
     receipt: 'Recibo',

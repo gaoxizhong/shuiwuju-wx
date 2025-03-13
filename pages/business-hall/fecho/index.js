@@ -27,6 +27,7 @@ Page({
     cash_sum: 0,
     pos_sum: 0,
     transfer_accounts_sum: 0,
+    discount_money_sum: 0,
     actual_amount: ''
   },
 
@@ -49,6 +50,10 @@ Page({
    */
   onShow() {
     this.getAdminShift(0);
+    this.setData({
+      lang: lang.fecho,
+      btnName: lang.btnName,
+    })
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str){
@@ -194,6 +199,7 @@ Page({
     let infoData = this.data.infoData;
     let date = this.handleTimeValue();
     this.setData({
+      printInfo_title:`EPASKS-E.P.`,
       printInfo:`
 Recibo:            ${infoData.receipt_num} Un
 Numerário:         ${infoData.receipt_cash} kZ
@@ -213,6 +219,7 @@ Cartão Multicaixa: ${infoData.demand_note_pos_sum} kZ
 Transferência:     ${infoData.demand_note_transfer_accounts_sum} kZ
 --------------------------------
 Total:             ${this.data.total_price} Un
+Desconto:          ${this.data.discount_money_sum} kZ
 Numerário:         ${this.data.cash_sum} kZ
 Cartão Multicaixa: ${this.data.pos_sum} kZ
 Transferência:     ${this.data.transfer_accounts_sum} kZ
@@ -275,6 +282,10 @@ DATA: ${date.time}
     // GBK.encode({string}) 解码GBK为一个字节数组
     let info = [
       ...blueToolth.printCommand.clear,
+      ...blueToolth.printCommand.center,
+      ...blueToolth.printCommand.ct,
+      ...this.arrEncoderCopy(this.data.printInfo_title),
+      ...blueToolth.printCommand.ct_zc,
       ...this.arrEncoderCopy(this.data.printInfo),
       ...blueToolth.printCommand.center,
       ...this.arrEncoderCopy(this.data.printInfo_data),

@@ -84,6 +84,14 @@ van-button button{
   padding-bottom: 16rpx;
   position: relative;
 }
+.title-box1{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.title-box1>view{
+  flex: 1;
+}
 .title-box::after{
   content: '';
   width: 100%;
