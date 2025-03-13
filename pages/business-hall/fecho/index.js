@@ -101,12 +101,14 @@ Page({
       let cash_sum = Number(res.data.data.cash_sum);
       let pos_sum = Number(res.data.data.pos_sum);
       let transfer_accounts_sum = Number(res.data.data.transfer_accounts_sum);
+      let discount_money_sum = Number(res.data.data.discount_money_sum);
       that.setData({
         infoData: res.data.data,
         total_price,
         cash_sum: cash_sum,
         pos_sum: pos_sum,
         transfer_accounts_sum: transfer_accounts_sum,
+        discount_money_sum,
       })
     }).catch((res) => {
       wx.showToast({

@@ -74,7 +74,7 @@
     <view class="title-box or-box">
       <view class="or-item">
         <text class="text-1">{{ lang.total_price }}：</text>
-        <text class="text-2">{{total_price }} {{ lang.zhang }}</text>
+        <text class="text-2">{{ total_price }} {{ lang.zhang }}</text>
       </view>
       <view class="or-item">
         <text class="text-1">{{ lang.money_zk }}：</text>
