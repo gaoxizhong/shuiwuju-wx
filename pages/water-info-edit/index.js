@@ -80,6 +80,7 @@ Page({
    */
   onLoad(options) {
     lang = app.globalData.lang;
+    console.log(options)
     const form = JSON.parse(options.data);
     console.log(form)
     // 获取价格类型

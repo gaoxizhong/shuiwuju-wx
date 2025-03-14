@@ -11,40 +11,43 @@
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="wixi-list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="index">
-        <view class="wixi-item" data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">
+        <view class="wixi-item">
           <view class="wixi-item_title">
             <view class="view-box">
-              <text class="text-t">{{item.wm_no}}</text>
+              <text class="text-t" data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">{{item.wm_no}}</text>
               <image src="/img/vol-icon-xg.png" mode="widthFix" class="text-x" wx:if="{{ is_GC }}" data-item="{{item}}" bindtap="goToEdit"/>
             </view>
 
             <van-button type="info" size="small" block='true' data-item="{{item}}" catch:tap="imprimirInfo" class="cadastrar-btn">{{ btnName.cadastrar }}</van-button>
           </view>
-          <view class="wixi-item_i">
-            <view class="wixi-item_i_label"> {{lang.wm_name}}： </view>
-            <view class="wixi-item_i_content"> {{ item.wm_name }} </view>
-          </view>
+          <view  data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">
+            <view class="wixi-item_i" data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">
+              <view class="wixi-item_i_label"> {{lang.wm_name}}： </view>
+              <view class="wixi-item_i_content"> {{ item.wm_name }} </view>
+            </view>
 
-          <view class="wixi-item_i">
-            <view class="wixi-item_i_label">{{item.area2}} {{item.wm_address}} {{item.area_code}} {{item.house_number}}</view>
-            <!-- <view class="wixi-item_i_content">{{ item.}}</view> -->
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_label">{{item.area2}} {{item.wm_address}} {{item.area_code}} {{item.house_number}}</view>
+              <!-- <view class="wixi-item_i_content">{{ item.}}</view> -->
+            </view>
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_label">
+                {{lang.money}}：
+              </view>
+              <view class="wixi-item_i_content">
+                {{item.user_bal}}（KZ）
+              </view>
+            </view>
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_label">
+                {{lang.createTime}}：
+              </view>
+              <view class="wixi-item_i_content">
+                {{item.created_at}}
+              </view>
+            </view>
           </view>
-          <view class="wixi-item_i">
-            <view class="wixi-item_i_label">
-              {{lang.money}}：
-            </view>
-            <view class="wixi-item_i_content">
-              {{item.user_bal}}（KZ）
-            </view>
-          </view>
-          <view class="wixi-item_i">
-            <view class="wixi-item_i_label">
-              {{lang.createTime}}：
-            </view>
-            <view class="wixi-item_i_content">
-              {{item.created_at}}
-            </view>
-          </view>
+          
           <!-- <view class="wixi-item__status" style="color: {{item.status === 1 ? '#ee0a24' : '#07c160'}};">
             {{item.status_text}}
           </view> -->
