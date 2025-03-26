@@ -19,15 +19,52 @@
             <view class="info-item__label">{{lang.last_water}}</view>
             <view class="info-item__info">{{form.water_mater.last_reading}}（m³）</view>
           </view>
+          <!-- <view class="info-item">
+            <view class="info-item__label">{{lang.total_money}}</view>
+            <view class="info-item__info">{{form.user_bal}}（KZ）</view>
+          </view> -->
           <view class="info-item">
             <view class="info-item__label">{{lang.createDate}}</view>
             <view class="info-item__info">{{form.water_mater.created_at}}</view>
           </view>
-          <view class="info-item">
-            <view class="info-item__label">{{lang.total_money}}</view>
-            <view class="info-item__info">{{form.user_bal}}（KZ）</view>
+        </view>
+        <view class="tody-summary-total">
+          <view class="important-data" style="margin-right: 8rpx;">
+            <text>{{lang.jfdsl}}</text>
+            <view class="important-data-font">
+              {{form.water_mater_payment_count?form.water_mater_payment_count:0}}（{{ lang.num }}）
+            </view>
           </view>
-
+          <view class="important-data">
+            <text>{{lang.jfdzje}}</text>
+            <view class="important-data-font">
+              {{water_mater_price_sum}}（KZ）
+            </view>
+          </view>
+          <view class="general-data" style="margin-right: 8rpx;">
+            <text>{{lang.jfzje}}</text>
+            <view class="general-data-font">
+              <tex> {{user_pay_log_total_money_sum}}（KZ） </tex>
+            </view>
+          </view>
+          <view class="general-data">
+            <text>{{lang.qfzje}}</text>
+            <view class="general-data-font">
+              <tex> {{water_mater_arrears_money_sum}}（KZ） </tex>
+            </view>
+          </view>
+          <view class="general-data" style="margin-right: 8rpx;">
+            <text>{{lang.jmed}}</text>
+            <view class="general-data-font">
+              <tex> {{user_pay_log_discount_money_sum}}（KZ） </tex>
+            </view>
+          </view>
+          <view class="general-data">
+            <text>{{lang.zhye}}</text>
+            <view class="general-data-font">
+              <tex> {{form.user_bal}}（KZ） </tex>
+            </view>
+          </view>
         </view>
         <view class="jfjl-box">
           <view class="jfjl-title">{{lang.jfjl}}：</view>

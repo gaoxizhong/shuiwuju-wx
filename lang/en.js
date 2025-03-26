@@ -463,6 +463,13 @@ const en_lang = {
     placeholderName: 'Preencher o nome do pedágio',
     cheque_number: 'N* do Cheque',
     jfjl: 'Registro de pagamentos',
+    jmed: '减免总额',
+    jfzje: '缴费总金额',
+    jfdzje: '缴费单总金额',
+    qfzje: '欠费总额',
+    jfdsl: '缴费单数量',
+    zhye: '账户余额',
+    num: 'un',
   },
   // 功能列表
   func: {

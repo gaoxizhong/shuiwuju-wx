@@ -96,9 +96,22 @@ Page({
     getFbuserStatis(p).then( res =>{
       if(res.code == 200){
         let form = res.data.data;
-        form.user_bal = fmoney(form.water_mater.user_bal,2);
+        // form.user_bal = fmoney(form.water_mater.user_bal,2);
+        form.user_bal = (form.water_mater.user_bal).toFixed(2);
+        let water_mater_payment_count = form.water_mater_payment_count; //缴费单数量
+        let user_pay_log_count = form.user_pay_log_count; //缴费(支付)次数
+        let user_pay_log_total_money_sum = form.user_pay_log_total_money_sum;//缴费(支付)总金额
+        let user_pay_log_discount_money_sum = form.user_pay_log_discount_money_sum; //缴费(支付)减免总额
+        let water_mater_price_sum = form.water_mater_price_sum; //缴费单总金额
+        let water_mater_arrears_money_sum = form.water_mater_arrears_money_sum; //欠费总额
         that.setData({
-          form
+          form,
+          water_mater_payment_count,
+          user_pay_log_count,
+          user_pay_log_total_money_sum,
+          user_pay_log_discount_money_sum,
+          water_mater_price_sum,
+          water_mater_arrears_money_sum
         })
       }
     }).catch( e=>{
