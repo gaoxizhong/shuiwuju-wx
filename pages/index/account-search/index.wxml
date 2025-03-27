@@ -18,7 +18,7 @@
               <image src="/img/vol-icon-xg.png" mode="widthFix" class="text-x" wx:if="{{ is_GC }}" data-item="{{item}}" bindtap="goToEdit"/>
             </view>
 
-            <van-button type="info" size="small" block='true' data-item="{{item}}" catch:tap="imprimirInfo" class="cadastrar-btn">{{ btnName.cadastrar }}</van-button>
+            <!-- <van-button type="info" size="small" block='true' data-item="{{item}}" catch:tap="imprimirInfo" class="cadastrar-btn">{{ btnName.cadastrar }}</van-button> -->
           </view>
           <view  data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">
             <view class="wixi-item_i" data-index="{{index}}" bindtap="{{ userInfo != '{}'?'handleDetails':'' }}">

@@ -38,6 +38,7 @@ Page({
     water_mater_price_sum: '', //缴费单总金额
     water_mater_payment_count: '', //缴费单数量
     water_mater_arrears_money_sum: '', //欠费总额
+    title_active: 1,
   },
 
   /**
@@ -99,11 +100,11 @@ Page({
         // form.user_bal = fmoney(form.water_mater.user_bal,2);
         form.user_bal = (form.water_mater.user_bal).toFixed(2);
         let water_mater_payment_count = form.water_mater_payment_count; //缴费单数量
-        let user_pay_log_count = form.user_pay_log_count; //缴费(支付)次数
         let user_pay_log_total_money_sum = form.user_pay_log_total_money_sum;//缴费(支付)总金额
         let user_pay_log_discount_money_sum = form.user_pay_log_discount_money_sum; //缴费(支付)减免总额
         let water_mater_price_sum = form.water_mater_price_sum; //缴费单总金额
         let water_mater_arrears_money_sum = form.water_mater_arrears_money_sum; //欠费总额
+        let user_pay_log_count = form.user_pay_log_count; //缴费(支付)次数
         that.setData({
           form,
           water_mater_payment_count,
@@ -152,11 +153,22 @@ Page({
   onShareAppMessage() {
 
   },
-  
+  onChange(e){
+    let title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      title_active,
+    })
+
+  },
   // 打印信息
   imprimirInfo(){
     let that = this;
     let item = that.data.form;
+    let water_mater_payment_count = item.water_mater_payment_count; //缴费单数量
+    let user_pay_log_total_money_sum = item.user_pay_log_total_money_sum;//缴费(支付)总金额
+    let user_pay_log_discount_money_sum = item.user_pay_log_discount_money_sum; //缴费(支付)减免总额
+    let water_mater_price_sum = item.water_mater_price_sum; //缴费单总金额
+    let water_mater_arrears_money_sum = item.water_mater_arrears_money_sum; //欠费总额
     let water_mater_pay_log_list = item.water_mater_pay_log_list; //缴费(支付)记录
     let log_list = '';
     let date_time = handleTimeValue().time;
@@ -184,7 +196,12 @@ NIF: ${item.water_mater.user_card}
 Telefone: ${item.water_mater.wm_phone}
 EMAIL: ${item.email}
 Leitura anterior: ${item.water_mater.last_reading} (m³)
-Valor da factura: ${item.user_bal} KZ
+Ordem de pagamento: ${item.water_mater_payment_count?item.water_mater_payment_count:0}
+Linha de pagamento pendente: ${item.water_mater_price_sum} KZ
+Créditos já pagos: ${item.user_pay_log_total_money_sum} KZ
+Valor total devido: ${item.water_mater_arrears_money_sum} KZ
+Limite de redução: ${item.user_pay_log_discount_money_sum} KZ
+Saldo da conta: ${item.user_bal} KZ
 `,
 print_order_info: `
 ${that.data.startTime} - ${that.data.endTime}
@@ -192,8 +209,6 @@ Registro de pagamentos:
 --------------------------------
 ${log_list?log_list:''}
 --------------------------------
-Total: ${item.user_pay_log_total_money_sum} KZ
-Total em atraso: ${item.water_mater_arrears_money_sum} KZ
 `,
 valores:`
 Water manager

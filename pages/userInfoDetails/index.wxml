@@ -67,13 +67,49 @@
           </view>
         </view>
         <view class="jfjl-box">
-          <view class="jfjl-title">{{lang.jfjl}}：</view>
-          <block wx:for="{{form.water_mater_pay_log_list}}" wx:key="index">
-            <view class="jfjl-list">
-              <view>{{item.pay_time}}</view>
-              <view>{{item.total_money}} KZ</view>
-            </view>
-          </block>
+          <view class="container-tabbox">
+            <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.jfd}}</view>
+            <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.jfjl}}</view>
+          </view>
+          <!-- 缴费单（抄表记录） -->
+          <view wx:if="{{title_active == 1}}">
+            <block wx:for="{{form.user_payment_list}}" wx:key="index">
+              <view class="item" data-index="{{index}}">
+                <view class="item__title">
+                  {{form.water_mater.wm_no}} 
+                </view>
+                <view class="item__money">
+                  {{lang.wm_name}}：{{form.water_mater.wm_name}}
+                </view>
+                <view class="item__water">
+                  {{lang.water}}：{{( item.reading *10000) / 10000}}
+                </view>
+
+                <view class="item__money">
+                  {{lang.money}}：{{item.price}}
+                </view>
+
+                <view class="item__money">
+                  {{lang.createTime}}：{{item.created_at}}
+                </view>
+
+                <!-- <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+                  {{item.status_text}}
+                </view> -->
+              
+              </view>
+            </block>
+          </view>
+          <!-- 缴费记录 -->
+          <view wx:if="{{title_active == 2}}">
+            <block wx:for="{{form.water_mater_pay_log_list}}" wx:key="index">
+              <view class="jfjl-list">
+                <view>{{item.pay_time}}</view>
+                <view>{{item.total_money}} KZ</view>
+              </view>
+            </block>
+          </view>
+
         </view>
     </scroll-view>
     

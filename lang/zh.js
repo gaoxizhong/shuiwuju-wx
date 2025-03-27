@@ -461,6 +461,7 @@ const zh_lang = {
     placeholderName: '请输入姓名',
     cheque_number: '支票编码',
     jfjl: '缴费记录',
+    jfd: '缴费单',
     jmed: '减免总额',
     jfzje: '缴费总金额',
     jfdzje: '缴费单总金额',
@@ -468,6 +469,11 @@ const zh_lang = {
     jfdsl: '缴费单数量',
     zhye: '账户余额',
     num: 'un',
+    wm_name: '用户名',
+    wm_no:'水表号',
+    water: '用水量',
+    money: '缴费金额',
+    createTime: '查询时间',
   },
   // 功能列表
   func: {
