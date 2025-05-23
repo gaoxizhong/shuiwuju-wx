@@ -113,7 +113,7 @@ van-tab {
 }
 
 .list {
-  flex: 1;
+  height: 100%;
   overflow: hidden;
   padding: 20rpx 0rpx 0rpx 20rpx;
   box-sizing: border-box;

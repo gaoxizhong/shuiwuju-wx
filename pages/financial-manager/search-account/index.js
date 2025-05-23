@@ -51,8 +51,8 @@ Page({
     this.getListData()
   },
   onChange(e) {
+    console.log(e)
     const pay_way = e.detail.name
-    console.log(pay_way)
     this.setData({
       pay_way,
       wm_no: '',

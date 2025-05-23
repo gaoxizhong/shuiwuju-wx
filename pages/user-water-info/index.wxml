@@ -44,36 +44,6 @@
     <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup" wx:if="{{source === 'search-person' || source === 'business-hall'}}">
       {{btnName.pay}}
     </view>
-    <!-- <block wx:if="{{source === 'search-person'}}">
-      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
-        {{btnName.pay}}
-      </view>
-      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
-        {{btnName.printOther}}
-      </view>
-      <view class="btn-item {{status === 'over' ? 'over' : ''}}" bindtap="blueToothPrint">
-        {{btnName.print}}
-      </view>
-    </block>
-    <block wx:if="{{source === 'business-hall'}}">
-      <view wx:if="{{status === 'bank_pay'}}" class="btn-item over" bindtap="showPayPopup">
-        {{btnName.pay}}
-      </view>
-      <view wx:if="{{status === 'print'}}" class="btn-item over" bindtap="businessHallPrint">
-        {{btnName.printOther}}
-      </view>
-      <view wx:if="{{status === 'print_two'}}" class="btn-item over" bindtap="businessHallPrint">
-        {{btnName.printOtherTwo}}
-      </view>
-    </block>
-    <block wx:if="{{source === 'financial-manager'}}">
-      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="1" style="border-right: 1px solid #ebeef5;" bindtap="handleInfoStatus">
-        {{btnName.agree}}
-      </view>
-      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="2" bindtap="handleOpenResult">
-        {{btnName.disagree}}
-      </view>
-    </block> -->
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">

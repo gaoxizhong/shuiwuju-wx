@@ -56,8 +56,8 @@ Page({
     showSewage: false, // 是否污水
     sewage_rate: '', // 选中的值
     optionsSewage: [
+      { text: 'No',value: 0 },
       { text: 'Sim',value: 1 }, 
-      { text: 'No',value: 0 }
     ],
     email:'',
     currentDate: new Date().getTime(),
@@ -113,19 +113,13 @@ Page({
     let area_code = form.area_code;
 
     // 污水
-    let sewage_text = form.sewage_rate;
+    let sewage_rate = form.sewage_rate;
     let optionsSewage = this.data.optionsSewage;
-    if(sewage_text == 80){
-      this.setData({
-        sewage_rate: 1,
-        sewage_rate_value: 'Sim'
-      })
-    }else{
-      this.setData({
-        sewage_rate: 0,
-        sewage_rate_value: 'No'
-      })
-    }
+    this.setData({
+      sewage_rate: sewage_rate ,
+      sewage_rate_value: sewage_rate == 1 ? 'Sim' : 'No',
+      sewage_text: sewage_rate == 1 ? 80 : 0
+    })
     this.setData({
       label: lang.waterInfoEdit,
       langDialog: lang.dialog,
@@ -411,6 +405,7 @@ Page({
       })
     },
     handleSewage(e){
+      console.log(e)
       let text = e.detail.value.text;
       let value = e.detail.value.value;
       this.setData({

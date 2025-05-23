@@ -1,157 +1,115 @@
 <!--pages/financial-manager/index.wxml-->
-
-
 <view class="container search-account">
-  <van-tabs active="{{ pay_way }}" bind:change="onChange">
-    <van-tab title="{{lang.tabs.one}}" name="1">
-      <view class="now">
-        <!-- <view class="now-total">
-          <view class="total total-number">
-            <text>{{lang.totalNumber}}</text>
-            <text class="total-text">{{stas.today_cash_count}}</text>
-          </view>
-          <view class="total total-money">
-            <text>{{lang.totalMoney}}</text>
-            <text class="total-text">{{stas.today_cash_amount}}（KZ）</text>
-          </view>
-        </view> -->
-        <view class="now-content">
-          <view class="search-bar">
-            <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
-              <view class="icon" slot="action">
-                <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
-                <van-icon name="ellipsis" bind:tap="onShowPopup" />
-              </view>
-            </van-search>
-          </view>
-          <view class="search-content {{!list.length ? 'no-data' : ''}}">
-            <van-empty wx:if="{{!list.length}}" image="search" description="{{langIndex.descriptionEmpty}}" />
-            <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
-              <block wx:for="{{list}}" wx:key="order_no">
-                <view class="item" data-index="{{index}}" bindtap="handleDetails">
-                  <view class="item__title">
-                    {{item.wm_name}} {{item.wm_no}}
-                  </view>
-
-                  <view class="item__water">
-                    {{langIndex.water}}：{{( item.reading *10000) / 10000}}
-                  </view>
-
-                  <view class="item__money">
-                    {{langIndex.money}}：{{item.price}}
-                  </view>
-
-                  <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
-                    {{item.status_text}}
-                  </view>
-                </view>
-              </block>
-            </scroll-view>
-            <view class="loading">{{loading}}</view>
-          </view>
+  <view>
+    <van-tabs active="{{ pay_way }}" bind:change="onChange">
+      <van-tab title="{{lang.tabs.one}}" name="1"></van-tab>
+      <van-tab title="{{lang.tabs.two}}" name="2"></van-tab>
+      <van-tab title="{{lang.tabs.three}}" name="3"></van-tab>
+    </van-tabs>
+  </view>
+  <view class="now-content" wx:if="{{pay_way == 1}}">
+    <view class="search-bar">
+      <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+        <view class="icon" slot="action">
+          <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
+          <van-icon name="ellipsis" bind:tap="onShowPopup" />
         </view>
-      </view>
-    </van-tab>
-    <van-tab title="{{lang.tabs.two}}" name="2">
-      <view class="bank">
-        <!-- <view class="now-total">
-          <view class="total total-number">
-            <text>{{lang.totalNumber}}</text>
-            <text class="total-text">{{stas.today_card_count}}</text>
-          </view>
-          <view class="total total-money">
-            <text>{{lang.totalMoney}}</text>
-            <text class="total-text">{{stas.today_card_amount}}（KZ）</text>
-          </view>
-        </view> -->
-        <view class="now-content">
-          <view class="search-bar">
-            <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
-              <view class="icon" slot="action">
-                <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
-                <van-icon name="ellipsis" bind:tap="onShowPopup" />
-              </view>
-            </van-search>
-          </view>
-          <view class="search-content {{!list.length ? 'no-data' : ''}}">
-            <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
-            <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
-              <block wx:for="{{list}}" wx:key="order_no">
-                <view class="item" data-index="{{index}}" bindtap="handleDetails">
-                  <view class="item__title">
-                    {{item.wm_name}} {{item.wm_no}}
-                  </view>
+      </van-search>
+    </view>
+    <view class="search-content {{!list.length ? 'no-data' : ''}}">
+      <van-empty wx:if="{{!list.length}}" image="search" description="{{langIndex.descriptionEmpty}}" />
+      <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+        <block wx:for="{{list}}" wx:key="order_no">
+          <view class="item" data-index="{{index}}" bindtap="handleDetails">
+            <view class="item__title">
+              {{item.wm_name}} {{item.wm_no}}
+            </view>
 
-                  <view class="item__water">
-                    {{langIndex.water}}：{{( item.reading *10000) / 10000}}
-                  </view>
+            <view class="item__water">
+              {{langIndex.water}}：{{( item.reading *10000) / 10000}}
+            </view>
 
-                  <view class="item__money">
-                    {{langIndex.money}}：{{item.price}}
-                  </view>
+            <view class="item__money">
+              {{langIndex.money}}：{{item.price}}
+            </view>
 
-                  <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
-                    {{item.status_text}}
-                  </view>
-                </view>
-              </block>
-            </scroll-view>
-            <view class="loading">{{loading}}</view>
+            <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+              {{item.status_text}}
+            </view>
           </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+  <view class="now-content" wx:if="{{pay_way == 2}}">
+    <view class="search-bar">
+      <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+        <view class="icon" slot="action">
+          <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
+          <van-icon name="ellipsis" bind:tap="onShowPopup" />
         </view>
-      </view>
-    </van-tab>
-    <van-tab title="{{lang.tabs.three}}" name="3">
-      <view class="bank">
-        <!-- <view class="now-total">
-          <view class="total total-number">
-            <text>{{lang.totalNumber}}</text>
-            <text class="total-text">{{stas.today_bank_count}}</text>
-          </view>
-          <view class="total total-money">
-            <text>{{lang.totalMoney}}</text>
-            <text class="total-text">{{stas.today_bank_amount}}（KZ）</text>
-          </view>
-        </view> -->
-        <view class="now-content">
-          <view class="search-bar">
-            <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
-              <view class="icon" slot="action">
-                <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
-                <van-icon name="ellipsis" bind:tap="onShowPopup" />
-              </view>
-            </van-search>
-          </view>
-          <view class="search-content {{!list.length ? 'no-data' : ''}}">
-            <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
-            <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
-              <block wx:for="{{list}}" wx:key="order_no">
-                <view class="item" data-index="{{index}}" bindtap="handleDetails">
-                  <view class="item__title">
-                    {{item.wm_name}} {{item.wm_no}}
-                  </view>
+      </van-search>
+    </view>
+    <view class="search-content {{!list.length ? 'no-data' : ''}}">
+      <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+      <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+        <block wx:for="{{list}}" wx:key="order_no">
+          <view class="item" data-index="{{index}}" bindtap="handleDetails">
+            <view class="item__title">
+              {{item.wm_name}} {{item.wm_no}}
+            </view>
 
-                  <view class="item__water">
-                    {{langIndex.water}}：{{( item.reading *10000) / 10000}}
-                  </view>
+            <view class="item__water">
+              {{langIndex.water}}：{{( item.reading *10000) / 10000}}
+            </view>
 
-                  <view class="item__money">
-                    {{langIndex.money}}：{{item.price}}
-                  </view>
+            <view class="item__money">
+              {{langIndex.money}}：{{item.price}}
+            </view>
 
-                  <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
-                    {{item.status_text}}
-                  </view>
-                </view>
-              </block>
-            </scroll-view>
-            <view class="loading">{{loading}}</view>
+            <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+              {{item.status_text}}
+            </view>
           </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+  <view class="now-content" wx:if="{{pay_way == 3}}">
+    <view class="search-bar">
+      <van-search value="{{ wm_no }}" placeholder="{{langIndex.searchBar}}" bind:change="handleChangeInput" bind:search="handleSearchInfo" use-action-slot>
+        <view class="icon" slot="action">
+          <van-button bind:click="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
+          <van-icon name="ellipsis" bind:tap="onShowPopup" />
         </view>
-      </view>
-    </van-tab>
-    <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
-      <van-picker id="select" show-toolbar  columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
-    </van-popup>
-  </van-tabs>
+      </van-search>
+    </view>
+    <view class="search-content {{!list.length ? 'no-data' : ''}}">
+      <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+      <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
+        <block wx:for="{{list}}" wx:key="order_no">
+          <view class="item" data-index="{{index}}" bindtap="handleDetails">
+            <view class="item__title">
+              {{item.wm_name}} {{item.wm_no}}
+            </view>
+
+            <view class="item__water">
+              {{langIndex.water}}：{{( item.reading *10000) / 10000}}
+            </view>
+
+            <view class="item__money">
+              {{langIndex.money}}：{{item.price}}
+            </view>
+
+            <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+              {{item.status_text}}
+            </view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar  columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
 </view>

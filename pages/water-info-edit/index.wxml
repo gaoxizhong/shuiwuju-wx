@@ -121,7 +121,7 @@
 
   <!-- 污水 弹窗-->
   <van-popup show="{{ showSewage }}" safe-area-tab-bar position="bottom" bind:close="onCloseSewage" round>
-    <van-picker id="sewage" show-toolbar columns="{{ optionsSewage }}" 
+    <van-picker id="sewage" show-toolbar columns="{{ optionsSewage }}"  default-index="{{ sewage_rate }}"
      confirm-button-text="{{langDialog.confirmText}}" 
      cancel-button-text="{{langDialog.cancelText}}" 
      bind:cancel="onCloseSewage" 
