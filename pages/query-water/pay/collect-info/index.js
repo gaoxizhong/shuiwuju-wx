@@ -18,6 +18,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    langVersion: 1,
     lang: lang.pay.collectInfo,
     langDialog: lang.dialog,
     btnName: lang.btnName,
@@ -88,6 +89,12 @@ Page({
       steps: lang.pay.steps,
     })
   },
+  onShow(){
+   const langVersion = wx.getStorageSync('langversion')
+   this.setData({
+    langVersion,  // 1: 葡语、0： 中文
+   })
+  },
   // 采集用户
   handleInputWmNo(e) {
     console.log(e.detail)
@@ -131,7 +138,7 @@ Page({
     
         if (Number(reading) < Number(this.data.selectradio_info.last_reading)) {
           wx.showToast({
-            title: '用水量需要大于等于上一次用水量',
+            title: `${this.data.langVersion == 1?'Leitura do contador ≥ Leitura anterior':'用水量需要大于等于上一次用水量'}`,
             duration: 3000,
             icon: 'none'
           })
@@ -226,19 +233,34 @@ Page({
     const months = this.data.months;
     const imageUrl = waterList[0] ? waterList[0].tempFilePath : '';
     const is_T = this.data.is_T;
-    let flag = true
+    let flag = true;
     if (!wm_no) {
       flag = false
       this.setData({
         wm_no_error: true
       })
     }
-    if (!reading && !is_T) {
-      flag = false
-      this.setData({
-        reading_error: true
-      })
+    if(!is_T){
+      if (!reading) {
+        flag = false
+        this.setData({
+          reading_error: true
+        })
+      }
+      if (Number(reading) < Number(this.data.selectradio_info.last_reading)) {
+        wx.showToast({
+          title: `${this.data.langVersion == 1?'Leitura do contador ≥ Leitura anterior':'用水量需要大于等于上一次用水量'}`,
+          duration: 3000,
+          icon: 'none'
+        })
+        this.setData({
+          reading_error: true
+        })
+        return
+      }
     }
+    
+    
     if (!imageUrl && !is_T) {
       flag = false
       this.setData({
@@ -259,6 +281,7 @@ Page({
       })
       return
     }
+
     // 计算包月 当前用水量 -----  ↓
     if(is_T){
       // 获取价格类型
