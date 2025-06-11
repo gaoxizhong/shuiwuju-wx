@@ -113,12 +113,12 @@ Page({
     let area_code = form.area_code;
 
     // 污水
-    let sewage_rate = form.sewage_rate;
+    let sewage_rate = Number(form.sewage_rate);
     let optionsSewage = this.data.optionsSewage;
     this.setData({
-      sewage_rate: sewage_rate ,
-      sewage_rate_value: sewage_rate == 1 ? 'Sim' : 'No',
-      sewage_text: sewage_rate == 1 ? 80 : 0
+      sewage_rate: sewage_rate > 0 ? 1 : 0,
+      sewage_rate_value: sewage_rate > 0 ? 'Sim' : 'No',
+      sewage_text: sewage_rate > 0 ? 1 : 0,
     })
     this.setData({
       label: lang.waterInfoEdit,
@@ -396,8 +396,17 @@ Page({
     // 有无污水
     onSewage(e){
       this.setData({
-        showSewage: true,
+        sewage_rate: 0,
+        showSewage: false,
       })
+      wx.nextTick(() => {
+        // 回调函数会在当前同步任务完成后执行
+        this.setData({
+          sewage_rate: this.data.sewage_text,
+          showSewage: true,
+        })
+      })
+     
     },
     onCloseSewage() {
       this.setData({
@@ -411,6 +420,7 @@ Page({
       this.setData({
         sewage_rate_value: text,
         sewage_rate: value,
+        sewage_text: value
       })
       this.onCloseSewage();
     },
