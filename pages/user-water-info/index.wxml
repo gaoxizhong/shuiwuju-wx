@@ -41,8 +41,11 @@
     </view>
   </view>
   <view class="btn">
-    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup" wx:if="{{source === 'search-person' || source === 'business-hall'}}">
+    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup" wx:if="{{(source === 'search-person' || source === 'business-hall') && !form.del_admin_id}}">
       {{btnName.pay}}
+    </view>
+    <view class="btn-item {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}" wx:if="{{form.del_admin_id}}">
+      {{btnName.print}}
     </view>
   </view>
   <!-- 缴费 -->

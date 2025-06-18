@@ -50,6 +50,7 @@
   position: relative;
   padding: 20rpx;
   font-size: 28rpx;
+  border-bottom: 1rpx solid rgb(236, 236, 236);
 }
 
 .item__title {

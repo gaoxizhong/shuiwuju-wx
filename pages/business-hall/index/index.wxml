@@ -22,7 +22,7 @@
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="order_no">
-        <view class="item" data-index="{{index}}" bindtap="{{ title_active == 1?'handleDetails':'' }}">
+        <view class="item" data-index="{{index}}" bindtap="handleDetails">
           <view class="item__title">
             {{item.wm_no}} 
           </view>
@@ -41,7 +41,7 @@
             {{lang.createTime}}：{{item.created_at}}
           </view>
 
-          <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
+          <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};" wx:if="{{title_active == 1}}">
             {{item.status_text}}
           </view>
           <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" wx:if="{{item.status == 1 && title_active == 1}}"/>

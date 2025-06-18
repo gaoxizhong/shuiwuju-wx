@@ -18,6 +18,8 @@ import {
 } from './../../apis/business-hall'
 
 const GBK = require('./../../utils/gbk.min')
+//只需要引用encoding.js,注意路径
+var encoding = require("./../../utils/encoding.js")
 Page({
 
   /**
@@ -45,6 +47,8 @@ Page({
       maxHeight: 100,
       minHeight: 100
     },
+    printInfo: '', // 缴费单信息打印内容
+    is_Printreturn: true
   },
 
   /**
