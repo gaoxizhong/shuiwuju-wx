@@ -58,6 +58,7 @@ Page({
     name_error: false,
     operatorNameList: [],
     is_operatorLsPop: false,
+    del_admin_id: ''
   },
 
   /**
@@ -95,6 +96,11 @@ Page({
       pay_way,
       source
     })
+    if(options.del_admin_id){
+      this.setData({
+        del_admin_id: options.del_admin_id
+      })
+    }
     this.getUserPayItemDetail(options.id)
   },
   onShow(){
@@ -464,8 +470,7 @@ Modos de Pagamento
 Método       Moeda       Total
 --------------------------------
 ${that.data.pay_text}   AOA    ${that.data.from.total_money} KZ
---------------------------------
-`,
+--------------------------------`,
       receiptInfo_Saldo: `
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
@@ -475,6 +480,7 @@ Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}
 
+${that.data.del_admin_id?'Foi abolido':''}
 --------------------------------
 *Obrigado e volte sempre!*
 
