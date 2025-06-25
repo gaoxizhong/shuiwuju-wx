@@ -522,7 +522,7 @@ const en_lang = {
       {
         auth: 'R',
         key: '/img/index/business-hall.png',
-        title: 'Nota de Credito',
+        title: 'Pagamentos',
         tabberName: 'Pagamento e recibo',
         color: '#58cab4',
         url: '/pages/business-hall/index/index',
