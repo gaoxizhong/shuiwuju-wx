@@ -131,6 +131,7 @@ const zh_lang = {
     tabs_2: {
       one: '发票',
       two: '缴费单',
+      baojia: '报价'
     },
     tabs_3: {
       one: '缴费记录',
@@ -532,6 +533,13 @@ const zh_lang = {
         title: '缴费单',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
+      },
+      {
+        auth: 'R',
+        key: '/img/index/business-hall.png',
+        title: '其他发票',
+        color: '#58cab4',
+        url: '/pages/query-water/other-invoices/index',
       },
       // {
       //   auth: 'DG',

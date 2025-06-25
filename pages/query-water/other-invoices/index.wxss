@@ -3,11 +3,9 @@
 }
 .search-bar {
   width: 100%;
-  overflow: hidden;
   padding-right: 20rpx;
-  padding-bottom: 20rpx;
-  background: #fff;
   margin-top: 20rpx;
+  background: #fff;
 }
 .dialog-pay-content{
   height: 680rpx;
@@ -50,6 +48,9 @@
   background: #fff;
   padding: 20rpx 0;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .container-tabbox>view.active::before{
     content: '';
@@ -61,7 +62,6 @@
     position: absolute;
     width: 40px;
     transform: translateX(-50%);
-    transition: 0.3s;
 }
 .search-content {
   border-radius: 10rpx;

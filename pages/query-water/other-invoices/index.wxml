@@ -1,5 +1,7 @@
 <view class="container-tabbox">
   <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_2.one}}</view>
+  <view class="{{ title_active == 3? 'active' : '' }}" data-index="3" bind:tap="onTabChange">{{lang.tabs_2.baojia}}</view>
+  
   <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_2.two}}</view>
 </view>
 <view class="search-bar">
@@ -10,7 +12,7 @@
   </van-search>
 </view>
 <!-- 开发票 -->
-<view class="container search-pay" wx:if="{{ title_active == 1 }}">
+<view class="container search-pay" wx:if="{{ title_active == 1 || title_active == 3 }}">
   <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
 
   <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_name}}" model:value="{{ selectradio_info.wm_name }}" readonly placeholder="{{lang.wm_name}}" />

@@ -133,6 +133,7 @@ const en_lang = {
     tabs_2: {
       one: 'Factura',
       two: 'Factura Simplificada',
+      baojia: 'Factura pro-forma'
     },
     tabs_3: {
       one: 'Nota de debito',
@@ -538,9 +539,17 @@ const en_lang = {
       {
         auth: 'GC',
         key: '/img/index/search.png',
-        title: 'Nota de debito',
+        title: 'Recibo',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
+      },
+      {
+        auth: 'R',
+        key: '/img/index/business-hall.png',
+        title: 'Faturação',
+        tabberName: 'Faturação',
+        color: '#58cab4',
+        url: '/pages/query-water/other-invoices/index',
       },
       // {
       //   auth: 'DG',

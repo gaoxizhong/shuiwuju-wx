@@ -230,28 +230,28 @@ Page({
       select_value: value,
     })
   },
-  // 失焦赋值
-  handleReading(e) {
-    console.log(e)
-    const select_value = e.detail.value;
-    this.setData({
-      select_value,
-      type_seach: 'type'
-    })
-  },
-  // 搜索按钮
-  handleSearchInfo() {
-    this.setData({
-      page: 1,
-      list: [],
-      isScroll: true,
-      loading: '',
-      radioList: [],
-      selectradio_info: null,
-      radio: '',
-    })
-    this.getlist();
-  },
+
+//搜索 失焦赋值 
+handlesearchReading(e) {
+  const select_value = e.detail.value;
+  this.setData({
+    select_value,
+    type_seach: 'type'
+  })
+},
+// 搜索按钮
+handleSearchInfo() {
+  this.setData({
+    page: 1,
+    list: [],
+    isScroll: true,
+    loading: '',
+    radioList: [],
+    selectradio_info: null,
+    radio: '',
+  })
+  this.getlist();
+},
   // 获取用户列表
   getlist(){
     let that = this;
