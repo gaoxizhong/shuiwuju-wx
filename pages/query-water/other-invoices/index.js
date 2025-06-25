@@ -59,7 +59,10 @@ Page({
     demandNoteList: [],// 收费项目订单列表
     page_demandNote: 1,
     isScroll: true,
-    total: 0
+    total: 0,
+    factura_title_active: 1,
+    page_proForm: 1,
+    proFormList: [],// 形式发票记录列表
   },
 
   /**
@@ -87,6 +90,7 @@ Page({
       btnName: lang.btnName,
     })
   },
+  // 页面tab
   onTabChange(e){
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
@@ -98,10 +102,25 @@ Page({
       title_active,
       page_demandNote: 1,
       demandNoteList: [],// 收费项目订单列表
+      page_proForm: 1,
+      proFormList: [],// 形式发票记录列表
     })
     if(title_active == 2){
       // 收费项目列表
       this.getDemandNoteList();
+    }
+  },
+  // 形式发票
+  facturaTabChange(e){
+    let factura_title_active = Number(e.currentTarget.dataset.index)
+    this.setData({
+      factura_title_active,
+      page_proForm: 1,
+      proFormList: [],// 形式发票记录列表
+    })
+    if(factura_title_active == 2){
+      // 形式发票记录列表
+      // this.getDemandNoteList();
     }
   },
   // 转二进制 并数组复制

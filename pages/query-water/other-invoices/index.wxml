@@ -12,25 +12,33 @@
   </van-search>
 </view>
 <!-- 开发票 -->
-<view class="container search-pay" wx:if="{{ title_active == 1 || title_active == 3 }}">
-  <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
-
-  <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_name}}" model:value="{{ selectradio_info.wm_name }}" readonly placeholder="{{lang.wm_name}}" />
-
-  <view class="add-box">
-    <view class="add-title">{{lang.location}}</view>
-    <view class="add-label {{selectradio_info.area2?'':'placeholder'}}" >{{selectradio_info.area2?selectradio_info.area2:lang.location}} {{selectradio_info.wm_address}} {{selectradio_info.area_code}} {{selectradio_info.house_number}}</view>
+<view class="search-pay search-content" wx:if="{{ title_active == 1 || title_active == 3 }}">
+  <view class="container-tabbox" wx:if="{{title_active == 3 }}">
+    <view class="{{ factura_title_active == 1? 'active' : '' }}" data-index="1" bind:tap="facturaTabChange">{{lang.tabs_2.one}}</view>
+    <view class="{{ factura_title_active == 2? 'active' : '' }}" data-index="2" bind:tap="facturaTabChange">{{lang.tabs_2.two}}</view>
   </view>
 
-  <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.parent_type}}" value="{{ typeLabel_1 }}" error="{{parent_type_error}}" placeholder="{{lang.selecione}}" bind:click-input="onType1Open" />
+  <view wx:if="{{ factura_title_active == 1}}">
+    <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
 
-  <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly="{{seltTypeInfo.id != 15?true:false}}" label="{{ lang.parent_price + '（KZ）' }}" placeholder="{{lang.parent_price}}" error="{{amount_error}}" model:value="{{ amount }}" wx:if="{{ showCheck }}" />
+    <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_name}}" model:value="{{ selectradio_info.wm_name }}" readonly placeholder="{{lang.wm_name}}" />
 
-  <view class="btn">
-    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPrint" >
-      {{btnName.cadastrar}}
+    <view class="add-box">
+      <view class="add-title">{{lang.location}}</view>
+      <view class="add-label {{selectradio_info.area2?'':'placeholder'}}" >{{selectradio_info.area2?selectradio_info.area2:lang.location}} {{selectradio_info.wm_address}} {{selectradio_info.area_code}} {{selectradio_info.house_number}}</view>
+    </view>
+
+    <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.parent_type}}" value="{{ typeLabel_1 }}" error="{{parent_type_error}}" placeholder="{{lang.selecione}}" bind:click-input="onType1Open" />
+
+    <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly="{{seltTypeInfo.id != 15?true:false}}" label="{{ lang.parent_price + '（KZ）' }}" placeholder="{{lang.parent_price}}" error="{{amount_error}}" model:value="{{ amount }}" wx:if="{{ showCheck }}" />
+
+    <view class="btn">
+      <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="clickPrint" >
+        {{btnName.cadastrar}}
+      </view>
     </view>
   </view>
+
 </view>
 
 <!-- 缴费列表 -->
