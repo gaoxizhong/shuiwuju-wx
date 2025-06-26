@@ -9,6 +9,7 @@
     "pages/query-water/pay/collect-info/index",
     "pages/query-water/today-summary/index",
     "pages/query-water/report-repair/index",
+    "pages/query-water/account-status/index",
     "pages/maintenance/maintenance/index",
     "pages/business-hall/index/index",
     "pages/business-hall/historical/index",

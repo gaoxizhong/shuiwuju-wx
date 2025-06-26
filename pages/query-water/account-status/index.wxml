@@ -1,0 +1,55 @@
+<view class="index">
+  <view class="search-bar">
+      <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.searchBar}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+        <view class="icon"  slot="action">
+          <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+        </view>
+      </van-search>
+    </view>
+  <view class="search-content {{!list.length ? 'no-data' : ''}}">
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="wixi-list" lower-threshold="50" bindscrolltolower="addListData">
+      <block wx:for="{{list}}" wx:key="index">
+        <view class="wixi-item">
+          <view class="wixi-item_title">
+            <view class="view-box">
+              <text class="text-t">{{item.wm_no}}</text>
+              <!-- <image src="/img/vol-icon-xg.png" mode="widthFix" class="text-x" wx:if="{{ is_GC }}" data-item="{{item}}" bindtap="goToEdit"/> -->
+            </view>
+          </view>
+          <view>
+            <view class="wixi-item_i">
+              <!-- <view class="wixi-item_i_label"> {{lang.wm_name}}： </view> -->
+              <view class="wixi-item_i_content"> {{ item.wm_name }} </view>
+            </view>
+
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_label">
+                {{lang.createTime}}：
+              </view>
+              <view class="wixi-item_i_content">
+                {{item.created_at}}
+              </view>
+            </view>
+            <view class="wixi-item_i" style="display: flex;align-items: center;justify-content: space-between;padding-right: 20rpx;padding-top: 20rpx;">
+              <view style="flex: 1;display: flex;align-items: center;"></view>
+              <view style="font-weight: 600;color: #fff;background-color: #1989fa;padding: 10rpx 26rpx;font-size: 24rpx;border-radius: 30rpx;" data-item="{{item}}" bind:tap="clickXgStatus">{{btnName.updateName}}</view>
+            </view>
+          </view>
+          <view class="wixi-item__status" style="color:#ee0a24;">
+            {{lang.use_activo}}
+          </view>
+
+        </view>
+      </block>
+    </scroll-view>
+    <!-- <view class="loading">{{loading}}</view> -->
+  </view>
+
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round >
+    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
+
+  
+
+</view>

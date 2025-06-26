@@ -124,6 +124,11 @@ const zh_lang = {
     location: '地址',
     parent_type:'种类',
     parent_price: '价格',
+    conversion: '一键转换',
+    use_status: '用户状态',
+    use_activo: '正常',
+    use_suspenso: '暂停',
+    use_desligado: '关闭',
     tabs_1: {
       one: '用户',
       two: '管理员',
@@ -131,7 +136,8 @@ const zh_lang = {
     tabs_2: {
       one: '发票',
       two: '缴费单',
-      baojia: '报价'
+      baojia: '报价',
+      tab_jl: '记录'
     },
     tabs_3: {
       one: '缴费记录',
@@ -533,6 +539,13 @@ const zh_lang = {
         title: '缴费单',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
+      },
+      {
+        auth: 'L',
+        key: '/img/index/add-account.png',
+        title: '用户状态',
+        color: '#6cbcfc',
+        url: '/pages/query-water/account-status/index'
       },
       {
         auth: 'R',

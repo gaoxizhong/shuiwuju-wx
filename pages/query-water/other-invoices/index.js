@@ -63,6 +63,7 @@ Page({
     factura_title_active: 1,
     page_proForm: 1,
     proFormList: [],// 形式发票记录列表
+    is_zhuanhuan: false,
   },
 
   /**
@@ -95,32 +96,37 @@ Page({
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
       select_value:'',
+      factura_title_active: 1,
       page: 1,
       radioList: [],
       selectTypeIndex: 0,
       selectradio_info: null,
+      seltTypeInfo: {},
       title_active,
       page_demandNote: 1,
       demandNoteList: [],// 收费项目订单列表
       page_proForm: 1,
       proFormList: [],// 形式发票记录列表
+      is_zhuanhuan: false, // 是否点击转换按钮
     })
     if(title_active == 2){
       // 收费项目列表
       this.getDemandNoteList();
     }
   },
-  // 形式发票
+  // 形式发票 Tab
   facturaTabChange(e){
     let factura_title_active = Number(e.currentTarget.dataset.index)
     this.setData({
       factura_title_active,
       page_proForm: 1,
       proFormList: [],// 形式发票记录列表
+      seltTypeInfo: {},
+      is_zhuanhuan: false, // 是否点击转换按钮
     })
     if(factura_title_active == 2){
       // 形式发票记录列表
-      // this.getDemandNoteList();
+      this.getDemandNoteList();
     }
   },
   // 转二进制 并数组复制
@@ -349,21 +355,6 @@ handleSearchInfo() {
     })
   },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   // 关闭选择用户弹窗
   onClose_dialog(){
     if(!this.data.radio){
@@ -427,7 +418,7 @@ handleSearchInfo() {
     })
     this.onCloseType1Select();
   },
-
+  // 点击发票打印
   clickPrint(){
     let selectradio_info = this.data.selectradio_info;
     let seltTypeInfo = this.data.seltTypeInfo;
@@ -450,10 +441,18 @@ handleSearchInfo() {
       })
       return
     }
+    this.getPrint(selectradio_info,amount);
+  },
+  getPrint(info,am){
     // 获取打印信息
-
+    let selectradio_info = info;
+    let amount = am;
     let date = this.handleTimeValue();
     this.setData({
+      proForm_title: `
+Factura-proforma
+
+`,
       invoiceInfo_title: `EPASKS-E.P.`,
       invoiceInfo_title_1: `
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
@@ -475,7 +474,7 @@ Endereco detalhado: ${selectradio_info.wm_address}
 N° da Porta: ${selectradio_info.house_number}
 Giro: ${selectradio_info.area_code}
 
-Espécies: ${seltTypeInfo.text}
+Espécies: ${this.data.seltTypeInfo.text}
 Montante: ${fmoney(amount,2)} KZ
 
       `,
@@ -490,7 +489,6 @@ ${date.time}
     })
     this.blueToothPrint();
   },
-
   // 蓝牙设备打印
   blueToothPrint() {
     const connectStorage = wx.getStorageSync('connectDevice')
@@ -535,20 +533,44 @@ ${date.time}
   handlePrint(p) {
     let that = this;
     let print_type = that.data.print_type;
+    let title_active = this.data.title_active;
+    let is_zhuanhuan = this.data.is_zhuanhuan;
     // GBK.encode({string}) 解码GBK为一个字节数组
-    let info = [
-      ...blueToolth.printCommand.clear,
-      ...blueToolth.printCommand.center,
-      ...blueToolth.printCommand.ct,
-      ...that.arrEncoderCopy(that.data.invoiceInfo_title),
-      ...blueToolth.printCommand.ct_zc,
-      ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
-      ...blueToolth.printCommand.left,
-      ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
-      ...blueToolth.printCommand.center,
-      ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
-      ...blueToolth.printCommand.enter
-    ]
+    let info = [];
+    if(title_active == 1 || is_zhuanhuan){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+    if(title_active == 3 && !is_zhuanhuan){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.proForm_title), // 形式发票抬头
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+    
     console.log('开始打印，api传信息...')
     blueToolth.writeBLECharacteristicValue({
       ...p,
@@ -560,10 +582,9 @@ ${date.time}
           icon: "none",
           duration: 3000,
         })
-        that.setData({
-          pay_success: false,
-        })
-        that.createPayDemandNote();
+        if(title_active == 1 || is_zhuanhuan){
+          that.createPayDemandNote();
+        }
       },
       onFail(res){
         console.log('打印失败...')
@@ -617,5 +638,20 @@ ${date.time}
         title: lang.message.info,
       })
     })
+  },
+  // 点击形式发票一键转换
+  clickconversion(e){
+    let item = e.currentTarget.dataset.item;
+    let selectradio_info = item.water_meter;
+    let amount = item.total_money;
+    this.setData({
+      is_zhuanhuan: true, // 是否点击转换按钮
+      seltTypeInfo: {
+        id: item.price_list_id,
+        amount: item.total_money,
+        text: item.price_name
+      }
+    })
+    this.getPrint(selectradio_info,amount);
   },
 })

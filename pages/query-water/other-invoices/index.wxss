@@ -75,13 +75,13 @@
 .search-content .list {
   flex: 1;
   overflow: hidden;
-  padding: 20rpx 0rpx 0rpx 20rpx;
   box-sizing: border-box;
 }
 .search-content .list .item {
   position: relative;
-  padding: 20rpx;
+  padding: 20rpx 20rpx 20rpx 40rpx;
   font-size: 28rpx;
+  border-bottom: 1rpx solid #f1f1f1;
 }
 .search-content .list .item__title {
   font-weight: 600;
@@ -97,4 +97,19 @@
   width: max-content;
   font-size: 24rpx;
   font-weight: 600;
+}
+.item__status__btn{
+  width: auto;
+  width: max-content;
+  font-weight: 600;
+  color: #fff;
+  background-color: #1989fa;
+  padding: 6rpx 26rpx;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+}
+.tabbox2{
+  padding-bottom: 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ebedf0;
 }

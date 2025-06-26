@@ -126,6 +126,11 @@ const en_lang = {
     location: 'Localidade',
     parent_type:'Espécies',
     parent_price: 'Valor a pagar',
+    conversion: 'Transformação',
+    use_status: 'Situação do cliente',
+    use_activo: 'Activo',
+    use_suspenso: 'Suspenso',
+    use_desligado: 'Desligado',
     tabs_1: {
       one: 'Facturação',
       two: 'Pagamento',
@@ -133,7 +138,8 @@ const en_lang = {
     tabs_2: {
       one: 'Factura',
       two: 'Factura Simplificada',
-      baojia: 'Factura pro-forma'
+      baojia: 'Factura pro-forma',
+      tab_jl: 'Registos'
     },
     tabs_3: {
       one: 'Nota de debito',
@@ -542,6 +548,13 @@ const en_lang = {
         title: 'Recibo',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
+      },
+      {
+        auth: 'L',
+        key: '/img/index/add-account.png',
+        title: 'Situação do cliente',
+        color: '#6cbcfc',
+        url: '/pages/query-water/account-status/index'
       },
       {
         auth: 'R',

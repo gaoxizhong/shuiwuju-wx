@@ -13,9 +13,9 @@
 </view>
 <!-- 开发票 -->
 <view class="search-pay search-content" wx:if="{{ title_active == 1 || title_active == 3 }}">
-  <view class="container-tabbox" wx:if="{{title_active == 3 }}">
+  <view class="container-tabbox tabbox2" wx:if="{{title_active == 3 }}">
     <view class="{{ factura_title_active == 1? 'active' : '' }}" data-index="1" bind:tap="facturaTabChange">{{lang.tabs_2.one}}</view>
-    <view class="{{ factura_title_active == 2? 'active' : '' }}" data-index="2" bind:tap="facturaTabChange">{{lang.tabs_2.two}}</view>
+    <view class="{{ factura_title_active == 2? 'active' : '' }}" data-index="2" bind:tap="facturaTabChange">{{lang.tabs_2.tab_jl}}</view>
   </view>
 
   <view wx:if="{{ factura_title_active == 1}}">
@@ -38,7 +38,32 @@
       </view>
     </view>
   </view>
-
+  <view style="display: flex;flex-direction: column;flex: 1;overflow: hidden;" wx:if="{{ factura_title_active == 2}}">
+    <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
+      <block wx:for="{{demandNoteList}}" wx:key="{{index}}">
+        <view class="item" data-item="{{item}}">
+          <view style="width: 100%;display: flex;align-items: center;justify-content: space-between;padding-bottom: 20rpx;">
+            <view class="item__title" style="flex: 1;padding: 0;"> {{item.water_meter.wm_no}} </view>
+            <view class="item__status__btn" data-item="{{item}}" bind:tap="clickconversion">{{lang.conversion}}</view>
+          </view>
+          <view class="item__money">
+            {{lang.wm_name}}：{{item.water_meter.wm_name}}
+          </view>
+          <view class="item__water">
+            {{lang.parent_type}}：{{ item.price_name }}
+          </view>
+          <view class="item__money">
+            {{lang.money}}：{{item.total_money}} (KZ)
+          </view>
+          <view class="item__money">
+            {{lang.createTime}}：{{item.created_at}}
+          </view>
+         
+        </view>
+      </block>
+    </scroll-view>
+  </view>
 </view>
 
 <!-- 缴费列表 -->
