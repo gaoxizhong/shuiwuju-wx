@@ -582,10 +582,9 @@ ${date.time}
           icon: "none",
           duration: 3000,
         })
-        // if(title_active == 1 || is_zhuanhuan){
-        //   that.createPayDemandNote();
-        // }
-        that.createPayDemandNote();
+        if(title_active == 1){
+          that.createPayDemandNote();
+        }
       },
       onFail(res){
         console.log('打印失败...')
