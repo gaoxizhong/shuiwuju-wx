@@ -36,12 +36,7 @@ Page({
 
     type_seach: 'type', // type - - 选类型  seach 输入
     select_value:'', // 查询内容
-    statusList: [
-      {id: 1,text: 'Dados do contador'},
-      {id: 2,text: 'Nome de usuário'},
-      {id: 3,text: 'Endereço detalhado'},
-      {id: 4,text: 'Nº de Porta'}
-    ],
+    searchStatusList: [],
     is_L: false,
     is_R: false,
     is_GC: false,
@@ -76,8 +71,6 @@ Page({
         is_R: true // 收银员
       })
     }
-    // app.watchBillStatus(_this.getStatusList)
-    // this.getStatusList(app.globalData.billStatus)
     this.setData({
       lang: lang.index, // 语言
       langDialog: lang.dialog,
@@ -94,18 +87,16 @@ Page({
      })
   },
   onShow() {
+    lang = app.globalData.lang
+    this.setData({
+      lang: lang.index, // 语言
+      langDialog: lang.dialog,
+      btnName: lang.btnName,
+      searchStatusList: lang.searchStatusList, 
+    })
     this.handleSearchInfo();
   },
-  getStatusList(values) {
-    const statusList = Object.keys(values).map(i => ({
-      key: i,
-      text: values[i]
-    }))
-    statusList.unshift(lang.allOptions)
-    this.setData({
-      statusList
-    })
-  },
+
   onShowPopup() {
     const select = this.selectComponent('#select')
     select && select.setColumnIndex(0, this.data.selectIndex)

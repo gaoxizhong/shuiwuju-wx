@@ -47,12 +47,7 @@ Page({
     selectIndex: 0,
     type_show: false,
     list: [],
-    statusList: [
-      {id: 1,text: 'Dados do contador'}, // 水表号
-      {id: 2,text: 'Nome de usuário'},  // 用户名
-      {id: 3,text: 'Endereço detalhado'}, // 用户地址
-      {id: 4,text: 'Nº de Porta'}  // 门牌号
-    ],
+    searchStatusList: [],
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
     select_value:'', // 查询内容
     payWayList: [],
@@ -90,6 +85,16 @@ Page({
       langMessage: lang.message,
       langDialog: lang.dialog,
       btnName: lang.btnName,
+    })
+  },
+  onShow(){
+    lang = app.globalData.lang
+    this.setData({
+      lang: lang.reportRepair,
+      langMessage: lang.message,
+      langDialog: lang.dialog,
+      btnName: lang.btnName,
+      searchStatusList: lang.searchStatusList, 
     })
   },
   handleChangeInput(e) {

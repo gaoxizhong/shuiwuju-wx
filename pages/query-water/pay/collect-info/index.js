@@ -47,12 +47,7 @@ Page({
     selectIndex: 0,
     show: false,
     list: [],
-    statusList: [
-      {id: 1,text: 'Dados do contador'}, // 水表号
-      {id: 2,text: 'Nome de usuário'},  // 用户名
-      {id: 3,text: 'Endereço detalhado'}, // 用户地址
-      {id: 4,text: 'Nº de Porta'}  // 门牌号
-    ],
+    searchStatusList: [],
     type_seach: 'type', // type - - 选类型  seach 输入
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
     select_value:'', // 查询内容
@@ -90,9 +85,13 @@ Page({
     })
   },
   onShow(){
-   const langVersion = wx.getStorageSync('langversion')
+   const langVersion = wx.getStorageSync('langversion');
+   lang = app.globalData.lang;
    this.setData({
     langVersion,  // 1: 葡语、0： 中文
+    lang: lang.pay.collectInfo,
+    btnName: lang.btnName,
+    searchStatusList: lang.searchStatusList, 
    })
   },
   // 采集用户

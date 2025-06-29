@@ -70,5 +70,5 @@
 
 </view>
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
-  <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
+  <van-picker id="Type_select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
 </van-popup>

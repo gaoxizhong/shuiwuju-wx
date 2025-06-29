@@ -1,24 +1,22 @@
 <view class="container-tabbox">
   <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_2.one}}</view>
+  <view class="{{ title_active == 4? 'active' : '' }}" data-index="4" bind:tap="onTabChange">{{lang.tabs_2.tab_yjf}}</view>
+</view>
+<view class="container-tabbox">
   <view class="{{ title_active == 3? 'active' : '' }}" data-index="3" bind:tap="onTabChange">{{lang.tabs_2.baojia}}</view>
-  
   <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_2.two}}</view>
 </view>
 <view class="search-bar">
-  <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+  <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"  use-action-slot>
     <view class="icon"  slot="action">
       <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+      <van-icon name="ellipsis" catchtap="onShowPopup" wx:if="{{title_active == 2}}"/>
     </view>
   </van-search>
 </view>
 <!-- 开发票 -->
 <view class="search-pay search-content" wx:if="{{ title_active == 1 || title_active == 3 }}">
-  <view class="container-tabbox tabbox2" wx:if="{{title_active == 3 }}">
-    <view class="{{ factura_title_active == 1? 'active' : '' }}" data-index="1" bind:tap="facturaTabChange">{{lang.tabs_2.one}}</view>
-    <view class="{{ factura_title_active == 2? 'active' : '' }}" data-index="2" bind:tap="facturaTabChange">{{lang.tabs_2.tab_jl}}</view>
-  </view>
-
-  <view wx:if="{{ factura_title_active == 1}}">
+  <view>
     <van-field custom-style="flex-direction: column;" title-width="100%" required error="{{wm_no_error}}" label="{{lang.wm_no}}" model:value="{{ selectradio_info.wm_no }}" readonly placeholder="{{lang.wm_no}}" />
 
     <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.wm_name}}" model:value="{{ selectradio_info.wm_name }}" readonly placeholder="{{lang.wm_name}}" />
@@ -38,40 +36,14 @@
       </view>
     </view>
   </view>
-  <view style="display: flex;flex-direction: column;flex: 1;overflow: hidden;" wx:if="{{ factura_title_active == 2}}">
-    <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
-    <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
-      <block wx:for="{{demandNoteList}}" wx:key="{{index}}">
-        <view class="item" data-item="{{item}}">
-          <view style="width: 100%;display: flex;align-items: center;justify-content: space-between;padding-bottom: 20rpx;">
-            <view class="item__title" style="flex: 1;padding: 0;"> {{item.water_meter.wm_no}} </view>
-            <view class="item__status__btn" data-item="{{item}}" bind:tap="clickconversion">{{lang.conversion}}</view>
-          </view>
-          <view class="item__money">
-            {{lang.wm_name}}：{{item.water_meter.wm_name}}
-          </view>
-          <view class="item__water">
-            {{lang.parent_type}}：{{ item.price_name }}
-          </view>
-          <view class="item__money">
-            {{lang.money}}：{{item.total_money}} (KZ)
-          </view>
-          <view class="item__money">
-            {{lang.createTime}}：{{item.created_at}}
-          </view>
-         
-        </view>
-      </block>
-    </scroll-view>
-  </view>
 </view>
 
 <!-- 缴费列表 -->
 <view class="search-pay search-content" wx:if="{{ title_active == 2 }}">
   <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
   <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
-    <block wx:for="{{demandNoteList}}" wx:key="{{index}}">
-      <view class="item" data-item="{{item}}" bindtap="handleDetails">
+    <block wx:for="{{demandNoteList}}" wx:key="index">
+      <view class="item" data-item="{{item}}" bindtap="{{item.type == 1?'handleDetails': ''}}">
         <view class="item__title">
           {{item.water_meter.wm_no}} 
         </view>
@@ -85,7 +57,15 @@
           {{lang.money}}：{{item.total_money}} (KZ)
         </view>
         <view class="item__money">
+          {{lang.facturaType}}：
+          <text style="color: #ff0000;" wx:if="{{item.type == 1}}">{{lang.tabs_2.one}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.type == 2}}">{{lang.tabs_2.baojia}}</text>
+        </view>
+        <view class="item__money">
           {{lang.createTime}}：{{item.created_at}}
+        </view>
+        <view class="item__money" style="margin-top: 10rpx; display: flex;align-items: center;justify-content: flex-end;" wx:if="{{item.type == 2}}">
+          <view class="item__status__btn" data-item="{{item}}" bind:tap="clickconversion">{{lang.conversion}}</view>
         </view>
         <view class="item__status" style="color: {{item.pay_status === 0 ? 'red' : 'green'}};">
           {{ item.pay_status === 0 ? 'A pagar' : 'Confirmado' }}
@@ -94,11 +74,41 @@
     </block>
     </scroll-view>
 </view>
+<!-- 预交费 -->
+<view class="search-pay search-content" wx:if="{{ title_active == 4 }}">
+  <view style="display: flex;flex-direction: column;flex: 1;overflow: hidden;">
+    <van-empty wx:if="{{!yjfwmList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
+      <block wx:for="{{yjfwmList}}" wx:key="index">
+        <view class="wixi-item" data-item="{{item}}" catch:tap="clickItem">
+          <view class="wixi-item_title">
+            <view class="view-box">
+              <text class="text-t">{{item.wm_no}}</text>
+            </view>
+          </view>
+          <view>
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_content"> {{ item.wm_name }} </view>
+            </view>
 
+            <view class="wixi-item_i">
+              <view class="wixi-item_i_label">
+                {{lang.createTime}}：
+              </view>
+              <view class="wixi-item_i_content">
+                {{item.created_at}}
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>
 
 <!-- 搜索前类型选择 弹窗 -->
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
-  <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
+  <van-picker id="Type_select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
 </van-popup>
 
   <!-- 选择信息弹窗 -->
@@ -121,4 +131,9 @@
   <!-- 打印发票的种类弹窗 -->
   <van-popup show="{{ show_1 }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
     <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns_1 }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
+  </van-popup>
+
+
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
+    <van-picker id="select" show-toolbar columns="{{ typeStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
   </van-popup>

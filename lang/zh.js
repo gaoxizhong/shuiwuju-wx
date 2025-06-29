@@ -97,6 +97,26 @@ const zh_lang = {
     cancelText: '取消',
     confirmText: '确认',
   },
+  // 搜索类型
+  searchStatusList: [
+    {id: 1,text: '水表号'},
+    {id: 2,text: '用户名'},
+    {id: 3,text: '详细的地址'},
+    {id: 4,text: '门牌号'},
+    // {id: 5,text: '一公里范围内'}
+  ],
+  // 其他类发票记录类型
+  typeStatusList: [
+    {id: 1,text: '全部'},
+    {id: 2,text: '正常发票'},
+    {id: 3,text: '形式发票'},
+  ],
+  // 用户状态
+  userStatusList: [
+    {"text":"正常","key":1},
+    {"text":"暂停","key":2},
+    {"text":"关闭","key":3}
+  ],
   // 首页
   index: {
     lang: '语言',
@@ -129,6 +149,7 @@ const zh_lang = {
     use_activo: '正常',
     use_suspenso: '暂停',
     use_desligado: '关闭',
+    facturaType: '类型',
     tabs_1: {
       one: '用户',
       two: '管理员',
@@ -137,7 +158,8 @@ const zh_lang = {
       one: '发票',
       two: '缴费单',
       baojia: '报价',
-      tab_jl: '记录'
+      tab_jl: '记录',
+      tab_yjf: '预交费',
     },
     tabs_3: {
       one: '缴费记录',
@@ -303,7 +325,8 @@ const zh_lang = {
       systemPlaceholder: '系统自动带出',
       btnName: "搜索",
       noData: "暂无数据",
-      look: "查看附近用户"
+      look: "查看附近用户",
+      zjsc: '最近三次记录'
     }
   },
   // 今日收费

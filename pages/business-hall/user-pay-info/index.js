@@ -81,6 +81,7 @@ Page({
       invoice_code,
       pay_time,
       discount_money,
+      operator_name,
       source, // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     } = options;
     this.setData({
@@ -94,7 +95,8 @@ Page({
       },
       invoice_code,
       pay_way,
-      source
+      source,
+      operator_name,
     })
     if(options.del_admin_id){
       this.setData({
@@ -189,11 +191,11 @@ Page({
     that.setData({
       print_type: 'receiptInfo'
     })
-    this.setData({
-      password_layer: true
-    })
-    return
-    // that.getUserBluetoolthInfoData(that.blueToothPrint);
+    // this.setData({
+    //   password_layer: true
+    // })
+    // return
+    that.getUserBluetoolthInfoData(that.blueToothPrint);
   },
   clickoperatorName(e) {
     this.setData({

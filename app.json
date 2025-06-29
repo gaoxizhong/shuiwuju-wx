@@ -22,6 +22,7 @@
     "pages/admin/bluetooth/index",
     "pages/query-water/pay/confirm-info/index",
     "pages/query-water/pay/print-info/index",
+    "pages/query-water/adiantamento-water/index",
     "pages/user-water-info/index",
     "pages/user-total-info/index",
     "pages/maintenance/maintenance-info/index",

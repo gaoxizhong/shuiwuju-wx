@@ -1,0 +1,47 @@
+<!--pages/query-water/pay/confirm-info/index.wxml-->
+<view class="container confirm-info">
+  <view class="confirm-info__content">
+    <view class="info">
+      <view class="info-label">
+        {{lang.title}}
+      </view>
+      <view class="info-content">
+        <view class="info-item">
+          <view class="info-item__label">{{lang.wm_no}}</view>
+          <view class="info-item__info">{{form.wm_no}}</view>
+        </view>
+        <view class="info-item" style="padding-top: 0;">
+          <!-- <view class="info-item__label">{{lang.wm_name}}</view> -->
+          <view>{{form.wm_name}}</view>
+        </view>
+        <!-- 前三次抄表记录 -->
+        <view style="padding: 30rpx 0 30rpx 30rpx;">{{lang.zjsc}}:</view>
+        <view class="loglist-box">
+            <view class="loglist-title-box">
+                <view>Data</view>
+                <view>m³</view>
+            </view>
+            <view style="min-height: 100rpx;">
+                <view class="loglist-item-box" wx:for="{{userBluetoolthInfoData.user_payment}}" wx:key="index">
+                    <view>{{item.check_date}}</view>
+                    <view>{{item.reading}}</view>
+                </view>
+                <view style="padding: 20rpx;text-align: center;" wx:if="{{userBluetoolthInfoData.user_payment.length <= 0}}">{{lang.noData}}</view>
+            </view>
+            
+        </view>
+        <!-- 本次读数 -->
+        <van-field custom-style="flex-direction: column;" title-width="100%" bind:blur="handleReading" data-type="reading" bind:change="handleInputReading" required label="{{lang.reading}}" error="{{reading_error}}" value="{{ reading }}" placeholder="{{lang.placeholder}}" />
+        <!-- 用水量 -->
+        <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_water}}" value="{{ total_water }}" placeholder="{{lang.systemPlaceholder}}"/>
+        <!-- 应缴金额 -->
+        <van-field readonly custom-style="flex-direction: column;" title-width="100%" label="{{lang.total_money}}" value="{{ total_money }}" placeholder="{{lang.systemPlaceholder}}" />
+      </view>
+    </view>
+    <view class="btn">
+      <view class="btn-item" bindtap="next">
+        {{btnName.submitName}}
+      </view>
+    </view>
+  </view>
+</view>

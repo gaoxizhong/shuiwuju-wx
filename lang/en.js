@@ -99,6 +99,26 @@ const en_lang = {
     cancelText: 'No',
     confirmText: 'Ok',
   },
+  // 搜索类型
+  searchStatusList: [
+    {id: 1,text: 'Dados do contador'},
+    {id: 2,text: 'Nome de usuário'},
+    {id: 3,text: 'Endereço detalhado'},
+    {id: 4,text: 'Nº de Porta'},
+    // {id: 5,text: 'Dentro de um quilômetro'}
+  ],
+  // 其他类发票记录类型
+  typeStatusList: [
+    {id: 1,text: 'Utilizador'},
+    {id: 2,text: 'Factura'},
+    {id: 3,text: 'Factura pro-forma'},
+  ],
+  // 用户状态
+  userStatusList: [
+    {"text":"Activo","key":1},
+    {"text":"Suspenso","key":2},
+    {"text":"Desligado","key":3}
+  ],
   // 首页
   index: {
     lang: 'Línguas',
@@ -130,6 +150,7 @@ const en_lang = {
     use_status: 'Situação do cliente',
     use_activo: 'Activo',
     use_suspenso: 'Suspenso',
+    facturaType: 'Os tipos',
     use_desligado: 'Desligado',
     tabs_1: {
       one: 'Facturação',
@@ -139,7 +160,9 @@ const en_lang = {
       one: 'Factura',
       two: 'Factura Simplificada',
       baojia: 'Factura pro-forma',
-      tab_jl: 'Registos'
+      tab_jl: 'Registos',
+      tab_yjf: 'Factura Automatica',
+
     },
     tabs_3: {
       one: 'Nota de debito',
@@ -305,7 +328,8 @@ const en_lang = {
       systemPlaceholder: 'O sistema calcula automaticamente',
       btnName: "Pesquisar",
       noData: "Dados não disponíveis",
-      look: "Ver usuários próximos"
+      look: "Ver usuários próximos",
+      zjsc: 'Ultimos três registros'
     }
   },
   // 今日收费

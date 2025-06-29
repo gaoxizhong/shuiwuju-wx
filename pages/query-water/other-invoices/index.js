@@ -12,6 +12,9 @@ import {
   createPayDemandNote, // 创建收费账单
   getDemandNoteList, // 订单列表
 } from '../../../apis/admin'
+const {
+  getFbSelectWmList
+} = require('../../../apis/water')
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
 Page({
@@ -33,12 +36,7 @@ Page({
     pos_sum: 0,
     transfer_accounts_sum: 0,
     actual_amount: '',
-    Type_statusList: [
-      {id: 1,text: 'Dados do contador'}, // 水表号
-      {id: 2,text: 'Nome de usuário'},  // 用户名
-      {id: 3,text: 'Endereço detalhado'}, // 用户地址
-      {id: 4,text: 'Nº de Porta'}  // 门牌号
-    ],
+    searchStatusList: [],
     type_seach: 'type', // type - - 选类型  seach 输入
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号 5 . 附近
     select_value:'', // 查询内容
@@ -60,10 +58,14 @@ Page({
     page_demandNote: 1,
     isScroll: true,
     total: 0,
-    factura_title_active: 1,
     page_proForm: 1,
-    proFormList: [],// 形式发票记录列表
     is_zhuanhuan: false,
+    yjfwmList: [],
+
+    selectIndex: 0,
+    show: false,
+    typeStatusList: [], // 其他类发票记录类型
+
   },
 
   /**
@@ -89,6 +91,8 @@ Page({
       lang: lang.index,
       langDialog: lang.dialog,
       btnName: lang.btnName,
+      searchStatusList: lang.searchStatusList, 
+      typeStatusList: lang.typeStatusList, 
     })
   },
   // 页面tab
@@ -96,7 +100,6 @@ Page({
     let title_active = Number(e.currentTarget.dataset.index)
     this.setData({
       select_value:'',
-      factura_title_active: 1,
       page: 1,
       radioList: [],
       selectTypeIndex: 0,
@@ -106,27 +109,18 @@ Page({
       page_demandNote: 1,
       demandNoteList: [],// 收费项目订单列表
       page_proForm: 1,
-      proFormList: [],// 形式发票记录列表
       is_zhuanhuan: false, // 是否点击转换按钮
+      yjfwmList: [],
+      selectIndex: 0,
+      
+
     })
     if(title_active == 2){
       // 收费项目列表
       this.getDemandNoteList();
     }
-  },
-  // 形式发票 Tab
-  facturaTabChange(e){
-    let factura_title_active = Number(e.currentTarget.dataset.index)
-    this.setData({
-      factura_title_active,
-      page_proForm: 1,
-      proFormList: [],// 形式发票记录列表
-      seltTypeInfo: {},
-      is_zhuanhuan: false, // 是否点击转换按钮
-    })
-    if(factura_title_active == 2){
-      // 形式发票记录列表
-      this.getDemandNoteList();
+    if(title_active == 4){
+      this.getFbSelectWmList();
     }
   },
   // 转二进制 并数组复制
@@ -274,8 +268,14 @@ handleSearchInfo() {
     radioList: [],
     selectradio_info: null,
     radio: '',
+    yjfwmList: [],
   })
-  this.getlist();
+  if(this.data.title_active == 4){
+    this.getFbSelectWmList();
+  }else{
+    this.getlist();
+
+  }
 },
   // 获取用户列表
   getlist(){
@@ -322,11 +322,12 @@ handleSearchInfo() {
       })
     })
   },
-  // 收费项目列表
+  // 收费项目记录列表
   getDemandNoteList(){
     let that = this;
     let p = {
       page: this.data.page_demandNote,
+      type: Number(that.data.selectIndex), // 0 全部 1、正式、2 形式
     }
     let selectradio_info = this.data.selectradio_info;
     if(selectradio_info){
@@ -443,8 +444,8 @@ handleSearchInfo() {
     }
     this.getPrint(selectradio_info,amount);
   },
+  // 获取打印信息
   getPrint(info,am){
-    // 获取打印信息
     let selectradio_info = info;
     let amount = am;
     let date = this.handleTimeValue();
@@ -476,7 +477,6 @@ Giro: ${selectradio_info.area_code}
 
 Espécies: ${this.data.seltTypeInfo.text}
 Montante: ${fmoney(amount,2)} KZ
-
       `,
 
       invoiceInfo_valores: `
@@ -582,9 +582,10 @@ ${date.time}
           icon: "none",
           duration: 3000,
         })
-        if(title_active == 1 || is_zhuanhuan){
-          that.createPayDemandNote();
-        }
+        // if(title_active == 1 || is_zhuanhuan){
+        //   that.createPayDemandNote();
+        // }
+        that.createPayDemandNote();
       },
       onFail(res){
         console.log('打印失败...')
@@ -598,12 +599,19 @@ ${date.time}
     let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
     let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
     let date = this.handleTimeValue();
-    
+    let title_active = this.data.title_active;
+    let is_zhuanhuan = this.data.is_zhuanhuan;
     let p = {
       wm_id: selectradio_info.wm_id,
       price_list_id: seltTypeInfo.id,
       total_money: total_money,
       date_time: date.time,
+    }
+    if(title_active == 1 || is_zhuanhuan){
+      p.type = 1; //  正常缴费单
+    }
+    if(title_active == 3 && !is_zhuanhuan){
+      p.type = 2; //  形式发票
     }
     createPayDemandNote(p).then( res =>{
 
@@ -621,7 +629,12 @@ ${date.time}
         page,
         loading: `${lang.message.loading}...`,
       })
-      this.getDemandNoteList()
+      if(this.data.title_active == 2){
+        this.getDemandNoteList()
+      }
+      if(this.data.title_active == 4){
+        this.getFbSelectWmList()
+      }
     } else {
       this.setData({
         loading: lang.message.noMoreEmpty,
@@ -654,4 +667,85 @@ ${date.time}
     })
     this.getPrint(selectradio_info,amount);
   },
+
+  // 获取水表列表
+  getFbSelectWmList(){
+    let that = this;
+    const params = {
+      select: this.data.select_value,
+      type: this.data.select_type?this.data.select_type:1,
+      page: this.data.page,
+    }
+    getFbSelectWmList(params).then(res => {
+      const {
+        total,
+        data,
+        per_page,
+      } = res.data
+      // data.forEach(ele =>{
+      //   ele.user_bal = fmoney(Number(ele.user_bal),2)
+      // })
+      const yjfwmList = this.data.yjfwmList.concat(data || [])
+      this.setData({
+        total,
+        per_page,
+        yjfwmList,
+        isScroll: true,
+      })
+      if (!yjfwmList.length) {
+        wx.showToast({
+          title: lang.message.noMoreEmpty,
+          icon: 'none',
+          duration: 2000
+        })
+      }
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  },
+  clickItem(e){
+    console.log(e)
+    let item = e.currentTarget.dataset.item;
+    wx.navigateTo({
+      url: '/pages/query-water/adiantamento-water/index?item=' + JSON.stringify(item),
+    })
+  },
+// 点击搜索框右侧 ... 
+  onShowPopup() {
+    const select = this.selectComponent('#select')
+    select && select.setColumnIndex(0, this.data.selectIndex)
+    this.setData({
+      show: true
+    })
+  },
+  onClosePopup() {
+    this.setData({
+      show: false
+    })
+  },
+  handleSelectItem(e) {
+    console.log(e)
+    const {
+      index,
+      value
+    } = e.detail;
+    this.setData({
+      selectIndex: index,
+      status: value.key,
+      page: 1,
+      page_demandNote: 1,
+      demandNoteList: [],// 收费项目订单列表
+      page_proForm: 1,
+      is_zhuanhuan: false, // 是否点击转换按钮
+      isScroll: true,
+      loading: ''
+    });
+    this.onClosePopup()
+    // 收费项目记录列表
+    this.getDemandNoteList();
+  }
 })

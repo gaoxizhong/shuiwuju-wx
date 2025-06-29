@@ -7,6 +7,15 @@
   margin-top: 20rpx;
   background: #fff;
 }
+.search-bar  .van-icon{
+  display: inline-block;
+  height: 100%;
+  padding-left: 26rpx;
+  padding-right: 16rpx;
+  font-size: 34rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+}
 .dialog-pay-content{
   height: 680rpx;
 }
@@ -41,6 +50,7 @@
 .container-tabbox{
   width: 100%;
   display: flex;
+  border-bottom: 1rpx solid #ebedf0;
 }
 .container-tabbox>view{
   flex: 1;
@@ -51,6 +61,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.container-tabbox>view:nth-of-type(1){
+  border-right: 1rpx solid #ebedf0;
 }
 .container-tabbox>view.active::before{
     content: '';
@@ -112,4 +125,53 @@
   padding-bottom: 0;
   box-sizing: border-box;
   border-bottom: 1px solid #ebedf0;
+}
+.wixi-item {
+  position: relative;
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+  border-bottom: 1px solid #ebedf0;
+}
+
+.wixi-item_title {
+  padding-bottom: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wixi-item_title .view-box{
+  display: flex;
+  align-items: center;
+}
+.wixi-item_title .view-box .text-t{
+  font-weight: 600;
+}
+.wixi-item_title .view-box .text-x{
+  padding-left: 20rpx;
+  width: 28rpx;
+  height: 28rpx;
+}
+.wixi-item_i {
+  display: flex;
+  padding-bottom: 6rpx;
+}
+.wixi-item_i_label {
+  color: rgba(69, 90, 100, 0.6);
+
+}
+/* .wixi-item_i_content {
+  margin-left: 10rpx;
+} */
+
+.wixi-item__status {
+  position: absolute;
+  right: 40rpx;
+  top: 20rpx;
+  width: max-content;
+  /* padding: 16rpx 24rpx; */
+  /* letter-spacing: 8rpx; */
+  font-size: 24rpx;
+  font-weight: 600;
+  /* border: 1px solid red; */
+  /* transform: rotateZ(-30deg); */
 }

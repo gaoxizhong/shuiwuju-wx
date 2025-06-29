@@ -202,3 +202,21 @@ export const getFbuserStatis = (data) => {
     data
   })
 }
+// 获取水表列表
+export const getFbSelectWmList = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_select_wm_list`,
+    method: 'POST',
+    data
+  })
+}
+// 修改水表状态
+export const upFbWmUserStatus = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_up_wm_user_status`,
+    method: 'POST',
+    data
+  })
+}

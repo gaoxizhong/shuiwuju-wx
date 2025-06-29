@@ -243,6 +243,7 @@ Page({
         pay_way: that.data.pay_way,
         pay_time: date.time,
         discount_money: that.data.discount_money,
+        operator_name: that.data.operator_name
       }
       if(params.pay_way == 4){
         params.cheque_number = that.data.cheque_number;
@@ -347,14 +348,14 @@ Page({
     }
     
     const is_judgmentData = judgmentData(s,e);
-    if(!is_judgmentData){
-      wx.showToast({
-        title: lang.message.businessHours,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
+    // if(!is_judgmentData){
+    //   wx.showToast({
+    //     title: lang.message.businessHours,
+    //     duration: 2000,
+    //     icon: 'none'
+    //   })
+    //   return
+    // }
 
     const paid_total_money = this.data.paid_total_money;
     const pay_text = this.data.pay_text;
@@ -721,7 +722,7 @@ Page({
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let user_info = '';
       info.forEach(ele => {
-        user_info += `${ele.check_time}   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.pay_money}KZ
+        user_info += `${ele.check_time} ${ele.arrears_money}KZ  ${ele.pay_money}KZ  ${ele.arrears_money}KZ
 `
       })
       let total_water = that.data.total_water;
@@ -805,7 +806,7 @@ Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 `,
         receiptInfo_historyData: `
 DATA: ${date.time}
- Data    Total    Pend.    Liq.
+ Data    Total    Liq.    Pend.
 --------------------------------
 ${user_info?user_info:''}
 --------------------------------

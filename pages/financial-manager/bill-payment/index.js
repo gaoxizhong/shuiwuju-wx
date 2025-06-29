@@ -29,12 +29,7 @@ Page({
     type_seach: 'type', // type - - 选类型  seach 输入
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
     select_value:'', // 查询内容
-    Type_statusList: [
-      {id: 1,text: 'Dados do contador'},
-      {id: 2,text: 'Nome de usuário'},
-      {id: 3,text: 'Endereço detalhado'},
-      {id: 4,text: 'Nº de Porta'}
-    ],
+    searchStatusList: [],
     selectTypeIndex: 0,
     Type_show: false,
     title_active: 1,
@@ -57,6 +52,9 @@ Page({
       delPayLogList: [], // 删除记录
       lang: lang.index,
       langDialog: lang.dialog,
+      btnName: lang.btnName,
+      searchStatusList: lang.searchStatusList, 
+
     })
     // if (stime && etime) {
     //   this.getListData()
@@ -190,7 +188,7 @@ Page({
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;
     wxAsyncApi('navigateTo', {
-      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&discount_money=${item.discount_money}&invoice_code=${item.invoice_code}&source=business-hall&del_admin_id=${item.del_admin_id?item.del_admin_id:''}`,
+      url: `/pages/business-hall/user-pay-info/index?id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&discount_money=${item.discount_money}&invoice_code=${item.invoice_code}&source=business-hall&del_admin_id=${item.del_admin_id?item.del_admin_id:''}&operator_name=${item.operator_name?item.operator_name:''}`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

@@ -15,7 +15,7 @@
   <view class="his-box" wx:if="{{ title_active == 1 }}">
     <van-button type="info" size="small" block='true' bindtap="goToHistorio">{{ lang.historio }}</van-button>
     <van-button type="info" size="small" block='true' bindtap="goToFecho">{{ lang.fecho }}</van-button>
-    <van-button type="info" size="small" block='true' bindtap="goToOther">{{ lang.other }}</van-button>
+    <!-- <van-button type="info" size="small" block='true' bindtap="goToOther">{{ lang.other }}</van-button> -->
   </view>
   
   <view class="search-content" style="margin-top:{{ title_active == 1?20:0}}rpx;">
@@ -61,7 +61,7 @@
 </view>
 
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
-  <van-picker id="Type_select" show-toolbar columns="{{ Type_statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
+  <van-picker id="Type_select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
 </van-popup>
 
 

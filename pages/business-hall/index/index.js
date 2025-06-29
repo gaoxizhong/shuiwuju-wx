@@ -39,12 +39,7 @@ Page({
     payWayList: [],
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
     select_value:'', // 查询内容
-    Type_statusList: [
-      {id: 1,text: 'Dados do contador'},
-      {id: 2,text: 'Nome de usuário'},
-      {id: 3,text: 'Endereço detalhado'},
-      {id: 4,text: 'Nº de Porta'}
-    ],
+    searchStatusList: [],
     selectTypeIndex: 0,
     Type_show: false,
     type_seach: 'type', // type - - 选类型  seach 输入
@@ -63,6 +58,8 @@ Page({
       list: [],
       lang: lang.index,
       langDialog: lang.dialog,
+      btnName: lang.btnName,
+      searchStatusList: lang.searchStatusList, 
       title_active: 1,
       delPayLogList: [],
 
@@ -171,7 +168,7 @@ Page({
   // 点击历史记录按钮
   goToHistorio(){
     wxAsyncApi('navigateTo', {
-      url: '/pages/business-hall/historical/index',
+      url: '/pages/financial-manager/bill-payment/index',
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.historio,
@@ -281,7 +278,7 @@ Page({
       up_id: del_selt_info.up_id,
     }
     delUserPayment(params).then(res => {
-      if(res.code == 0){
+      if(res.code == 200){
         wx.showToast({
           title: lang.message.success,
           icon: 'none'

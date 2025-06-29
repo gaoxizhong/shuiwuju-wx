@@ -8,6 +8,9 @@ import {
 const {
   wxAsyncApi,fmoney
 } = require('../../../utils/util')
+const {
+  getFbSelectWmList,upFbWmUserStatus
+} = require('../../../apis/water')
 Page({
   data: {
     lang: lang.index, // 语言
@@ -30,12 +33,7 @@ Page({
 
     type_seach: 'type', // type - - 选类型  seach 输入
     select_value:'', // 查询内容
-    statusList: [
-      {id: 1,text: 'Dados do contador'},
-      {id: 2,text: 'Nome de usuário'},
-      {id: 3,text: 'Endereço detalhado'},
-      {id: 4,text: 'Nº de Porta'}
-    ],
+    searchStatusList: [], // 查询条件项
     is_L: false,
     is_R: false,
     is_GC: false,
@@ -47,7 +45,8 @@ Page({
     printInfo: '',
     optionsPriceType: [],
     selectInfo: {},
-    selectStatusPop: false
+    selectStatusPop: false,
+    userStatusList: []
   },
   // 初始化 监听水表状态
   onLoad() {
@@ -72,12 +71,10 @@ Page({
         is_R: true // 收银员
       })
     }
-    // app.watchBillStatus(_this.getStatusList)
-    // this.getStatusList(app.globalData.billStatus)
     this.setData({
       lang: lang.index, // 语言
       langDialog: lang.dialog,
-      userInfo
+      userInfo,
     })
      // 获取价格类型
      let fbUserType = JSON.parse(wx.getStorageSync('fbUserType'));
@@ -90,17 +87,15 @@ Page({
      })
   },
   onShow() {
-    this.handleSearchInfo();
-  },
-  getStatusList(values) {
-    const statusList = Object.keys(values).map(i => ({
-      key: i,
-      text: values[i]
-    }))
-    statusList.unshift(lang.allOptions)
+    lang = app.globalData.lang
     this.setData({
-      statusList
+      lang: lang.index, // 语言
+      langDialog: lang.dialog,
+      btnName: lang.btnName,
+      userStatusList: lang.userStatusList, 
+      searchStatusList: lang.searchStatusList, 
     })
+    this.handleSearchInfo();
   },
   onShowPopup() {
     const select = this.selectComponent('#select')
@@ -171,7 +166,7 @@ Page({
       type: this.data.select_type?this.data.select_type:1,
       page: this.data.page,
     }
-    isAdmin(params).then(res => {
+    getFbSelectWmList(params).then(res => {
       const {
         total,
         data,
@@ -273,9 +268,58 @@ Page({
   clickXgStatus(e){
     console.log(e)
     this.setData({
-      selectInfo: e.currentTarget.dataset.item
+      selectInfo: e.currentTarget.dataset.item,
+      selectStatusPop: true
     })
+  },
+  // 关闭弹窗
+  onCloseUserStatusPopup(){
+    this.setData({
+      selectStatusPop: false
+    })
+  },
+  //确认弹窗
+  handleUserStatusItem(e){
+    let that = this;
+    let selectUserStatus = e.detail.value;
+    let selectInfo = that.data.selectInfo;
+    let list = that.data.list;
+    let p = {
+      wm_id: selectInfo.wm_id,
+      user_status: selectUserStatus.key
+    }
+    upFbWmUserStatus(p).then(res =>{
+      if(res.code == 200){
+        wx.showToast({
+          title: '',
+          icon: 'success'
+        })
+        list.forEach( ele =>{
+          if(ele.wm_id == p.wm_id){
+            ele.user_status = p.user_status
+          }
+        })
+        that.setData({
+          list
+        })
+      }else{
+        wx.showToast({
+          title: 'Error',
+          icon: 'none'
+        })
+      }
+      
+    }).catch(e =>{
+      console.log(e)
+    })
+    this.setData({
+      selectStatusPop: false
+    })
+  },
+  clickItem(e){
+    console.log(e)
   }
+
 
 
 

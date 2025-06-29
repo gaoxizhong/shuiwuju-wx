@@ -47,7 +47,7 @@
   </view>
    <!-- 用户搜索 选择类型弹窗 -->
    <van-popup show="{{ type_show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round>
-    <van-picker id="select" show-toolbar columns="{{ statusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
+    <van-picker id="select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem"  />
   </van-popup>
 
 
