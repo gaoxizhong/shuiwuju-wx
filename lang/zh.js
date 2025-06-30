@@ -103,7 +103,9 @@ const zh_lang = {
     {id: 2,text: '用户名'},
     {id: 3,text: '详细的地址'},
     {id: 4,text: '门牌号'},
-    // {id: 5,text: '一公里范围内'}
+    // {id: 5,text: '一公里范围内'},
+    {id: 6,text: '水表类型'},
+    {id: 7,text: '欠费数量'},
   ],
   // 其他类发票记录类型
   typeStatusList: [

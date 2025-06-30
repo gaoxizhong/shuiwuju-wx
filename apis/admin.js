@@ -67,3 +67,12 @@ export const setBillInvoiceCode= (data) => {
     data
   })
 }
+// 形式发票转换
+export const trUpPayDemandMote = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_up_pay_demand_note`,
+    method: 'POST',
+    data
+  })
+}

@@ -117,7 +117,13 @@ Page({
       wm_no,
       reading: Number(reading),
       check_time,
-      type: 1
+      type: 2, // 1、正常  2、预缴
+    }
+    if(!params.reading || params.reading== ''){
+      that.setData({
+        reading_error: true
+      })
+      return
     }
     readingPic(params).then(res => {
       console.log(res)
@@ -137,7 +143,7 @@ Page({
         const up_id = res.data.data.up_id
         setTimeout( ()=>{
           wxAsyncApi('reLaunch', {
-            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&imageUrl=${filePath}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}&now_time=${now_time}&months=${months}&is_T=${is_T}&is_yujiao=1`,
+            url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&order_no=${order_no}&total_water=${total_water}&reading=${reading}&last_reading=${last_reading}&up_id=${up_id}&payStatusList=${payStatusList}&check_time_text=${check_time_text}&now_time=${now_time}&months=${months}&is_T=${is_T}&is_yujiao=automatica`,
           }).then(res => {
             wx.setNavigationBarTitle({
               title: lang.message.info,

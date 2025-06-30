@@ -10,7 +10,8 @@ import {
   isAdmin,
   getTrPriceList, //获取收费及目标
   createPayDemandNote, // 创建收费账单
-  getDemandNoteList, // 订单列表
+  getDemandNoteList,  // 订单列表
+  trUpPayDemandMote, // 转换形式发票
 } from '../../../apis/admin'
 const {
   getFbSelectWmList
@@ -86,6 +87,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    lang = app.globalData.lang;
     this.setData({
       userWaterInfo: lang.userWaterInfo,
       lang: lang.index,
@@ -421,9 +423,10 @@ handleSearchInfo() {
   },
   // 点击发票打印
   clickPrint(){
-    let selectradio_info = this.data.selectradio_info;
-    let seltTypeInfo = this.data.seltTypeInfo;
-    let amount = seltTypeInfo.id == 15 ? this.data.amount : seltTypeInfo.amount;
+    let that = this;
+    let selectradio_info = that.data.selectradio_info; // 选择的用户
+    let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
+    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
     if (!selectradio_info.wm_no) {
       this.setData({
         wm_no_error : true
@@ -436,13 +439,34 @@ handleSearchInfo() {
       })
       return
     }
-    if (!amount) {
+    if (!total_money) {
       this.setData({
         amount_error : true
       })
       return
     }
-    this.getPrint(selectradio_info,amount);
+
+    let date = this.handleTimeValue();
+    let title_active = this.data.title_active;
+    let is_zhuanhuan = this.data.is_zhuanhuan;
+    let p = {
+      wm_id: selectradio_info.wm_id,
+      price_list_id: seltTypeInfo.id,
+      total_money: total_money,
+      date_time: date.time,
+    }
+    if(title_active == 1 || is_zhuanhuan){
+      p.type = 1; //  正常缴费单
+    }
+    if(title_active == 3 && !is_zhuanhuan){
+      p.type = 2; //  形式发票
+    }
+    createPayDemandNote(p).then( res =>{
+      this.getPrint(selectradio_info,total_money);
+    }).catch( e =>{
+      console.log(e)
+    })
+    // this.getPrint(selectradio_info,total_money);
   },
   // 获取打印信息
   getPrint(info,am){
@@ -582,41 +606,15 @@ ${date.time}
           icon: "none",
           duration: 3000,
         })
-        if(title_active == 1){
-          that.createPayDemandNote();
-        }
+        // if(title_active == 1){
+        //   that.createPayDemandNote();
+        // }
       },
       onFail(res){
         console.log('打印失败...')
         console.log(res)
       }
     });
-  },
-  createPayDemandNote(){
-    let that = this;
-    let selectradio_info = that.data.selectradio_info; // 选择的用户
-    let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
-    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
-    let date = this.handleTimeValue();
-    let title_active = this.data.title_active;
-    let is_zhuanhuan = this.data.is_zhuanhuan;
-    let p = {
-      wm_id: selectradio_info.wm_id,
-      price_list_id: seltTypeInfo.id,
-      total_money: total_money,
-      date_time: date.time,
-    }
-    if(title_active == 1 || is_zhuanhuan){
-      p.type = 1; //  正常缴费单
-    }
-    if(title_active == 3 && !is_zhuanhuan){
-      p.type = 2; //  形式发票
-    }
-    createPayDemandNote(p).then( res =>{
-
-    }).catch( e =>{
-      console.log(e)
-    })
   },
   addListData() {
     console.log(1)
@@ -653,18 +651,44 @@ ${date.time}
   },
   // 点击形式发票一键转换
   clickconversion(e){
+    let that = this;
     let item = e.currentTarget.dataset.item;
+    let index = e.currentTarget.dataset.index;
+    let demandNoteList = that.data.demandNoteList;
     let selectradio_info = item.water_meter;
     let amount = item.total_money;
-    this.setData({
+    that.setData({
       is_zhuanhuan: true, // 是否点击转换按钮
       seltTypeInfo: {
-        id: item.price_list_id,
+        id: item.price_list_id, // 种类发票id
         amount: item.total_money,
         text: item.price_name
       }
     })
-    this.getPrint(selectradio_info,amount);
+    let p = {
+      type: 1,
+      demand_note_id: item.id
+    }
+    trUpPayDemandMote(p).then( res =>{
+      if(res.code == 200){
+        wx.showToast({
+          title: '',
+          icon: 'success'
+        })
+        demandNoteList[index].type = 1;
+        that.setData({
+          demandNoteList
+        })
+        that.getPrint(selectradio_info,amount);
+      }else{
+        wx.showToast({
+          title: res.msg,
+          icon: 'none'
+        })
+      }
+    }).catch(e =>{
+      console.log(e)
+    })
   },
 
   // 获取水表列表

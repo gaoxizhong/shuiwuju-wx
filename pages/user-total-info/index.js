@@ -91,7 +91,10 @@ Page({
     printing: false,
     totIndex: 0, // 默认  选项下标
     showCheck: false,
-    cheque_number: ''
+    cheque_number: '',
+    is_yujiao: '', // 'automatica' 预缴
+    automatica_title:`
+Factura Automatica`,
   },
 
   /**
@@ -100,12 +103,6 @@ Page({
   onLoad(options) {
     console.log(options)
     lang = app.globalData.lang
-    this.setData({
-      lang: lang.userWaterInfo,
-      btnName: lang.btnName,
-      langDialog: lang.dialog,
-    })
-
     // const payStatusList = options.payWayList
     const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     let status = '';
@@ -120,11 +117,15 @@ Page({
     const wm_name = options.wm_name;
     const userInfo = app.globalData.userInfo || {}
     this.setData({
+      lang: lang.userWaterInfo,
+      btnName: lang.btnName,
+      langDialog: lang.dialog,
       wm_no,
       wm_name,
       source,
       status,
       userInfo,
+      is_yujiao: options.is_yujiao,
       // payStatusList: JSON.parse(payStatusList || '[]'),
     })
     this.getArrearsMoneySum(options.wm_no)

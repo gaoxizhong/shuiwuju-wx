@@ -65,7 +65,7 @@
           {{lang.createTime}}：{{item.created_at}}
         </view>
         <view class="item__money" style="margin-top: 10rpx; display: flex;align-items: center;justify-content: flex-end;" wx:if="{{item.type == 2}}">
-          <view class="item__status__btn" data-item="{{item}}" bind:tap="clickconversion">{{lang.conversion}}</view>
+          <view class="item__status__btn" data-item="{{item}}" data-index="{{index}}" bind:tap="clickconversion">{{lang.conversion}}</view>
         </view>
         <view class="item__status" style="color: {{item.pay_status === 0 ? 'red' : 'green'}};">
           {{ item.pay_status === 0 ? 'A pagar' : 'Confirmado' }}

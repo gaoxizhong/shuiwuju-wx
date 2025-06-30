@@ -105,7 +105,9 @@ const en_lang = {
     {id: 2,text: 'Nome de usuário'},
     {id: 3,text: 'Endereço detalhado'},
     {id: 4,text: 'Nº de Porta'},
-    // {id: 5,text: 'Dentro de um quilômetro'}
+    // {id: 5,text: 'Dentro de um quilômetro'},
+    {id: 6,text: '‌Tipo de hidrómetro'},
+    {id: 7,text: 'Montante em dívida'},
   ],
   // 其他类发票记录类型
   typeStatusList: [

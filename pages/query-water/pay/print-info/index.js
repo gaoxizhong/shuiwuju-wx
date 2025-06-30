@@ -47,7 +47,10 @@ Page({
     canvasHeight: 1,
     img: '',
     printing: false,
-    is_T: false
+    is_T: false,
+    is_yujiao: '', // 'automatica' 预缴
+    automatica_title:`
+Factura Automatica`,
   },
 
   /**
@@ -69,7 +72,8 @@ Page({
       check_time_text,
       is_T,
       now_time,
-      months
+      months,
+      is_yujiao
     } = options
     let arr = [];
     let payStatusList = JSON.parse(options.payStatusList);
@@ -87,7 +91,7 @@ Page({
         last_reading,
         check_time_text,
         now_time,
-        months
+        months,
       },
       is_T: is_T == 'true'?true:false,
       payStatusList: arr,
@@ -95,10 +99,11 @@ Page({
       langDialog: lang.dialog,
       btnName: lang.btnName,
       steps: lang.pay.steps,
+      is_yujiao
     })
     // this.getArrearsMoneySum(options.wm_no)
     // 获取图片
-    this.getLogoImage();
+    // this.getLogoImage();
   },
   
   // 新改版  获取用户待缴费金额接口 
@@ -266,7 +271,7 @@ Page({
    // 发票
    blueToothInvoice(){
      wx.navigateTo({
-       url:  `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.wm_name}&source=search-person`,
+       url:  `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.wm_name}&source=search-person&is_yujiao=${this.data.automatica}`,
      })
      return
     this.setData({
@@ -320,68 +325,134 @@ Page({
   handlePrint(p) {
     let that = this;
     let print_type = that.data.print_type;
+    let is_yujiao = that.data.is_yujiao;
     let info = [];
     // 发票
     if(print_type == 'invoiceInfo'){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
-        ...that.arrEncoderCopy(that.data.invoiceInfo_invoice_code),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_title),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_info),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
-        ...blueToolth.printCommand.enter
-      ]
+      if(is_yujiao == 'automatica'){
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+          ...that.arrEncoderCopy(that.data.invoiceInfo_invoice_code),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.automatica_title),
+          ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+          ...blueToolth.printCommand.enter
+        ]
+      }else{
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+          ...that.arrEncoderCopy(that.data.invoiceInfo_invoice_code),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+          ...blueToolth.printCommand.enter
+        ]
+      }
+      
     }
     // 缴费单
     console.log('printInfo: 拼接缴费单信息...')
     if(print_type == 'printInfo'){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.printInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.printInfo_title_1),
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.printInfo_Comsumidor),
-        ...blueToolth.printCommand.ct_zc,
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.printInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.printInfo_historyData_title),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.printInfo_historyData_info),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.printInfo_facturacao_title),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.printInfo_facturacao_info),
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.printInfo_TOTAL),
-        ...blueToolth.printCommand.ct_zc,
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.pagamento_pagamento),
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.printInfo_valores),
-        ...blueToolth.printCommand.ct_zc,
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.printInfo_time),
-        ...blueToolth.printCommand.enter
-      ]
+      if(is_yujiao == 'automatica'){
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.printInfo_title_1),
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_Comsumidor),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.printInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.printInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.pagamento_pagamento),
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_valores),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.automatica_title),
+          ...that.arrEncoderCopy(that.data.printInfo_time),
+          ...blueToolth.printCommand.enter
+        ]
+      }else{
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.printInfo_title_1),
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_Comsumidor),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.printInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.printInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.printInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.pagamento_pagamento),
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.printInfo_valores),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.printInfo_time),
+          ...blueToolth.printCommand.enter
+        ]
+      }
+     
     }
     console.log('开始打印，api传信息...')
     blueToolth.writeBLECharacteristicValue({

@@ -1,6 +1,6 @@
 <!--pages/query-water/pay/print-info/index.wxml-->
 <view class="container print-info/">
-  <van-steps steps="{{ steps }}" active="{{ active }}" />
+  <van-steps steps="{{ steps }}" active="{{ active }}" wx:if="{{is_yujiao != 'automatica'}}"/>
   <view class="print-info__content">
     <view class="info">
       <view class="info-label">
@@ -17,7 +17,7 @@
         </view>
         <view class="info-item"  wx:if="{{ !is_T }}">
           <view class="info-item__label">{{ lang.reading }}</view>
-          <view class="info-item__info">{{ form.last_reading }}（m³）</view>
+          <view class="info-item__info">{{ form.reading }}（m³）</view>
         </view>
         <view class="info-item" wx:if="{{ is_T }}">
           <view class="info-item__label">{{ lang.now_date }}</view>

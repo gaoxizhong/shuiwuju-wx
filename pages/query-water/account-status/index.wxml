@@ -31,7 +31,7 @@
                 {{item.created_at}}
               </view>
             </view>
-            <view class="wixi-item_i" style="display: flex;align-items: center;justify-content: space-between;padding-right: 20rpx;padding-top: 20rpx;">
+            <view class="wixi-item_i" style="display: flex;align-items: center;justify-content: space-between;padding-right: 20rpx;">
               <view style="flex: 1;display: flex;align-items: center;"></view>
               <view style="font-weight: 600;color: #fff;background-color: #1989fa;padding: 10rpx 26rpx;font-size: 24rpx;border-radius: 30rpx;" data-item="{{item}}" catch:tap="clickXgStatus">{{btnName.updateName}}</view>
             </view>
