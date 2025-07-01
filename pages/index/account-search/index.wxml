@@ -1,12 +1,12 @@
 <view class="index">
   <view class="search-bar">
-      <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
-        <view class="icon"  slot="action">
-          <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
-          <!-- <van-icon name="ellipsis" bind:tap="onShowPopup" /> -->
-        </view>
-      </van-search>
-    </view>
+    <van-search model:value="{{ select_value }}" type="{{inputType}}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"   bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+        <!-- <van-icon name="ellipsis" bind:tap="onShowPopup" /> -->
+      </view>
+    </van-search>
+  </view>
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="wixi-list" lower-threshold="50" bindscrolltolower="addListData">

@@ -106,7 +106,7 @@ const en_lang = {
     {id: 3,text: 'Endereço detalhado'},
     {id: 4,text: 'Nº de Porta'},
     // {id: 5,text: 'Dentro de um quilômetro'},
-    {id: 6,text: '‌Tipo de hidrómetro'},
+    // {id: 6,text: '‌Tipo de hidrómetro'},
     {id: 7,text: 'Montante em dívida'},
   ],
   // 其他类发票记录类型
@@ -403,6 +403,10 @@ const en_lang = {
     distribution: "Status da atribuição",
     distribution_1: "Já foi atribuído",
     distribution_2: "Não atribuído",
+    noEmpty: 'Dados não disponíveis ainda',
+    btnName: "Pesquisar",
+    wx_type: 'Os tipos',
+    wx_bz: 'Observações',
     info: {
       title: 'Informações de reparação',
       status: 'Status',

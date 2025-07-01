@@ -2,7 +2,7 @@
 <view class="container business-hall">
   <wixi-time bindgettime="handleGetTime"></wixi-time>
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
-    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.noEmpty}}" />
     <scroll-view wx:else scroll-y="{{isScroll}}" scroll-with-animation class="list" lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="order_no">
         <view class="item" data-id="{{item.id}}" data-item="{{item}}" bindtap="handleDetails">

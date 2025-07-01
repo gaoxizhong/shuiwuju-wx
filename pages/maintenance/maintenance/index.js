@@ -42,6 +42,11 @@ Page({
     all_complain_num: 0,
     all_repair_finish_num: 0,
     all_repair_num: 0,
+
+    type_seach: 'type', // type - - 选类型  seach 输入
+    select_value:'', // 查询内容
+    searchStatusList: [],
+    inputType: 'text'
   },
 
 
@@ -58,6 +63,7 @@ Page({
       lang: lang.maintenance,
       langIndex: lang.index,
       langDialog: lang.dialog,
+      searchStatusList: lang.searchStatusList, 
       all_complain_finish_num: 0,
       all_complain_num: 0,
       all_repair_finish_num: 0,
@@ -91,9 +97,12 @@ Page({
   // 获取所有维修列表
   getMaintenanceList() {
     const areas = app.globalData.area
+    console.log(areas)
     const params = {
       status: this.data.status, // 1、待处理 
-      page: this.data.page
+      page: this.data.page,
+      select: this.data.select_value,
+      type: this.data.select_type?this.data.select_type:1,
     }
     getMaintenanceList(params).then(res => {
       const l = (res.data.list.data || []).map(i => {
@@ -125,6 +134,7 @@ Page({
         statusList,
         loading: total > list.length ? lang.message.scrollLoading : lang.message.noMoreEmpty
       })
+      console.log(list)
     })
   },
   // 获取我的统计
@@ -238,5 +248,70 @@ Page({
       this.getMyMaintenanceList();
       this.getMyRepairAllStatis();
     }
-  }
+  },
+  onShowPopup() {
+    const select = this.selectComponent('#select')
+    select && select.setColumnIndex(0, this.data.selectIndex)
+    this.setData({
+      show: true
+    })
+  },
+  onClosePopup() {
+    this.setData({
+      show: false
+    })
+  },
+  // 搜索 Change 事件
+  handleChangeInput(e) {
+    const value = e.detail
+    this.setData({
+      select_value: value,
+    })
+  },
+  //搜索 失焦赋值 
+  handlesearchReading(e) {
+    const select_value = e.detail.value;
+    this.setData({
+      select_value,
+      type_seach: 'type'
+    })
+  },
+  handleSearchInfo() {
+    this.setData({
+      page: 1,
+      list: [],
+      isScroll: true,
+      loading: ''
+    })
+    this.getMaintenanceList();
+  },
+  handleSelectItem(e) {
+    const {
+      index,
+      value
+    } = e.detail;
+    if(value.id == 7){
+      wx.nextTick(() => {
+        // 回调函数会在当前同步任务完成后执行
+        this.setData({
+          inputType: 'digit'
+        })
+      })
+    }else{
+      wx.nextTick(() => {
+        // 回调函数会在当前同步任务完成后执行
+        this.setData({
+          inputType: 'text'
+        })
+      })
+    }
+    this.setData({
+      select_value: '',
+      selectIndex: index,
+      select_type: value.id,
+      type_seach: 'seach',
+    });
+    this.onClosePopup()
+  },
+
 })

@@ -284,6 +284,7 @@ Page({
     const parent_type = this.data.parent_type
     const report_note = this.data.report_note
     const waterList = this.data.waterList
+    console.log(waterList)
     if (!wixiForm) {
       return
     }

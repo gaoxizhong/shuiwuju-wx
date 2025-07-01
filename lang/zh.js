@@ -104,7 +104,7 @@ const zh_lang = {
     {id: 3,text: '详细的地址'},
     {id: 4,text: '门牌号'},
     // {id: 5,text: '一公里范围内'},
-    {id: 6,text: '水表类型'},
+    // {id: 6,text: '水表类型'},
     {id: 7,text: '欠费数量'},
   ],
   // 其他类发票记录类型
@@ -399,6 +399,10 @@ const zh_lang = {
     distribution: "分配状态",
     distribution_1: "已分配",
     distribution_2: "未分配",
+    noEmpty: '暂无数据',
+    btnName: "搜索",
+    wx_type: '维修类型',
+    wx_bz: '备注',
     info: {
       title: '维修信息',
       status: '状态',

@@ -5,6 +5,14 @@
 </view>
 
 <view class="container maintenance">
+  <view class="search-bar">
+    <van-search model:value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.info.placeholder}}" bindtap="{{type_seach == 'type'?'onShowPopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"  bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon" slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{lang.btnName}}</van-button>
+        <!-- <van-icon name="ellipsis" bind:tap="onShowPopup" /> -->
+      </view>
+    </van-search>
+  </view>
   <!-- 统计模块 ↓ -->
   <view class="tody-summary-total">
     <view class="general-data" style="margin-right: 8rpx;">
@@ -35,20 +43,29 @@
   <!-- 统计模块 ↑ -->
 
   <view class="search-content {{!list.length ? 'no-data' : ''}}">
-    <van-empty wx:if="{{!list.length}}" image="search" description="暂无数据" />
+    <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.noEmpty}}" />
     <scroll-view wx:else scroll-y="true" class="maintenance-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
       <block wx:for="{{list}}" wx:key="no">
         <view class="maintenance-item" data-index="{{index}}" bindtap="handleDetails">
           <view class="item__title">
-            {{item.type === 1 ? (item.meter.wm_name + ' ' + item.meter.wm_no) : item.report_user.name}}
+            {{item.meter ? (item.meter.wm_name + ' ' + item.meter.wm_no) : item.report_user.name}}
           </view>
 
           <view class="item__water">
-            {{lang.phone}}：{{item.type === 1 ? item.meter.wm_phone : item.report_user.mobile}}
+            {{lang.phone}}：{{item.meter ? item.meter.wm_phone : (item.report_user.mobile?item.report_user.mobile: '')}}
           </view>
 
           <view class="item__money">
-            {{lang.location}}：{{item.area }} {{item.address}}
+            {{lang.location}}：{{item.area }} {{item.address?item.address:''}}
+          </view>
+          <view class="item__money">
+            {{lang.wx_type}}：{{item.type_text }}
+          </view>
+          <view class="item__money">
+            {{lang.wx_bz}}：{{item.report_note }}
+          </view>
+          <view class="item__money">
+            {{item.report_date }}
           </view>
           <view class="item__do_uid">
             {{ lang.distribution }}: <text style="padding-left:10rpx;color:{{item.do_uid > 0 ? 'green': '#ff0000' }};">{{ item.do_uid > 0 ? lang.distribution_1: lang.distribution_2  }}</text>
@@ -61,4 +78,8 @@
       </block>
     </scroll-view>
   </view>
+  <!-- 选项弹窗 -->
+  <van-popup show="{{ show }}" safe-area-tab-bar position="bottom" bind:close="onClosePopup" round >
+    <van-picker id="select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onClosePopup" bind:confirm="handleSelectItem" />
+  </van-popup>
 </view>

@@ -46,7 +46,8 @@ Page({
       {"text":"Pagamento bancário","key":3}
     ],
     printInfo: '',
-    optionsPriceType: []
+    optionsPriceType: [],
+    inputType: 'text'
   },
   // 初始化 监听水表状态
   onLoad() {
@@ -144,6 +145,23 @@ Page({
       index,
       value
     } = e.detail;
+    console.log(value.id)
+    
+    if(value.id == 7){
+      wx.nextTick(() => {
+        // 回调函数会在当前同步任务完成后执行
+        this.setData({
+          inputType: 'digit'
+        })
+      })
+    }else{
+      wx.nextTick(() => {
+        // 回调函数会在当前同步任务完成后执行
+        this.setData({
+          inputType: 'text'
+        })
+      })
+    }
     this.setData({
       selectIndex: index,
       select_type: value.id,
