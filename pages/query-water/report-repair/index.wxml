@@ -12,7 +12,17 @@
     <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.parent_type}}" value="{{ typeLabel_1 }}" error="{{parent_type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onType1Open" />
 
     <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type}}" value="{{ typeLabel }}" error="{{type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onOpen" />
-
+    <!-- 水表号 -->
+    <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required label="{{label.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{label.wm_no}}" /> -->
+    <!-- 地区选择 -->
+   <!-- <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" label="{{label.area}}" 
+      model:value="{{ areavalue }}" 
+      placeholder="{{label.area_placeholder}}" 
+      bind:click-input="onOpenSelect"
+    ></van-field> -->
+    <!-- 详细地址 -->
+    <!-- <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_address}}" model:value="{{ wm_address }}"  placeholder="{{label.wm_address}}" required /> -->
+    
     <wixi-form id="report-repair-form" form="{{form}}"></wixi-form>
     
     <van-field label="{{lang.photo}}" type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
