@@ -150,3 +150,6 @@
   padding: 14rpx 20rpx;
   border-bottom: 1px solid #d0d0d059;
 }
+.btn-item.btn-item-2{
+  background: #ff0000;
+}

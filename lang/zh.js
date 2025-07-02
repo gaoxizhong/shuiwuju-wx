@@ -333,6 +333,7 @@ const zh_lang = {
   },
   // 今日收费
   todaySummary: {
+    noEmpty: '暂无数据',
     todayNumber: '缴费单',
     todayMoney: '金额总数',
     invoice: '发票',
@@ -354,31 +355,11 @@ const zh_lang = {
   },
   // 上报维修
   reportRepair: {
-    form: [{
-        name: '水表号',
-        placeholder: '请输入',
-        type: 'input',
-        key: 'wm_no',
-        required: false,
-        error: false,
-      },
-      {
-        name: '地区',
-        placeholder: '请选择地区',
-        type: 'area',
-        key: 'area1,area2,area3',
-        required: false,
-        error: false,
-      },
-      {
-        name: '详细地址',
-        placeholder: '请输入详细地址',
-        type: 'input',
-        key: 'wm_address',
-        required: false,
-        error: false,
-      },
-    ],
+    wm_no: '水表号',
+    area: '地区',
+    area_placeholder: '请选择地区',
+    address: '详细地址',
+    address_placeholder: '请输入详细地址',
     photo: '照片',
     placeholder: '请输入',
     parent_type:'投诉/申请',

@@ -42,7 +42,7 @@
       </view>
     </view>
     <view class="search-content {{!list.length ? 'no-data' : ''}}">
-      <van-empty wx:if="{{!list.length}}" image="search" description="{{'暂无数据'}}" />
+      <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.noEmpty}}" />
       <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
         <block wx:for="{{list}}" wx:key="no">
           <view class="tody-summary-item" data-index="{{index}}" bindtap="handleDetails">
@@ -75,8 +75,8 @@
         <van-button bind:click="onAdminNameSearch" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
       </view>
     </van-search> -->
-    <view class="search-content {{!adminList.length ? 'no-data' : ''}}" style="margin-top: 10rpx;">
-      <van-empty wx:if="{{!adminList.length}}" image="search" description="{{'暂无数据'}}" />
+    <view class="search-content {{!adminList.length ? 'no-data' : ''}}">
+      <van-empty wx:if="{{!adminList.length}}" image="search" description="{{lang.noEmpty}}" />
       <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
         <block wx:for="{{adminList}}" wx:key="no">
           <view class="tody-summary-item-2" data-index="{{index}}">

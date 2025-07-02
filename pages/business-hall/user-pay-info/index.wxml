@@ -47,10 +47,14 @@
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{ source == 'search-person' }}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" >
         {{btnName.invoice}}
       </view>
-      <!-- 打印发票 -->
+      <!-- 打印发票 结束-->
+      <!-- 取消发票 -->
+      <!-- <view class="btn-item btn-item-2"  style="border-left: 1px solid #ebeef5;" bindtap="{{is_return ?'blueToothInvoice':''}}" >
+        取消
+      </view> -->
     </block>
   </view>
 

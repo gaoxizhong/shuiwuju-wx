@@ -13,17 +13,15 @@
 
     <van-field custom-style="flex-direction: column;" required readonly title-width="100%" label="{{lang.type}}" value="{{ typeLabel }}" error="{{type_error}}" placeholder="{{lang.placeholder}}" bind:click-input="onOpen" />
     <!-- 水表号 -->
-    <!-- <van-field custom-style="flex-direction: column;" title-width="100%" required label="{{label.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{label.wm_no}}" /> -->
+    <van-field custom-style="flex-direction: column;" title-width="100%" required="{{required_wm_no}}" label="{{lang.wm_no}}" model:value="{{ wm_no }}"  placeholder="{{lang.placeholder}}" />
     <!-- 地区选择 -->
-   <!-- <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" label="{{label.area}}" 
+   <van-field title-width="100%" readonly="true" required custom-style="flex-direction: column;" label="{{lang.area}}" 
       model:value="{{ areavalue }}" 
-      placeholder="{{label.area_placeholder}}" 
+      placeholder="{{lang.area_placeholder}}" 
       bind:click-input="onOpenSelect"
-    ></van-field> -->
+    ></van-field>
     <!-- 详细地址 -->
-    <!-- <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{label.wm_address}}" model:value="{{ wm_address }}"  placeholder="{{label.wm_address}}" required /> -->
-    
-    <wixi-form id="report-repair-form" form="{{form}}"></wixi-form>
+    <van-field  type ='input' title-width="100%" custom-style="flex-direction: column;" label="{{lang.address}}" model:value="{{ wm_address }}"  placeholder="{{lang.address_placeholder}}" required />
     
     <van-field label="{{lang.photo}}" type="textarea" autosize="{{autosize}}" custom-style="flex-direction: column;" title-width="100%" required error="{{image_error}}" error-message="{{image_error ? btnName.selectImg : ''}}">
       <view slot="input">
@@ -75,6 +73,16 @@
         </van-radio-group>
       </scroll-view>
     </view>
- 
   </van-dialog>
+
+    
+  <!-- 省市区 弹窗-->
+  <van-popup show="{{ showSelect }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseAddSelect">
+    <van-picker id="wixi-area" show-toolbar  columns="{{ columns_add }}" 
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="onConfirmAddSelect" 
+      bind:cancel="onCloseAddSelect" 
+      bind:change="onChangeSelect" />
+  </van-popup>
 </view>

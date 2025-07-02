@@ -336,6 +336,7 @@ const en_lang = {
   },
   // 今日收费
   todaySummary: {
+    noEmpty: 'Dados não disponíveis ainda',
     todayNumber: 'Factura Simplificada',
     todayMoney: 'Valor total',
     invoice: 'Factura/Recibo',
@@ -358,31 +359,11 @@ const en_lang = {
   },
   // 上报维修
   reportRepair: {
-    form: [{
-        name: 'Dados do contador',
-        placeholder: 'Por favor, digite',
-        type: 'input',
-        key: 'wm_no',
-        required: false,
-        error: false,
-      },
-      {
-        name: 'Localidade',
-        placeholder: 'Escolha Localidade',
-        type: 'area',
-        key: 'area1,area2,area3',
-        required: false,
-        error: false,
-      },
-      {
-        name: 'Endereço detalhado',
-        placeholder: 'Preencher o endereço detalhado',
-        type: 'input',
-        key: 'wm_address',
-        required: false,
-        error: false,
-      },
-    ],
+    wm_no: 'Dados do contador',
+    area: 'Localidade',
+    area_placeholder: 'Escolha Localidade',
+    address: 'Endereço detalhado',
+    address_placeholder: 'Preencher o endereço detalhado',
     photo: 'Fotos',
     placeholder: 'Por favor, digite',
     parent_type:'RECLAMACAO/PIDIDO',

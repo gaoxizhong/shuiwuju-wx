@@ -43,13 +43,6 @@ Page({
     const stime = this.data.startTime
     const etime = this.data.endTime
     this.setData({
-      page: 1,
-      total: 0,
-      loading: '',
-      isScroll: true,
-      list: [],
-      title_active: 1,
-      delPayLogList: [], // 删除记录
       lang: lang.index,
       langDialog: lang.dialog,
       btnName: lang.btnName,

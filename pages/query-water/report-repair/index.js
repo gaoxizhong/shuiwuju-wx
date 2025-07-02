@@ -23,7 +23,6 @@ Page({
     },
     showAddImg: true,
     waterList: [],
-    form: [],
     parent_type_error: false,
     parent_type:'', // 投诉或者申请 key
     typeLabel_1: '', // 投诉或者申请 text
@@ -62,6 +61,16 @@ Page({
     area1: '',
     area2: '',
     area3: '',
+    areavalue: '', // 地区
+    showSelect: false,  // 地区弹窗
+    columns_add: [],
+    columnsIndex: [0, 0, 0],
+    confirmIndex: [0, 0, 0],
+    confirmValue: [0, 0, 0],
+    address: '', //详细地址
+    wm_no: '',
+    required_wm_no:false,
+    is_return: true
   },
 
   /**
@@ -69,17 +78,12 @@ Page({
    */
   onLoad(options) {
     lang = app.globalData.lang
-    const form = lang.reportRepair.form.map(i => ({
-      ...i,
-      value: ''
-    }))
     const repair_type = app.globalData.repair_type
     const columns = Object.keys(repair_type).map(i => ({
       key: i,
       text: repair_type[i]
     }))
     this.setData({
-      form,
       columns,
       lang: lang.reportRepair,
       langMessage: lang.message,
@@ -224,71 +228,67 @@ Page({
       show: false
     })
   },
-    // 弹窗选择维修类型
-    onConfirmType1Select(e) {
-      const parent_type = e.detail.value.key
-      const typeLabel_1 = e.detail.value.text
-      this.setData({
-        parent_type,
-        parent_type_error: false,
-        typeLabel_1,
-      })
-      this.onCloseType1Select();
-    },
+  // 弹窗选择维修类型
+  onConfirmType1Select(e) {
+    const parent_type = e.detail.value.key
+    const typeLabel_1 = e.detail.value.text
+    this.setData({
+      parent_type,
+      parent_type_error: false,
+      typeLabel_1,
+    })
+    this.onCloseType1Select();
+  },
   // 弹窗选择维修类型
   onConfirmSelect(e) {
+    console.log(e)
     const type = e.detail.value.key
     const typeLabel = e.detail.value.text
-
-    const form = this.data.form
-    form.forEach(i => {
-      if (i.key === 'wm_no') {
-        i.required = (type === '1')
-      } else {
-        i.required = (type !== '1')
-      }
-    })
+    if (type === '1') {
+      this.setData({
+        required_wm_no: true
+      })
+    } else {
+      this.setData({
+        required_wm_no: false
+      })
+    }
     this.setData({
       type,
       type_error: false,
       typeLabel,
-      form
     })
     this.onCloseSelect()
   },
- //获取当前时间
- handleTimeValue(date) {
-  const _date = date ? new Date(date) : new Date()
-  const year = _date.getFullYear()
-  const month = _date.getMonth() + 1
-  const day = _date.getDate()
-  const hh = _date.getHours()
-  const mm = _date.getMinutes()
-  const ss = _date.getSeconds()
-  const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
-  const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
-  return {
-    year,
-    month,
-    day,
-    time,
-    timestamp
-  }
-},
+  //获取当前时间
+  handleTimeValue(date) {
+    const _date = date ? new Date(date) : new Date()
+    const year = _date.getFullYear()
+    const month = _date.getMonth() + 1
+    const day = _date.getDate()
+    const hh = _date.getHours()
+    const mm = _date.getMinutes()
+    const ss = _date.getSeconds()
+    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+    const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+    return {
+      year,
+      month,
+      day,
+      time,
+      timestamp
+    }
+  },
 
   // 点击提交按钮
   handleReportRepair() {
     let that = this;
-    const wixiForm = this.selectComponent('#report-repair-form')
     const type = this.data.type
     const parent_type = this.data.parent_type
     const report_note = this.data.report_note
     const waterList = this.data.waterList
     console.log(waterList)
-    if (!wixiForm) {
-      return
-    }
-    const data = wixiForm.getFormData()
+    // const data = wixiForm.getFormData()
     if (!parent_type) {
       this.setData({
         parent_type_error: true
@@ -311,7 +311,7 @@ Page({
         report_note_error: true
       })
     }
-    if (data && type && waterList && report_note) {
+    if (type && waterList && report_note) {
       const baseUrl = getApp().globalData.baseUrl;
       const token = wx.getStorageSync('token');
       let report_date = that.handleTimeValue().time;
@@ -322,14 +322,23 @@ Page({
         type,
       }
       if (type === '1') {
-        params.wm_no = data.wm_no
+        params.wm_no = this.data.wm_no
       } else {
-        params.area1 = this.data.area1?this.data.area1:data.area1
-        params.area2 = this.data.area2?this.data.area2:data.area2
-        params.area3 = this.data.area3?this.data.area3:data.area3
-        params.address = this.data.wm_address?this.data.wm_address:data.wm_address
+        params.area1 = this.data.area1,
+        params.area2 = this.data.area2,
+        params.area3 = this.data.area3,
+        params.address = this.data.wm_address
       }
       console.log(params)
+      if( !is_return ){
+        return
+      }
+      this.setData({
+        is_return: false
+      })
+      wx.showLoading({
+        title: '',
+      })
       wx.uploadFile({
         filePath: waterList.length ? waterList[0].tempFilePath : '',
         name: 'report_pic',
@@ -341,6 +350,7 @@ Page({
           ...params
         },
         success(res) {
+          wx.hideLoading();
           const data = JSON.parse(res.data)
           if (data.code !== 200) {
             wx.showToast({
@@ -358,8 +368,17 @@ Page({
               delta: -1
             })
           }
+          this.setData({
+            is_return: true
+          })
         },
-        fail(res) {}
+        fail(e) {
+          console.log(e)
+          wx.hideLoading();
+          this.setData({
+            is_return: true
+          })
+        }
       })
     } else {
       wx.showToast({
@@ -431,21 +450,140 @@ Page({
     console.log(event)
     const item = event.currentTarget.dataset.item;
     const { name } = event.currentTarget.dataset;
-    const form = this.data.form;
-    form[0].value = item.wm_no;
-    form[1].value = item.area1 +','+ item.area2 +','+ item.area3;
-    form[2].value = item.wm_address;
+    const area = app.globalData.area;
+    const values1 = area.map(i => i.name); // 省
+    const values2 = area[0].areas.map(i => i.name);  // 市
+    const values3 = area[0].areas[0].areas.map(i => i.name); // 区
+    let a_1 = '';
+    let a_2 = '';
+    let a_3 = '';
+    let item_1 = [];
+    let item_2 = [];
+    area.forEach(ele =>{
+      if(ele.name == item.area1){
+        a_1 = ele.id;
+        item_1 = ele.areas;
+      }
+    })
+    item_1.forEach(ele =>{
+      if(ele.name == item.area2){
+        a_2 = ele.id;
+        item_2 = ele.areas;
+      }
+    })
+    item_2.forEach(ele =>{
+      if(ele.name == item.area3){
+        a_3 = ele.id;
+      }
+    })
+    console.log(a_1);
+    console.log(a_2);
+    console.log(a_3);
+    const columns_add = [{
+      values: values1,
+    }, {
+      values: values2,
+    }, {
+      values: values3,
+    }]
     this.setData({
-      area1: item.area1,
-      area2: item.area2,
-      area3: item.area3,
+      areavalue: item.area1 + ' ' + item.area2 + ' ' + item.area3,
+      area1: a_1,
+      area2: a_2,
+      area3: a_3,
+      columns_add,
       wm_address: item.wm_address,
-      form,
       radio: name,
       wm_no: event.currentTarget.dataset.item.wm_no,
-      selectradio_info: event.currentTarget.dataset.item,
+      selectradio_info: item,
     })
-   
-    console.log(form)
+  },
+  // 地区
+  onOpenSelect(e) {
+    const area = app.globalData.area
+    const picker = this.selectComponent('#wixi-area')
+    const confirmIndex = this.data.confirmIndex
+    if (picker) {
+      confirmIndex.forEach((i, index) => {
+        if (index === 0) {
+          picker.setColumnValues(1, area[i].areas.map(i => i.name));
+        } else if (index === 1) {
+          picker.setColumnValues(2, area[confirmIndex[index - 1]].areas[i].areas.map(i => i.name));
+        } else {
+          setTimeout(() => {
+            picker.setColumnIndex(index, i)
+          }, 200)
+        }
+        picker.setColumnIndex(index, i)
+      })
+    }
+    this.setData({
+      showSelect: true,
+      formIndex: e.currentTarget.dataset.index,
+      columnsIndex: [...confirmIndex]
+    })
+  },
+  onChangeSelect(e) {
+    const area = app.globalData.area
+    const {
+      picker,
+      index,
+      value
+    } = e.detail;
+    if (index === 0) {
+      const indexValue = value[index]
+      const _columnsIndex = area.findIndex(i => i.name = indexValue)
+      const columnsIndex = [_columnsIndex, 0, 0]
+      this.setData({
+        columnsIndex
+      })
+      // const _index = area[0].areas.findIndex(i => i.name === value[index])
+      picker.setColumnValues(1, area[_columnsIndex].areas.map(i => i.name));
+      picker.setColumnValues(2, area[_columnsIndex].areas[0].areas.map(i => i.name));
+    } else if (index === 1) {
+      const columnsIndex = this.data.columnsIndex
+      const _index = area[columnsIndex[0]].areas.findIndex(i => i.name === value[index])
+      columnsIndex[1] = _index
+      columnsIndex[2] = 0
+      this.setData({
+        columnsIndex
+      })
+      picker.setColumnValues(2, area[columnsIndex[0]].areas[_index].areas.map(i => i.name));
+    }
+
+  },
+  onConfirmAddSelect(e) {
+    const {
+      index,
+      value
+    } = e.detail
+    console.log(e)
+    const area = app.globalData.area;
+    const confirmValue = this.data.confirmValue;
+    const areavalue = value.join(',');
+    console.log(area)
+    index.forEach((i, _index) => {
+      if (_index === 0) {
+        confirmValue[_index] = area[i].id
+      } else if (_index === 1) {
+        confirmValue[_index] = area[index[0]].areas[i].id
+      } else {
+        confirmValue[_index] = area[index[0]].areas[index[1]].areas[i].id
+      }
+    })
+    this.setData({
+      confirmIndex: index,
+      confirmValue,
+      area1: confirmValue[0],
+      area2: confirmValue[1],
+      area3: confirmValue[2],
+      areavalue,
+    })
+    this.onCloseAddSelect();
+  },
+  onCloseAddSelect() {
+    this.setData({
+      showSelect: false
+    })
   },
 })
