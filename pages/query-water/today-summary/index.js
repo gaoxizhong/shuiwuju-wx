@@ -16,7 +16,7 @@ Page({
     lang: lang.todaySummary,
     langIndex: lang.index,
     langDialog: lang.dialog,
-
+    btnName: lang.btnName,
     list: [],
     payWayList: [],
     statusList: [],
@@ -45,6 +45,7 @@ Page({
     loading: lang.message.scrollLoading,
     title_active: 1,
     adminList: [],
+    tj: {}
   },
 
   /**
@@ -63,6 +64,7 @@ Page({
       lang: lang.todaySummary,
       langIndex: lang.index,
       langDialog: lang.dialog,
+      btnName: lang.btnName,
       loading: lang.message.scrollLoading
     })
   },
@@ -185,24 +187,35 @@ Page({
       const adminList = this.data.adminList.concat(data)
       console.log(adminList)
       let a = 0;
+      let a1 = 0;
       let b = 0;
       let c = 0;
       let d = 0;
 
       adminList.forEach(ele=>{
-        a += ele.user_payment_count
-        b += ele.invoice_num
-        c += ele.receipt_num
-        d += Number(ele.total_price)
+        a += Number(ele.user_payment_count);
+        a1 += Number(ele.price_sum);
+        b += ele.invoice_num; // 发票
+        c += ele.receipt_num; // 收据
+        d += Number(ele.total_price);
       })
       console.log('缴费单:',a)
+      console.log('缴费单额度:',a1)
       console.log('发票数:',b)
       console.log('收据数:',c)
-      console.log('总额度:',d)
+      console.log('支付总额度:',d)
+      let tj = {
+        a,
+        a1,
+        b,
+        c,
+        d
+      }
       // const total = res.data.list.total
       this.setData({
         adminList,
         // total
+        tj
       })
     }).catch(res => {})
   },

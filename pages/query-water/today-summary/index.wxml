@@ -68,16 +68,47 @@
     <view class="loading">{{loading}}</view>
   </view>
   <!-- 管理员  开始 -->
-  <view class="page-box" wx:if="{{ title_active == 2 }}">
+  <view class="page-box page-box-2" wx:if="{{ title_active == 2 }}">
     <wixi-time bindgettime="handleGetTime"></wixi-time>
+    <view class="his-box">
+      <van-button type="info" size="small" block='true' bindtap="imprimirInfo">{{ btnName.cadastrar }}</van-button>
+    </view>
     <!-- <van-search value="{{ admin_name }}" style="margin-top: 10rpx;" placeholder="{{langIndex.searchBar}}" use-action-slot bind:change="handleChangeAdminName" bind:search="onAdminNameSearch">
       <view class="icon" slot="action">
         <van-button bind:click="onAdminNameSearch" class="icon-btn" type="info" plain size="small">{{langIndex.btnName}}</van-button>
       </view>
     </van-search> -->
+    
     <view class="search-content {{!adminList.length ? 'no-data' : ''}}">
-      <van-empty wx:if="{{!adminList.length}}" image="search" description="{{lang.noEmpty}}" />
-      <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
+      <scroll-view scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
+        <view class="tody-summary-total ">
+          <view class="important-data" style="margin-right: 8rpx;">
+            <text>{{lang.todayNumber}}</text>
+            <view class="important-data-font">
+              {{tj.a}}（{{ lang.num }}）/ {{tj.a1}} KZ
+            </view>
+          </view>
+          <view class="important-data">
+            <text>{{lang.invoice}}</text>
+            <view class="important-data-font">
+              {{tj.b}}（{{ lang.num }}）
+            </view>
+          </view>
+          <view class="general-data" style="margin-right: 8rpx;">
+            <text>{{lang.receipt}}</text>
+            <view class="general-data-font">
+              {{tj.c}}（{{ lang.num }}）
+            </view>
+          </view>
+          <view class="general-data">
+            <text>{{lang.todayMoney}}</text>
+            <view class="important-data-font">
+              {{today_bill_amount}}（KZ）
+            </view>
+          </view>
+        </view>
+       <van-empty wx:if="{{!adminList.length}}" image="search" description="{{lang.noEmpty}}" />
+
         <block wx:for="{{adminList}}" wx:key="no">
           <view class="tody-summary-item-2" data-index="{{index}}">
             <view class="item__title">{{item.admin_name}}</view>

@@ -24,7 +24,6 @@ page {
 .tody-summary-item-2 .tody-summary-total{
   font-size: 28rpx;
 }
-
 .important-data {
   width: calc(50% - 5rpx);
   font-size: 28rpx;
@@ -37,7 +36,9 @@ page {
   align-items: center;
   justify-content: center;
 }
-
+.page-box-2 .important-data{
+  font-weight: 400;
+}
 .important-data-font {
   padding-top: 10rpx;
   font-size: 24rpx;
@@ -105,7 +106,7 @@ page {
   padding: 20rpx;
   font-size: 28rpx;
   border-bottom: 1px solid #ececec;
-  margin-top: 20rpx;
+  margin-top: 10rpx;
   background: #fff;
 }
 .item__title {
@@ -200,4 +201,21 @@ page {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+.his-box{
+  width: 100%;
+  border-radius: 10rpx;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: #ffffff;
+  padding: 10rpx 20rpx;
+  margin-top: 10rpx;
+}
+.his-box van-button{
+  margin: 0 20rpx;
+}
+.his-box van-button .van-button{
+  text-align: center;
 }

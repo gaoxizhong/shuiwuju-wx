@@ -25,17 +25,27 @@
         <view class="info-item__label">{{lang.createDate}}</view>
         <view class="info-item__info">{{from.pay_time}}</view>
       </view>
-      <!-- <view class="info-item">
-        <view class="info-item__label">{{lang.total_money}}</view>
-        <view class="info-item__info">{{arrears_money_sum}}（KZ）</view>
-      </view> -->
+      
       <van-cell-group>
         <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" readonly bind:blur="handleReading"     bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ from.total_money }}" placeholder="{{lang.paid_total_money}}" />
       </van-cell-group>
       <van-cell-group>
         <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.pay_type}}" readonly model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}"/>
       </van-cell-group>
-
+      <view class="status-box">
+        <view>
+          <text>发票：</text>
+          <text wx:if="{{from.invoice_status == 1}}">未开具</text>
+          <text wx:if="{{from.invoice_status == 2}}">已开具</text>
+          <text wx:if="{{from.invoice_status == 3}}">已取消</text>
+        </view>
+        <view>
+          <text>收据：</text>
+          <text wx:if="{{from.receipt_status == 1}}">未开具</text>
+          <text wx:if="{{from.receipt_status == 2}}">已开具</text>
+          <text wx:if="{{from.receipt_status == 3}}">已取消</text>
+        </view>
+      </view>
     </view>
   </view>
   <view class="btn">
@@ -47,7 +57,7 @@
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" >
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{ source == 'search-person' }}">
         {{btnName.invoice}}
       </view>
       <!-- 打印发票 结束-->

@@ -72,6 +72,7 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog,
     })
+    let item = JSON.parse(options.item)
     const {
       id,
       wm_no,
