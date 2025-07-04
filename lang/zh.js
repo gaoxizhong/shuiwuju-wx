@@ -491,6 +491,11 @@ const zh_lang = {
     water: '用水量',
     money: '缴费金额',
     createTime: '查询时间',
+    f_status: '发票状态',
+    s_status: '收据状态',
+    wkj_status: '未开具',
+    ykj_status: '已开具',
+    yqx_status: '已取消',
   },
   // 功能列表
   func: {

@@ -866,7 +866,8 @@ Utilizador: ${that.data.operator_name}
   setReceiptStatus() {
     let that = this;
     setReceiptStatus({
-      id: that.data.user_PayFees_info.id
+      id: that.data.user_PayFees_info.id,
+      receipt_status: 2,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
 
     }).catch(res => {
@@ -877,7 +878,8 @@ Utilizador: ${that.data.operator_name}
   setInvoiceStatus() {
     let that = this;
     setInvoiceStatus({
-      id: that.data.user_PayFees_info.id
+      id: that.data.user_PayFees_info.id,
+      invoice_status: 2,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
 
     }).catch(res => {

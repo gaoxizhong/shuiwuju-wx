@@ -58,7 +58,8 @@ Page({
     name_error: false,
     operatorNameList: [],
     is_operatorLsPop: false,
-    del_admin_id: ''
+    del_admin_id: '',
+    item: {}
   },
 
   /**
@@ -72,19 +73,19 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog,
     })
-    let item = JSON.parse(options.item)
+    let item = JSON.parse(options.item);
     const {
       id,
       wm_no,
       wm_name,
       total_money,
-      pay_way,
-      invoice_code,
       pay_time,
       discount_money,
+      invoice_code,
       operator_name,
-      source, // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
-    } = options;
+      pay_way
+    } = item;
+    const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     this.setData({
       from: {
         id,
@@ -94,17 +95,18 @@ Page({
         pay_time,
         discount_money
       },
+      item,
       invoice_code,
       pay_way,
       source,
       operator_name,
     })
-    if(options.del_admin_id){
+    if(item.del_admin_id){
       this.setData({
-        del_admin_id: options.del_admin_id
+        del_admin_id: item.del_admin_id
       })
     }
-    this.getUserPayItemDetail(options.id)
+    this.getUserPayItemDetail(id)
   },
   onShow(){
     this.setData({
@@ -515,16 +517,22 @@ ${that.data.del_admin_id?'Foi abolido':''}
   // 4.修改打印收据状态
   setReceiptStatus() {
     let that = this;
-    setReceiptStatus({id: that.data.from.id}).then(res => {
+    setReceiptStatus({
+      id: that.data.from.id,
+      receipt_status: 2,  // 1:未开具 2:已开具 3:已取消
+    }).then(res => {
      
     }).catch(res => {
       wx.hideToast()
     })
   },
-  // 5.修改发票收据状态
+  // 5.修改发票状态
   setInvoiceStatus(){
     let that = this;
-    setInvoiceStatus({id: that.data.from.id}).then(res => {
+    setInvoiceStatus({
+      id: that.data.from.id,
+      invoice_status: 2,  // 1:未开具 2:已开具 3:已取消
+    }).then(res => {
     
     }).catch(res => {
       wx.hideToast()

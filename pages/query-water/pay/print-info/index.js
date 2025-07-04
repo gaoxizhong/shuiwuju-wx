@@ -720,7 +720,10 @@ ${date.time}
   // 4.修改打印收据状态
   setReceiptStatus (){
     let that = this;
-    setReceiptStatus({id: that.data.id}).then(res => {
+    setReceiptStatus({
+      id: that.data.id,
+      receipt_status: 2,  // 1:未开具 2:已开具 3:已取消
+    }).then(res => {
      
     }).catch(res => {
       wx.hideToast()
@@ -729,7 +732,10 @@ ${date.time}
   // 5.修改发票收据状态
   setInvoiceStatus(){
     let that = this;
-    setInvoiceStatus({id: that.data.user_PayFees_info.id}).then(res => {
+    setInvoiceStatus({
+      id: that.data.user_PayFees_info.id,
+      invoice_status: 2,  // 1:未开具 2:已开具 3:已取消
+    }).then(res => {
     
     }).catch(res => {
       wx.hideToast()

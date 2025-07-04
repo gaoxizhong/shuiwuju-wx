@@ -181,7 +181,7 @@ Page({
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;
     wxAsyncApi('navigateTo', {
-      url: `/pages/business-hall/user-pay-info/index?item=${JSON.stringify(item)}&id=${item.id}&wm_name=${item.wm_name}&wm_no=${item.wm_no}&total_money=${item.total_money}&pay_time=${item.pay_time}&pay_way=${item.pay_way}&discount_money=${item.discount_money}&invoice_code=${item.invoice_code}&source=business-hall&del_admin_id=${item.del_admin_id?item.del_admin_id:''}&operator_name=${item.operator_name?item.operator_name:''}`,
+      url: `/pages/business-hall/user-pay-info/index?item=${JSON.stringify(item)}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,

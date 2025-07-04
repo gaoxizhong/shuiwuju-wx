@@ -71,7 +71,7 @@
   <view class="page-box page-box-2" wx:if="{{ title_active == 2 }}">
     <wixi-time bindgettime="handleGetTime"></wixi-time>
     <view class="his-box">
-      <van-button type="info" size="small" block='true' bindtap="imprimirInfo">{{ btnName.cadastrar }}</van-button>
+      <van-button type="info" size="small" block='true' bindtap="imprimirInfo" style="margin: 0;">{{ btnName.cadastrar }}</van-button>
     </view>
     <!-- <van-search value="{{ admin_name }}" style="margin-top: 10rpx;" placeholder="{{langIndex.searchBar}}" use-action-slot bind:change="handleChangeAdminName" bind:search="onAdminNameSearch">
       <view class="icon" slot="action">
@@ -103,7 +103,7 @@
           <view class="general-data">
             <text>{{lang.todayMoney}}</text>
             <view class="important-data-font">
-              {{today_bill_amount}}（KZ）
+              {{tj.d}}（KZ）
             </view>
           </view>
         </view>

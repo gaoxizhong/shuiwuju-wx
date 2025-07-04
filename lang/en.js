@@ -494,6 +494,11 @@ const en_lang = {
     water: 'Consumo de água',
     money: 'Valor a pagar',
     createTime: 'Hora de leitura',
+    f_status: 'Status da fatura',
+    s_status: 'Status da recibo',
+    wkj_status: 'Não emitido',
+    ykj_status: 'Já emitido em',
+    yqx_status: 'Já foi cancelado',
   },
   // 功能列表
   func: {

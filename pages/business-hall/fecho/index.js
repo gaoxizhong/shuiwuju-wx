@@ -50,6 +50,7 @@ Page({
    */
   onShow() {
     this.getAdminShift(0);
+    lang = app.globalData.lang
     this.setData({
       lang: lang.fecho,
       btnName: lang.btnName,

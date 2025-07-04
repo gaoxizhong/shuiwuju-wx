@@ -34,16 +34,16 @@
       </van-cell-group>
       <view class="status-box">
         <view>
-          <text>发票：</text>
-          <text wx:if="{{from.invoice_status == 1}}">未开具</text>
-          <text wx:if="{{from.invoice_status == 2}}">已开具</text>
-          <text wx:if="{{from.invoice_status == 3}}">已取消</text>
+          <text>{{lang.f_status}}：</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1}}">{{lang.wkj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2}}">{{lang.ykj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3}}">{{lang.yqx_status}}</text>
         </view>
         <view>
-          <text>收据：</text>
-          <text wx:if="{{from.receipt_status == 1}}">未开具</text>
-          <text wx:if="{{from.receipt_status == 2}}">已开具</text>
-          <text wx:if="{{from.receipt_status == 3}}">已取消</text>
+          <text>{{lang.s_status}}：</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1}}">{{lang.wkj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2}}">{{lang.ykj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3}}">{{lang.yqx_status}}</text>
         </view>
       </view>
     </view>
