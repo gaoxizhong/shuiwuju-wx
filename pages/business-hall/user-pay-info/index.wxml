@@ -35,15 +35,17 @@
       <view class="status-box">
         <view>
           <text>{{lang.f_status}}：</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1}}">{{lang.wkj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2}}">{{lang.ykj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3}}">{{lang.yqx_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1 && !item.cancel_invoice_number}}">{{lang.wkj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2 && !item.cancel_invoice_number}}">{{lang.ykj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3 || item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
+          <view class="qx-btn {{item.invoice_status == 2 && !item.cancel_invoice_number ? 'active':''}}" data-type="fatura" bind:tap="{{item.invoice_status == 2 ? 'clickQx':''}}">取消打印</view>
         </view>
         <view>
           <text>{{lang.s_status}}：</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1}}">{{lang.wkj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2}}">{{lang.ykj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3}}">{{lang.yqx_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1 && !item.cancel_receipt_number}}">{{lang.wkj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2 && !item.cancel_receipt_number}}">{{lang.ykj_status}}</text>
+          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3 || item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
+          <view class="qx-btn {{item.receipt_status == 2 && !item.cancel_receipt_number ? 'active':''}}" data-type="recibo" bind:tap="{{item.receipt_status == 2 && !item.cancel_receipt_number ? 'clickQx':''}}">取消打印</view>
         </view>
       </view>
     </view>
@@ -87,5 +89,11 @@
     </view>
   </view>
 </view>
+
+  <!-- 取消发票-- 原因弹窗 -->
+  <van-popup show="{{ cancelShowPop }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ cancelList }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
+  </van-popup>
+
 
 

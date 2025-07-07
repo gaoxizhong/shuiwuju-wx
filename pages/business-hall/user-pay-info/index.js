@@ -9,7 +9,8 @@ const {
   getUserPayItemDetail,
   getUserBluetoolthInfoData,
   setReceiptStatus,
-  setInvoiceStatus
+  setInvoiceStatus,
+  addUserPayLogNumber
 } = require('../../../apis/water')
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
@@ -43,6 +44,7 @@ Page({
       {key: 2,title: "Cartão Multicaixa"},
       {key: 3,title: "Pagamento bancário"},
     ],
+    print_type: '',
     pay_way:'',
     pay_text:'',
     receiptInfo:'', //  收据
@@ -59,14 +61,17 @@ Page({
     operatorNameList: [],
     is_operatorLsPop: false,
     del_admin_id: '',
-    item: {}
+    item: {},
+    cancelShowPop: false,
+    cancelList: [], // 取消原因
+    selt_cancel_status: {}, // 选中的取消原因
+    status_type: '',
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    console.log(options)
     lang = app.globalData.lang
     this.setData({
       lang: lang.userWaterInfo,
@@ -74,6 +79,8 @@ Page({
       langDialog: lang.dialog,
     })
     let item = JSON.parse(options.item);
+    console.log(item)
+
     const {
       id,
       wm_no,
@@ -343,9 +350,10 @@ Page({
   handlePrint(p) {
     let that = this;
     let print_type = that.data.print_type;
+    let status_type = that.data.status_type;
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
-     //  收据
+    //  收据
     if(print_type == 'receiptInfo'){
       info = [
         ...blueToolth.printCommand.clear,
@@ -368,6 +376,37 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
+    //  取消收据
+    if(status_type == 'recibo'){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.cancelReceipt_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...that.arrEncoderCopy(that.data.cancelReceipt_title_1),
+        ...blueToolth.printCommand.left,
+        ...that.arrEncoderCopy(that.data.cancelReceipt_N),
+        ...that.arrEncoderCopy(that.data.cancelReceipt_info),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+    
+    //  取消发票
+    if(status_type == 'fatura'){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.cancelFatura_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...that.arrEncoderCopy(that.data.cancelFatura_title_1),
+        ...blueToolth.printCommand.left,
+        ...that.arrEncoderCopy(that.data.cancelFatura_N),
+        ...that.arrEncoderCopy(that.data.cancelFatura_info),
+        ...blueToolth.printCommand.enter
+      ]
+    }
     console.log('开始打印，api传信息...')
     let n = 1;
     that.writeBLECharacteristicValue(p,info,n);
@@ -377,6 +416,7 @@ Page({
     let info = i;
     let num = n; 
     let that = this;
+    let item = that.data.item;
     blueToolth.writeBLECharacteristicValue({
       // ...this.data.printDeviceInfo,
       ...p,
@@ -392,6 +432,7 @@ Page({
           pay_success: false,
         })
         let print_type = that.data.print_type;
+        let status_type = that.data.status_type;
         //打印收据
         if (print_type == 'receiptInfo') {
           num++;
@@ -399,13 +440,29 @@ Page({
             that.writeBLECharacteristicValue(p,i,num);
           }else{
             // 4.修改打印收据状态
-            that.setReceiptStatus();
+            that.setReceiptStatus(2);
           }
-        } else {
-          // 5.修改发票收据状态
-          that.setInvoiceStatus();
         }
-       
+        //发票
+        if(status_type == 'invoiceInfo'){
+          that.setInvoiceStatus(2);
+        }
+        //取消收据
+        if(status_type == 'recibo'){
+          that.setInvoiceStatus(3);
+          item.receipt_status = 3;
+          that.setData({
+            item
+          })
+        }
+        //取消发票
+        if(status_type == 'fatura'){
+          that.setInvoiceStatus(3);
+          item.invoice_status = 3;
+          that.setData({
+            item
+          })
+        }
       },
       onFail(res) {
         console.log('打印失败...')
@@ -484,8 +541,6 @@ Processado por programaválido n31.1/AGT20
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}
-
-${that.data.del_admin_id?'Foi abolido':''}
 --------------------------------
 *Obrigado e volte sempre!*
 
@@ -515,11 +570,11 @@ ${that.data.del_admin_id?'Foi abolido':''}
   },
 
   // 4.修改打印收据状态
-  setReceiptStatus() {
+  setReceiptStatus(n) {
     let that = this;
     setReceiptStatus({
       id: that.data.from.id,
-      receipt_status: 2,  // 1:未开具 2:已开具 3:已取消
+      receipt_status: n,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
      
     }).catch(res => {
@@ -527,11 +582,11 @@ ${that.data.del_admin_id?'Foi abolido':''}
     })
   },
   // 5.修改发票状态
-  setInvoiceStatus(){
+  setInvoiceStatus(n){
     let that = this;
     setInvoiceStatus({
       id: that.data.from.id,
-      invoice_status: 2,  // 1:未开具 2:已开具 3:已取消
+      invoice_status: n,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
     
     }).catch(res => {
@@ -539,10 +594,179 @@ ${that.data.del_admin_id?'Foi abolido':''}
     })
   },
 
+
+  // 点击取消按钮
+  clickQx(e){
+    console.log(e)
+    let status_type = e.currentTarget.dataset.type;
+    if(status_type == 'fatura'){ // 发票
+      this.setData({
+        cancelList: [
+          {id: 1,text:'Leitura Errada'},
+          {id: 2,text:'Fatura Duplicada'},
+          {id: 3,text:'Outro'},
+        ]
+      })
+    }
+    //收据
+    if(status_type == 'recibo'){
+      this.setData({
+        cancelList: [
+          {id: 1,text:'Erro de lançamento'},
+          {id: 2,text:'Duplicação'},
+          {id: 3,text:'Devolução do pagamento'},
+          {id: 4,text:'Outro motivo justificado'},
+        ]
+      })
+    }
+    this.setData({
+      status_type,
+      cancelShowPop: true
+    })
+  },
+  onCloseType1Select() {
+    this.setData({
+      cancelShowPop: false
+    })
+  },
+  // 取消原因弹窗 确认
+  onConfirmType1Select(e){
+    let that = this;
+    let valueinfo = e.detail.value;
+    let datainfo = this.data.item; 
+    let status_type = that.data.status_type;
+    let date = handleTimeValue();
+    if( !that.data.is_return ){
+      return
+    }
+    that.setData({
+      is_return: false
+    })
+    let p = {
+      id: datainfo.id,
+    }
+    // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
+    if(status_type == 'fatura'){
+      p.type = 4;
+    }
+    if(status_type == 'recibo'){
+      p.type = 3;
+    }
+    addUserPayLogNumber(p).then(res => {
+      console.log(res)
+      that.setData({
+        is_return: true
+      })
+      if(res.code == 200){
+      // 取消发票信息
+        if(status_type == 'fatura'){
+          that.setData({
+            selt_cancel_status: valueinfo,
+            cancelFatura_title:`EPASKS-E.P.`,
+            cancelFatura_title_1: `
+NIF: 5601022917
+Av. 14 de Abril nº 15, Sumbe/Cuanza-Sul
+Tel: 941648993 / 942626722
+--------------------------------
+    `,
+            cancelFatura_N:`
+NOTA DE DÉBITO Nº: ${datainfo.invoice_code}
+Data: ${datainfo.pay_time.split(" ")[0]}
+Ref. Recibo: ${datainfo.invoice_number}
+--------------------------------
+    `,
+            cancelFatura_info: `
+Cliente: ${datainfo.water_meter.wm_name}
+NIF: ${datainfo.water_meter.user_card}
+N° Contador: ${datainfo.water_meter.wm_no}
+Telefone: ${datainfo.water_meter.wm_phone}
+EMAIL: ${datainfo.water_meter.email}
+--------------------------------
+Motivo: ${valueinfo.text}
+--------------------------------
+INFORMACOES DA FACTURA
+${datainfo.cancel_invoice_number}
+VALOR:  ${datainfo.total_money} Kz
+IVA(0%) M04
+${date.time}
+--------------------------------
+Emitido por: Shufeng Wang
+Gestor Comercial
+Assinatura: ______________
+    
+--------------------------------
+  *Obrigado e volte sempre!*
+    
+    `,
+          })
+        
+        }
+        // 取消收据信息
+        if(status_type == 'recibo'){
+          that.setData({
+            selt_cancel_status: valueinfo,
+            cancelReceipt_title:`EPASKS-E.P.`,
+            cancelReceipt_title_1:`
+NIF: 5601022917
+Av. 14 de Abril nº 15, Sumbe/Cuanza-Sul
+Tel: 941648993 / 942626722
+--------------------------------
+    `,
+            cancelReceipt_N:`
+NOTA DE DÉBITO Nº: ${datainfo.invoice_code}
+Data: ${datainfo.pay_time.split(" ")[0]}
+Ref. Recibo: ${datainfo.receipt_number}
+--------------------------------
+    `,
+            cancelReceipt_info: `
+Cliente: ${datainfo.water_meter.wm_name}
+NIF: ${datainfo.water_meter.user_card}
+N° Contador: ${datainfo.water_meter.wm_no}
+Telefone: ${datainfo.water_meter.wm_phone}
+EMAIL: ${datainfo.water_meter.email}
+--------------------------------
+Motivo: ${valueinfo.text}
+--------------------------------
+Nº do Recibo          Data
+${datainfo.cancel_receipt_number}    ${date.time}
+Total:  ${datainfo.total_money} Kz
+--------------------------------
+Emitido por: Shufeng Wang
+Gestor Comercial
+Assinatura: ______________
+    
+--------------------------------
+  *Obrigado e volte sempre!*
+    
+      `,
+          })
+        }
+        that.blueToothPrint();
+      }else{
+        wx.showToast({
+          title: 'Error',
+          icon:'none'
+        })
+      }
+
+    }).catch(e => {
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon: 'none'
+      })
+      that.setData({
+        is_return: true
+      })
+    })
+  },
+
+
   onCloseResult() {
     this.setData({
       showResult: false
     })
+
   },
   // 转二进制 并数组复制
   arrEncoderCopy(str){

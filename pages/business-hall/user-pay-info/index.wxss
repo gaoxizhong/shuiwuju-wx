@@ -159,4 +159,20 @@
 }
 .status-box>view{
   margin-top: 30rpx;
+  display: flex;
+  align-items: center;
+}
+.qx-btn{
+  margin-left: 30rpx;
+  display: inline-block;
+  padding: 6rpx 26rpx;
+  font-size: 24rpx;
+  border-radius: 30rpx;
+  background-color: #f4f4f3;
+  color: #707070;
+  width: max-content;
+}
+.qx-btn.active {
+  color: #fff;
+  background-color: #1989fa;
 }

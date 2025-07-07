@@ -220,3 +220,12 @@ export const upFbWmUserStatus = (data) => {
     data
   })
 }
+// 支付记录编码
+export const addUserPayLogNumber = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/fb/fb_add_user_pay_log_number`,
+    method: 'POST',
+    data
+  })
+}
