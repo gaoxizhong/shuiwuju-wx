@@ -199,7 +199,8 @@ Page({
       return
     }
     that.setData({
-      print_type: 'receiptInfo'
+      print_type: 'receiptInfo',
+      status_type: ''
     })
     // this.setData({
     //   password_layer: true
@@ -354,27 +355,69 @@ Page({
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
     //  收据
-    if(print_type == 'receiptInfo'){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.receiptInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
-        ...blueToolth.printCommand.enter
-      ]
+    if(print_type == 'receiptInfo' && !status_type){
+      /// 判断是否有收据编码
+      let item = that.data.item;
+      if(item.receipt_number){
+        that.setData({
+          receiptInfo_number: `
+Ref. Recibo: ${item.receipt_number}
+`,
+        })
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.receiptInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
+          ...that.arrEncoderCopy(that.data.receiptInfo_number),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
+          ...blueToolth.printCommand.enter
+        ]
+      }else{
+        addUserPayLogNumber({
+          id: item.id,
+          type: 1
+        }).then(res => {
+          that.setData({
+            receiptInfo_number: `
+  Ref. Recibo: ${res.data.receipt_number}
+  `,
+          })
+          info = [
+            ...blueToolth.printCommand.clear,
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
+            ...that.arrEncoderCopy(that.data.receiptInfo_number),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
+            ...blueToolth.printCommand.enter
+          ]
+        })
+      }
     }
     //  取消收据
     if(status_type == 'recibo'){
@@ -444,7 +487,7 @@ Page({
           }
         }
         //发票
-        if(status_type == 'invoiceInfo'){
+        if(print_type == 'invoiceInfo'){
           that.setInvoiceStatus(2);
         }
         //取消收据
@@ -463,6 +506,7 @@ Page({
             item
           })
         }
+        that.onCloseType1Select();
       },
       onFail(res) {
         console.log('打印失败...')
@@ -652,6 +696,7 @@ Utilizador: ${that.data.operator_name}
     if(status_type == 'recibo'){
       p.type = 3;
     }
+    // 获取编码
     addUserPayLogNumber(p).then(res => {
       console.log(res)
       that.setData({
@@ -685,7 +730,7 @@ EMAIL: ${datainfo.water_meter.email}
 Motivo: ${valueinfo.text}
 --------------------------------
 INFORMACOES DA FACTURA
-${datainfo.cancel_invoice_number}
+${res.data.cancel_invoice_number}
 VALOR:  ${datainfo.total_money} Kz
 IVA(0%) M04
 ${date.time}
@@ -728,7 +773,7 @@ EMAIL: ${datainfo.water_meter.email}
 Motivo: ${valueinfo.text}
 --------------------------------
 Nº do Recibo          Data
-${datainfo.cancel_receipt_number}    ${date.time}
+${res.data.cancel_receipt_number}    ${date.time}
 Total:  ${datainfo.total_money} Kz
 --------------------------------
 Emitido por: Shufeng Wang

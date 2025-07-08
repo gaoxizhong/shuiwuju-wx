@@ -21,7 +21,8 @@ const {
   new_payWater,
   getUserBluetoolthInfoData,
   setReceiptStatus,
-  setInvoiceStatus
+  setInvoiceStatus,
+  addUserPayLogNumber
 } = require('./../../apis/water')
 const {
   handleCheckBill
@@ -93,6 +94,7 @@ Page({
     showCheck: false,
     cheque_number: '',
     is_yujiao: '', // 'automatica' 预缴
+    pay_log_id: '',
     automatica_title:`
 Factura Automatica`,
   },
@@ -261,6 +263,7 @@ Factura Automatica`,
           user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
           total_water: res.data.total_water, // 总用水量
           invoice_code: res.data.invoice_code,
+          pay_log_id: res.data.data.id
         })
         //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
@@ -491,7 +494,6 @@ Factura Automatica`,
     this.setData({
       print_type: 'invoiceInfo'
     })
-    // this.getUserBluetoolthInfoData(this.blueToothPrint);
     this.new_onConfirmPay();
   },
 
@@ -532,132 +534,98 @@ Factura Automatica`,
         icon: "none",
         duration: 30000,
       })
-      // this.connectBlueToothDevice(connectDeviceInfo)
       this.handlePrint(connectDeviceInfo)
     }
   },
-  connectBlueToothDevice({
-    deviceId,
-    serviceId
-  }) {
-    wx.showToast({
-      icon: "none",
-      duration: 30000,
-    })
-    console.log('开始连接蓝牙设备')
-    // 开始连接蓝牙设备
-    blueToolth.createBLEConnection(deviceId).then(res => {
-      // 连接蓝牙设备成功
-      console.log('连接蓝牙设备成功')
-      if (res.errMsg && res.errMsg.includes('ok')) {
-        blueToolth.getBLEDeviceServices({
-          deviceId,
-          serviceId
-        }).then(data => {
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectSuccess,
-            icon: "none",
-            duration: 3000,
-          })
-          this.setData({
-            printDeviceInfo: data,
-          })
-          this.handlePrint()
-        }).catch((res) => {
-          console.log(res)
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectfail,
-            icon: "none",
-            duration: 3000,
-          })
-          this.setData({
-            printDeviceInfo: null,
-          })
-        })
-      } else {
-        console.log('11')
-        wx.hideToast()
-        this.setData({
-          printDeviceInfo: null,
-        })
-      }
-    }).catch((res) => {
-      console.log('连接蓝牙设备成功' + res)
-      wx.hideToast()
-      let msg = ''
-      if (res.errCode) {
-        msg = blueToolth.errorInfo[res.errCode]
-      }
-      msg = msg || res.errMsg.split('fail')[1]
-      wx.showToast({
-        title: msg,
-        icon: "none",
-        duration: 3000,
-      })
-      this.setData({
-        printDeviceInfo: null,
-      })
-    })
-  },
   // 开始打印
   handlePrint(p) {
-    let print_type = this.data.print_type;
-    let info = [];
-    // GBK.encode({string}) 解码GBK为一个字节数组
+    let that = this;
+    let print_type = that.data.print_type;
+    let p_d = {
+      id: that.data.pay_log_id,
+    }
     // 发票
-    if (print_type == 'invoiceInfo') {
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_title_1),
-        ...this.arrEncoderCopy(this.data.invoiceInfo_invoice_code),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_title),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_historyData_info),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_title),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_facturacao_info),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.invoiceInfo_valores),
-        ...blueToolth.printCommand.enter
-      ]
+    if (print_type == 'invoiceInfo'){
+      p_d.tyep = 2;  // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
     }
-    //  收据
-    if (print_type == 'receiptInfo') {
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        // ...this.data.imgArr,
-        ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title_1),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_historyData),
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_TOTAL),
-        ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Pagamento),
-        ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Modos),
-        ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Saldo),
-        ...blueToolth.printCommand.enter
-      ]
+    // 收据
+    if (print_type == 'receiptInfo'){
+      p_d.tyep = 1;
     }
-    console.log('开始打印，api传信息...')
-    let n = 1;
-    this.writeBLECharacteristicValue(p,info,n);
+    // 获取编码
+    addUserPayLogNumber(p_d).then(res => {
+      if(res.code == 200){
+        let info = [];
+
+        // 发票
+        if (print_type == 'invoiceInfo') {
+          that.setData({
+            invoiceInfo_number: `
+Ref. Recibo: ${res.data.invoice_number}
+`,
+          })
+          info = [
+            ...blueToolth.printCommand.clear,
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+            ...that.arrEncoderCopy(that.data.invoiceInfo_invoice_code),
+            ...that.arrEncoderCopy(that.data.invoiceInfo_number),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_title),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_historyData_info),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+            ...blueToolth.printCommand.enter
+          ]
+        }
+        //  收据
+        if (print_type == 'receiptInfo') {
+          that.setData({
+            receiptInfo_number: `
+Ref. Recibo: ${res.data.receipt_number}
+`,
+          })
+          info = [
+            ...blueToolth.printCommand.clear,
+            ...blueToolth.printCommand.center,
+            // ...that.data.imgArr,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
+            ...that.arrEncoderCopy(that.data.receiptInfo_number),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
+            ...blueToolth.printCommand.enter
+          ]
+        }
+        console.log('开始打印，api传信息...')
+        let n = 1;
+        that.writeBLECharacteristicValue(p,info,n);
+      }
+    }).catch(e => {
+      console.log(e)
+    })
+
   },
   writeBLECharacteristicValue(data,i,n){
     let p = data;
@@ -692,8 +660,9 @@ Factura Automatica`,
             // 4.修改打印收据状态
             that.setReceiptStatus();
           }
-        } else {
-          // 5.修改发票收据状态
+        } 
+        if (print_type == 'invoiceInfo'){
+          // 5.修改发票状态
           that.setInvoiceStatus();
         }
        
@@ -746,13 +715,12 @@ NIF:5601022917
 Atendimento ao Cliente941648993
 Comunicação de Roturas941648999
 Email info.epasksagmail.com
-
         `,
         invoiceInfo_invoice_code: `
 Factura/Recibo N° ${that.data.invoice_code}
-
-Dados do Cliente `,
+`,
         invoiceInfo_CustomerData: `
+Dados do Cliente 
 Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}
 N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
 N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
@@ -778,7 +746,7 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${total_water} (m³)
 ${userBluetoolthInfoData.user_type.is_constant == 0?'Domestico： ' + (userBluetoolthInfoData.user_type.range_min >= 10?'> 10':(userBluetoolthInfoData.user_type.range_min + '-' + userBluetoolthInfoData.user_type.range_max) ):''}
-T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money }
+T.Fixa ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}: ${ userBluetoolthInfoData.user_type.rent_money }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%)
 IVA(0%) M04
 TOTAL A PAGAR  ${that.data.user_PayFees_info.total_money} KZ
@@ -803,7 +771,6 @@ Recibo N° ${that.data.invoice_code}
 ORIGINAL
 Nome: ${userBluetoolthInfoData.water_meter.wm_name}
 Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
-
 `,
         receiptInfo_historyData: `
 DATA: ${date.time}

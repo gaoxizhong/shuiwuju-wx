@@ -303,7 +303,7 @@ ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].
       printInfo_facturacao_info:`
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
-T.Fixa Domestico: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
+T.Fixa ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}
 Totalizador/Normal: ${userBluetoolthInfoData.water_meter.is_share ? 'Totalizador':'Normal' }
 Unidades: ${userBluetoolthInfoData.water_meter.household_num }    

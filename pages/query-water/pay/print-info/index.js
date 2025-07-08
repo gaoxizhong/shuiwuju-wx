@@ -12,7 +12,8 @@ const {
   printWater,
   getUserBluetoolthInfoData,
   setReceiptStatus,
-  setInvoiceStatus
+  setInvoiceStatus,
+  addUserPayLogNumber
 } = require('./../../../../apis/water')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../../../utils/encoding.js")
@@ -715,8 +716,20 @@ ${date.time}
       },
     })
   },
-  
+  // 添加编码
+  addUserPayLogNumber(n){
+    let that = this;
+    let p = {
+      id: that.data.id,
+      type: n,  // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
+    }
+    // 获取编码
+    addUserPayLogNumber(p).then(res => {
 
+    }).catch(e => {
+      console.log(e)
+    })
+  },
   // 4.修改打印收据状态
   setReceiptStatus (){
     let that = this;
@@ -724,19 +737,25 @@ ${date.time}
       id: that.data.id,
       receipt_status: 2,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
-     
+      if(res.code == 200){
+        // 添加编码
+        that.addUserPayLogNumber(1);
+      }
     }).catch(res => {
       wx.hideToast()
     })
   },
-  // 5.修改发票收据状态
+  // 5.修改发票状态
   setInvoiceStatus(){
     let that = this;
     setInvoiceStatus({
       id: that.data.user_PayFees_info.id,
       invoice_status: 2,  // 1:未开具 2:已开具 3:已取消
     }).then(res => {
-    
+      if(res.code == 200){
+        // 添加编码
+        that.addUserPayLogNumber(2);
+      }
     }).catch(res => {
       wx.hideToast()
     })

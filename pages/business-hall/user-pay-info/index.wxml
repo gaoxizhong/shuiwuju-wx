@@ -38,14 +38,14 @@
           <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1 && !item.cancel_invoice_number}}">{{lang.wkj_status}}</text>
           <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2 && !item.cancel_invoice_number}}">{{lang.ykj_status}}</text>
           <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3 || item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
-          <view class="qx-btn {{item.invoice_status == 2 && !item.cancel_invoice_number ? 'active':''}}" data-type="fatura" bind:tap="{{item.invoice_status == 2 ? 'clickQx':''}}">取消打印</view>
+          <view class="qx-btn {{item.invoice_status == 2 && !item.cancel_invoice_number ? 'active':''}}" data-type="fatura" bind:tap="{{item.invoice_status == 2 ? 'clickQx':''}}">{{btnName.cancelName}}</view>
         </view>
         <view>
           <text>{{lang.s_status}}：</text>
           <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1 && !item.cancel_receipt_number}}">{{lang.wkj_status}}</text>
           <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2 && !item.cancel_receipt_number}}">{{lang.ykj_status}}</text>
           <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3 || item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
-          <view class="qx-btn {{item.receipt_status == 2 && !item.cancel_receipt_number ? 'active':''}}" data-type="recibo" bind:tap="{{item.receipt_status == 2 && !item.cancel_receipt_number ? 'clickQx':''}}">取消打印</view>
+          <view class="qx-btn {{item.receipt_status == 2 && !item.cancel_receipt_number ? 'active':''}}" data-type="recibo" bind:tap="{{item.receipt_status == 2 && !item.cancel_receipt_number ? 'clickQx':''}}">{{btnName.cancelName}}</view>
         </view>
       </view>
     </view>
