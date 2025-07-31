@@ -12,6 +12,7 @@ import {
   createPayDemandNote, // 创建收费账单
   getDemandNoteList,  // 订单列表
   trUpPayDemandMote, // 转换形式发票
+  getTrDemandNoteTotalMoney
 } from '../../../apis/admin'
 const {
   getFbSelectWmList
@@ -188,6 +189,26 @@ Page({
    */
   onShareAppMessage() {
 
+  },
+  getTrDemandNoteTotalMoney(){
+    const that = this;
+    let price_list_id = that.data.seltTypeInfo.id;
+    let wm_id = that.data.selectradio_info.wm_id;
+    let date_time = that.handleTimeValue().time
+    getTrDemandNoteTotalMoney({
+      wm_id,
+      price_list_id,
+      date_time
+    }).then( res =>{
+      if(res.code == 200){
+        that.setData({
+          amount: res.data.data.total_money
+        })
+      }
+      
+    }).catch(e =>{
+      console.log(e)
+    })
   },
    //获取收费及目标
   getTrPriceList(){
@@ -411,15 +432,21 @@ handleSearchInfo() {
   },
   // 弹窗选择打印类型
   onConfirmType1Select(e) {
+    const that = this;
     const typeLabel_1 = e.detail.value.text
-    this.setData({
+    that.setData({
       parent_type_error: false,
       typeLabel_1,
       seltTypeInfo: e.detail.value,
       showCheck: true,
       amount: e.detail.value.amount?fmoney(Number(e.detail.value.amount),2) : '',
     })
-    this.onCloseType1Select();
+    that.onCloseType1Select();
+    if(that.data.selectradio_info){
+      setTimeout( () =>{
+        that.getTrDemandNoteTotalMoney();
+      },100)
+    }
   },
   // 点击发票打印
   clickPrint(){

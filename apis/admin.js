@@ -76,3 +76,12 @@ export const trUpPayDemandMote = (data) => {
     data
   })
 }
+// 计算其他收费项目应收费用
+export const getTrDemandNoteTotalMoney = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_demand_note_total_money`,
+    method: 'POST',
+    data
+  })
+}
