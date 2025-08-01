@@ -89,6 +89,8 @@ Page({
       text: i.type_name,
       value: i.id
     }))
+    console.log(list)
+
     let user_type_id = form.user_type_id;
     let type = '';
     list.forEach( ele =>{

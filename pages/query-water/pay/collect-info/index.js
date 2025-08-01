@@ -357,7 +357,15 @@ Page({
     let that = this;
     that.setData({
       page: 1,
-      radioList: []
+      radioList: [],
+      selectradio_info: {},
+      reading: '',
+      total_water: '',
+      now_time: '',
+      months: '',
+      total_money: '',
+      waterList: [],
+      radio: 0,
     })
     that.getlist();
   },
