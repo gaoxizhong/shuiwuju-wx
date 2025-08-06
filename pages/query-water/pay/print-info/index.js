@@ -102,6 +102,7 @@ Factura Automatica`,
       steps: lang.pay.steps,
       is_yujiao
     })
+   
     // this.getArrearsMoneySum(options.wm_no)
     // 获取图片
     // this.getLogoImage();
@@ -641,8 +642,7 @@ T.Fixa ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_
 Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate_num+ '* ' + user_type_price + ' = ' + sewage_rate_price}  
 ${userBluetoolthInfoData.water_meter.is_share?'O custo médio: ' +average_pairce +'KZ':'' }
 IVA(0%) M04
-CFR: 11.00 Kz X ${months} = ${Number(11*months).toFixed(2)} Kz
-
+CFR: 11.00 Kz X ${userBluetoolthInfoData.user_payment[0].CFR_total_price?userBluetoolthInfoData.user_payment[0].months:0} = ${userBluetoolthInfoData.user_payment[0].CFR_total_price} Kz
 `,
       printInfo_TOTAL:`
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,

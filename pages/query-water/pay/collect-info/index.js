@@ -42,7 +42,7 @@ Page({
       maxHeight: 140,
       minHeight: 140
     },
-
+    CFR_info:{},
 
     selectIndex: 0,
     show: false,
@@ -83,6 +83,7 @@ Page({
       btnName: lang.btnName,
       steps: lang.pay.steps,
     })
+    wx.setStorageSync('CFR_info', '');
   },
   onShow(){
    const langVersion = wx.getStorageSync('langversion');
@@ -171,7 +172,12 @@ Page({
         this.setData({
           total_water: water,
           total_money: price,
-          months
+          months,
+          CFR_info: {
+            CFR_price: res.data.CFR_price,
+            CFR_total_price: res.data.CFR_total_price,
+            months: res.data.months,
+          }
         })
       }).catch((res) => {
         wx.showToast({
@@ -297,7 +303,8 @@ Page({
       reading = Number(last_reading) + Number(months * Number(water_num))
     }
     // 计算包月 当前用水量 -----  ↑
-
+    let CFR_info = this.data.CFR_info;
+    wx.setStorageSync('CFR_info', JSON.stringify(CFR_info));
     wxAsyncApi('navigateTo', {
       url: `/pages/query-water/pay/confirm-info/index?wm_no=${wm_no}&wm_name=${wm_name}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}&last_time=${last_time}&now_time=${now_time}&months=${months}&is_T=${is_T}&pageUrl=collectInfo`,
       // url: `/pages/query-water/pay/print-info/index?wm_no=${wm_no}&total_money=${total_money}&total_water=${total_water}&reading=${reading}&imageUrl=${imageUrl}&last_reading=${last_reading}`,
