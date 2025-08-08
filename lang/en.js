@@ -630,7 +630,9 @@ const en_lang = {
           error: false,
         },
       ],
-      submit: 'Confirmar'
+      submit: 'Confirmar',
+      agree: 'Concordo',
+      yhysxy: 'Acordo de privacidade do usuário',
     },
     bluetoolthDevice: {
       connectDeviceTitle: 'Dispositivos já conectados',

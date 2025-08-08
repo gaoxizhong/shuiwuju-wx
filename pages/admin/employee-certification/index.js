@@ -14,7 +14,8 @@ Page({
     lang: lang.admin.employee,
     btnName: lang.btnName,
     form: [],
-    employee: false
+    employee: false,
+    checked: false,
   },
 
   /**
@@ -42,6 +43,13 @@ Page({
     const wixiForm = that.selectComponent('#employee-form')
     const data = wixiForm.getFormData()
     if (data) {
+      if(!that.data.checked){
+        wx.showToast({
+          title: 'Por favor concordar',
+          icon: 'none'
+        })
+        return
+      }
       employeeCertification(data).then(res => {
         wx.setStorageSync('tabberIndex', 0)
         wx.setStorageSync('employee', true)
@@ -74,4 +82,30 @@ Page({
       delta: page
     })
   },
+  openPrivacyContract() {
+    wx.openPrivacyContract({
+      success: res => {
+        console.log('openPrivacyContract success')
+      },
+      fail: res => {
+        console.error('openPrivacyContract fail', res)
+      }
+    })
+  },
+  bindChange(e){
+    console.log(e)
+    this.setData({
+      checkbox : e.detail.value
+    })
+    if(e.detail.value.length == 0){
+      this.setData({
+        checked :false
+      })
+    }
+    if(e.detail.value[0] == '1'){
+      this.setData({
+        checked :true,
+      })
+    }
+  }
 })

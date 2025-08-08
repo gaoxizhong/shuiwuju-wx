@@ -1,6 +1,19 @@
 <!--pages/admin/employee-certification/index.wxml-->
 <view class="container employee-certification">
-  <wixi-form id="employee-form" form="{{form}}" readonly="{{employee}}"></wixi-form>
+  <view style="flex: 1;">
+    <wixi-form id="employee-form" form="{{form}}" readonly="{{employee}}"></wixi-form>
+    <view class="checkbox-view" wx:if="{{ !employee }}">
+      <checkbox-group bindchange="bindChange">
+        <label class="checkbox">
+          <checkbox value="1" checked="{{ checked }}"/>
+          <text>{{lang.agree}}</text>
+        </label>
+      </checkbox-group>
+      <text class="lable-text" bindtap="openPrivacyContract">《{{lang.yhysxy}}》</text>
+    </view>
+  </view>
+  
+ 
   <view class="btn" wx:if="{{!employee}}">
       <view class="btn-item" bindtap="handleClick">
         {{btnName.submitName}}

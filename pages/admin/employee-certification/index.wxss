@@ -19,3 +19,21 @@ page {
   border-top: 1px solid #ebeef5;
   padding: 20rpx;
 }
+.checkbox-view{
+  margin-top: 30rpx;
+  font-size: 30rpx;
+  padding-left: 30rpx;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+.checkbox{
+  display: flex;
+  align-items: center;
+}
+.lable-text{
+  color: blue;
+}
+.checkbox checkbox{
+  transform: scale(0.7);
+}

@@ -618,7 +618,10 @@ const zh_lang = {
           error: false,
         },
       ],
-      submit: '确认'
+      submit: '确认',
+      agree: '同意',
+      yhysxy: '用户隐私协议',
+
     },
     bluetoolthDevice: {
       connectDeviceTitle: '已连接设备',
