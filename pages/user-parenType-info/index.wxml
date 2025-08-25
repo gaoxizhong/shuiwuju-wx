@@ -27,10 +27,10 @@
       </view>
       <!-- 优惠 -->
       <van-cell-group>
-        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:blur="handleReading"  bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" />
+        <van-field type="digit" custom-style="flex-direction: column;" title-width="100%" required error="{{no_error}}" bind:blur="handleReading"  bind:change="handleInputMoney" label="{{lang.paid_total_money}}  (KZ)" model:value="{{ paid_total_money }}" placeholder="{{lang.paid_total_money}}" readonly="{{itemInfo.pay_status == 1}}" />
       </van-cell-group>
       <van-cell-group>
-        <van-field custom-style="flex-direction: column;" title-width="100%" readonly required error="{{pay_type_error}}" label="{{lang.pay_type}}" model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}" bindtap="showPayPopup"/>
+        <van-field custom-style="flex-direction: column;" title-width="100%" readonly required error="{{pay_type_error}}" label="{{lang.pay_type}}" model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}" bindtap="{{itemInfo.pay_status == 1?'': 'showPayPopup'}}"/>
       </van-cell-group>
       <van-cell-group>
 
@@ -41,7 +41,9 @@
   </view>
   <view class="btn">
     <block>
-      <!-- 打印收据 开始 抄表员 search-person不显示收据--> 
+      <!-- <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printAgain':''}}" wx:if="{{ itemInfo.pay_status == 1 }}">
+        再次打印
+      </view> -->
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
         {{btnName.printOther}}
       </view>

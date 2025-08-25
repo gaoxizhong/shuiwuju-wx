@@ -86,26 +86,31 @@ Page({
    */
   onLoad(options) {
     console.log(options)
-    lang = app.globalData.lang
-    this.setData({
+    lang = app.globalData.lang;
+    let that = this;
+    that.setData({
       lang: lang.index,
       btnName: lang.btnName,
       langDialog: lang.dialog,
     })
     const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     const itemInfo = JSON.parse(options.data);
+    console.log(itemInfo)
     const total_money = JSON.parse(options.data).total_money;
-    const userInfo = app.globalData.userInfo || {}
-    this.setData({
+    const userInfo = app.globalData.userInfo || {};
+    that.getArrearsMoneySum(options.wm_no);
+
+    that.setData({
       wm_no: itemInfo.water_meter.wm_no,
       wm_name: itemInfo.water_meter.wm_name,
       source,
       userInfo,
       itemInfo,
       total_money: fmoney(total_money,2),
-      paid_total_money: JSON.parse(options.data).total_money
+      paid_total_money: JSON.parse(options.data).total_money,
+      operator_name: itemInfo.operator_name?itemInfo.operator_name: ''
     })
-    this.getArrearsMoneySum(options.wm_no)
+
     if (wx.getStorageSync('operatorNameList')) {
       let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
       console.log(operatorNameList)
@@ -150,6 +155,20 @@ Page({
           pay_text: '',
           cheque_number: '',
         })
+        if(that.data.itemInfo.pay_status == 1){
+          let way = that.data.itemInfo.pay_way;
+          let text = payWayList.find( ele => ele.key == way).text;
+          that.setData({
+            pay_way: way,
+            pay_text: text,
+          })
+          if (way == 4){
+            that.setData({
+              showCheck: true,
+              cheque_number: that.data.itemInfo.cheque_number?that.data.itemInfo.cheque_number:''
+            })
+          }
+        }
       }
       
     }).catch((res) => {
