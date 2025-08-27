@@ -7,6 +7,10 @@
   </block> -->
   <van-tabbar active="{{ selected }}" bind:change="toRouter">
     <van-tabbar-item  wx:for="{{list}}" icon="{{item.icon}}" wx:key="index">{{item.text}}</van-tabbar-item>
+    <!-- 中间凸起按钮 -->
+    <view class="center-button" bindtap="onCenterClick">
+      <image src="/img/index/icon-user-cx.png" class="center-icon" />
+    </view>
   </van-tabbar>
 
 </view>

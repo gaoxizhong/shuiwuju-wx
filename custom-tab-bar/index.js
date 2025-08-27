@@ -41,5 +41,10 @@ Component({
         fail(res) {}
       })
     },
+    onCenterClick() {
+      wx.navigateTo({
+        url: '/pages/index/account-search/index'
+      });
+    }
   }
 })

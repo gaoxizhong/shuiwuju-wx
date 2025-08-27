@@ -45,7 +45,7 @@
         再次打印
       </view> -->
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
-        {{btnName.printOther}}
+        {{ itemInfo.pay_status == 1 ?btnName.printOtherTwo:btnName.printOther }}
       </view>
       <!-- 打印 结束-->
     </block>

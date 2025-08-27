@@ -1,8 +1,11 @@
 <!--pages/index/index.wxml-->
 <view class="index">
   <view class="image-logo">
-    <van-image width="100%" src="/img/index/bag.png" fit="widthFix" />
-    <view class="fix-func">
+    <image src="https://oss.qingshanpai.com/wx_shuiwuju/index-bg2.png" mode="widthFix" />
+    <view class="image-logo-title">
+      <view class="logo-title">EPASKS-E.P.</view>
+    </view>
+    <!-- <view class="fix-func">
       <view class="box-btn" bindtap="handleToSearch">
         <view class="icon" style="background-color: #58cab4;">
           <image src="/img/index/search.png" mode="aspectFit" />
@@ -11,35 +14,40 @@
           {{lang.iconSearch}}
         </view>
       </view>
-    </view>
+    </view> -->
   </view>
   <view class="index-content">
 
-    <scroll-view scroll-y class="scroll-content">
-      <view class="func box" wx:if="{{showFuncList.length}}">
-        <view class="title">
-          {{lang.iconFunc}}
+    <view class="func box" wx:if="{{showFuncList.length}}">
+      <view class="title">
+        <image src="/img/index/icon-index-1.png" mode="widthFix"/>
+        <view class="title-text">
+          <!-- <image src="/img/index/icon-index-2.png" mode="widthFix"/> -->
+          <text>{{lang.iconFunc}}</text>
         </view>
-        <view class="content">
-          <view wx:for="{{showFuncList}}" wx:key="index" class="box-btn" data-index="{{index}}" bindtap="handleToFuncPage">
-            <view class="icon" style="background-color: {{item.color}};">
-              <image src="{{item.key}}" mode="aspectFit" />
-            </view>
-            <view class="text">
-              {{item.title}}
-            </view>
+      </view>
+      <view class="content">
+        <view wx:for="{{showFuncList}}" wx:key="index" class="box-btn" data-index="{{index}}" bindtap="handleToFuncPage">
+          <view class="icon">
+            <image src="{{item.key}}" mode="widthFix" />
+          </view>
+          <view class="text">
+            {{item.title}}
           </view>
         </view>
       </view>
-      <view class="notice box">
-        <view class="title">
-          {{lang.iconNotice}}
-        </view>
-        <view class="content">
-          {{lang.iconNoticeText}}
+    </view>
+    <view class="notice box">
+      <view class="title">
+        <image src="/img/index/icon-index-3.png" mode="widthFix"/>
+        <view class="title-text">
+          <text>{{lang.iconNotice}}</text>
         </view>
       </view>
-    </scroll-view>
+      <view class="content">
+        {{lang.iconNoticeText}}
+      </view>
+    </view>
 
   </view>
   <van-popup show="{{ show }}" position="bottom" bind:close="onCloseSelect">

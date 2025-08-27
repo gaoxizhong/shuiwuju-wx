@@ -12,6 +12,7 @@
   overflow: hidden;
   padding-bottom: env(safe-area-inset-bottom);
   border-top: 1px solid rgba(0, 0, 0, 0.15);
+  position: relative;
 }
 
 .bar-item {
@@ -24,4 +25,34 @@
 
 .active {
   color: red;
+}
+.center-button {
+  position: absolute;
+  left: 50%;
+  bottom: 30rpx;
+  transform: translateX(-50%);
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  box-shadow: 0 4rpx 16rpx rgba(116, 116, 116, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  background: #fff;
+}
+
+.center-icon {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+/* 调整Vant默认样式 */
+.van-tabbar {
+  height: 120rpx !important;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.van-tabbar-item__icon {
+  margin-bottom: 4rpx !important;
 }

@@ -205,6 +205,10 @@ Page({
   payDemandNote() {
     let that = this;
     let pay_success = that.data.pay_success;
+    let itemInfo = that.data.itemInfo;
+    if(itemInfo.pay_status == 1){
+      pay_success = true;
+    }
     if (pay_success) {
       that.getUserBluetoolthInfoData(that.blueToothPrint);
     } else {
@@ -579,7 +583,7 @@ Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
 
 `,
         receiptInfo_historyData: `
-DATA: ${date.time}
+DATA: ${itemInfo.pay_status == 1 ? that.data.itemInfo.pay_time:date.time}
 `,
         receiptInfo_Pagamento: `
 Modos de Pagamento

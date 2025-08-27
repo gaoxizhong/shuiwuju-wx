@@ -501,70 +501,70 @@ const zh_lang = {
   func: {
     list: [{
         auth: 'L',
-        key: '/img/index/add-account.png',
+        key: '/img/index/icon-index-add.png',
         title: '新增用户',
         color: '#6cbcfc',
         url: '/pages/query-water/add-account/index'
       },
       {
         auth: 'L',
-        key: '/img/index/search-pay.png',
+        key: '/img/index/icon-search-pay.png',
         title: '查表缴费',
         color: '#fc9c3c',
-        url: '/pages/query-water/pay/collect-info/index'
+        url: '/pages/query-water/pay/icon-collect-info/index'
       },
       {
         auth: 'L',
-        key: '/img/index/today-summary.png',
+        key: '/img/index/icon-today-summary.png',
         title: '今日收费',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },
       {
         auth: 'L',
-        key: '/img/index/report-pepair.png',
+        key: '/img/index/icon-report-pepair.png',
         title: '请求维护',
         color: '#58cab4',
         url: '/pages/query-water/report-repair/index'
       },
       {
         auth: 'C',
-        key: '/img/index/maintenance.png',
+        key: '/img/index/icon-maintenance.png',
         title: '维修清单',
         color: '#fc9c3c',
         url: '/pages/maintenance/maintenance/index'
       },
       {
         auth: 'R',
-        key: '/img/index/business-hall.png',
+        key: '/img/index/icon-business-hall.png',
         title: '缴费和收据',
         color: '#58cab4',
         url: '/pages/business-hall/index/index',
       },
       {
         auth: 'CF',
-        key: '/img/index/fm-search-account.png',
+        key: '/img/index/icon-fm-search-account.png',
         title: '对账',
         color: '#6cbcfc',
         url: '/pages/financial-manager/search-account/index'
       },
       {
         auth: 'GC',
-        key: '/img/index/search.png',
+        key: '/img/index/icon-search.png',
         title: '缴费单',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },
       {
         auth: 'L',
-        key: '/img/index/add-account.png',
+        key: '/img/index/icon-user-status.png',
         title: '用户状态',
         color: '#6cbcfc',
         url: '/pages/query-water/account-status/index'
       },
       {
         auth: 'R',
-        key: '/img/index/business-hall.png',
+        key: '/img/index/icon-other-invoices.png',
         title: '其他发票',
         color: '#58cab4',
         url: '/pages/query-water/other-invoices/index',
