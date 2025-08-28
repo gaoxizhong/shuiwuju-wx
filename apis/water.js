@@ -100,7 +100,7 @@ export const getUserBluetoolthInfoData = (data) => {
   })
 }
 
-// 修改打印收据状态
+// 修改打印状态
 export const setReceiptStatus = (data) => {
   const baseUrl = getApp().globalData.baseUrl
   return httpRequest({

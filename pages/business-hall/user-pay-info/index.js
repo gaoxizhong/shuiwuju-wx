@@ -628,10 +628,14 @@ Utilizador: ${that.data.operator_name}
   // 5.修改发票状态
   setInvoiceStatus(n){
     let that = this;
-    setInvoiceStatus({
+    let p = {
       id: that.data.from.id,
       invoice_status: n,  // 1:未开具 2:已开具 3:已取消
-    }).then(res => {
+    }
+    if(p.invoice_status == 3){
+      p.comment = that.data.valueinfo.text
+    }
+    setInvoiceStatus().then(res => {
     
     }).catch(res => {
       wx.hideToast()
