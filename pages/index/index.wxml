@@ -1,7 +1,7 @@
 <!--pages/index/index.wxml-->
 <view class="index">
   <view class="image-logo">
-    <image src="https://oss.qingshanpai.com/wx_shuiwuju/index-bg2.png" mode="widthFix" />
+    <image src="https://oss.qingshanpai.com/wx_shuiwuju/index-bg3.png" mode="widthFix" />
     <view class="image-logo-title">
       <view class="logo-title">EPASKS-E.P.</view>
     </view>

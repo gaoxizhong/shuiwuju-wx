@@ -98,7 +98,7 @@ page{
   flex-wrap: wrap;
 }
 .box .content .box-btn {
-  padding: 20rpx 0px;
+  padding: 12rpx 0px;
 }
 
 .box-btn {
@@ -114,16 +114,16 @@ page{
   text-align: center;
 }
 .box-btn .icon {
-  margin: 6rpx;
-  width: 80rpx;
-  height: 80rpx;
+  /* margin: 6rpx; */
+  width: 128rpx;
+  height: 128rpx;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .icon image{
-  width: 80rpx;
-  height: 80rpx;
+  width: 128rpx;
+  height: 128rpx;
 }
 
 .notice .content {

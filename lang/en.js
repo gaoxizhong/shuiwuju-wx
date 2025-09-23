@@ -504,7 +504,7 @@ const en_lang = {
   func: {
     list: [{
         auth: 'L',
-        key: '/img/index/icon-index-add.png',
+        key: '/img/index/icon-index-add1.png',
         title: 'Cadastrar',
         tabberName: 'Cadastrar consumidor',
         color: '#6cbcfc',
@@ -512,7 +512,7 @@ const en_lang = {
       },
       {
         auth: 'L',
-        key: '/img/index/icon-search-pay.png',
+        key: '/img/index/icon-search-pay1.png',
         title: 'Leituras',
         tabberName: 'Factura Simplificada',
         color: '#fc9c3c',
@@ -520,7 +520,7 @@ const en_lang = {
       },
       {
         auth: 'L',
-        key: '/img/index/icon-today-summary.png',
+        key: '/img/index/icon-today-summary1.png',
         title: 'Relatorios',
         tabberName: 'Relatorios',
         color: '#58cab4',
@@ -528,7 +528,7 @@ const en_lang = {
       },
       {
         auth: 'L',
-        key: '/img/index/icon-report-pepair.png',
+        key: '/img/index/icon-report-pepair1.png',
         title: 'Ocorrencias',
         tabberName: 'Mautenção e Reparação',
         color: '#58cab4',
@@ -536,7 +536,7 @@ const en_lang = {
       },
       {
         auth: 'C',
-        key: '/img/index/icon-maintenance.png',
+        key: '/img/index/icon-maintenance1.png',
         title: 'Relatorio de Ocorrencias',
         tabberName: 'Tavefas de Revisão',
         color: '#fc9c3c',
@@ -544,7 +544,7 @@ const en_lang = {
       },
       {
         auth: 'R',
-        key: '/img/index/icon-business-hall.png',
+        key: '/img/index/icon-business-hall1.png',
         title: 'Pagamentos',
         tabberName: 'Pagamento e recibo',
         color: '#58cab4',
@@ -552,7 +552,7 @@ const en_lang = {
       },
       {
         auth: 'CF',
-        key: '/img/index/icon-fm-search-account.png',
+        key: '/img/index/icon-fm-search-account1.png',
         title: 'Finanças',
         tabberName: 'Verificação financeira',
         color: '#6cbcfc',
@@ -560,21 +560,21 @@ const en_lang = {
       },
       {
         auth: 'GC',
-        key: '/img/index/icon-search.png',
+        key: '/img/index/icon-search1.png',
         title: 'Recibo',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },
       {
         auth: 'L',
-        key: '/img/index/icon-user-status.png',
+        key: '/img/index/icon-user-status1.png',
         title: 'Situação do cliente',
         color: '#6cbcfc',
         url: '/pages/query-water/account-status/index'
       },
       {
         auth: 'R',
-        key: '/img/index/icon-other-invoices.png',
+        key: '/img/index/icon-other-invoices1.png',
         title: 'Faturação',
         tabberName: 'Faturação',
         color: '#58cab4',
