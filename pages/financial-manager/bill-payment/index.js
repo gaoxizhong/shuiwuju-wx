@@ -1,12 +1,9 @@
 // pages/business-hall/index/index.js
 const app = getApp()
 let lang = app.globalData.lang
-import {
-  getAllUserPayLog,delAllUserPayLog,getDelAllUserPayLog
-} from './../../../apis/financial-manager'
-import {
-  wxAsyncApi,fmoney,handleTimeValue
-} from './../../../utils/util'
+import { getAllUserPayLog,delAllUserPayLog,getDelAllUserPayLog, } from './../../../apis/financial-manager'
+const { addUserPayLogNumber } = require('../../../apis/water')
+import { wxAsyncApi,fmoney,handleTimeValue } from './../../../utils/util'
 Page({
 
   /**
@@ -23,8 +20,7 @@ Page({
     list: [],
     stime: '', // 开始时间
     etime: '', // 结束时间
-    del_selt_info: {},
-    del_selt_index: null,
+
 
     type_seach: 'type', // type - - 选类型  seach 输入
     select_type: 1, // 1:水表号/ 2:用户名/3:用户地址/ 4:门牌号
@@ -33,7 +29,14 @@ Page({
     selectTypeIndex: 0,
     Type_show: false,
     title_active: 1,
+    del_selt_info: {},
+    del_selt_index: null,
     delList: [],  // 删除记录
+    cancelShowPop: false,
+    cancelList: [], // 取消原因
+    selt_cancel_status: {}, // 选中的取消原因
+    status_type: '',
+    is_return: true
   },
   /**
    * 生命周期函数--监听页面显示
@@ -202,37 +205,50 @@ Page({
     let item = e.currentTarget.dataset.item;
     let index = e.currentTarget.dataset.index;
     let list = that.data.list;
-    wx.showModal({
-      title: lang.historical.title,
-      content: lang.historical.content,
-      cancelText: lang.historical.cancelText,
-      confirmText: lang.historical.confirmText,
-      complete: (res) => {
-        if (res.confirm) {
-          console.log(item)
-          delAllUserPayLog({
-            user_pay_log_id: item.id,
-            del_data_time: handleTimeValue().time
-          }).then( res =>{
-            if(res.code == 200){
-              wx.showToast({
-                title: lang.message.success,
-              })
-              list.splice(index,1);
-              that.setData({
-                list,
-              })
-            }else{
-              wx.showToast({
-                title: res.desc,
-                icon: 'none'
-              })
-            }
-          })
+    if(item.cancel_receipt_number){
+      wx.showModal({
+        title: lang.historical.title,
+        content: lang.historical.content,
+        cancelText: lang.historical.cancelText,
+        confirmText: lang.historical.confirmText,
+        complete: (res) => {
+          if (res.confirm) {
+            console.log(item)
+            delAllUserPayLog({
+              user_pay_log_id: item.id,
+              del_data_time: handleTimeValue().time
+            }).then( res =>{
+              if(res.code == 200){
+                wx.showToast({
+                  title: lang.message.success,
+                })
+                list.splice(index,1);
+                that.setData({
+                  list,
+                })
+              }else{
+                wx.showToast({
+                  title: res.desc,
+                  icon: 'none'
+                })
+              }
+            })
+          }
         }
-      }
-    })
-    
+      })
+    }else{
+      that.setData({
+        cancelList: [
+          {id: 1,text:'Erro de lançamento'},
+          {id: 2,text:'Duplicação'},
+          {id: 3,text:'Devolução do pagamento'},
+          {id: 4,text:'Outro motivo justificado'},
+        ],
+        del_selt_index: index,
+        del_selt_info: item,
+        cancelShowPop: true
+      })
+    }
   },
   onChange(e){
     console.log(e)
@@ -273,5 +289,82 @@ Page({
     }).catch( e=>{
       console.log(e)
     })
-  }
+  },
+  // 点击取消按钮
+  // clickQx(){
+
+  // },
+  onCloseType1Select() {
+    this.setData({
+      cancelShowPop: false
+    })
+  },
+  // 取消原因弹窗 确认
+  onConfirmType1Select(e){
+    let that = this;
+    let valueinfo = e.detail.value; // 取消原因
+    let datainfo = this.data.del_selt_info; 
+    let list = that.data.list;
+    let index = that.data.del_selt_index;
+    if( !that.data.is_return ){
+      return
+    }
+    that.setData({
+      is_return: false
+    })
+    let p = {
+      id: datainfo.id,
+      type: 3,
+      comment: valueinfo.text
+    }
+    // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
+    // 获取编码
+    addUserPayLogNumber(p).then(res => {
+      console.log(res)
+      if(res.code == 200){
+        // that.blueToothPrint();
+        // 删除接口
+        delAllUserPayLog({
+          user_pay_log_id: datainfo.id,
+          del_data_time: handleTimeValue().time
+        }).then( res =>{
+          if(res.code == 200){
+            wx.showToast({
+              title: lang.message.success,
+            })
+            list.splice(index,1);
+            that.setData({
+              list,
+              del_selt_index: null,
+              del_selt_info: {},
+              cancelShowPop: false
+            })
+          }else{
+            wx.showToast({
+              title: res.desc,
+              icon: 'none'
+            })
+          }
+        })
+      }else{
+        wx.showToast({
+          title: 'Error',
+          icon:'none'
+        })
+      }
+      that.setData({
+        is_return: true
+      })
+    }).catch(e => {
+      console.log(e)
+      wx.showToast({
+        title: e.desc,
+        icon: 'none'
+      })
+      that.setData({
+        is_return: true
+      })
+    })
+    
+  },
 })

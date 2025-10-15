@@ -73,3 +73,8 @@
 <van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
   <van-picker id="Type_select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem"  />
 </van-popup>
+
+  <!-- 取消发票-- 原因弹窗 -->
+  <van-popup show="{{ cancelShowPop }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseType1Select">
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ cancelList }}" bind:confirm="onConfirmType1Select" bind:cancel="onCloseType1Select" />
+  </van-popup>
