@@ -511,7 +511,7 @@ const zh_lang = {
         key: '/img/index/icon-search-pay.png',
         title: '查表缴费',
         color: '#fc9c3c',
-        url: '/pages/query-water/pay/icon-collect-info/index'
+        url: '/pages/query-water/pay/collect-info/index'
       },
       {
         auth: 'L',
