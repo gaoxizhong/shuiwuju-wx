@@ -190,6 +190,8 @@ Component({
     onOpenSelect(e) {
       const area = app.globalData.area
       const picker = this.selectComponent('#wixi-area')
+      console.log(picker)
+
       const confirmIndex = this.data.confirmIndex
       if (picker) {
         confirmIndex.forEach((i, index) => {

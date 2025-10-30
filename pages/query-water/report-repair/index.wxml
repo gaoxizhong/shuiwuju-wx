@@ -45,7 +45,7 @@
   </van-popup>
    <!-- 选择类型弹窗 -->
   <van-popup show="{{ show }}" position="bottom"  custom-style="height: 300px;" bind:close="onCloseSelect">
-    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns }}" bind:confirm="onConfirmSelect" bind:cancel="onCloseSelect" />
+    <van-picker confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" show-toolbar columns="{{ columns_type }}" bind:confirm="onConfirmSelect" bind:cancel="onCloseSelect" />
   </van-popup>
   <!-- 提交按钮 -->
   <view class="btn">
@@ -78,7 +78,7 @@
     
   <!-- 省市区 弹窗-->
   <van-popup show="{{ showSelect }}" position="bottom" custom-style="height: 300px;" bind:close="onCloseAddSelect">
-    <van-picker id="wixi-area" show-toolbar  columns="{{ columns_add }}" 
+    <van-picker id="wixi-area" show-toolbar  columns="{{ columns }}" 
       confirm-button-text="{{langDialog.confirmText}}"
       cancel-button-text="{{langDialog.cancelText}}"
       bind:confirm="onConfirmAddSelect" 

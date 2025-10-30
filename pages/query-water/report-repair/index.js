@@ -63,7 +63,7 @@ Page({
     area3: '',
     areavalue: '', // 地区
     showSelect: false,  // 地区弹窗
-    columns_add: [],
+    columns: [],
     columnsIndex: [0, 0, 0],
     confirmIndex: [0, 0, 0],
     confirmValue: [0, 0, 0],
@@ -78,13 +78,25 @@ Page({
    */
   onLoad(options) {
     lang = app.globalData.lang
+    const area = app.globalData.area
+    const area0 = area.map(i => i.name)
+    const area1 = area[0].areas.map(i => i.name)
+    const area2 = area[0].areas[0].areas.map(i => i.name)
+    const columns = [{
+      values: area0,
+    }, {
+      values: area1,
+    }, {
+      values: area2,
+    }]
     const repair_type = app.globalData.repair_type
-    const columns = Object.keys(repair_type).map(i => ({
+    const columns_type = Object.keys(repair_type).map(i => ({
       key: i,
       text: repair_type[i]
     }))
     this.setData({
       columns,
+      columns_type,
       lang: lang.reportRepair,
       langMessage: lang.message,
       langDialog: lang.dialog,
@@ -330,7 +342,7 @@ Page({
         params.address = this.data.wm_address
       }
       console.log(params)
-      if( !is_return ){
+      if( !this.data.is_return ){
         return
       }
       this.setData({
@@ -479,7 +491,7 @@ Page({
     console.log(a_1);
     console.log(a_2);
     console.log(a_3);
-    const columns_add = [{
+    const columns = [{
       values: values1,
     }, {
       values: values2,
@@ -491,7 +503,7 @@ Page({
       area1: a_1,
       area2: a_2,
       area3: a_3,
-      columns_add,
+      columns,
       wm_address: item.wm_address,
       radio: name,
       wm_no: event.currentTarget.dataset.item.wm_no,
@@ -500,9 +512,14 @@ Page({
   },
   // 地区
   onOpenSelect(e) {
-    const area = app.globalData.area
+    const area = app.globalData.area;
+    console.log(area)
     const picker = this.selectComponent('#wixi-area')
+    console.log(picker)
+
     const confirmIndex = this.data.confirmIndex
+    console.log(confirmIndex)
+
     if (picker) {
       confirmIndex.forEach((i, index) => {
         if (index === 0) {
