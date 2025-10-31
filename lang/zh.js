@@ -387,7 +387,7 @@ const zh_lang = {
     info: {
       title: '维修信息',
       status: '状态',
-      name: '姓名',
+      name: '操作员',
       wm_no: '用户名',
       area: '地区',
       address: '详细地址',

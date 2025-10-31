@@ -11,7 +11,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.name}}</view>
-        <view class="info-item__info">{{form.type === 1 ? form.meter.wm_name: form.report_user.name}}</view>
+        <view class="info-item__info">{{ form.report_user.name }}</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.wm_no}}</view>
@@ -27,7 +27,7 @@
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.phone}}</view>
-        <view class="info-item__info">{{form.type === 1 ? form.meter.wm_phone: form.report_user.mobile}}</view>
+        <view class="info-item__info">{{form.meter.wm_phone? form.meter.wm_phone : ''}}</view>
       </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.info.report_pic}}</view>

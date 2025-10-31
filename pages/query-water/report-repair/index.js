@@ -380,14 +380,14 @@ Page({
               delta: -1
             })
           }
-          this.setData({
+          that.setData({
             is_return: true
           })
         },
         fail(e) {
           console.log(e)
           wx.hideLoading();
-          this.setData({
+          that.setData({
             is_return: true
           })
         }

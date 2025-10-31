@@ -391,8 +391,8 @@ const en_lang = {
     info: {
       title: 'Informações de reparação',
       status: 'Status',
-      name: 'Consumidor',
-      wm_no: 'Nome de usuário',
+      name: 'Nome de usuário',
+      wm_no: 'Consumidor',
       area: 'Localidade',
       address: 'Endereço detalhado',
       phone: 'Telefone',
