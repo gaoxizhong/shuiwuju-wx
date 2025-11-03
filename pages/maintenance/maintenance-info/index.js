@@ -2,8 +2,11 @@
 const app = getApp()
 let lang = app.globalData.lang
 import {
-  wxAsyncApi
+  wxAsyncApi,fmoney
 } from './../../../utils/util'
+const blueToolth = require('../../../utils/bluetoolth')
+//只需要引用encoding.js,注意路径
+var encoding = require("../../../utils/encoding.js")
 import {
   handleRepairAssig, //手动分配维修/投诉单给相关人员
   getRepairUserList,  // 获取维修人员列表
@@ -86,23 +89,6 @@ Page({
     // 获取分配人员列表
     this.getRepairUserList();
   },
-    //获取当前时间
-    handleTimeValue(date) {
-      const _date = date ? new Date(date) : new Date()
-      const year = _date.getFullYear()
-      const month = _date.getMonth() + 1
-      const day = _date.getDate()
-      const hh = _date.getHours()
-      const mm = _date.getMinutes()
-      const ss = _date.getSeconds()
-      const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
-      return {
-        year,
-        month,
-        day,
-        time,
-      }
-    },
   getRepairUserList(){
     getRepairUserList({}).then(res => {
       if(res.code == 200){
@@ -279,34 +265,171 @@ Page({
       show_repairUser: true
     })
   },
-    // 打印类型 弹窗关闭按钮
-    onCloseType1Select() {
-      this.setData({
-        show_repairUser: false
+  // 弹窗关闭按钮
+  onCloseType1Select() {
+    this.setData({
+      show_repairUser: false
+    })
+  },
+  // 弹窗选择
+  onConfirmType1Select(e) {
+    const repairUserLabel = e.detail.value.text
+    console.log(e)
+    this.setData({
+      repairUsererror: false,
+      repairUserLabel,
+      seltTypeInfo: e.detail.value,
+    })
+    this.onCloseType1Select();
+  },
+  previewImage(e){
+    console.log(e)
+    let that = this;
+    that.setData({
+      report_pic:e.currentTarget.dataset.report_pic,
+      swiper_shop:true
+    })
+  },
+  closePic(){
+    this.setData({
+      swiper_shop: false
+    })
+  },
+  // 打印数据-- 获取打印信息
+  imprimirInfo(){
+    let that = this;
+    // 获取打印信息
+    let date = this.handleTimeValue();
+    let form = that.data.form;
+    let lang = that.data.lang;
+    this.setData({
+      printInfo_title:`
+EPASKS-E.P.
+`,
+      printInfo:`
+Informações de reparação
+--------------------------------
+Status:      ${form.status_text}
+Nome de usuário:    ${form.report_user.name?form.report_user.name: ''}
+Consumidor:    ${form.meter ? form.meter.wm_no : ''}
+Localidade:    ${form.area ? form.area : ''}
+Endereço detalhado:    ${form.address ? form.address : ''}
+Telefone:    ${form.meter.wm_phone? form.meter.wm_phone : ''}
+Resolução:   ${form.report_note? form.report_note : ''}
+Status da atribuição:   ${form.do_uid > 0 ? lang.distribution_1: lang.distribution_2}
+Distribuição:    ${that.data.repairUserLabel}
+--------------------------------
+Processado por programaválido n31.1/AGT20
+`,
+      printInfo_data:`
+DATA: ${date.time}
+
+`,
+      
+    })
+    this.blueToothPrint();
+  },
+  
+  // 蓝牙设备打印
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    console.log(connectDeviceInfo)
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
+      wx.showModal({
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
+          if (res.confirm) {
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(res => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: "none",
+            })
+          }
+        }
       })
-    },
-    // 弹窗选择打印类型
-    onConfirmType1Select(e) {
-      const repairUserLabel = e.detail.value.text
-      console.log(e)
-      this.setData({
-        repairUsererror: false,
-        repairUserLabel,
-        seltTypeInfo: e.detail.value,
+    } else {
+      console.log('已连接。。。')
+      wx.showToast({
+        title: lang.blueToolth.connectDevice,
+        icon: "none",
+        duration: 30000,
       })
-      this.onCloseType1Select();
-    },
-    previewImage(e){
-      console.log(e)
-      let that = this;
-      that.setData({
-        report_pic:e.currentTarget.dataset.report_pic,
-        swiper_shop:true
-      })
-    },
-    closePic(){
-      this.setData({
-        swiper_shop: false
-      })
+      this.handlePrint(connectDeviceInfo)
     }
+  },
+  // 开始打印
+  handlePrint(p) {
+    let that = this;
+    // GBK.encode({string}) 解码GBK为一个字节数组
+      //  收据
+    let info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.ct,
+        ...blueToolth.printCommand.center,
+        ...this.arrEncoderCopy(this.data.printInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.left,
+        ...this.arrEncoderCopy(this.data.printInfo),
+        ...blueToolth.printCommand.center,
+        ...this.arrEncoderCopy(this.data.printInfo_data),
+        ...blueToolth.printCommand.enter
+      ]
+    console.log('开始打印，api传信息...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        console.log('打印成功...')
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: "none",
+          duration: 3000,
+        })
+      },
+      onFail(res){
+        console.log('打印失败...')
+        console.log(res)
+      }
+    });
+  },
+  //获取当前时间
+  handleTimeValue(date) {
+    const _date = date ? new Date(date) : new Date()
+    const year = _date.getFullYear()
+    const month = _date.getMonth() + 1
+    const day = _date.getDate()
+    const days = _date.getDay()
+    const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+    return {
+      time,
+      year,
+      month,
+      day,
+      days
+    }
+  },
+  // 转二进制 并数组复制
+  arrEncoderCopy(str){
+    let data = str;
+    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
+    // let arr = [...encoder.encode(data)]
+    // console.log(arr)
+    //utf8
+    let inputBuffer = new encoding.TextEncoder().encode(str);
+    let arr = [ ...inputBuffer ]
+    return arr
+  }
 })

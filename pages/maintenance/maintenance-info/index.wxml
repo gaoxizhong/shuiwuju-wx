@@ -59,6 +59,10 @@
     <view wx:if="{{ status === 'doing' }}" class="btn-item" bindtap="openRepairDone">
       {{btnName.submitName}}
     </view>
+    <!-- 打印 -->
+    <view wx:if="{{ form.status === 5 }}" class="btn-item" bindtap="imprimirInfo">
+      {{ btnName.cadastrar }}
+    </view>
   </view>
   <!-- 完成维修 -->
   <van-popup show="{{ show }}" position="bottom"  bind:close="onCloseRepairDone">
