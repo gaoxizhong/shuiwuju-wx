@@ -67,7 +67,7 @@ Page({
     selectIndex: 0,
     show: false,
     typeStatusList: [], // 其他类发票记录类型
-
+    proforma_number: '',
   },
 
   /**
@@ -489,6 +489,11 @@ handleSearchInfo() {
       p.type = 2; //  形式发票
     }
     createPayDemandNote(p).then( res =>{
+      if(p.type == 2){
+        that.setData({
+          proforma_number: res.data.data.proforma_number
+        })
+      }
       this.getPrint(selectradio_info,total_money);
     }).catch( e =>{
       console.log(e)
@@ -499,6 +504,7 @@ handleSearchInfo() {
   getPrint(info,am){
     let selectradio_info = info;
     let amount = am;
+    let proforma_number = this.data.proforma_number;
     let date = this.handleTimeValue();
     this.setData({
       proForm_title: `
@@ -528,6 +534,7 @@ Giro: ${selectradio_info.area_code}
 
 Espécies: ${this.data.seltTypeInfo.text}
 Montante: ${fmoney(amount,2)} KZ
+Recibo N°: ${proforma_number?proforma_number:''}
       `,
 
       invoiceInfo_valores: `
