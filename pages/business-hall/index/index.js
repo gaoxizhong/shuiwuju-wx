@@ -45,6 +45,13 @@ Page({
     type_seach: 'type', // type - - 选类型  seach 输入
     title_active: 1,
     delPayLogList: [],
+    cancelList: [
+      {id: 1,text:'Erro de lançamento'},
+      {id: 2,text:'Duplicação'},
+      {id: 3,text:'Devolução do pagamento'},
+      {id: 4,text:'Outro motivo justificado'},
+    ], // 取消原因
+    selt_cancel_status: {}, // 选中的取消原因
   },
   /**
    * 生命周期函数--监听页面显示

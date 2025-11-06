@@ -45,6 +45,12 @@
             {{item.status_text}}
           </view>
           <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" wx:if="{{item.status == 1 && title_active == 1}}"/>
+          <view class="btn-box">
+            <van-button  size='mini' type="info" data-type='print' bind:tap="clickCzBtn" wx:if="{{title_active == 2}}">
+              <image src="/img/icon-dy.png" mode="widthFix" />
+            </van-button>
+          </view>
+          
         </view>
       </block>
     </scroll-view>
