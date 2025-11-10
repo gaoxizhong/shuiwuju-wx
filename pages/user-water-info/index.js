@@ -225,7 +225,7 @@ Page({
     const time = `${day >= 10 ? day : '0' + day}.${month >= 10 ? month : '0' + month}.${year}`
     return time
   },
-   // 缴费单
+  // 缴费单
   // 获取用户打印信息
   blueToothPrint(){
     let that = this;
@@ -246,7 +246,7 @@ Page({
       let user_type_price = userBluetoolthInfoData.user_type.price; // 用户类型单价
       let total_water = Number(that.data.form.water);
       let sewage_rate_num = Number( Number(total_water) * Number(userBluetoolthInfoData.water_meter.sewage_rate)/100).toFixed(2); // 污水量
-      let sewage_rate_price =  Number(sewage_rate_num * user_type_price.toFixed(2)); // 污水价格
+      let sewage_rate_price =  Number(sewage_rate_num * user_type_price).toFixed(2); // 污水价格
     
       let first_step_water = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].first_step_water:0;
       let first_step_price = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].first_step_price:0;
@@ -313,8 +313,6 @@ CFR: 11.00 Kz X ${userBluetoolthInfoData.user_payment[0].CFR_total_price?userBlu
 `,
       printInfo_TOTAL:`
 TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,
-      pagamento_pagamento:`
-limite de pagamento: ${this.getMoreDay(15)}`,
       printInfo_valores:`
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
@@ -413,10 +411,6 @@ ${date.time}
       ...blueToolth.printCommand.center,
       ...blueToolth.printCommand.ct,
       ...that.arrEncoderCopy(that.data.printInfo_TOTAL),
-      ...blueToolth.printCommand.ct_zc,
-      ...blueToolth.printCommand.center,
-      ...that.arrEncoderCopy(that.data.pagamento_pagamento),
-      ...blueToolth.printCommand.ct,
       ...that.arrEncoderCopy(that.data.printInfo_valores),
       ...blueToolth.printCommand.ct_zc,
       ...blueToolth.printCommand.center,
