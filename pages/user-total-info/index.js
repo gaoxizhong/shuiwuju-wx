@@ -95,6 +95,7 @@ Page({
     cheque_number: '',
     is_yujiao: '', // 'automatica' 预缴
     pay_log_id: '',
+    price: 0,
     automatica_title:`
 Factura Automatica`,
   },
@@ -117,11 +118,13 @@ Factura Automatica`,
 
     const wm_no = options.wm_no;
     const wm_name = options.wm_name;
+    const price = Number(options.price);
     const userInfo = app.globalData.userInfo || {}
     this.setData({
       lang: lang.userWaterInfo,
       btnName: lang.btnName,
       langDialog: lang.dialog,
+      price,
       wm_no,
       wm_name,
       source,
@@ -200,10 +203,17 @@ Factura Automatica`,
     })
   },
   handleInputdescontos(e){
-    const discount_money = e.detail
-    this.setData({
-      discount_money,
-    })
+    const discount_money = Number(e.detail)
+    const max = 100;
+    if (max > Number(discount_money) ) {
+      this.setData({
+        discount_money:discount_money,
+      })
+    }else{
+      this.setData({
+        discount_money:max,
+      })
+    }
   },
   //输入实缴金额
   handleInputMoney(e) {
@@ -219,10 +229,18 @@ Factura Automatica`,
     })
   },
   handBlurdescontos(e){
-    const discount_money = e.detail.value;
-    this.setData({
-      discount_money,
-    })
+    const discount_money = Number(e.detail.value);
+    const max = 100;
+    if (max > Number(discount_money) ) {
+      this.setData({
+        discount_money:discount_money,
+      })
+    }else{
+      this.setData({
+        discount_money:max,
+      })
+    }
+    
   },
   // 失焦赋值
   handleReading(e) {
@@ -245,7 +263,7 @@ Factura Automatica`,
         total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
         pay_time: date.time,
-        discount_money: that.data.discount_money,
+        discount_money: Number(that.data.price * (that.data.discount_money / 100)).toFixed(2),
         operator_name: that.data.operator_name
       }
       if(params.pay_way == 4){
@@ -778,7 +796,7 @@ DATA: ${date.time}
 --------------------------------
 ${user_info?user_info:''}
 --------------------------------
-Desconto: ${that.data.discount_money} KZ
+Desconto: ${Number(that.data.price * (that.data.discount_money / 100)).toFixed(2)} KZ
 `,
         receiptInfo_TOTAL: `
 TOTAL: ${that.data.user_PayFees_info.total_money} KZ

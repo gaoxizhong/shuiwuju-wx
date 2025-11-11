@@ -121,7 +121,7 @@ Page({
 
   showPayPopup() {
     wxAsyncApi('navigateTo', {
-      url: `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.meter.wm_name}&source=business-hall`,
+      url: `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.meter.wm_name}&price=${this.data.form.arrears_money}&source=business-hall`,
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info,
