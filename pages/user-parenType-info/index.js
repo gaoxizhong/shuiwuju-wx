@@ -95,6 +95,9 @@ Page({
     })
     const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     const itemInfo = JSON.parse(options.data);
+    if(itemInfo.type == 2){
+      itemInfo.pay_status = 1
+    }
     console.log(itemInfo)
     const total_money = JSON.parse(options.data).total_money;
     const userInfo = app.globalData.userInfo || {};
@@ -310,30 +313,11 @@ Page({
       s = `${dayTime} 07:00:00`;
       e = `${dayTime} 16:00:00`;
     }
-    
-
-
     const pay_text = this.data.pay_text;
-
-    if (!pay_text) {
-      this.setData({
-        pay_type_error: true
-      })
-      wx.showToast({
-        title: lang.message.formWarning,
-        duration: 2000,
-        icon: 'none'
-      })
-      return
-    }
-
-    const pay_way = this.data.pay_way;
-    const cheque_number = this.data.cheque_number;
-
-    if (pay_way == 4) {
-      if(!cheque_number || cheque_number == ''){
+    if(this.data.itemInfo.type == 1){
+      if (!pay_text) {
         this.setData({
-          check_num_error: true
+          pay_type_error: true
         })
         wx.showToast({
           title: lang.message.formWarning,
@@ -342,12 +326,30 @@ Page({
         })
         return
       }
+      const pay_way = this.data.pay_way;
+      const cheque_number = this.data.cheque_number;
+  
+      if (pay_way == 4) {
+        if(!cheque_number || cheque_number == ''){
+          this.setData({
+            check_num_error: true
+          })
+          wx.showToast({
+            title: lang.message.formWarning,
+            duration: 2000,
+            icon: 'none'
+          })
+          return
+        }
+      }
+      this.setData({
+        password_layer: true
+      })
     }
-
-    this.setData({
-      password_layer: true
-    })
-    return
+    // 补开形式发票
+    if(this.data.itemInfo.type == 2){
+      this.getPrint(this.data.itemInfo);
+    }
   },
   clickoperatorName(e) {
     this.setData({
@@ -418,107 +420,63 @@ Page({
         icon: "none",
         duration: 30000,
       })
-      // this.connectBlueToothDevice(connectDeviceInfo)
       this.handlePrint(connectDeviceInfo)
     }
   },
-  connectBlueToothDevice({
-    deviceId,
-    serviceId
-  }) {
-    wx.showToast({
-      icon: "none",
-      duration: 30000,
-    })
-    console.log('开始连接蓝牙设备')
-    // 开始连接蓝牙设备
-    blueToolth.createBLEConnection(deviceId).then(res => {
-      // 连接蓝牙设备成功
-      console.log('连接蓝牙设备成功')
-      if (res.errMsg && res.errMsg.includes('ok')) {
-        blueToolth.getBLEDeviceServices({
-          deviceId,
-          serviceId
-        }).then(data => {
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectSuccess,
-            icon: "none",
-            duration: 3000,
-          })
-          this.setData({
-            printDeviceInfo: data,
-          })
-          this.handlePrint()
-        }).catch((res) => {
-          console.log(res)
-          wx.hideToast()
-          wx.showToast({
-            title: lang.blueToolth.connectfail,
-            icon: "none",
-            duration: 3000,
-          })
-          this.setData({
-            printDeviceInfo: null,
-          })
-        })
-      } else {
-        console.log('11')
-        wx.hideToast()
-        this.setData({
-          printDeviceInfo: null,
-        })
-      }
-    }).catch((res) => {
-      console.log('连接蓝牙设备成功' + res)
-      wx.hideToast()
-      let msg = ''
-      if (res.errCode) {
-        msg = blueToolth.errorInfo[res.errCode]
-      }
-      msg = msg || res.errMsg.split('fail')[1]
-      wx.showToast({
-        title: msg,
-        icon: "none",
-        duration: 3000,
-      })
-      this.setData({
-        printDeviceInfo: null,
-      })
-    })
-  },
   // 开始打印
   handlePrint(p) {
-    let print_type = this.data.print_type;
+    let that = this;
+    let print_type = that.data.print_type;
+    let itemInfo = that.data.itemInfo;
     let info = [];
     // GBK.encode({string}) 解码GBK为一个字节数组
-    //  收据
-    if (print_type == 'receiptInfo') {
+    //  正式发票
+    if (itemInfo.type == 1) {
       info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         // ...this.data.imgArr,
         ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title),
+        ...that.arrEncoderCopy(that.data.receiptInfo_title),
         ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_title_1),
+        ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
         ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_historyData),
+        ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.receiptInfo_TOTAL),
+        ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
         ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Pagamento),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
         ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Modos),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
         ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.receiptInfo_Saldo),
+        ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
         ...blueToolth.printCommand.enter
       ]
     }
+    // 形式发票
+    if(itemInfo.type == 2){
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.proForm_title), // 形式发票抬头
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.ct,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+
     console.log('开始打印，api传信息...')
     let n = 1;
-    this.writeBLECharacteristicValue(p,info,n);
+    that.writeBLECharacteristicValue(p,info,n);
   },
   writeBLECharacteristicValue(data,i,n){
     let p = data;
@@ -536,14 +494,17 @@ Page({
           icon: "none",
           duration: 3000,
         })
-        that.setData({
-          pay_success: false,
-          pay_way: '',
-          pay_text: '',
-          cheque_number: '',
-        })
+       
          // 5.修改发票收据状态
-         that.setBillInvoiceCode();
+         if(info.type == 1){
+          that.setData({
+            pay_success: false,
+            pay_way: '',
+            pay_text: '',
+            cheque_number: '',
+          })
+          that.setBillInvoiceCode();
+         }
         //  num++;
         //  if(num <= 2){
         //    that.writeBLECharacteristicValue(p,i,num);
@@ -633,7 +594,70 @@ Utilizador: ${that.data.operator_name}
       wx.hideToast()
     })
   },
+  // 形式发票打印
+  getPrint(info){
+    let selectradio_info = info;
+    let date = this.handleTimeValue();
+    this.setData({
+      proForm_title: `
+Factura-proforma
 
+`,
+      invoiceInfo_title: `EPASKS-E.P.`,
+      invoiceInfo_title_1: `
+Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
+NIF:5601022917
+Atendimento ao Cliente941648993
+Comunicação de Roturas941648999
+Email info.epasksagmail.com
+
+Dados do Cliente
+      `,
+      invoiceInfo_CustomerData: `
+Comsumidor: ${selectradio_info.wm_name}
+N° do Cliente: ${selectradio_info.user_code}
+N° Contador: ${selectradio_info.wm_no}
+NIF: ${selectradio_info.user_card}
+EMAIL: ${selectradio_info.email}
+Endereco detalhado: ${selectradio_info.wm_address}
+N° da Porta: ${selectradio_info.house_number}
+Giro: ${selectradio_info.area_code}
+
+Espécies: ${selectradio_info.price_name}
+Montante: ${fmoney(selectradio_info.total_money,2)} KZ
+Recibo N°: ${selectradio_info.proforma_number?selectradio_info.proforma_number:''}
+      `,
+
+      invoiceInfo_valores: `
+Water manager
+Processado por programaválido n31.1/AGT20
+${date.time}
+
+    `,
+      
+    })
+    this.blueToothPrint();
+  },
+    //获取当前时间
+    handleTimeValue(date) {
+      const _date = date ? new Date(date) : new Date()
+      const year = _date.getFullYear()
+      const month = _date.getMonth() + 1
+      const day = _date.getDate()
+      const hh = _date.getHours()
+      const mm = _date.getMinutes()
+      const ss = _date.getSeconds()
+      const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
+      const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000
+      return {
+        year,
+        month,
+        day,
+        time,
+        timestamp
+      }
+    },
   /**蒙板禁止滚动  bug 在开发工具模拟器底层页面上依然可以滚动，手机上不滚动*/
   myCatchTouch: function () {
     return

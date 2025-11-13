@@ -43,7 +43,7 @@
   <van-empty wx:if="{{!demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
   <scroll-view wx:else scroll-with-animation  scroll-y="{{isScroll}}" lower-threshold="50" bindscrolltolower="addListData" class="list">
     <block wx:for="{{demandNoteList}}" wx:key="index">
-      <view class="item" data-item="{{item}}" bindtap="{{item.type == 1?'handleDetails': ''}}">
+      <view class="item" data-item="{{item}}" bindtap="handleDetails">
         <view class="item__title">
           {{item.water_meter.wm_no}} 
         </view>
