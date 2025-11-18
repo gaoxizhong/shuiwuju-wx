@@ -96,7 +96,12 @@
                 <!-- <view class="item__status" style="color: {{item.status === 1 ? 'red' : 'green'}};">
                   {{item.status_text}}
                 </view> -->
-              
+
+                <view class="btn-box">
+                  <van-button  size='mini' type="info" data-type='printInfo' data-index="{{ index }}" data-item="{{ item }}" catch:tap="clickPrintItem">
+                    <image src="/img/icon-dy.png" mode="widthFix" />
+                  </van-button>
+                </view>
               </view>
             </block>
           </view>
