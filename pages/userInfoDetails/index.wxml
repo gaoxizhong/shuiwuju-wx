@@ -111,6 +111,11 @@
               <view class="jfjl-list">
                 <view>{{item.pay_time}}</view>
                 <view>{{item.total_money}} KZ</view>
+                <view class="btn-box">
+                  <van-button  size='mini' type="info" data-type='reciboInfo' data-index="{{ index }}" data-item="{{ item }}" catch:tap="clickPrintItem">
+                    <image src="/img/icon-dy.png" mode="widthFix" />
+                  </van-button>
+                </view>
               </view>
             </block>
           </view>

@@ -8,7 +8,7 @@ const GBK = require('./../../utils/gbk.min')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 import {
-  getFbuserStatis,getUserBluetoolthInfoData
+  getFbuserStatis,getUserBluetoolthInfoData,getUserPayItemDetail
 } from './../../apis/water'
 Page({
 
@@ -39,6 +39,14 @@ Page({
     water_mater_payment_count: '', //缴费单数量
     water_mater_arrears_money_sum: '', //欠费总额
     title_active: 1,
+    infoData: {},
+    payStatusList: [
+      {key: 1,title: "Numerário"},
+      {key: 2,title: "Cartão Multicaixa"},
+      {key: 3,title: "Pagamento bancário"},
+    ],
+    pay_way:'',
+    pay_text:'',
   },
 
   /**
@@ -161,19 +169,60 @@ Page({
     })
 
   },
-  // =============================================
+  // ====================== ↓ =======================
+  // 获取当前缴费记录收据下的 包含的缴费单数据
+  getUserPayItemDetail(i){
+    let that = this;
+    const id = i;
+    const params = {
+      user_pay_log_id: id,
+    }
+    getUserPayItemDetail(params).then(res => {
+      let infoData = res.data.list; // 当前缴费记录下的 包含的缴费单数据
+      let pay_way = that.data.pay_way;
+        this.setData({
+          infoData,
+        })
+        const payStatusList = that.data.payStatusList;
+        payStatusList.forEach( ele =>{
+          if(ele.key == pay_way){
+            that.setData({
+              pay_text: ele.title,
+            })
+          }
+        })
+        that.getUserBluetoolthInfoData1(that.verifyBlueToothPrint);
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+    })
+  },
   // 点击缴费单列表打印
   clickPrintItem(e){
     console.log(e)
     let that = this;
+    let selectPrintInfo = e.currentTarget.dataset.item;
+    let print_type = e.currentTarget.dataset.type;
     that.setData({
-      print_type: e.currentTarget.dataset.type, // 缴费单
-      selectPrintInfo: e.currentTarget.dataset.item,
+      print_type,
+      selectPrintInfo,
       selectImprimirIndex: e.currentTarget.dataset.index, 
     })
-    that.getUserBluetoolthInfoData(that.verifyBlueToothPrint);
+    if(print_type == 'reciboInfo'){
+      that.setData({
+        pay_way: selectPrintInfo.pay_way
+      })
+      that.getUserPayItemDetail(selectPrintInfo.id);
+    }else{
+      that.getUserBluetoolthInfoData(that.verifyBlueToothPrint);
+    }
+    
   },
-  // 获取用户打印信息
+
+  // 获取用户缴费单打印信息
   getUserBluetoolthInfoData(f){
     let that = this;
     let selectPrintInfo = that.data.selectPrintInfo;
@@ -276,6 +325,91 @@ ${date_time}
       })
     })
   },
+  // 获取用户收据打印信息
+  getUserBluetoolthInfoData1(f){
+    let that = this;
+    let selectPrintInfo = that.data.selectPrintInfo;
+
+    const params = {
+      wm_no: that.data.form.water_mater.wm_no,
+    }
+    getUserBluetoolthInfoData(params).then(res => {
+      const userBluetoolthInfoData = res.data
+      let info = that.data.infoData; // 缴费记录下的缴费单信息
+      let user_info = '';
+      info.forEach(ele => {
+        user_info += `${ ele.check_date }   ${(ele.arrears_money).toFixed(2)}KZ   ${(ele.arrears_money).toFixed(2)}KZ   ${(ele.price).toFixed(2)}KZ
+`
+      })
+      console.log(user_info)
+      console.log(selectPrintInfo)
+     
+      that.setData({
+      //收据
+      receiptInfo_title:`EPASKS-E.P.`,
+      receiptInfo_title_1:`
+Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
+Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
+NIF: 5601022917
+Recibo N° ${selectPrintInfo.invoice_code}
+ORIGINAL
+Nome: ${userBluetoolthInfoData.water_meter.wm_name}
+Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}
+
+`,
+      receiptInfo_historyData:`
+DATA: ${selectPrintInfo.pay_time}
+  Data    Total    Pend.    Liq.
+--------------------------------
+${user_info?user_info:''}
+--------------------------------
+`,
+      receiptInfo_TOTAL: `
+TOTAL: ${selectPrintInfo.total_money} KZ
+`,
+      receiptInfo_Pagamento:`
+Modos de Pagamento
+`,
+      receiptInfo_Modos: `
+Método       Moeda       Total
+--------------------------------
+${that.data.pay_text}   AOA    ${selectPrintInfo.total_money} KZ
+--------------------------------`,
+      receiptInfo_Saldo: `
+Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
+
+Water manager
+Processado por programaválido n31.1/AGT20
+Este documento nao serve de fatura
+IVA Regime Simplificado
+Utilizador: ${selectPrintInfo.operator_name}
+--------------------------------
+*Obrigado e volte sempre!*
+
+`,
+      })
+      setTimeout(()=>{
+        that.setData({
+          is_return: true
+        })
+      },1000)
+      if (typeof f == 'function'){
+        console.log('f()')
+        return f()
+      }
+    }).catch((res) => {
+      wx.showToast({
+        title: res.desc,
+        icon: 'none',
+        duration: 2000
+      })
+      setTimeout(()=>{
+        that.setData({
+          is_return: true
+        })
+      },1000)
+    })
+  },
   // 蓝牙设备打印
   verifyBlueToothPrint() {
     console.log('蓝牙设备打印')
@@ -323,9 +457,70 @@ ${date_time}
     let print_type = that.data.print_type;
     console.log(print_type)
     let info = [];
-    // 发票
-    if(print_type == 'invoiceInfo'){
-      
+    // 收据
+    if(print_type == 'receiptInfo'){
+      console.log('printInfo')
+      let selectPrintInfo = that.data.selectPrintInfo;
+      if(selectPrintInfo.receipt_number){
+        that.setData({
+          receiptInfo_number: `
+Ref. Recibo: ${selectPrintInfo.receipt_number}
+`,
+        })
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.receiptInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
+          ...that.arrEncoderCopy(that.data.receiptInfo_number),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
+          ...blueToolth.printCommand.left,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
+          ...blueToolth.printCommand.center,
+          ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
+          ...blueToolth.printCommand.enter
+        ]
+      }else{
+        addUserPayLogNumber({
+          id: selectPrintInfo.id,
+          type: 1
+        }).then(res => {
+          that.setData({
+            receiptInfo_number: `
+  Ref. Recibo: ${res.data.receipt_number}
+  `,
+          })
+          info = [
+            ...blueToolth.printCommand.clear,
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_title_1),
+            ...that.arrEncoderCopy(that.data.receiptInfo_number),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_historyData),
+            ...blueToolth.printCommand.center,
+            ...blueToolth.printCommand.ct,
+            ...that.arrEncoderCopy(that.data.receiptInfo_TOTAL),
+            ...blueToolth.printCommand.ct_zc,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Pagamento),
+            ...blueToolth.printCommand.left,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Modos),
+            ...blueToolth.printCommand.center,
+            ...that.arrEncoderCopy(that.data.receiptInfo_Saldo),
+            ...blueToolth.printCommand.enter
+          ]
+        })
+      }
     }
     // 缴费单
     console.log('printInfo: 拼接缴费单信息...')
@@ -394,7 +589,7 @@ ${date_time}
 
 
 
-// =============================================
+// =========================  ↑   ====================
 
   // 打印信息
   imprimirInfo(){
@@ -453,10 +648,10 @@ DATA: ${date_time}
 
     `
     })
-    that.blueToothPrint1();
+    that.blueToothInfo();
   },
   // 蓝牙设备打印
-  blueToothPrint1() {
+  blueToothInfo() {
     const connectStorage = wx.getStorageSync('connectDevice')
     const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
     console.log(connectDeviceInfo)

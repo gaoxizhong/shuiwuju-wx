@@ -532,7 +532,7 @@ Ref. Recibo: ${item.receipt_number}
       let info = that.data.infoData; // 缴费记录下的缴费单信息
       let user_info = '';
       info.forEach(ele => {
-        user_info += `${ ele.check_date }   ${ele.arrears_money}KZ   ${ele.arrears_money}KZ   ${ele.price}KZ
+        user_info += `${ ele.check_date }   ${(ele.arrears_money).toFixed(2)}KZ   ${(ele.arrears_money).toFixed(2)}KZ   ${(ele.price).toFixed(2)}KZ
 `
       })
       console.log(user_info)

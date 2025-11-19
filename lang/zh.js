@@ -551,7 +551,7 @@ const zh_lang = {
       {
         auth: 'GC',
         key: '/img/index/icon-search.png',
-        title: '缴费单',
+        title: '收据单',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },

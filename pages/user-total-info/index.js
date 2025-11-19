@@ -60,7 +60,8 @@ Page({
     },
     last_reading: '',
     last_time: '',
-    arrears_money_sum: '',
+    arrears_money_sum: 0,
+    arrears_money_t: 0,
     paid_total_money: '',
     discount_money: 0, // 优惠价格
     no_error: false,
@@ -162,10 +163,12 @@ Factura Automatica`,
         last_reading,
         last_time,
       } = res.data
+      let money = arrears_money_sum;
       that.setData({
         last_reading,
         last_time,
-        arrears_money_sum: fmoney(arrears_money_sum,2),
+        arrears_money_sum,
+        arrears_money_t: fmoney(money,2),
       })
       if(that.data.payStatusList.length <= 0){
         const payWayList = Object.keys(res.data.pay_way).map(i => ({
@@ -254,6 +257,8 @@ Factura Automatica`,
   new_onConfirmPay() {
     let that = this;
     let pay_success = that.data.pay_success;
+    let arrears_money_sum = Math.abs(that.data.arrears_money_sum);
+
     if (pay_success) {
       that.getUserBluetoolthInfoData(that.blueToothPrint);
     } else {
@@ -263,7 +268,7 @@ Factura Automatica`,
         total_money: that.data.paid_total_money,
         pay_way: that.data.pay_way,
         pay_time: date.time,
-        discount_money: Number(that.data.price * (that.data.discount_money / 100)).toFixed(2),
+        discount_money: Number(arrears_money_sum * (that.data.discount_money / 100)).toFixed(2),
         operator_name: that.data.operator_name
       }
       if(params.pay_way == 4){
