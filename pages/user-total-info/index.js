@@ -713,6 +713,7 @@ Ref. Recibo: ${res.data.receipt_number}
       const userBluetoolthInfoData = res.data
       let date = handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
+      let arrears_money_sum = Math.abs(that.data.arrears_money_sum);
       let user_info = '';
       info.forEach(ele => {
         user_info += `${ele.check_time} ${ele.arrears_money}KZ  ${ele.pay_money}KZ  ${ele.arrears_money}KZ
@@ -801,7 +802,7 @@ DATA: ${date.time}
 --------------------------------
 ${user_info?user_info:''}
 --------------------------------
-Desconto: ${Number(that.data.price * (that.data.discount_money / 100)).toFixed(2)} KZ
+Desconto: ${Number(arrears_money_sum * (that.data.discount_money / 100)).toFixed(2)} KZ
 `,
         receiptInfo_TOTAL: `
 TOTAL: ${that.data.user_PayFees_info.total_money} KZ
