@@ -160,10 +160,10 @@ const en_lang = {
     },
     tabs_2: {
       one: 'Factura',
-      two: 'Factura Simplificada',
-      baojia: 'Factura pro-forma',
-      tab_jl: 'Registos',
       tab_yjf: 'Factura Automatica',
+      baojia: 'Factura pro-forma',
+      two: 'Factura Simplificada',
+      tab_jl: 'Registos',
 
     },
     tabs_3: {

@@ -158,10 +158,10 @@ const zh_lang = {
     },
     tabs_2: {
       one: '发票',
-      two: '缴费单',
-      baojia: '报价',
-      tab_jl: '记录',
       tab_yjf: '预交费',
+      baojia: '报价',
+      two: '缴费单',
+      tab_jl: '记录',
     },
     tabs_3: {
       one: '缴费记录',
