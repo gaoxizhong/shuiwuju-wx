@@ -484,6 +484,9 @@ Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Totalizador/Normal: ${userBluetoolthInfoData.water_meter.is_share ? 'Totalizador':'Normal' }
 Unidades: ${userBluetoolthInfoData.water_meter.household_num }
         `,
+        abolido:`
+ANULADO
+        `,
         printInfo_historyData_title:`
 Histórico de Leituras
         `,
@@ -512,9 +515,6 @@ ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
 Processado por programaválido n31.1/AGT20
 `,     
-      abolido:`
-Foi abolido
-      `,
       printInfo_time:`
 ${date.time}
 
@@ -596,6 +596,10 @@ ${date.time}
       ...blueToolth.printCommand.left,
       ...that.arrEncoderCopy(that.data.printInfo_CustomerData),
       ...blueToolth.printCommand.center,
+      ...blueToolth.printCommand.ct,
+      ...that.arrEncoderCopy(that.data.abolido), // 展示'已作废'
+      ...blueToolth.printCommand.ct_zc,
+      ...blueToolth.printCommand.center,
       ...that.arrEncoderCopy(that.data.printInfo_historyData_title),
       ...blueToolth.printCommand.left,
       ...that.arrEncoderCopy(that.data.printInfo_historyData_info),
@@ -609,7 +613,6 @@ ${date.time}
       ...that.arrEncoderCopy(that.data.printInfo_valores),
       ...blueToolth.printCommand.ct_zc,
       ...blueToolth.printCommand.center,
-      ...that.arrEncoderCopy(that.data.abolido), // 展示'已作废'
       ...that.arrEncoderCopy(that.data.printInfo_time),
       ...blueToolth.printCommand.enter
     ]

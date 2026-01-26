@@ -10,6 +10,9 @@ var encoding = require("./../../utils/encoding.js")
 import {
   getFbuserStatis,getUserBluetoolthInfoData,getUserPayItemDetail
 } from './../../apis/water'
+import {
+  getDemandNoteList,  // 其他类型发票订单列表
+} from './../../apis/admin'
 Page({
 
   /**
