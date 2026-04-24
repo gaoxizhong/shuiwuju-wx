@@ -7,7 +7,7 @@
 <view class="container business-hall">
 <!-- 缴费单记录 -->
 <view class="page-box" wx:if="{{ title_active == 1 }}">
- <view class="search-bar">
+  <view class="search-bar">
     <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
       <view class="icon"  slot="action">
         <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{ lang.btnName }}</van-button>
@@ -40,6 +40,13 @@
 </view>
 
 <view class="page-box" wx:if="{{ title_active == 2 }}">
+  <view class="search-bar">
+    <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
+      <view class="icon"  slot="action">
+        <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain  size="small">{{ lang.btnName }}</van-button>
+      </view>
+    </van-search>
+  </view>
   <wixi-time bindgettime="handleGetTime"></wixi-time>
   <view class="search-content {{!delPayLogList.length ? 'no-data' : ''}}">
     <van-empty wx:if="{{!delPayLogList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
@@ -56,7 +63,7 @@
             {{lang.saldo}}：{{item.after_arrears_money}} (KZ)
           </view>
           <view class="item__money">
-            {{lang.createTime}}：{{item.created_at}}
+            {{lang.createTime}}：{{item.updated_at}}
           </view>
         </view>
       </block>

@@ -1,7 +1,6 @@
 // pages/business-hall/hecho/index.js
 const app = getApp()
 let lang = app.globalData.lang
-const blueToolth = require('../../../utils/bluetoolth')
 
 const {
   wxAsyncApi,
@@ -201,9 +200,9 @@ Page({
     // 获取打印信息
     let infoData = this.data.infoData;
     let date = this.handleTimeValue();
-    this.setData({
-      printInfo_title:`EPASKS-E.P.`,
-      printInfo:`
+
+    let printInfo_title =`EPASKS-E.P.`;
+    let printInfo =`
 Recibo:            ${infoData.receipt_num} Un
 Numerário:         ${infoData.receipt_cash} kZ
 Cartão Multicaixa: ${infoData.receipt_pos} kZ
@@ -230,76 +229,68 @@ Transferência:     ${this.data.transfer_accounts_sum} kZ
 ${this.data.actual_amount?'Valor Declarado:   '+ this.data.actual_amount +'KZ': ''}
 Pessoa de entrega: ${operator_name}
 Processado por programaválido n31.1/AGT20
-`,
-      printInfo_data:`
-DATA: ${date.time}
 
-`,
-      
-    })
-    this.blueToothPrint();
-  },
-  // 蓝牙设备打印
-  blueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    console.log(connectDeviceInfo)
-    const lang = getApp().globalData.lang
-    if (!connectDeviceInfo) {
-      wx.showModal({
-        title: lang.blueToolth.noConnect,
-        content: lang.blueToolth.noConnectWarning,
-        cancelText: lang.blueToolth.cancelText,
-        confirmText: lang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(res => {
-              wx.setNavigationBarTitle({
-                title: lang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: lang.blueToolth.cancel,
-              icon: "none",
-            })
-          }
-        }
-      })
-    } else {
-      console.log('已连接。。。')
-      wx.showToast({
-        title: lang.blueToolth.connectDevice,
-        icon: "none",
-        duration: 30000,
-      })
-     this.handlePrint(connectDeviceInfo)
+`;
+    let printInfo_data = `DATA: ${date.time}`;
+    let printData = {
+      "name": "printMix", //普通纸混合打印
+      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
+      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
+      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
+      "data": [
+        {
+          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
+          "text": printInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "concentration": 15, //打印浓度1~20，默认15
+          "align": 1, //0左对齐，1居中对齐，2右对齐；
+          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
+          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
+          "isDoubleHeight": true, //是否倍高；
+          "isDoubleWidth": false, //是否倍宽；
+          "isUnderLine": 0, //是否加下划线；
+          "isBold": true, //是否加粗；
+        },
+        {
+          "printType": 0,
+          "text": printInfo + "\n",
+          "concentration": 15,
+          "align": 0,
+          "lineHeight": 30,
+          "isDoubleHeight": false, 
+          "isDoubleWidth": false,
+          "isUnderLine": 0,
+          "isBold": false,
+        },
+        {
+          "printType": 0,
+          "text": printInfo_data + "\n",
+          "concentration": 15,
+          "align": 1,
+          "lineHeight": 30,
+          "isDoubleHeight": false, 
+          "isDoubleWidth": false,
+          "isUnderLine": 0,
+          "isBold": false,
+        },
+      ]
     }
+    this.SendControlCommand(printData);
   },
-  // 开始打印
-  handlePrint(p) {
-    let print_type = this.data.print_type;
-    // GBK.encode({string}) 解码GBK为一个字节数组
-    let info = [
-      ...blueToolth.printCommand.clear,
-      ...blueToolth.printCommand.center,
-      ...blueToolth.printCommand.ct,
-      ...this.arrEncoderCopy(this.data.printInfo_title),
-      ...blueToolth.printCommand.ct_zc,
-      ...this.arrEncoderCopy(this.data.printInfo),
-      ...blueToolth.printCommand.center,
-      ...this.arrEncoderCopy(this.data.printInfo_data),
-      ...blueToolth.printCommand.enter
-    ]
-    console.log('开始打印，api传信息...')
-    blueToolth.writeBLECharacteristicValue({
-      ...p,
-      value: new Uint8Array(info).buffer,
-      lasterSuccess() {
+
+  // 新打印机打印方法
+  SendControlCommand(printData) {
+    let that = this;
+    console.log('链接打印',printData)
+    // 接口地址：如果访问不了，IP可以改成设备本地IP尝试；
+    var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
+    wx.showLoading();
+    wx.request({
+      url: apiUrl,
+      method: "GET",
+      success: (res) => {
+        console.log(res)
         console.log('打印成功...')
+        wx.hideLoading();
         wx.showToast({
           title: lang.blueToolth.printSuccess,
           icon: "none",
@@ -310,11 +301,10 @@ DATA: ${date.time}
         })
         that.getAdminShift(1,that.data.operator_name,that.data.actual_amount);
       },
-      onFail(res){
-        console.log('打印失败...')
-        console.log(res)
+      fail: (err) => {
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        wx.hideLoading();
       }
-    });
+    })
   },
-
 })

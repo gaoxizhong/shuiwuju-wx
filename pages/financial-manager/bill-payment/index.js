@@ -148,6 +148,9 @@ Page({
       select: this.data.select_value,
       type: this.data.select_type
     }
+    if(params.type == 1){
+      params.wm_no = this.data.select_value
+    }
     getAllUserPayLog(params).then(res => {
       const data = res.data.list.data || [];
       data.forEach(ele =>{
@@ -256,15 +259,14 @@ Page({
     this.setData({
       delPayLogList: [],
       list: [],
+      select_value: '',
       wm_no: '',
       admin_name:'',
       page: 1,
       total: 0,
       title_active,
     })
-    if(title_active == 2){
-      this.getDelAllUserPayLog();
-    }
+    
   },
   getDelAllUserPayLog(){
     let that = this;
