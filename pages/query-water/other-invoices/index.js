@@ -506,13 +506,8 @@ handleSearchInfo() {
     let amount = am;
     let proforma_number = this.data.proforma_number;
     let date = this.handleTimeValue();
-    this.setData({
-      proForm_title: `
-Factura-proforma
-
-`,
-      invoiceInfo_title: `EPASKS-E.P.`,
-      invoiceInfo_title_1: `
+    let invoiceInfo_title = `EPASKS-E.P.`;
+    let invoiceInfo_title_1 = `
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
@@ -521,8 +516,7 @@ Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
 Dados do Cliente
-      `,
-      invoiceInfo_CustomerData: `
+
 Comsumidor: ${selectradio_info.wm_name}
 N° do Cliente: ${selectradio_info.user_code}
 N° Contador: ${selectradio_info.wm_no}
@@ -535,120 +529,118 @@ Giro: ${selectradio_info.area_code}
 Espécies: ${this.data.seltTypeInfo.text}
 Montante: ${fmoney(amount,2)} KZ
 Recibo N°: ${proforma_number?proforma_number:''}
-      `,
-
-      invoiceInfo_valores: `
+`;
+    let invoiceInfo_valores = `
 Water manager
 Processado por programaválido n31.1/AGT20
 ${date.time}
 
-    `,
-      
-    })
-    this.blueToothPrint();
+`;
+    let invoiceInfo_data = {
+      "name": "printMix", //普通纸混合打印
+      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
+      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
+      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
+      "data": [
+        {
+          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
+          "text": invoiceInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "concentration": 15, //打印浓度1~20，默认15
+          "align": 1, //0左对齐，1居中对齐，2右对齐；
+          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
+          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
+          "isDoubleHeight": true, //是否倍高；
+          "isDoubleWidth": false, //是否倍宽；
+          "isUnderLine": 0, //是否加下划线；
+          "isBold": true, //是否加粗；
+        },
+        {
+          "printType": 0,
+          "text": invoiceInfo_title_1 + "\n",
+          "concentration": 15,
+          "align": 0,
+          "lineHeight": 30,
+          "isDoubleHeight": false, 
+          "isDoubleWidth": false,
+          "isUnderLine": 0,
+          "isBold": false,
+        },
+        {
+          "printType": 0,
+          "text": invoiceInfo_valores + "\n",
+          "concentration": 15,
+          "align": 1,
+          "lineHeight": 30,
+          "isDoubleHeight": false, 
+          "isDoubleWidth": false,
+          "isUnderLine": 0,
+          "isBold": false,
+        },
+      ]
+    };
+    this.handlePrint(invoiceInfo_data);
   },
-  // 蓝牙设备打印
-  blueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    console.log(connectDeviceInfo)
-    const lang = getApp().globalData.lang
-    if (!connectDeviceInfo) {
-      wx.showModal({
-        title: lang.blueToolth.noConnect,
-        content: lang.blueToolth.noConnectWarning,
-        cancelText: lang.blueToolth.cancelText,
-        confirmText: lang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(res => {
-              wx.setNavigationBarTitle({
-                title: lang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: lang.blueToolth.cancel,
-              icon: "none",
-            })
-          }
-        }
-      })
-    } else {
-      console.log('已连接。。。')
-      wx.showToast({
-        title: lang.blueToolth.connectDevice,
-        icon: "none",
-        duration: 30000,
-      })
-     this.handlePrint(connectDeviceInfo)
-    }
-  },
+
   // 开始打印
   handlePrint(p) {
     let that = this;
     let print_type = that.data.print_type;
     let title_active = this.data.title_active;
     let is_zhuanhuan = this.data.is_zhuanhuan;
+
     // GBK.encode({string}) 解码GBK为一个字节数组
     let info = [];
     if(title_active == 1 || is_zhuanhuan){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
-        ...blueToolth.printCommand.enter
-      ]
+      that.SendControlCommand(p);
     }
     if(title_active == 3 && !is_zhuanhuan){
-      info = [
-        ...blueToolth.printCommand.clear,
-        ...blueToolth.printCommand.center,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.proForm_title), // 形式发票抬头
-        ...blueToolth.printCommand.ct_zc,
-        ...blueToolth.printCommand.ct,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title),
-        ...blueToolth.printCommand.ct_zc,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_title_1),
-        ...blueToolth.printCommand.left,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_CustomerData),
-        ...blueToolth.printCommand.center,
-        ...that.arrEncoderCopy(that.data.invoiceInfo_valores),
-        ...blueToolth.printCommand.enter
-      ]
+      let proForm_title = `Factura-proforma
+`;
+      let proForm_title_data = {
+        "printType": 0,
+        "text": proForm_title + "\n", 
+        "concentration": 15,
+        "align": 1,
+        "lineHeight": 28,
+        "isDoubleHeight": true, //是否倍高；
+        "isDoubleWidth": false, //是否倍宽；
+        "isUnderLine": 0, //是否加下划线；
+        "isBold": true, //是否加粗；
+      }
+      p.data.splice(0, 0, proForm_title_data);
+      that.SendControlCommand(p);
     }
     
-    console.log('开始打印，api传信息...')
-    blueToolth.writeBLECharacteristicValue({
-      ...p,
-      value: new Uint8Array(info).buffer,
-      lasterSuccess() {
-        console.log('打印成功...')
+   
+  },
+  // 新打印机打印方法
+  SendControlCommand(printData) {
+    let that = this;
+
+    console.log('链接打印',printData)
+    // 接口地址：如果访问不了，IP可以改成设备本地IP尝试；
+    var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
+    wx.showLoading();
+
+    wx.request({
+      url: apiUrl,
+      method: "GET",
+      success: (res) => {
+        console.log('success...',res)
+        console.log(res)
+        wx.hideLoading();
         wx.showToast({
           title: lang.blueToolth.printSuccess,
           icon: "none",
           duration: 3000,
         })
-        // if(title_active == 1){
-        //   that.createPayDemandNote();
-        // }
       },
-      onFail(res){
-        console.log('打印失败...')
-        console.log(res)
+      fail: (err) => {
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        wx.hideLoading();
+
       }
-    });
+    })
   },
   addListData() {
     console.log(1)

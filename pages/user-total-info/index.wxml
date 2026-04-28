@@ -45,7 +45,7 @@
   <view class="btn">
     <block>
 
-      <!-- 打印收据 开始 抄表员 search-person不显示收据--> 
+      <!-- 缴费员---打印收据 开始。 抄表员search-person不显示此按钮--> 
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{source != 'search-person'}}">
         {{btnName.printOther}}
       </view>
@@ -69,7 +69,7 @@
       <van-button type="info" plain size="small" bind:click="onCloseResult">{{lang.cancelName}}</van-button>
     </view>
   </van-popup>
-
+  <!-- 记录员弹窗 -->
   <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" catchtap="cover_layer"></view>
   <view wx:if="{{ is_operatorLsPop }}" catchtouchmove="myCatchTouch" class="operatorNameList-cover"></view>
   <view class="toast-box" wx-if="{{password_layer}}" catchtouchmove="myCatchTouch">
