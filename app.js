@@ -32,7 +32,8 @@ App({
     tabberList: [],
     auth: [],
     area: [],
-    baseUrl: 'https://swj-admin.qingshanpai.com',
+    baseUrl: 'https://swj-admin.qingshanpai.com',  // 正式服
+    // baseUrl: 'https://swj-admin-test.qingshanpai.com', // 测试服
     billStatus: null, // 水表单状态
     wm_id: '',
     repair_type: []
