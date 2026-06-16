@@ -600,8 +600,9 @@ ${date.time}
   },
   // 新打印机打印方法
   SendControlCommand(printData) {
+    let that = this;
     console.log('链接打印',printData)
-    // 接口地址：如果访问不了，IP可以改成设备本地IP尝试；
+    // 接口地址
     var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
     wx.showLoading();
     wx.request({
@@ -618,10 +619,16 @@ ${date.time}
           icon: "none",
           duration: 3000,
         })
+        that.setData({
+          is_Printreturn: true,
+        })
       },
       fail: (err) => {
         wx.hideLoading();
         console.log('err...',err)// 控制台打印完整错误，方便排查
+        that.setData({
+          is_Printreturn: true,
+        })
       }
     })
   },

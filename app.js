@@ -34,6 +34,8 @@ App({
     area: [],
     baseUrl: 'https://swj-admin.qingshanpai.com',  // 正式服
     // baseUrl: 'https://swj-admin-test.qingshanpai.com', // 测试服
+    AGTUrl: "https://quiosqueagt.hml.minfin.gov.ao", // AGT 发票税务 测试环境
+    // AGTUrl: "https://quiosqueagt.minfin.gov.ao", // AGT 发票税务 生产正式环境
     billStatus: null, // 水表单状态
     wm_id: '',
     repair_type: []
