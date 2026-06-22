@@ -366,7 +366,7 @@ ${date.time}
           "data": [
             {
               "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-              "text": printInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+              "text":  encodeURIComponent(printInfo_title + "\n"), //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
               "concentration": 15, //打印浓度1~20，默认15
               "align": 1, //0左对齐，1居中对齐，2右对齐；
               "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -378,7 +378,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_title_1 + "\n",
+              "text": encodeURIComponent(printInfo_title_1 + "\n"),
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -389,7 +389,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_Comsumidor + "\n",
+              "text": encodeURIComponent(printInfo_Comsumidor + "\n"),
               "concentration": 15,
               "align": 0,
               "lineHeight": 32,
@@ -400,7 +400,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_CustomerData + "\n",
+              "text": encodeURIComponent(printInfo_CustomerData + "\n"),
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -411,7 +411,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_historyData_title + "\n",
+              "text": encodeURIComponent(printInfo_historyData_title + "\n"),
               "concentration": 15,
               "align": 1, // 居中
               "lineHeight": 30,
@@ -422,7 +422,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_historyData_info + "\n",
+              "text": encodeURIComponent(printInfo_historyData_info + "\n"),
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -433,7 +433,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_facturacao_title + "\n",
+              "text": encodeURIComponent(printInfo_facturacao_title + "\n"),
               "concentration": 15,
               "align": 1,
               "lineHeight": 30,
@@ -444,7 +444,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_facturacao_info + "\n",
+              "text": encodeURIComponent(printInfo_facturacao_info + "\n"),
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -455,7 +455,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_TOTAL + "\n",
+              "text": encodeURIComponent(printInfo_TOTAL + "\n"),
               "concentration": 15,
               "align": 1,
               "lineHeight": 24,
@@ -466,7 +466,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": pagamento_pagamento + "\n",
+              "text": encodeURIComponent(pagamento_pagamento + "\n"),
               "concentration": 15,
               "align": 1,
               "lineHeight": 30,
@@ -477,7 +477,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_valores + "\n",
+              "text": encodeURIComponent(printInfo_valores + "\n"),
               "concentration": 15,
               "align": 1,
               "lineHeight": 34,
@@ -488,7 +488,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": printInfo_time + "\n",
+              "text": encodeURIComponent(printInfo_time + "\n"),
               "concentration": 15,
               "align": 1,
               "lineHeight": 26,
@@ -602,12 +602,24 @@ ${date.time}
   SendControlCommand(printData) {
     let that = this;
     console.log('链接打印',printData)
+    let printCtn = {
+      "type":"print",
+      "printJsonStr": JSON.stringify(printData)
+    }
     // 接口地址
-    var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
+    var apiUrl = "https://iot.unioncore.vip/iotAdmin/iot/write2Printer"
     wx.showLoading();
     wx.request({
       url: apiUrl,
-      method: "GET",
+      method: "post",
+      data: {
+        terminalNo: '0818202605016479',
+        groupId: '37388650-9ba5-4859-89f2-8b83d2122129',
+        printCtn: JSON.stringify(printCtn)
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
       success: (res) => {
         // res.data: {code: 0, data: "ok", msg: ""}
 
