@@ -422,40 +422,83 @@ Page({
   // 新打印机打印方法
   SendControlCommand(printData) {
     let that = this;
+     wx.showLoading({
+      title: ''
+    });
 
-    console.log('链接打印',printData)
-    // 接口地址：如果访问不了，IP可以改成设备本地IP尝试；
-    var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
-    wx.showLoading();
+    let printCtn = {
+      "type":"print",
+      "printJsonStr": printData
+    }
+    wx.request({
+      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
+      method: "post",
+      data: {
+        terminalNo: app.globalData.terminalNo,
+        groupId: app.globalData.groupId,
+        printCtn: JSON.stringify(printCtn)
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "",
+            duration: 3000,
+          })
+           // 5.修改发票收据状态
+          if(that.data.itemInfo.type == 1){
+            that.setData({
+              pay_success: false,
+              pay_way: '',
+              pay_text: '',
+              cheque_number: '',
+            })
+            that.setBillInvoiceCode();
+          }
+        }else{
+          wx.showToast({
+            title: 'error',
+            icon: "none",
+            duration: 3000,
+          })
+        }
+        that.getOrderInfo(res.data.data[0].orderId);
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+      }
+    })
+  },
+  getOrderInfo(id){
 
     wx.request({
-      url: apiUrl,
-      method: "GET",
+      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
+      method: "post",
+      data: {
+        orderId: id
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
       success: (res) => {
-        console.log('success...',res)
-        console.log(res)
         wx.hideLoading();
-        wx.showToast({
-          title: lang.blueToolth.printSuccess,
-          icon: "none",
-          duration: 3000,
-        })
-        // 5.修改发票收据状态
-        if(that.data.itemInfo.type == 1){
-          that.setData({
-            pay_success: false,
-            pay_way: '',
-            pay_text: '',
-            cheque_number: '',
-          })
-          that.setBillInvoiceCode();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          
+        }else{
+         
         }
       },
       fail: (err) => {
-        // err... {errMsg: "request:fail", errno: undefined}
-        console.log('err...',err)// 控制台打印完整错误，方便排查
         wx.hideLoading();
-
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
       }
     })
   },

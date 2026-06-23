@@ -880,57 +880,100 @@ Assinatura: ______________
     let arr = [ ...inputBuffer ]
     return arr
   },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
+   // 新打印机打印方法
+   SendControlCommand(printData) {
     let that = this;
+     wx.showLoading({
+      title: ''
+    });
     let print_type = that.data.print_type;
     let status_type = that.data.status_type;
     let item = that.data.item;
 
-    console.log('链接打印',printData)
-    // 接口地址：如果访问不了，IP可以改成设备本地IP尝试；
-    var apiUrl = "http://127.0.0.1:8080/print/jsonToPrint?data=" + encodeURIComponent(JSON.stringify(printData));
-    wx.showLoading();
-
+    let printCtn = {
+      "type":"print",
+      "printJsonStr": printData
+    }
     wx.request({
-      url: apiUrl,
-      method: "GET",
+      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
+      method: "post",
+      data: {
+        terminalNo: app.globalData.terminalNo,
+        groupId: app.globalData.groupId,
+        printCtn: JSON.stringify(printCtn)
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
       success: (res) => {
-        // res.data: {code: 0, data: "ok", msg: ""}
-        console.log('success...',res)
-        console.log(res)
         wx.hideLoading();
-        wx.showToast({
-          title: lang.blueToolth.printSuccess,
-          icon: "none",
-          duration: 3000,
-        })
-        //发票
-        if(print_type == 'invoiceInfo'){
-          that.setInvoiceStatus(2);
-        }
-        //取消收据
-        if(status_type == 'recibo'){
-          that.setInvoiceStatus(3);
-          item.receipt_status = 3;
-          that.setData({
-            item
+        console.log('success...',res)
+        if(res.data.code == 200){
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "",
+            duration: 3000,
+          })
+          //发票
+          if(print_type == 'invoiceInfo'){
+            that.setInvoiceStatus(2);
+          }
+          //取消收据
+          if(status_type == 'recibo'){
+            that.setInvoiceStatus(3);
+            item.receipt_status = 3;
+            that.setData({
+              item
+            })
+          }
+          //取消发票
+          if(status_type == 'fatura'){
+            that.setInvoiceStatus(3);
+            item.invoice_status = 3;
+            that.setData({
+              item
+            })
+          }
+          that.onCloseType1Select();
+        }else{
+          wx.showToast({
+            title: 'error',
+            icon: "none",
+            duration: 3000,
           })
         }
-        //取消发票
-        if(status_type == 'fatura'){
-          that.setInvoiceStatus(3);
-          item.invoice_status = 3;
-          that.setData({
-            item
-          })
-        }
-        that.onCloseType1Select();
+        that.getOrderInfo(res.data.data[0].orderId);
       },
       fail: (err) => {
-        console.log('err...',err)// 控制台打印完整错误，方便排查
         wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+      }
+    })
+  },
+  getOrderInfo(id){
 
+    wx.request({
+      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
+      method: "post",
+      data: {
+        orderId: id
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          
+        }else{
+         
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
       }
     })
   },

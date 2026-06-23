@@ -99,8 +99,6 @@ Page({
       steps: lang.pay.steps,
       is_yujiao
     })
-    // 获取图片
-    // this.getLogoImage();
   },
   
   // 新改版  获取用户待缴费金额接口 
@@ -361,12 +359,12 @@ ${date.time}
         let printData = {
           "name": "printMix", //普通纸混合打印
           "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-          "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
+          "runOnNewThread": true, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
           "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
           "data": [
             {
               "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-              "text":  encodeURIComponent(printInfo_title + "\n"), //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+              "text":  encodeURIComponent(printInfo_title)+ "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
               "concentration": 15, //打印浓度1~20，默认15
               "align": 1, //0左对齐，1居中对齐，2右对齐；
               "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -378,7 +376,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_title_1 + "\n"),
+              "text": encodeURIComponent(printInfo_title_1) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -389,7 +387,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_Comsumidor + "\n"),
+              "text": encodeURIComponent(printInfo_Comsumidor) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 32,
@@ -400,7 +398,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_CustomerData + "\n"),
+              "text": encodeURIComponent(printInfo_CustomerData) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -411,7 +409,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_historyData_title + "\n"),
+              "text": encodeURIComponent(printInfo_historyData_title) + "\n",
               "concentration": 15,
               "align": 1, // 居中
               "lineHeight": 30,
@@ -422,7 +420,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_historyData_info + "\n"),
+              "text": encodeURIComponent(printInfo_historyData_info) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -433,7 +431,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_facturacao_title + "\n"),
+              "text": encodeURIComponent(printInfo_facturacao_title) + "\n",
               "concentration": 15,
               "align": 1,
               "lineHeight": 30,
@@ -444,7 +442,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_facturacao_info + "\n"),
+              "text": encodeURIComponent(printInfo_facturacao_info) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 30,
@@ -455,7 +453,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_TOTAL + "\n"),
+              "text": encodeURIComponent(printInfo_TOTAL) + "\n",
               "concentration": 15,
               "align": 1,
               "lineHeight": 24,
@@ -466,7 +464,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(pagamento_pagamento + "\n"),
+              "text": encodeURIComponent(pagamento_pagamento) + "\n",
               "concentration": 15,
               "align": 1,
               "lineHeight": 30,
@@ -477,7 +475,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_valores + "\n"),
+              "text": encodeURIComponent(printInfo_valores) + "\n",
               "concentration": 15,
               "align": 1,
               "lineHeight": 34,
@@ -488,7 +486,7 @@ ${date.time}
             },
             {
               "printType": 0,
-              "text": encodeURIComponent(printInfo_time + "\n"),
+              "text": encodeURIComponent(printInfo_time) + "\n",
               "concentration": 15,
               "align": 1,
               "lineHeight": 26,
@@ -500,14 +498,12 @@ ${date.time}
           ]
         }
         console.log('初始信息：',printData)
-        setTimeout(()=>{
-          that.setData({
-            is_Printreturn: true,
-          })
-        },1000)
         if (typeof f == 'function'){
           return f(printData)
         }
+        that.setData({
+          is_Printreturn: true,
+        })
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -515,43 +511,8 @@ ${date.time}
         duration: 2000
       })
     })
-    setTimeout(()=>{
-      that.setData({
-        is_Printreturn: true,
-      })
-    },1000)
-  },
-  // 获取图片
-  getLogoImage(){
-    const ctx = wx.createCanvasContext('secondCanvas');
-    wx.getImageInfo({
-      src: '../../../../img/epasks-logo.png',
-      success: (res) => {
-        console.log(res)
-        // 打印宽度须是8的整数倍，这里处理掉多余的，使得宽度合适，不然有可能乱码
-        const mw = this.data.paperWidth % 8;
-        const w = mw === 0 ? this.data.paperWidth : this.data.paperWidth - mw;
-        // 等比算出图片的高度
-        const h = Math.floor((res.height * w) / res.width);
-        // 设置canvas宽高
-        this.setData({
-          img: '../../../../img/epasks-logo.png',
-          canvasHeight: h,
-          canvasWidth: w,
-        });
-        // 在canvas 画一张图片
-        ctx.fillStyle = 'rgba(255,255,255,1)';
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillRect(0, 0, w, h);
-        ctx.drawImage('../../../../img/epasks-logo.png', 0, 0, w, h);
-        ctx.draw(false, () => {
-            wx.hideLoading();
-        });
-      },
-      fail: (res) => {
-        console.log('get info fail', res);
-        wx.hideLoading();
-      },
+    that.setData({
+      is_Printreturn: true,
     })
   },
   // 添加编码
@@ -601,36 +562,42 @@ ${date.time}
   // 新打印机打印方法
   SendControlCommand(printData) {
     let that = this;
-    console.log('链接打印',printData)
+     wx.showLoading({
+      title: ''
+    });
+
     let printCtn = {
       "type":"print",
-      "printJsonStr": JSON.stringify(printData)
+      "printJsonStr": printData
     }
-    // 接口地址
-    var apiUrl = "https://iot.unioncore.vip/iotAdmin/iot/write2Printer"
-    wx.showLoading();
     wx.request({
-      url: apiUrl,
+      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
       method: "post",
       data: {
-        terminalNo: '0818202605016479',
-        groupId: '37388650-9ba5-4859-89f2-8b83d2122129',
+        terminalNo: app.globalData.terminalNo,
+        groupId: app.globalData.groupId,
         printCtn: JSON.stringify(printCtn)
       },
       header: {
         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
       },
       success: (res) => {
-        // res.data: {code: 0, data: "ok", msg: ""}
-
-        console.log('success...',res)
-        console.log(res)
         wx.hideLoading();
-        wx.showToast({
-          title: lang.blueToolth.printSuccess,
-          icon: "none",
-          duration: 3000,
-        })
+        console.log('success...',res)
+        if(res.data.code == 200){
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "",
+            duration: 3000,
+          })
+        }else{
+          wx.showToast({
+            title: 'error',
+            icon: "none",
+            duration: 3000,
+          })
+        }
+        that.getOrderInfo(res.data.data[0].orderId);
         that.setData({
           is_Printreturn: true,
         })
@@ -644,7 +611,33 @@ ${date.time}
       }
     })
   },
+  getOrderInfo(id){
 
+    wx.request({
+      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
+      method: "post",
+      data: {
+        orderId: id
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          
+        }else{
+         
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
+      }
+    })
+  },
 
   // 转二进制 并数组复制
   arrEncoderCopy(str){
