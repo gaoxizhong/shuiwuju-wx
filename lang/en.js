@@ -645,7 +645,9 @@ const en_lang = {
       isDefaultDevice: 'Seja definido dispositivo',
       success: 'Dispositivo conectado com sucesso',
       fail: 'Falha na conexão do dispositivo',
-      noDeviceBuleToolth: 'Dispositivo bluetooth não conectado'
+      noDeviceBuleToolth: 'Dispositivo bluetooth não conectado',
+      equipmentNumber: 'Número de SN',
+      pleaseequipmentNumber: 'Insira o número SN',
     },
     setLang: {
       label: 'Línguas',

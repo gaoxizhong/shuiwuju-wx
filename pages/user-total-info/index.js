@@ -1,22 +1,12 @@
 // pages/query-water/status/print-info/index.js
 const app = getApp()
 console.log(new Date().getDay())
-
 let lang = app.globalData.lang
-const blueToolth = require('./../../utils/bluetoolth')
 const {wxAsyncApi,fmoney,judgmentData,handleTimeValue} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
-const {
-  convert4to1,
-  convert8to1,
-  overwriteImageData,
-  getImageCommandArray,
-} = require('./../../utils/imgIrinting')
 
 const {
-  payWater,
-  printWater,
   getArrearsMoneySum,
   new_payWater,
   getUserBluetoolthInfoData,
@@ -28,10 +18,8 @@ const {
   handleCheckBill
 } = require('./../../apis/financial-manager')
 import {
-  handleBusinessHallPayBill,
   handleBusinessHallBillReceipt
 } from './../../apis/business-hall'
-const GBK = require('./../../utils/gbk.min')
 Page({
 
   /**
@@ -257,9 +245,9 @@ Factura Automatica`,
     let that = this;
     let pay_success = that.data.pay_success;
     let arrears_money_sum = Math.abs(that.data.arrears_money_sum);
-
+    console.log('pay_success',pay_success)
     if (pay_success) {
-      that.getUserBluetoolthInfoData(that.handlePrint);
+      that.getUserBluetoolthInfoData();
     } else {
       let date = handleTimeValue();
       const params = {
@@ -289,7 +277,7 @@ Factura Automatica`,
         })
         //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
-        that.getUserBluetoolthInfoData(that.handlePrint);
+        that.getUserBluetoolthInfoData();
       }).catch((res) => {
         wx.showToast({
           title: res.desc,
@@ -523,6 +511,7 @@ Factura Automatica`,
   handlePrint(i_data,r_data) {
     let that = this;
     let print_type = that.data.print_type;
+    console.log('开始打印',print_type)
     let p_d = {
       id: that.data.pay_log_id,
     }
@@ -534,17 +523,19 @@ Factura Automatica`,
     if (print_type == 'receiptInfo'){
       p_d.tyep = 1;
     }
+    console.log('p_d',p_d)
     // 获取编码
     addUserPayLogNumber(p_d).then(res => {
+      console.log('获取编码接口',res)
       if(res.code == 200){
-        let info = [];
-
         // 发票
         if (print_type == 'invoiceInfo') {
           let invoiceInfo_number = `Ref. Recibo: ${res.data.invoice_number}`;
+          console.log(invoiceInfo_number)
+
           let i_value = {
             "printType": 0,
-            "text": invoiceInfo_number + "\n",
+            "text": encodeURIComponent(invoiceInfo_number) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 26,
@@ -558,9 +549,10 @@ Factura Automatica`,
         //  收据
         if (print_type == 'receiptInfo') {
           let receiptInfo_number = `Ref. Recibo: ${res.data.receipt_number}`;
+            console.log(receiptInfo_number)
             let r_value = {
               "printType": 0,
-              "text": receiptInfo_number + "\n",
+              "text": encodeURIComponent(receiptInfo_number) + "\n",
               "concentration": 15,
               "align": 0,
               "lineHeight": 26,
@@ -632,6 +624,7 @@ Factura Automatica`,
             icon: "",
             duration: 3000,
           })
+          that.getOrderInfo(res.data.data[0].orderId);
         }else{
           wx.showToast({
             title: 'error',
@@ -639,7 +632,6 @@ Factura Automatica`,
             duration: 3000,
           })
         }
-        that.getOrderInfo(res.data.data[0].orderId);
       },
       fail: (err) => {
         wx.hideLoading();
@@ -675,7 +667,7 @@ Factura Automatica`,
     })
   },
   // 获取用户打印信息
-  getUserBluetoolthInfoData(f) {
+  getUserBluetoolthInfoData() {
     let that = this;
     console.log(that.data.pay_text)
     const params = {
@@ -688,7 +680,8 @@ Factura Automatica`,
       is_return: false
     })
     getUserBluetoolthInfoData(params).then(res => {
-      const userBluetoolthInfoData = res.data
+      const userBluetoolthInfoData = res.data;
+      console.log(userBluetoolthInfoData)
       let date = handleTimeValue();
       let info = that.data.user_payment_info; // 缴费记录下的缴费单信息
       let arrears_money_sum = Math.abs(that.data.arrears_money_sum);
@@ -767,7 +760,7 @@ ${date.time}
         "data": [
           {
             "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": invoiceInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+            "text": encodeURIComponent(invoiceInfo_title)+ "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
             "concentration": 15, //打印浓度1~20，默认15
             "align": 1, //0左对齐，1居中对齐，2右对齐；
             "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -779,7 +772,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_title_1 + "\n",
+            "text": encodeURIComponent(invoiceInfo_title_1) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -790,7 +783,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_CustomerData + "\n",
+            "text": encodeURIComponent(invoiceInfo_CustomerData) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -801,7 +794,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_historyData_title + "\n",
+            "text": encodeURIComponent(invoiceInfo_historyData_title) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 24,
@@ -812,7 +805,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_historyData_info + "\n",
+            "text": encodeURIComponent(invoiceInfo_historyData_info) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -823,7 +816,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_facturacao_title + "\n",
+            "text": encodeURIComponent(invoiceInfo_facturacao_title) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 30,
@@ -834,7 +827,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_facturacao_info + "\n",
+            "text": encodeURIComponent(invoiceInfo_facturacao_info) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -845,7 +838,7 @@ ${date.time}
           },
           {
             "printType": 0,
-            "text": invoiceInfo_valores + "\n",
+            "text": encodeURIComponent(invoiceInfo_valores) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 30,
@@ -910,7 +903,7 @@ Utilizador: ${that.data.operator_name}
         "data": [
           {
             "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": receiptInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+            "text": encodeURIComponent(receiptInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
             "concentration": 15, //打印浓度1~20，默认15
             "align": 1, //0左对齐，1居中对齐，2右对齐；
             "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -922,7 +915,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_title_1 + "\n",
+            "text": encodeURIComponent(receiptInfo_title_1) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -933,7 +926,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_historyData + "\n",
+            "text": encodeURIComponent(receiptInfo_historyData) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -944,7 +937,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_TOTAL + "\n",
+            "text": encodeURIComponent(receiptInfo_TOTAL) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 24,
@@ -955,7 +948,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Pagamento + "\n",
+            "text": encodeURIComponent(receiptInfo_Pagamento) + "\n",
             "concentration": 15,
             "align": 1, // 居中
             "lineHeight": 30,
@@ -966,7 +959,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Modos + "\n",
+            "text": encodeURIComponent(receiptInfo_Modos) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -977,7 +970,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Saldo + "\n",
+            "text": encodeURIComponent(receiptInfo_Saldo) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 30,
@@ -988,16 +981,12 @@ Utilizador: ${that.data.operator_name}
           },
         ]
       };
-
-
-      setTimeout(() => {
-        that.setData({
-          is_return: true
-        })
-      }, 1000)
-      if (typeof f == 'function'){
-        return f(invoiceInfo_data,receiptInfo_data)
-      }
+      that.handlePrint(invoiceInfo_data,receiptInfo_data);
+      that.setData({
+        is_return: true
+      })
+      
+      
     }).catch((res) => {
       wx.showToast({
         title: res.desc,

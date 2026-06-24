@@ -352,8 +352,6 @@ Page({
     let that = this;
     let print_type = that.data.print_type;
     let status_type = that.data.status_type;
-    let info = [];
-    // GBK.encode({string}) 解码GBK为一个字节数组
     //  收据
     if(print_type == 'receiptInfo' && !status_type){
       /// 判断是否有收据编码
@@ -363,7 +361,7 @@ Page({
 Ref. Recibo: ${item.receipt_number}`;
         let r_value = {
           "printType": 0,
-          "text": receiptInfo_number + "\n",
+          "text": encodeURIComponent(receiptInfo_number) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 26,
@@ -383,7 +381,7 @@ Ref. Recibo: ${item.receipt_number}`;
 Ref. Recibo: ${res.data.receipt_number}`;
         let r_value = {
           "printType": 0,
-          "text": receiptInfo_number + "\n",
+          "text": encodeURIComponent(receiptInfo_number) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 26,
@@ -503,7 +501,7 @@ Utilizador: ${that.data.operator_name}
         "data": [
           {
             "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": receiptInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+            "text": encodeURIComponent(receiptInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
             "concentration": 15, //打印浓度1~20，默认15
             "align": 1, //0左对齐，1居中对齐，2右对齐；
             "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -515,7 +513,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_title_1 + "\n",
+            "text": encodeURIComponent(receiptInfo_title_1) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -526,7 +524,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_historyData + "\n",
+            "text": encodeURIComponent(receiptInfo_historyData) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -537,7 +535,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_TOTAL + "\n",
+            "text": encodeURIComponent(receiptInfo_TOTAL) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 24,
@@ -548,7 +546,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Pagamento + "\n",
+            "text": encodeURIComponent(receiptInfo_Pagamento) + "\n",
             "concentration": 15,
             "align": 1, // 居中
             "lineHeight": 30,
@@ -559,7 +557,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Modos + "\n",
+            "text": encodeURIComponent(receiptInfo_Modos) + "\n",
             "concentration": 15,
             "align": 0,
             "lineHeight": 30,
@@ -570,7 +568,7 @@ Utilizador: ${that.data.operator_name}
           },
           {
             "printType": 0,
-            "text": receiptInfo_Saldo + "\n",
+            "text": encodeURIComponent(receiptInfo_Saldo) + "\n",
             "concentration": 15,
             "align": 1,
             "lineHeight": 30,
@@ -744,7 +742,7 @@ Assinatura: ______________
               "data": [
                 {
                   "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-                  "text": cancelFatura_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+                  "text": encodeURIComponent(cancelFatura_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
                   "concentration": 15, //打印浓度1~20，默认15
                   "align": 1, //0左对齐，1居中对齐，2右对齐；
                   "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -756,7 +754,7 @@ Assinatura: ______________
                 },
                 {
                   "printType": 0,
-                  "text": cancelFatura_title_1 + "\n",
+                  "text": encodeURIComponent(cancelFatura_title_1) + "\n",
                   "concentration": 15,
                   "align": 0,
                   "lineHeight": 30,
@@ -815,7 +813,7 @@ Assinatura: ______________
             "data": [
               {
                 "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-                "text": cancelReceipt_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+                "text": encodeURIComponent(cancelReceipt_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
                 "concentration": 15, //打印浓度1~20，默认15
                 "align": 1, //0左对齐，1居中对齐，2右对齐；
                 "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -827,7 +825,7 @@ Assinatura: ______________
               },
               {
                 "printType": 0,
-                "text": cancelReceipt_title_1 + "\n",
+                "text": encodeURIComponent(cancelReceipt_title_1) + "\n",
                 "concentration": 15,
                 "align": 0,
                 "lineHeight": 30,
@@ -935,6 +933,7 @@ Assinatura: ______________
             })
           }
           that.onCloseType1Select();
+          that.getOrderInfo(res.data.data[0].orderId);
         }else{
           wx.showToast({
             title: 'error',
@@ -942,7 +941,6 @@ Assinatura: ______________
             duration: 3000,
           })
         }
-        that.getOrderInfo(res.data.data[0].orderId);
       },
       fail: (err) => {
         wx.hideLoading();

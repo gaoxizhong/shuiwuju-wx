@@ -634,7 +634,10 @@ const zh_lang = {
       isDefaultDevice: '是否将设置为常用设备？',
       success: '设备连接成功',
       fail: '设备连接失败',
-      noDeviceBuleToolth: '未连接蓝牙设备'
+      noDeviceBuleToolth: '未连接蓝牙设备',
+      equipmentNumber: '设备SN编号',
+      pleaseequipmentNumber: '请输入SN编号',
+
     },
     setLang: {
       label: '设备语言',

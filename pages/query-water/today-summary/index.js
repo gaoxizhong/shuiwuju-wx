@@ -361,7 +361,7 @@ DATA: ${date.time}
       "data": [
         {
           "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": printInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "text": encodeURIComponent(printInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
           "concentration": 15, //打印浓度1~20，默认15
           "align": 1, //0左对齐，1居中对齐，2右对齐；
           "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -373,7 +373,7 @@ DATA: ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo + "\n",
+          "text": encodeURIComponent(printInfo) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -384,7 +384,7 @@ DATA: ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_data + "\n",
+          "text": encodeURIComponent(printInfo_data) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 26,
@@ -429,6 +429,7 @@ DATA: ${date.time}
             icon: "",
             duration: 3000,
           })
+          that.getOrderInfo(res.data.data[0].orderId);
         }else{
           wx.showToast({
             title: 'error',
@@ -436,7 +437,6 @@ DATA: ${date.time}
             duration: 3000,
           })
         }
-        that.getOrderInfo(res.data.data[0].orderId);
       },
       fail: (err) => {
         wx.hideLoading();

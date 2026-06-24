@@ -224,7 +224,7 @@ Page({
 Factura Automatica`;
         let automatica_value = {
           "printType": 0,
-          "text": automatica_title + "\n",
+          "text": encodeURIComponent(automatica_title) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 26,
@@ -590,6 +590,7 @@ ${date.time}
             icon: "",
             duration: 3000,
           })
+          that.getOrderInfo(res.data.data[0].orderId);
         }else{
           wx.showToast({
             title: 'error',
@@ -597,7 +598,6 @@ ${date.time}
             duration: 3000,
           })
         }
-        that.getOrderInfo(res.data.data[0].orderId);
         that.setData({
           is_Printreturn: true,
         })

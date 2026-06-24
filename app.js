@@ -32,7 +32,7 @@ App({
     tabberList: [],
     auth: [],
     area: [],
-    terminalNo: '0818202605016479', // 手持一体机SN编号
+    terminalNo: '', // 手持一体机SN编号
     groupId: '37388650-9ba5-4859-89f2-8b83d2122129', // 手持一体机groupId
     apiUrl: 'https://iot.unioncore.vip', // 手持一体机请求地址
     

@@ -179,7 +179,7 @@ ${info_data.last_time}
       "data": [
         {
           "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "text": encodeURIComponent(title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
           "concentration": 15, //打印浓度1~20，默认15
           "align": 1, //0左对齐，1居中对齐，2右对齐；
           "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -191,7 +191,7 @@ ${info_data.last_time}
         },
         {
           "printType": 0,
-          "text": title_1 + "\n",
+          "text": encodeURIComponent(title_1) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -202,7 +202,7 @@ ${info_data.last_time}
         },
         {
           "printType": 0,
-          "text": valores + "\n",
+          "text": encodeURIComponent(valores) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 30,

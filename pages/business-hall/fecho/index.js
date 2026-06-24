@@ -3,10 +3,7 @@ const app = getApp()
 let lang = app.globalData.lang
 
 const {
-  wxAsyncApi,
-} = require('../../../utils/util')
-const {
-  getAdminShift,getAdminShiftData
+  getAdminShift
 } = require('../../../apis/water')
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
@@ -54,17 +51,6 @@ Page({
       lang: lang.fecho,
       btnName: lang.btnName,
     })
-  },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
   },
   //获取当前时间
   handleTimeValue(date) {
@@ -240,7 +226,7 @@ Processado por programaválido n31.1/AGT20
       "data": [
         {
           "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": printInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "text": encodeURIComponent(printInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
           "concentration": 15, //打印浓度1~20，默认15
           "align": 1, //0左对齐，1居中对齐，2右对齐；
           "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -252,7 +238,7 @@ Processado por programaválido n31.1/AGT20
         },
         {
           "printType": 0,
-          "text": printInfo + "\n",
+          "text": encodeURIComponent(printInfo) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -263,7 +249,7 @@ Processado por programaválido n31.1/AGT20
         },
         {
           "printType": 0,
-          "text": printInfo_data + "\n",
+          "text": encodeURIComponent(printInfo_data) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 30,
@@ -308,6 +294,7 @@ Processado por programaválido n31.1/AGT20
             icon: "",
             duration: 3000,
           })
+          that.getOrderInfo(res.data.data[0].orderId);
         }else{
           wx.showToast({
             title: 'error',
@@ -315,7 +302,6 @@ Processado por programaválido n31.1/AGT20
             duration: 3000,
           })
         }
-        that.getOrderInfo(res.data.data[0].orderId);
         that.setData({
           pay_success: false,
         })
