@@ -33,8 +33,6 @@ Page({
   },
   onShow(){
     let terminalNo = wx.getStorageSync('terminalNo') || '';
-    console.log(terminalNo)
-    console.log(app.globalData.terminalNo)
     this.setData({
       terminalNo,
     })
@@ -57,7 +55,6 @@ Page({
       })
       wx.setStorageSync('terminalNo', this.data.terminalNo);// 0818202605016479
       app.globalData.terminalNo = this.data.terminalNo;
-      console.log(app.globalData.terminalNo)
       setTimeout( ()=>{
         this.goBack();
       },1500)
