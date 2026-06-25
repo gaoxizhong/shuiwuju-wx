@@ -26,6 +26,7 @@ Page({
   data: {
     lang: lang.pay.collectInfo,
     langDialog: lang.dialog,
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     paid_total_money: '',
     btnName: lang.btnName,
     form: {},
@@ -97,10 +98,13 @@ Page({
       langDialog: lang.dialog,
       btnName: lang.btnName,
       steps: lang.pay.steps,
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
       is_yujiao
     })
   },
-  
+  onShow(){
+    
+  },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){
     const wm_no = n
@@ -202,7 +206,7 @@ Page({
     this.setData({
       print_type: 'printInfo'
     })
-    this.getUserBluetoolthInfoData(this.handlePrint);
+    this.getUserBluetoolthInfoData();
          
   },
 
@@ -258,7 +262,7 @@ Factura Automatica`;
     })
   },
   // 获取用户打印信息
-  getUserBluetoolthInfoData(f){
+  getUserBluetoolthInfoData(){
     let that = this;
     const params = {
       wm_no: that.data.form.wm_no,
@@ -498,12 +502,13 @@ ${date.time}
           ]
         }
         console.log('初始信息：',printData)
-        if (typeof f == 'function'){
-          return f(printData)
-        }
         that.setData({
           is_Printreturn: true,
         })
+        setTimeout(() =>{
+          that.handlePrint(printData)
+        },100)
+        
     }).catch((res) => {
       wx.showToast({
         title: res.desc,
@@ -562,10 +567,34 @@ ${date.time}
   // 新打印机打印方法
   SendControlCommand(printData) {
     let that = this;
-     wx.showLoading({
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
+      })
+      return
+    }else{
+      that.SendControlCommand_1(printData);
+    }
+  },
+  SendControlCommand_1(printData){
+    let that = this;
+    wx.showLoading({
       title: ''
     });
-
     let printCtn = {
       "type":"print",
       "printJsonStr": printData
@@ -574,7 +603,7 @@ ${date.time}
       url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
       method: "post",
       data: {
-        terminalNo: app.globalData.terminalNo,
+        terminalNo: wx.getStorageSync('terminalNo'),
         groupId: app.globalData.groupId,
         printCtn: JSON.stringify(printCtn)
       },

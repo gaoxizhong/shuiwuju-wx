@@ -23,6 +23,7 @@ Page({
     lang: lang.userWaterInfo,
     btnName: lang.btnName,
     langDialog: lang.dialog,
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     from: {},
     printDeviceInfo: null,
 
@@ -77,6 +78,7 @@ Page({
       lang: lang.userWaterInfo,
       btnName: lang.btnName,
       langDialog: lang.dialog,
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
     })
     let item = JSON.parse(options.item);
     console.log(item)
@@ -878,10 +880,36 @@ Assinatura: ______________
     let arr = [ ...inputBuffer ]
     return arr
   },
-   // 新打印机打印方法
-   SendControlCommand(printData) {
+  // 新打印机打印方法
+  SendControlCommand(printData) {
     let that = this;
-     wx.showLoading({
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
+      })
+      return
+    }else{
+      that.SendControlCommand_1(printData);
+    }
+  },
+  // 新打印机打印方法
+  SendControlCommand_1(printData) {
+    let that = this;
+      wx.showLoading({
       title: ''
     });
     let print_type = that.data.print_type;
@@ -896,7 +924,7 @@ Assinatura: ______________
       url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
       method: "post",
       data: {
-        terminalNo: app.globalData.terminalNo,
+        terminalNo: wx.getStorageSync('terminalNo'),
         groupId: app.globalData.groupId,
         printCtn: JSON.stringify(printCtn)
       },

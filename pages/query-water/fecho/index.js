@@ -15,6 +15,7 @@ Page({
   data: {
     lang: lang.fecho,
     btnName: lang.btnName,
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     operator_name: '',
     name_error: false,
     printInfo:'', //  打印数据
@@ -39,6 +40,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    lang = app.globalData.lang;
+    this.setData({
+      lang: lang.fecho,
+      btnName: lang.btnName,
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
+    })
     this.getAdminShift(0);
   },
   // 转二进制 并数组复制
@@ -225,83 +232,108 @@ DATA: ${date.time}
     }
     this.SendControlCommand(printData);
   },
-// 新打印机打印方法
-SendControlCommand(printData) {
-  let that = this;
-  wx.showLoading({
-    title: ''
-  });
-
-  let printCtn = {
-    "type":"print",
-    "printJsonStr": printData
-  }
-  wx.request({
-    url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-    method: "post",
-    data: {
-      terminalNo: app.globalData.terminalNo,
-      groupId: app.globalData.groupId,
-      printCtn: JSON.stringify(printCtn)
-    },
-    header: {
-      'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-    },
-    success: (res) => {
-      wx.hideLoading();
-      console.log('success...',res)
-      if(res.data.code == 200){
-        wx.showToast({
-          title: lang.blueToolth.printSuccess,
-          icon: "",
-          duration: 3000,
-        })
-        that.getOrderInfo(res.data.data[0].orderId);
-      }else{
-        wx.showToast({
-          title: 'error',
-          icon: "none",
-          duration: 3000,
-        })
-      }
-      that.setData({
-        pay_success: false,
+  // 新打印机打印方法
+  SendControlCommand(printData) {
+    let that = this;
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
       })
-      that.getAdminShift(1,that.data.operator_name);
-    },
-    fail: (err) => {
-      wx.hideLoading();
-      console.log('err...',err)// 控制台打印完整错误，方便排查
-     
+      return
+    }else{
+      that.SendControlCommand_1(printData);
     }
-  })
-},
-getOrderInfo(id){
+  },
+  SendControlCommand_1(printData) {
+    let that = this;
+    wx.showLoading({
+      title: ''
+    });
 
-  wx.request({
-    url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-    method: "post",
-    data: {
-      orderId: id
-    },
-    header: {
-      'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-    },
-    success: (res) => {
-      wx.hideLoading();
-      console.log('success...',res)
-      if(res.data.code == 200){
-        
-      }else{
-       
-      }
-    },
-    fail: (err) => {
-      wx.hideLoading();
-      console.log('err...',err)// 控制台打印完整错误，方便排查
-      
+    let printCtn = {
+      "type":"print",
+      "printJsonStr": printData
     }
-  })
-},
+    wx.request({
+      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
+      method: "post",
+      data: {
+        terminalNo: wx.getStorageSync('terminalNo'),
+        groupId: app.globalData.groupId,
+        printCtn: JSON.stringify(printCtn)
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "",
+            duration: 3000,
+          })
+          that.getOrderInfo(res.data.data[0].orderId);
+        }else{
+          wx.showToast({
+            title: 'error',
+            icon: "none",
+            duration: 3000,
+          })
+        }
+        that.setData({
+          pay_success: false,
+        })
+        that.getAdminShift(1,that.data.operator_name);
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+      
+      }
+    })
+  },
+  getOrderInfo(id){
+
+    wx.request({
+      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
+      method: "post",
+      data: {
+        orderId: id
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          
+        }else{
+        
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
+      }
+    })
+  },
 
 })

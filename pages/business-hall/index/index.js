@@ -24,6 +24,7 @@ Page({
     lang: lang.index,
     langDialog: lang.dialog,
     btnName: lang.btnName,
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     wm_no: '',
     is_seach: false,
     status: '',
@@ -71,6 +72,7 @@ Page({
       langDialog: lang.dialog,
       btnName: lang.btnName,
       searchStatusList: lang.searchStatusList, 
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
       title_active: 1,
       delPayLogList: [],
 
@@ -676,13 +678,37 @@ ${date.time}
       })
     },1000)
   },
-    // 新打印机打印方法
+  // 新打印机打印方法
   SendControlCommand(printData) {
     let that = this;
-     wx.showLoading({
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
+      })
+      return
+    }else{
+      that.SendControlCommand_1(printData);
+    }
+  },
+  SendControlCommand_1(printData){
+    let that = this;
+    wx.showLoading({
       title: ''
     });
-
     let printCtn = {
       "type":"print",
       "printJsonStr": printData
@@ -691,7 +717,7 @@ ${date.time}
       url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
       method: "post",
       data: {
-        terminalNo: app.globalData.terminalNo,
+        terminalNo: wx.getStorageSync('terminalNo'),
         groupId: app.globalData.groupId,
         printCtn: JSON.stringify(printCtn)
       },
@@ -715,13 +741,20 @@ ${date.time}
             duration: 3000,
           })
         }
+        that.setData({
+          is_Printreturn: true,
+        })
       },
       fail: (err) => {
         wx.hideLoading();
         console.log('err...',err)// 控制台打印完整错误，方便排查
+        that.setData({
+          is_Printreturn: true,
+        })
       }
     })
   },
+  
   getOrderInfo(id){
 
     wx.request({

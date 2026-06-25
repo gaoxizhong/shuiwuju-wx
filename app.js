@@ -18,11 +18,14 @@ App({
     wx.setStorageSync('foreverDevice', '')
     wx.setStorageSync('tabberIndex', 0)
     // wx.setStorageSync('langversion', 1)
+    let terminalNo = wx.getStorageSync('terminalNo') || '';
+    this.globalData.terminalNo = terminalNo;
     const lang = getLang()
     this.globalData.lang = lang
     wx.setNavigationBarTitle({
       title: lang.tabber.list[0].text,
     })
+
     // 登录
     this.appLogin()
   },

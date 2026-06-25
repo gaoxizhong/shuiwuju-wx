@@ -1,5 +1,6 @@
 // pages/maintenance/add-account/index.js
 const app = getApp();
+let lang = app.globalData.lang;
 import {
   getLang
 } from './../../../lang/index'
@@ -20,6 +21,7 @@ Page({
    */
   data: {
     lang: getLang(),
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     form: [],
     is_true:false,
     info_data: null
@@ -41,6 +43,8 @@ Page({
   onShow(){
     this.setData({
       lang: getLang(),
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
+
     })
     console.log(this.data.lang)
     // 获取价格类型
@@ -220,6 +224,31 @@ ${info_data.last_time}
    // 新打印机打印方法
    SendControlCommand(printData) {
     let that = this;
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
+      })
+      return
+    }else{
+      that.SendControlCommand_1(printData);
+    }
+  },
+  SendControlCommand_1(printData) {
+    let that = this;
      wx.showLoading({
       title: ''
     });
@@ -232,7 +261,7 @@ ${info_data.last_time}
       url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
       method: "post",
       data: {
-        terminalNo: app.globalData.terminalNo,
+        terminalNo: wx.getStorageSync('terminalNo'),
         groupId: app.globalData.groupId,
         printCtn: JSON.stringify(printCtn)
       },

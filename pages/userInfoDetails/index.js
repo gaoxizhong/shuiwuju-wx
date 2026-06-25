@@ -22,6 +22,7 @@ Page({
     lang: lang.userWaterInfo,
     btnName: lang.btnName,
     langDialog: lang.dialog,
+    bluetoolthDevice: lang.admin.bluetoolthDevice,
     wm_no: '',
     status: '',
     admin_name:'', // 管理员搜索字段
@@ -64,6 +65,7 @@ Page({
       lang: lang.userWaterInfo,
       btnName: lang.btnName,
       langDialog: lang.dialog,
+      bluetoolthDevice: lang.admin.bluetoolthDevice,
     })
   },
 
@@ -319,7 +321,7 @@ ${date.time}
       "data": [
         {
           "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": printInfo_title + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
+          "text": encodeURIComponent(printInfo_title)+ "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
           "concentration": 15, //打印浓度1~20，默认15
           "align": 1, //0左对齐，1居中对齐，2右对齐；
           "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
@@ -331,7 +333,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_title_1 + "\n",
+          "text": encodeURIComponent(printInfo_title_1) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -342,7 +344,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_Comsumidor + "\n",
+          "text": encodeURIComponent(printInfo_Comsumidor) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 32,
@@ -353,7 +355,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_CustomerData + "\n",
+          "text": encodeURIComponent(printInfo_CustomerData) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -364,7 +366,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_historyData_title + "\n",
+          "text": encodeURIComponent(printInfo_historyData_title) + "\n",
           "concentration": 15,
           "align": 1, // 居中
           "lineHeight": 30,
@@ -375,7 +377,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_historyData_info + "\n",
+          "text": encodeURIComponent(printInfo_historyData_info) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -386,7 +388,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_facturacao_title + "\n",
+          "text": encodeURIComponent(printInfo_facturacao_title) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 30,
@@ -397,7 +399,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_facturacao_info + "\n",
+          "text": encodeURIComponent(printInfo_facturacao_info) + "\n",
           "concentration": 15,
           "align": 0,
           "lineHeight": 30,
@@ -408,7 +410,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_TOTAL + "\n",
+          "text": encodeURIComponent(printInfo_TOTAL) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 24,
@@ -419,7 +421,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": pagamento_pagamento + "\n",
+          "text": encodeURIComponent(pagamento_pagamento) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 26,
@@ -430,7 +432,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_valores + "\n",
+          "text": encodeURIComponent(printInfo_valores) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 34,
@@ -441,7 +443,7 @@ ${date.time}
         },
         {
           "printType": 0,
-          "text": printInfo_time + "\n",
+          "text": encodeURIComponent(printInfo_time) + "\n",
           "concentration": 15,
           "align": 1,
           "lineHeight": 26,
@@ -807,79 +809,104 @@ DATA: ${date_time}
 
 
 
-    // 新打印机打印方法
-    SendControlCommand(printData) {
-      let that = this;
-       wx.showLoading({
-        title: ''
-      });
-  
-      let printCtn = {
-        "type":"print",
-        "printJsonStr": printData
+  // 新打印机打印方法
+  SendControlCommand(printData) {
+    let that = this;
+    let bluetoolthDevice = that.data.bluetoolthDevice;
+    // 判断是否有设备SN码
+    let terminalNo = wx.getStorageSync('terminalNo');
+    if(!terminalNo || terminalNo == ''){
+      wx.showModal({
+        title: bluetoolthDevice.equipmentNumber,
+        editable: true, // 开启输入框
+        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
+        success(res) {
+          if (res.confirm) {
+            // 用户点击确定后，通过res.content获取输入的内容
+            console.log('设备SN码：', res.content)
+            wx.setStorageSync('terminalNo',res.content);
+            app.globalData.terminalNo = res.content;
+            that.SendControlCommand_1(printData);
+          }
+        }
+      })
+      return
+    }else{
+      that.SendControlCommand_1(printData);
+    }
+  },
+  SendControlCommand_1(printData) {
+    let that = this;
+      wx.showLoading({
+      title: ''
+    });
+
+    let printCtn = {
+      "type":"print",
+      "printJsonStr": printData
+    }
+    wx.request({
+      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
+      method: "post",
+      data: {
+        terminalNo: wx.getStorageSync('terminalNo'),
+        groupId: app.globalData.groupId,
+        printCtn: JSON.stringify(printCtn)
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
+          wx.showToast({
+            title: lang.blueToolth.printSuccess,
+            icon: "",
+            duration: 3000,
+          })
+          that.getOrderInfo(res.data.data[0].orderId);
+        }else{
+          wx.showToast({
+            title: 'error',
+            icon: "none",
+            duration: 3000,
+          })
+        }
+        
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
       }
-      wx.request({
-        url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-        method: "post",
-        data: {
-          terminalNo: app.globalData.terminalNo,
-          groupId: app.globalData.groupId,
-          printCtn: JSON.stringify(printCtn)
-        },
-        header: {
-          'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-        },
-        success: (res) => {
-          wx.hideLoading();
-          console.log('success...',res)
-          if(res.data.code == 200){
-            wx.showToast({
-              title: lang.blueToolth.printSuccess,
-              icon: "",
-              duration: 3000,
-            })
-            that.getOrderInfo(res.data.data[0].orderId);
-          }else{
-            wx.showToast({
-              title: 'error',
-              icon: "none",
-              duration: 3000,
-            })
-          }
+    })
+  },
+  getOrderInfo(id){
+
+    wx.request({
+      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
+      method: "post",
+      data: {
+        orderId: id
+      },
+      header: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log('success...',res)
+        if(res.data.code == 200){
           
-        },
-        fail: (err) => {
-          wx.hideLoading();
-          console.log('err...',err)// 控制台打印完整错误，方便排查
-         
-        }
-      })
-    },
-    getOrderInfo(id){
-  
-      wx.request({
-        url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-        method: "post",
-        data: {
-          orderId: id
-        },
-        header: {
-          'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-        },
-        success: (res) => {
-          wx.hideLoading();
-          console.log('success...',res)
-          if(res.data.code == 200){
-            
-          }else{
-           
-          }
-        },
-        fail: (err) => {
-          wx.hideLoading();
-          console.log('err...',err)// 控制台打印完整错误，方便排查
+        }else{
           
         }
-      })
-    },
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.log('err...',err)// 控制台打印完整错误，方便排查
+        
+      }
+    })
+  },
 })
