@@ -38,14 +38,26 @@ App({
     terminalNo: '', // 手持一体机SN编号
     groupId: '37388650-9ba5-4859-89f2-8b83d2122129', // 手持一体机groupId
     apiUrl: 'https://iot.unioncore.vip', // 手持一体机请求地址
-    
     baseUrl: 'https://swj-admin.qingshanpai.com',  // 正式服
     // baseUrl: 'https://swj-admin-test.qingshanpai.com', // 测试服
-    AGTUrl: "https://quiosqueagt.hml.minfin.gov.ao", // AGT 发票税务 测试环境
-    // AGTUrl: "https://quiosqueagt.minfin.gov.ao", // AGT 发票税务 生产正式环境
     billStatus: null, // 水表单状态
     wm_id: '',
-    repair_type: []
+    repair_type: [],
+    AGTUrl: "https://quiosqueagt.hml.minfin.gov.ao", // AGT 发票税务 测试环境
+    // AGTUrl: "https://quiosqueagt.minfin.gov.ao", // AGT 发票税务 生产正式环境
+    SOAP_Url:' https://sifphml.minfin.gov.ao/sigt/fe/ws/v1',
+    "schemaVersion": "1.0.1", // 服务schema版本，如"1.0"
+    "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
+    "taxRegistrationNumber": "string", // 纳税人识别号
+    "submissionTimeStamp": "string", // 请求提交时间戳，格式为ISO 8601，示例："2025-05-27T14:30:00Z"（UTC）；"2025-05-27T14:30:00-03:00"（含时区信息）
+    "softwareInfo": { // 开票软件数据对象
+      "softwareInfoDetail": {  // 开票软件详细信息对象
+          "productId": "string", // 开票软件名称
+          "productVersion": "string", // 开票软件版本
+          "softwareValidationNumber": "string" // 开票软件认证编号
+      },
+      "jwsSoftwareSignature": "string" // 使用软件私钥对开票软件进行的数字签名，采用RS256算法（RSA + SHA-256）。softwareInfo对象的所有字段必须用于签名
+    },
   },
   // 登录
   appLogin() {

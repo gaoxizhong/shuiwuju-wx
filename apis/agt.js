@@ -1,7 +1,7 @@
-//1 请求注册电子发票
 //REST
-//Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/registarFactura
 //请求示例（Accept: application/json）：
+//1 请求注册电子发票
+//Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/registarFactura
 let data = {
     "schemaVersion": "1.0.1", // 服务schema版本，如"1.0"
     "submissionUUID": "string",
@@ -70,4 +70,90 @@ let data = {
         }]
 
     }]
+}
+export const getRegistarFactura = (data) => {
+  return httpRequest({
+    url: 'https://sifphml.minfin.gov.ao/sigt/fe/v1/registarFactura',
+    method: 'POST',
+    data
+  })
+}
+
+//2、获取电子发票验证状态
+//Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/obterEstado
+let obterEstado_data = {
+    "schemaVersion": "string", // 服务schema版本，如"1.0
+    "submissionUUID": "string",   // 由软件提供的请求标识符（GUID或UUID）
+    "taxRegistrationNumber": "string", // 纳税人识别号
+    "submissionTimeStamp": "string", // 请求提交时间戳，格式ISO 8601
+    "softwareInfo": { // 开票软件数据对象
+      "softwareInfoDetail": { // 开票软件详细信息对象
+        "productId": "string",  // 开票软件名称
+        "productVersion": "string", // 开票软件版本
+        "softwareValidationNumber": "string"  // 开票软件认证编号
+      },
+      "jwsSoftwareSignature": "string", //使用软件私钥对开票软件的数字签名，采用RS256算法
+    },
+    "requestID": "string" // 请求唯一标识符
+}
+// 3、 列出发票
+// Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/listarFacturas
+let listarFacturas_data = {
+  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "taxRegistrationNumber": "string", // 纳税人识别号
+  "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
+  "softwareInfo": {  //开票软件数据对象
+    "softwareInfoDetail": { // 开票软件详细信息对象
+      "productId": "string",  // 开票软件名称
+      "productVersion": "string", // 开票软件版本
+      "softwareValidationNumber": "string"  // 开票软件认证编号
+    },
+    "jwsSoftwareSignature": "string" // 软件数字签名
+  },
+  "jwsSignature": "string",  // 请求数字签名
+  "requestID": "string", //请求唯一标识符
+  "documentType": "string",  // 发票文件类型过滤器
+  "documentDateFrom": "string", //发票日期起始范围，格式"YYYY-MM-DD"
+  "documentDateTo": "string"  // 发票日期结束范围，格式"YYYY-MM-DD
+}
+// 4、 查询发票
+
+// Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/consultarFactura
+let consultarFactura_data = {
+  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
+  "taxRegistrationNumber": "string", // 纳税人识别号
+  "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
+  "invoiceNo": "string",  // 发票编号
+  "softwareInfo": {  //开票软件数据对象
+    "softwareInfoDetail": { // 开票软件详细信息对象
+      "productId": "string",  // 开票软件名称
+      "productVersion": "string", // 开票软件版本
+      "softwareValidationNumber": "string"  // 开票软件认证编号
+    },
+    "jwsSoftwareSignature": "string" // 软件数字签名
+  },
+  "jwsSignature": "string" // 请求数字签名
+}
+
+// 5、申请序列号
+// Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/solicitarSerie
+let solicitarSerie_data = {
+  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
+  "taxRegistrationNumber": "string", // 纳税人识别号
+  "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
+  "softwareInfo": {  //开票软件数据对象
+    "softwareInfoDetail": { // 开票软件详细信息对象
+      "productId": "string",  // 开票软件名称
+      "productVersion": "string", // 开票软件版本
+      "softwareValidationNumber": "string"  // 开票软件认证编号
+    },
+    "jwsSoftwareSignature": "string" // 软件数字签名
+  },
+  "seriesYear":"String", // 系统年份
+  "documentType": "String", // 文件类型
+  "establishmentNumber": "String", // 机构编号  
+  "seriesContingencyIndicator": "String",
+  "jwsSignature": "string" // 请求数字签名
 }
