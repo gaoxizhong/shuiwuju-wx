@@ -39,7 +39,13 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false
+    "condition": false,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "condition": {},
@@ -51,5 +57,7 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxaa5e4d1657828960"
+  "appid": "wxaa5e4d1657828960",
+  "libVersion": "3.16.2",
+  "simulatorPluginLibVersion": {}
 }

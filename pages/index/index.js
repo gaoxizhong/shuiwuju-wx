@@ -30,7 +30,6 @@ Page({
     })
     const _this = this
     app.watchAuth(_this.getFuncList)
-
   },
 
   /**

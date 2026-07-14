@@ -108,11 +108,14 @@ Component({
     //获取当前时间
     handleTimeValue(date) {
       const _date = date ? new Date(date) : new Date()
+      const submissionTimeStamp = _date.toISOString();
       const year = _date.getFullYear()
       const month = _date.getMonth() + 1
       const day = _date.getDate()
       const days = _date.getDay()
       const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day}`
+      console.log( '获取当前时间UTC:',submissionTimeStamp )
+      console.log( '获取当前时间time:',time )
       return {
         time,
         year,

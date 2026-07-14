@@ -15,7 +15,7 @@ const {
 } = require('./../../../../apis/water')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../../../utils/encoding.js")
-
+const { getRegistarFactura } = require('../../../../apis/agt')
 // const { SendControlCommand } = require("./../../../../utils/print")
 
 Page({
@@ -103,7 +103,9 @@ Page({
     })
   },
   onShow(){
-    
+    getRegistarFactura({a:1,b:2,c:3}).then( res =>{
+      console.log(res)
+    })
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){

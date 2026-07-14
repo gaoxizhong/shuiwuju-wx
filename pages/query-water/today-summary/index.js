@@ -501,7 +501,7 @@ DATA: ${date.time}
 
   //获取当前时间
   handleTimeValue(date) {
-    const _date = date ? new Date(date) : new Date()
+    const _date = date ? new Date(date) : new Date();
     const year = _date.getFullYear()
     const month = _date.getMonth() + 1
     const day = _date.getDate()
