@@ -17,7 +17,7 @@ export const getRegistarFactura = (d) => {
   let data = {
     "schemaVersion": "1.0.1", // 服务schema版本，如"1.0"
     "submissionUUID": "13e7aaf7-e9e1-40af-875b-930f070c22be",
-    "taxRegistrationNumber": "string", // 纳税人识别号
+    "taxRegistrationNumber": "5001442740", // 纳税人识别号
     "submissionTimeStamp": "2026-06-16T14:30:00Z", // 请求提交时间戳，格式为ISO 8601，示例："2025-05-27T14:30:00Z"（UTC）；"2025-05-27T14:30:00-03:00"（含时区信息）
     "softwareInfo": { // 开票软件数据对象
         "softwareInfoDetail": { 
@@ -37,24 +37,24 @@ export const getRegistarFactura = (d) => {
         "documentType": "FA",  
         "eacCode": "36001", // 与本发票相关的活动代码
         "systemEntryDate": "2026-07-16T18:06:06",  //签名时记录注册的时间戳 — ISO 8601格式（YYYY-MMDDThh:mm:ss）
-        "customerTaxID": "N/A", // 发票客户识别号。对于国内买家（customerCountry字段标注为AO的），填写安哥拉NIF。对于国内纳税人开票文件中未标识买方的，可使用值"999999999
+        "customerTaxID": "5001442740", // 发票客户识别号。对于国内买家，填写安哥拉NIF。对于国内纳税人开票文件中未标识买方的，可使用值"999999999
         "customerCountry": "AO", // 买方国家代码，遵循ISO 3166-1-alpha-2标准，国内买方使用"AO"
         "companyName": "string", // 纳税人名称/商号
         "lines": [{  // 发票文件条目列表数组（document对象），以下发票类型（documentType）不 需要填写：AR — 收款通知/收据；RC — 开具收据；RG — 其 他开具收据。其他发票文件类型必须填写此字段
-            "lineNumber": "1",  //发票文件条目的行 号，从1开始，每新增一行递增1
+            "lineNumber": 1,  //发票文件条目的行 号，从1开始，每新增一行递增1
             "productCode": "string", // 产品或服务代码 
-            "productDescription": "string",  // 产品或服务描述
-            "quantity": "string",  // 数量，整数或小数
+            "productDescription": "Factura de Adiantamento",  // 产品或服务描述
+            "quantity": 1,  // 数量，整数或小数
             "unitOfMeasure": "string",  // 计量单位
             "unitPrice": "string",  // 单价，不含折扣和税费
             "unitPriceBase": "string",  // 扣除行或头折扣后的单价，不含税费
             "debitAmount": "string", // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁 免原因的值。debitAmount和 creditAmount字段只 能填写其一
             "creditAmount": "string",  // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁免原因的值。debitAmount和creditAmount字段只能填写其一
             "taxes": [{  // 指定为该行计算的税 款的对象数组
-                "taxType": "string",  // 税制类型，可选值：IVA — 增值税；IS —印花税；IEC — 特别 消费税
-                "taxCountryRegion": "string",  //税收适用的国家/地区代码
-                "taxCode": "string",   //税率代码。ISE表示豁免；NS表示不征税
-                "taxPercentage": "string",  // 适用百分比税率（如14表示14%税率）。 豁免或不征税时填写0
+                "taxType": "IVA",  // 税制类型，可选值：IVA — 增值税；IS —印花税；IEC — 特别 消费税
+                "taxCountryRegion": "AO",  //税收适用的国家/地区代码
+                "taxCode": "ISE",   //税率代码。ISE表示豁免；NS表示不征税
+                "taxPercentage": 0,  // 适用百分比税率（如14表示14%税率）。 豁免或不征税时填写0
                 "taxContribution": "string"  // 本行税款的计算值（最多两位小数的十 进制值），贡献于发票文件总税额。此字 段计算值应向上取整 到下一个分，示例：23.144 → 23.15；0.001844 → 0.01；5.9999999 → 6.00
             }],
             "settlementAmount": "string"  // 折扣总额，应反映该行折扣比例和特定折 扣
@@ -76,8 +76,8 @@ export const getRegistarFactura = (d) => {
             "grossTotal": 100.00 // 含税的文档总额（最多两位小数的十进制值）
         },
         "withholdingTaxList": [{ // 预扣税列表
-            "withholdingTaxType": "OU",  // 预扣税类型 RT - 劳动所得税；II - 工业税；IS - 印花税；IVA - 增值税；IP - 房产税；IAC - 资本应用税；OU - 其他；IRPC - 法人所得税（未来税）；IRPS - 个人所得税
-            "withholdingTaxDescription": "string",  // 预扣税描述
+            "withholdingTaxType": "IVA",  // 预扣税类型 RT - 劳动所得税；II - 工业税；IS - 印花税；IVA - 增值税；IP - 房产税；IAC - 资本应用税；OU - 其他；IRPC - 法人所得税（未来税）；IRPS - 个人所得税
+            "withholdingTaxDescription": "IVA",  // 预扣税描述
             "withholdingTaxAmount": 100  // 预扣税金额
         }]
 
