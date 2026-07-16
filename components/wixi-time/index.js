@@ -121,7 +121,8 @@ Component({
         year,
         month,
         day,
-        days
+        days,
+        submissionTimeStamp
       }
     },
     // 打开时间选择器

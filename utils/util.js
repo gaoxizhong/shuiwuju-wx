@@ -80,7 +80,8 @@ function handleTimeValue(date) {
       day,
       time,
       dayTime,
-      timestamp
+      timestamp,
+      submissionTimeStamp
     }
   }
 // 判断当前时间是否在时间段内
