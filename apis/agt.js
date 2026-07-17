@@ -48,8 +48,14 @@ export const getRegistarFactura = (d) => {
             "unitOfMeasure": "string",  // 计量单位
             "unitPrice": "string",  // 单价，不含折扣和税费
             "unitPriceBase": "string",  // 扣除行或头折扣后的单价，不含税费
-            "debitAmount": "string", // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁 免原因的值。debitAmount和 creditAmount字段只 能填写其一
-            "creditAmount": "string",  // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁免原因的值。debitAmount和creditAmount字段只能填写其一
+            "debitAmount": "string", // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁 免原因的值。debitAmount和 creditAmount字段只 能填写其一；（借方金额）‌：代表资金流出或资产增加的数值，在会计记账中记入借方。
+            "creditAmount": "string",  // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁免原因的值。debitAmount和creditAmount字段只能填写其一 （贷方金额）‌：代表资金流入或负债/权益增加的数值，在会计记账中记入贷方。
+            //预付款发票场景下，‌付款时填借方（预付账款），收货/核销时填贷方（冲减预付账款）‌。‌‌
+            "referenceInfo": { // 详细说明本发票文件所引用基础文件的参考信息。以下类型发票必填：NC（贷项通知单），用于标识退货的基础发票
+              "reference": "string",  // 本条目引用的原始发票文件参考编号
+              "reason": "Anular", // 原始文件介入原因
+              "referenceItemLineNo": 1 // 本条目引用的原始发票文件中条目行号的参考
+            },
             "taxes": [{  // 指定为该行计算的税 款的对象数组
                 "taxType": "IVA",  // 税制类型，可选值：IVA — 增值税；IS —印花税；IEC — 特别 消费税
                 "taxCountryRegion": "AO",  //税收适用的国家/地区代码
@@ -59,28 +65,27 @@ export const getRegistarFactura = (d) => {
             }],
             "settlementAmount": "string"  // 折扣总额，应反映该行折扣比例和特定折 扣
         }],
-        "paymentReceipt": {  // 收据数据对象，以下发票类型必填：AR — 收款通知/收据；RC— 开具收据；RG —其他开具收据。其他发票文件类型不填写 此字段
-            "sourceDocuments": [{  // 已支付的发票文件数据
-                "lineNo": "string", // 包含在收据中的发票 文件行号，从1开始，每新增一行递增1
-                "sourceDocumentID": {  // 包含在此收据中的发票文件数据
-                    "originatingON": "string", // 已核销的发票文件编号
-                    "documentDate": "string"  // 付款所涉及的发票或更正文件的签发日  期。格式："YYYYMM-DD"
-                },
-                "debitAmount": "string",  // 更正文件收据金额，源自无折扣发票行列 表
-                "creditAmount": "string" // 更正文件收据金额，源自无折扣发票行列表
-            }]
-        },
         "documentTotals": {  //包含发票总计的对象
-            "taxPayable": 100.00,  // 发票总税额（最多两 位小数的十进制值）
-            "netTotal": 100.00,  // 不含税的文档净额（最多两位小数的十 进制值）
-            "grossTotal": 100.00 // 含税的文档总额（最多两位小数的十进制值）
-        },
-        "withholdingTaxList": [{ // 预扣税列表
-            "withholdingTaxType": "IVA",  // 预扣税类型 RT - 劳动所得税；II - 工业税；IS - 印花税；IVA - 增值税；IP - 房产税；IAC - 资本应用税；OU - 其他；IRPC - 法人所得税（未来税）；IRPS - 个人所得税
-            "withholdingTaxDescription": "IVA",  // 预扣税描述
-            "withholdingTaxAmount": 100  // 预扣税金额
-        }]
-
+          "taxPayable": 0,  // 发票总税额（最多两 位小数的十进制值）
+          "netTotal": 100.00,  // 不含税的文档净额（最多两位小数的十 进制值）
+          "grossTotal": 100.00 // 含税的文档总额（最多两位小数的十进制值）
+      },
+      "withholdingTaxList": [{ // 预扣税列表
+          "withholdingTaxType": "IVA",  // 预扣税类型 RT - 劳动所得税；II - 工业税；IS - 印花税；IVA - 增值税；IP - 房产税；IAC - 资本应用税；OU - 其他；IRPC - 法人所得税（未来税）；IRPS - 个人所得税
+          "withholdingTaxDescription": "IVA",  // 预扣税描述
+          "withholdingTaxAmount": 0 // 预扣税金额
+      }]
+        // "paymentReceipt": {  // 收据数据对象，以下发票类型必填：AR — 收款通知/收据；RC— 开具收据；RG —其他开具收据。其他发票文件类型不填写 此字段
+        //     "sourceDocuments": [{  // 已支付的发票文件数据
+        //         "lineNo": "string", // 包含在收据中的发票 文件行号，从1开始，每新增一行递增1
+        //         "sourceDocumentID": {  // 包含在此收据中的发票文件数据
+        //             "originatingON": "string", // 已核销的发票文件编号
+        //             "documentDate": "string"  // 付款所涉及的发票或更正文件的签发日  期。格式："YYYYMM-DD"
+        //         },
+        //         "debitAmount": "string",  // 更正文件收据金额，源自无折扣发票行列 表 借方
+        //         "creditAmount": "string" // 更正文件收据金额，源自无折扣发票行列表  贷方
+        //     }]
+        // },
     }]
   }
   return httpRequest({
