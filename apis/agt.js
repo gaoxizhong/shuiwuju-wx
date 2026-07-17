@@ -53,7 +53,7 @@ export const getRegistarFactura = (d) => {
             //预付款发票场景下，‌付款时填借方（预付账款），收货/核销时填贷方（冲减预付账款）‌。‌‌
             "referenceInfo": { // 详细说明本发票文件所引用基础文件的参考信息。以下类型发票必填：NC（贷项通知单），用于标识退货的基础发票
               "reference": "string",  // 本条目引用的原始发票文件参考编号
-              "reason": "Anular", // 原始文件介入原因
+              "reason": "Cancelar", // 原始文件介入原因
               "referenceItemLineNo": 1 // 本条目引用的原始发票文件中条目行号的参考
             },
             "taxes": [{  // 指定为该行计算的税 款的对象数组
