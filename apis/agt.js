@@ -1,4 +1,6 @@
 import { httpRequest } from '../utils/request'
+let uesr = "ws.hml.Watmanagement";
+let password = "mfn79302026";
 
 //REST
 //请求示例（Accept: application/json）：
