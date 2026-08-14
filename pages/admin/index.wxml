@@ -2,7 +2,7 @@
 <view class="home">
   <view class="home-me-info">
     <view class="me-header">
-      <image src="{{imgUrl}}" mode="" />
+      <image src="{{imgUrl}}" mode="widthFix" />
     </view>
 
     <view class="me-content">

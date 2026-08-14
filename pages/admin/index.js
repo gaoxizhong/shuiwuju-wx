@@ -46,7 +46,7 @@ Page({
     const auth = app.globalData.auth
     const length = auth.length
     const key = length ? auth[length - 1] : 'H'
-    const imgUrl = imgList[key || 'H']
+    const imgUrl = imgList[key] ? imgList[key] : imgList['H']
     const userInfo = app.globalData.userInfo || {}
     console.log(userInfo)
     this.setData({
