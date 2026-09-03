@@ -359,7 +359,11 @@ handleSearchInfo() {
       p.wm_id = selectradio_info.wm_id;
       p.wm_no = selectradio_info.wm_no;
     }
+    wx.showLoading({
+      title: `${lang.message.loading}...`,
+    });
     getDemandNoteList(p).then( res =>{
+      wx.hideLoading();
       if(res.code == 200){
         let data = res.data.data.data;
         let columns_1 = that.data.columns_1;// 打印发票的种类列表
@@ -378,6 +382,8 @@ handleSearchInfo() {
         })
         console.log(that.data.demandNoteList)
       }
+    }).catch( e =>{
+      wx.hideLoading();
     })
   },
 
@@ -714,26 +720,33 @@ ${date.time}
     })
   },
   addListData() {
-    console.log(1)
-    let page = this.data.page
-    const total = this.data.total
-    if (total >= page * 15) {
-      page += 1
+    if(this.data.title_active == 2){
+      let page_demandNote = this.data.page_demandNote;
+      page_demandNote += 1;
       this.setData({
-        page,
-        loading: `${lang.message.loading}...`,
+        page_demandNote,
       })
-      if(this.data.title_active == 2){
-        this.getDemandNoteList()
-      }
-      if(this.data.title_active == 4){
-        this.getFbSelectWmList()
-      }
-    } else {
-      this.setData({
-        loading: lang.message.noMoreEmpty,
-      })
+      this.getDemandNoteList();
     }
+    if(this.data.title_active == 4){
+      let page = this.data.page
+      const total = this.data.total
+      if (total >= page * 15) {
+        page += 1
+        this.setData({
+          page,
+          loading: `${lang.message.loading}...`,
+        })
+        this.getFbSelectWmList()
+      } else {
+        this.setData({
+          loading: lang.message.noMoreEmpty,
+        })
+      }
+    }
+
+
+
   },
   handleDetails(e) {
     const item = e.currentTarget.dataset.item;
