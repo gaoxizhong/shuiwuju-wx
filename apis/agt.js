@@ -19,13 +19,13 @@ export const getRegistarFactura = (d) => {
   let data = {
     "schemaVersion": "1.0.1", // 服务schema版本，如"1.0"
     "submissionUUID": "13e7aaf7-e9e1-40af-875b-930f070c22be",
-    "taxRegistrationNumber": "5001442740", // 纳税人识别号
+    "taxRegistrationNumber": "5601022917", // 纳税人识别号
     "submissionTimeStamp": "2026-06-16T14:30:00Z", // 请求提交时间戳，格式为ISO 8601，示例："2025-05-27T14:30:00Z"（UTC）；"2025-05-27T14:30:00-03:00"（含时区信息）
     "softwareInfo": { // 开票软件数据对象
         "softwareInfoDetail": { 
           "productId": "Water Manager", // 开票软件名称
           "productVersion": "1.0.1", // 开票软件版本
-          "softwareValidationNumber": "1" // 开票软件认证编号
+          "softwareValidationNumber": "FE/407/AGT/2026" // 开票软件认证编号
         },
         "jwsSoftwareSignature": "string" // 使用软件私钥对开票软件进行的数字签名，采用RS256算法（RSA + SHA-256）。softwareInfo对象的所有字段必须用于签名
     },
@@ -39,7 +39,7 @@ export const getRegistarFactura = (d) => {
         "documentType": "FA",  
         "eacCode": "36001", // 与本发票相关的活动代码
         "systemEntryDate": "2026-07-16T18:06:06",  //签名时记录注册的时间戳 — ISO 8601格式（YYYY-MMDDThh:mm:ss）
-        "customerTaxID": "5001442740", // 发票客户识别号。对于国内买家，填写安哥拉NIF。对于国内纳税人开票文件中未标识买方的，可使用值"999999999
+        "customerTaxID": "5601022917", // 发票客户识别号。对于国内买家，填写安哥拉NIF。对于国内纳税人开票文件中未标识买方的，可使用值"999999999
         "customerCountry": "AO", // 买方国家代码，遵循ISO 3166-1-alpha-2标准，国内买方使用"AO"
         "companyName": "string", // 纳税人名称/商号
         "lines": [{  // 发票文件条目列表数组（document对象），以下发票类型（documentType）不 需要填写：AR — 收款通知/收据；RC — 开具收据；RG — 其 他开具收据。其他发票文件类型必须填写此字段
@@ -102,13 +102,13 @@ export const getRegistarFactura = (d) => {
 let obterEstado_data = {
     "schemaVersion": "string", // 服务schema版本，如"1.0
     "submissionUUID": "string",   // 由软件提供的请求标识符（GUID或UUID）
-    "taxRegistrationNumber": "string", // 纳税人识别号
+    "taxRegistrationNumber": "5601022917", // 纳税人识别号
     "submissionTimeStamp": "string", // 请求提交时间戳，格式ISO 8601
     "softwareInfo": { // 开票软件数据对象
       "softwareInfoDetail": { // 开票软件详细信息对象
         "productId": "string",  // 开票软件名称
         "productVersion": "string", // 开票软件版本
-        "softwareValidationNumber": "string"  // 开票软件认证编号
+        "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
       },
       "jwsSoftwareSignature": "string", //使用软件私钥对开票软件的数字签名，采用RS256算法
     },
@@ -118,13 +118,13 @@ let obterEstado_data = {
 // Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/listarFacturas
 let listarFacturas_data = {
   "schemaVersion": "string", // 服务schema版本，如"1.0"
-  "taxRegistrationNumber": "string", // 纳税人识别号
+  "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
   "softwareInfo": {  //开票软件数据对象
     "softwareInfoDetail": { // 开票软件详细信息对象
       "productId": "string",  // 开票软件名称
       "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "string"  // 开票软件认证编号
+      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
@@ -140,14 +140,14 @@ let listarFacturas_data = {
 let consultarFactura_data = {
   "schemaVersion": "string", // 服务schema版本，如"1.0"
   "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
-  "taxRegistrationNumber": "string", // 纳税人识别号
+  "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
   "invoiceNo": "string",  // 发票编号
   "softwareInfo": {  //开票软件数据对象
     "softwareInfoDetail": { // 开票软件详细信息对象
       "productId": "string",  // 开票软件名称
       "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "string"  // 开票软件认证编号
+      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
@@ -159,13 +159,13 @@ let consultarFactura_data = {
 let solicitarSerie_data = {
   "schemaVersion": "string", // 服务schema版本，如"1.0"
   "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
-  "taxRegistrationNumber": "string", // 纳税人识别号
+  "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
   "softwareInfo": {  //开票软件数据对象
     "softwareInfoDetail": { // 开票软件详细信息对象
       "productId": "string",  // 开票软件名称
       "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "string"  // 开票软件认证编号
+      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
