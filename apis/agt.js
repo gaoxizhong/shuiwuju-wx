@@ -162,10 +162,10 @@ let solicitarSerie_data = {
   "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
   "softwareInfo": {  //开票软件数据对象
-    "softwareInfoDetail": { // 开票软件详细信息对象
-      "productId": "string",  // 开票软件名称
-      "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
+    "softwareInfoDetail": { 
+      "productId": "Water Manager", // 开票软件名称
+      "productVersion": "1.0.1", // 开票软件版本
+      "softwareValidationNumber": "FE/407/AGT/2026" // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
