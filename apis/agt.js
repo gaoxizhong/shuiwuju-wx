@@ -1,7 +1,8 @@
 import { httpRequest } from '../utils/request'
 let uesr = "ws.hml.Watmanagement";
 let password = "mfn79302026";
-
+let AGTUrl= "https://quiosqueagt.hml.minfin.gov.ao"; // AGT 发票税务 测试环境
+// let AGTUrl=  "https://quiosqueagt.minfin.gov.ao"; // AGT 发票税务 生产正式环
 //REST
 //请求示例（Accept: application/json）：
 // 开票软件详细信息对象
