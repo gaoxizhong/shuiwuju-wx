@@ -99,6 +99,22 @@ const en_lang = {
     cancelText: 'No',
     confirmText: 'Ok',
   },
+  // 其他发票页
+  otherInvoices: {
+    payStatusUnpaid: 'A pagar',
+    payStatusPaid: 'Confirmado',
+    agtLoading: 'Emissão AGT...',
+    agtSuccessTitle: 'AGT emitido com sucesso',
+    agtFailTitle: 'Falha na emissão AGT',
+    agtInvoiceNo: 'N° da Factura',
+    printAnyway: 'Imprimir mesmo assim',
+    noDemandNoteId: 'ID do recibo não obtido',
+    createDemandNoteFail: 'Falha ao criar recibo',
+    printError: 'Erro de impressão',
+    facturaNoLabel: 'Factura N°',
+    reciboNoLabel: 'Recibo N°',
+    noSearchData: 'Dados não disponíveis',
+  },
   // 搜索类型
   searchStatusList: [
     {id: 1,text: 'Dados do contador'},

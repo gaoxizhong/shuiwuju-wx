@@ -18,7 +18,8 @@ const {
   setReceiptStatus,
 } = require('./../../apis/water')
 const {
-  payDemandNote,setBillInvoiceCode
+  payDemandNote,
+  issueAgtInvoice,
 } = require('./../../apis/admin')
 const GBK = require('./../../utils/gbk.min')
 Page({
@@ -28,6 +29,7 @@ Page({
    */
   data: {
     lang: lang.index,
+    otherInvoices: lang.otherInvoices,
     btnName: lang.btnName,
     langDialog: lang.dialog,
     bluetoolthDevice: lang.admin.bluetoolthDevice,
@@ -79,7 +81,9 @@ Page({
     cheque_number: '',
     itemInfo: null,
     total_money: 0,
-    paid_total_money: 0
+    paid_total_money: 0,
+    agt_document_no: '',
+    agtInvoiceResult: null,
   },
 
   /**
@@ -91,6 +95,7 @@ Page({
     let that = this;
     that.setData({
       lang: lang.index,
+      otherInvoices: lang.otherInvoices,
       btnName: lang.btnName,
       langDialog: lang.dialog,
       bluetoolthDevice: lang.admin.bluetoolthDevice,
@@ -125,10 +130,14 @@ Page({
     }
   },
   onShow() {
+    lang = app.globalData.lang
     this.setData({
-      is_return: true
+      is_return: true,
+      lang: lang.index,
+      otherInvoices: lang.otherInvoices,
+      btnName: lang.btnName,
+      langDialog: lang.dialog,
     })
-    // this.printImg();
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
@@ -206,6 +215,79 @@ Page({
       paid_total_money,
     })
   },
+  extractAgtDocumentNo(agtData) {
+    if (!agtData) return ''
+    const inner = agtData.data || agtData
+    return inner.documentNo
+      || inner.document_no
+      || inner.invoice_no
+      || inner.invoiceNo
+      || (inner.seriesFEResult && inner.seriesFEResult.seriesCode)
+      || ''
+  },
+  formatAgtResultForDisplay(res) {
+    try {
+      const payload = res.data || res
+      return JSON.stringify(payload, null, 2).slice(0, 800)
+    } catch (e) {
+      return String(res)
+    }
+  },
+  // 收款成功后向 AGT 开票，再打印
+  issueAgtInvoiceThenPrint() {
+    const that = this
+    const itemInfo = that.data.itemInfo
+    const water_meter = itemInfo.water_meter || {}
+    const otherInvoices = that.data.otherInvoices || lang.otherInvoices
+    const params = {
+      demand_note_id: itemInfo.id,
+      document_type: 'FR',
+      poll: 1,
+      poll_times: 5,
+      poll_interval: 3,
+    }
+    if (water_meter.user_card) {
+      params.customer_tax_id = water_meter.user_card
+    }
+    wx.showLoading({
+      title: otherInvoices.agtLoading,
+      mask: true,
+    })
+    issueAgtInvoice(params).then(res => {
+      wx.hideLoading()
+      console.log('AGT开票成功', res)
+      const agtPayload = res.data || {}
+      const agtInner = agtPayload.data || agtPayload
+      const agt_document_no = that.extractAgtDocumentNo(agtInner)
+      that.setData({
+        agtInvoiceResult: agtPayload,
+        agt_document_no,
+      })
+      wx.showModal({
+        title: otherInvoices.agtSuccessTitle,
+        content: that.formatAgtResultForDisplay(res) + (agt_document_no ? `\n\n${otherInvoices.agtInvoiceNo}: ${agt_document_no}` : ''),
+        showCancel: false,
+        confirmText: lang.dialog.confirmText,
+        success() {
+          that.getUserBluetoolthInfoData(that.handlePrint)
+        },
+      })
+    }).catch(e => {
+      wx.hideLoading()
+      console.log('AGT开票失败', e)
+      wx.showModal({
+        title: otherInvoices.agtFailTitle,
+        content: (e.desc || e.msg || that.formatAgtResultForDisplay(e)).slice(0, 500),
+        confirmText: otherInvoices.printAnyway,
+        cancelText: lang.dialog.cancelText,
+        success(modalRes) {
+          if (modalRes.confirm) {
+            that.getUserBluetoolthInfoData(that.handlePrint)
+          }
+        },
+      })
+    })
+  },
   //  缴费
   payDemandNote() {
     let that = this;
@@ -229,12 +311,19 @@ Page({
         params.cheque_number = that.data.cheque_number;
       }
       payDemandNote(params).then(res => {
+        const itemInfo = Object.assign({}, that.data.itemInfo, { pay_status: 1 })
         that.setData({
           status: 'print',
           showPay: false,
-          pay_success: true
+          pay_success: true,
+          password_layer: false,
+          itemInfo,
         })
-        that.getUserBluetoolthInfoData(that.handlePrint);
+        if (itemInfo.type == 1) {
+          that.issueAgtInvoiceThenPrint()
+        } else {
+          that.getUserBluetoolthInfoData(that.handlePrint);
+        }
       }).catch((res) => {
         wx.showToast({
           title: res.desc,
@@ -477,7 +566,6 @@ Page({
             icon: "",
             duration: 3000,
           })
-           // 5.修改发票收据状态
           if(that.data.itemInfo.type == 1){
             that.setData({
               pay_success: false,
@@ -485,12 +573,11 @@ Page({
               pay_text: '',
               cheque_number: '',
             })
-            that.setBillInvoiceCode();
             that.getOrderInfo(res.data.data[0].orderId);
           }
         }else{
           wx.showToast({
-            title: 'error',
+            title: that.data.otherInvoices.printError,
             icon: "none",
             duration: 3000,
           })
@@ -543,10 +630,13 @@ Page({
       const userBluetoolthInfoData = res.data;
       let date = handleTimeValue();
       let receiptInfo_title = `EPASKS-E.P.`;
+      const otherInvoices = that.data.otherInvoices || lang.otherInvoices
+      const agt_document_no = that.data.agt_document_no
       let receiptInfo_title_1 = `
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
+${agt_document_no ? `${otherInvoices.facturaNoLabel}: ${agt_document_no}` : ''}
 Dados do Cliente
 Nome: ${userBluetoolthInfoData.water_meter.wm_name}
 N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
@@ -661,18 +751,6 @@ Utilizador: ${that.data.operator_name}
     });
     
       
-  },
-  // 5.修改发票收据状态
-  setBillInvoiceCode() {
-    let that = this;
-    setBillInvoiceCode({
-      wm_id: that.data.itemInfo.wm_id,
-      demand_note_id: that.data.itemInfo.id,
-    }).then(res => {
-
-    }).catch(res => {
-      wx.hideToast()
-    })
   },
   // 形式发票打印
   getPrint(info){

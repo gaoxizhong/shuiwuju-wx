@@ -38,8 +38,8 @@ App({
     terminalNo: '', // 手持一体机SN编号
     groupId: '37388650-9ba5-4859-89f2-8b83d2122129', // 手持一体机groupId
     apiUrl: 'https://iot.unioncore.vip', // 手持一体机请求地址
-    baseUrl: 'https://swj-admin.qingshanpai.com',  // 正式服
-    // baseUrl: 'https://swj-admin-test.qingshanpai.com', // 测试服
+    // baseUrl: 'https://swj-admin.qingshanpai.com',  // 正式服
+    baseUrl: 'https://swj-admin-test.qingshanpai.com', // 测试服
     billStatus: null, // 水表单状态
     wm_id: '',
     repair_type: [],

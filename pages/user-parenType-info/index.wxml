@@ -51,8 +51,17 @@
     </block>
   </view>
   <!-- 缴费 -->
-  <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
-    <van-picker id="pay" show-toolbar default-index="{{ totIndex }}" columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}"  bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+  <van-popup show="{{ showPay }}" safe-area-tab-bar position="bottom" round bind:close="onClosePay">
+    <van-picker
+      id="pay"
+      show-toolbar
+      default-index="{{ totIndex }}"
+      columns="{{ payStatusList }}"
+      confirm-button-text="{{langDialog.confirmText}}"
+      cancel-button-text="{{langDialog.cancelText}}"
+      bind:confirm="onConfirmPay"
+      bind:cancel="onClosePay"
+    />
   </van-popup>
 
   <view wx-if="{{password_layer}}" catchtouchmove="myCatchTouch" class="cover" catchtap="cover_layer"></view>

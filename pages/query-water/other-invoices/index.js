@@ -12,7 +12,8 @@ import {
   createPayDemandNote, // 创建收费账单
   getDemandNoteList,  // 订单列表
   trUpPayDemandMote, // 转换形式发票
-  getTrDemandNoteTotalMoney
+  getTrDemandNoteTotalMoney,
+  deletePayDemandNote, // 删除缴费单
 } from '../../../apis/admin'
 const {
   getFbSelectWmList
@@ -27,6 +28,7 @@ Page({
   data: {
     userWaterInfo: lang.userWaterInfo,
     lang: lang.index,
+    otherInvoices: lang.otherInvoices,
     langDialog: lang.dialog,
     btnName: lang.btnName,
     bluetoolthDevice: lang.admin.bluetoolthDevice,
@@ -69,6 +71,8 @@ Page({
     show: false,
     typeStatusList: [], // 其他类发票记录类型
     proforma_number: '',
+    agt_document_no: '', // AGT 电子发票编号
+    agtInvoiceResult: null, // AGT 开票返回（测试调试用）
   },
 
   /**
@@ -93,6 +97,7 @@ Page({
     this.setData({
       userWaterInfo: lang.userWaterInfo,
       lang: lang.index,
+      otherInvoices: lang.otherInvoices,
       langDialog: lang.dialog,
       btnName: lang.btnName,
       searchStatusList: lang.searchStatusList, 
@@ -117,7 +122,8 @@ Page({
       is_zhuanhuan: false, // 是否点击转换按钮
       yjfwmList: [],
       selectIndex: 0,
-      
+      agt_document_no: '',
+      agtInvoiceResult: null,
 
     })
     if(title_active == 2){
@@ -323,7 +329,7 @@ handleSearchInfo() {
           })
         }else{
           wx.showToast({
-            title: this.data.lang.noData,
+            title: this.data.otherInvoices.noSearchData,
             icon:'none'
           })
         }
@@ -496,15 +502,30 @@ handleSearchInfo() {
     if(title_active == 3 && !is_zhuanhuan){
       p.type = 2; //  形式发票
     }
+    wx.showLoading({
+      title: lang.message.loading,
+      mask: true,
+    })
     createPayDemandNote(p).then( res =>{
+      wx.hideLoading()
       if(p.type == 2){
         that.setData({
-          proforma_number: res.data.data.proforma_number
+          proforma_number: res.data.data.proforma_number,
+        })
+      } else {
+        that.setData({
+          agt_document_no: '',
+          agtInvoiceResult: null,
         })
       }
-      this.getPrint(selectradio_info,total_money);
+      that.getPrint(selectradio_info, total_money);
     }).catch( e =>{
+      wx.hideLoading()
       console.log(e)
+      wx.showToast({
+        title: e.desc || that.data.otherInvoices.createDemandNoteFail,
+        icon: 'none',
+      })
     })
     // this.getPrint(selectradio_info,total_money);
   },
@@ -513,6 +534,8 @@ handleSearchInfo() {
     let selectradio_info = info;
     let amount = am;
     let proforma_number = this.data.proforma_number;
+    let agt_document_no = this.data.agt_document_no;
+    const otherInvoices = this.data.otherInvoices || lang.otherInvoices;
     let date = this.handleTimeValue();
     let invoiceInfo_title = `EPASKS-E.P.`;
     let invoiceInfo_title_1 = `
@@ -536,7 +559,8 @@ Giro: ${selectradio_info.area_code}
 
 Espécies: ${this.data.seltTypeInfo.text}
 Montante: ${fmoney(amount,2)} KZ
-Recibo N°: ${proforma_number?proforma_number:''}
+${agt_document_no ? `${otherInvoices.facturaNoLabel}: ${agt_document_no}` : ''}
+${otherInvoices.reciboNoLabel}: ${proforma_number ? proforma_number : ''}
 `;
     let invoiceInfo_valores = `
 Water manager
@@ -679,7 +703,7 @@ ${date.time}
           })
         }else{
           wx.showToast({
-            title: 'error',
+            title: that.data.otherInvoices.printError,
             icon: "none",
             duration: 3000,
           })
@@ -759,6 +783,49 @@ ${date.time}
       })
     })
   },
+  // 删除未付款缴费单
+  clickDeleteDemandNote(e) {
+    const item = e.currentTarget.dataset.item
+    const index = e.currentTarget.dataset.index
+    if (item.pay_status !== 0) {
+      return
+    }
+    wx.showModal({
+      title: lang.historical.title,
+      content: lang.historical.content,
+      confirmText: lang.historical.confirmText,
+      cancelText: lang.historical.cancelText,
+      success: (res) => {
+        if (!res.confirm) {
+          return
+        }
+        wx.showLoading({
+          title: lang.message.loading,
+          mask: true,
+        })
+        deletePayDemandNote({
+          demand_note_id: item.id,
+        }).then(() => {
+          wx.hideLoading()
+          const demandNoteList = this.data.demandNoteList
+          demandNoteList.splice(index, 1)
+          this.setData({
+            demandNoteList,
+          })
+          wx.showToast({
+            title: lang.message.success,
+            icon: 'success',
+          })
+        }).catch(err => {
+          wx.hideLoading()
+          wx.showToast({
+            title: err.desc || lang.message.fail,
+            icon: 'none',
+          })
+        })
+      },
+    })
+  },
   // 点击形式发票一键转换
   clickconversion(e){
     let that = this;
@@ -781,15 +848,15 @@ ${date.time}
     }
     trUpPayDemandMote(p).then( res =>{
       if(res.code == 200){
-        wx.showToast({
-          title: '',
-          icon: 'success'
-        })
         demandNoteList[index].type = 1;
         that.setData({
           demandNoteList
         })
-        that.getPrint(selectradio_info,amount);
+        wx.showToast({
+          title: lang.message.success,
+          icon: 'success',
+        })
+        that.getPrint(selectradio_info, amount);
       }else{
         wx.showToast({
           title: res.msg,

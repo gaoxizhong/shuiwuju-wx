@@ -97,6 +97,22 @@ const zh_lang = {
     cancelText: '取消',
     confirmText: '确认',
   },
+  // 其他发票页
+  otherInvoices: {
+    payStatusUnpaid: '待付款',
+    payStatusPaid: '已确认',
+    agtLoading: 'AGT开票中...',
+    agtSuccessTitle: 'AGT开票成功',
+    agtFailTitle: 'AGT开票失败',
+    agtInvoiceNo: '发票号',
+    printAnyway: '仍打印',
+    noDemandNoteId: '未获取到缴费单ID',
+    createDemandNoteFail: '创建缴费单失败',
+    printError: '打印失败',
+    facturaNoLabel: '发票号',
+    reciboNoLabel: '收据号',
+    noSearchData: '暂无数据',
+  },
   // 搜索类型
   searchStatusList: [
     {id: 1,text: '水表号'},

@@ -85,3 +85,24 @@ export const getTrDemandNoteTotalMoney = (data) => {
     data
   })
 }
+
+// 删除缴费单（仅未付款可删）
+export const deletePayDemandNote = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_delete_pay_demand_note`,
+    method: 'POST',
+    data
+  })
+}
+
+// AGT 电子发票开具（后端封装 solicitarSerie + registarFactura + obterEstado）
+export const issueAgtInvoice = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_issue_agt_invoice`,
+    method: 'POST',
+    data,
+    timeout: 60000,
+  })
+}

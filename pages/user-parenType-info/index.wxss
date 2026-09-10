@@ -157,3 +157,23 @@
   padding: 14rpx 20rpx;
   border-bottom: 1px solid #d0d0d059;
 }
+
+/* 确保支付方式 picker 工具栏可见 */
+.user-water-info .van-picker__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88rpx;
+  line-height: 88rpx;
+}
+.user-water-info .van-picker__cancel,
+.user-water-info .van-picker__confirm {
+  padding: 0 32rpx;
+  font-size: 28rpx;
+}
+.user-water-info .van-picker__cancel {
+  color: #969799;
+}
+.user-water-info .van-picker__confirm {
+  color: #1989fa;
+}

@@ -111,6 +111,12 @@
   font-size: 24rpx;
   font-weight: 600;
 }
+.item__action {
+  margin-top: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
 .item__status__btn{
   width: auto;
   width: max-content;
@@ -120,6 +126,13 @@
   padding: 6rpx 26rpx;
   font-size: 24rpx;
   border-radius: 30rpx;
+}
+.search-content .list .icon-delete {
+  width: 40rpx;
+  height: 30rpx;
+  position: absolute;
+  right: 20rpx;
+  bottom: 30rpx;
 }
 .tabbox2{
   padding-bottom: 0;

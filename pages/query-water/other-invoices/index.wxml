@@ -64,11 +64,20 @@
         <view class="item__money">
           {{lang.createTime}}：{{item.created_at}}
         </view>
-        <view class="item__money" style="margin-top: 10rpx; display: flex;align-items: center;justify-content: flex-end;" wx:if="{{item.type == 2}}">
-          <view class="item__status__btn" data-item="{{item}}" data-index="{{index}}" bind:tap="clickconversion">{{lang.conversion}}</view>
+        <view class="item__action" wx:if="{{item.pay_status === 0 && item.type == 2}}">
+          <view class="item__status__btn" data-item="{{item}}" data-index="{{index}}" catch:tap="clickconversion">{{lang.conversion}}</view>
         </view>
+        <image
+          wx:if="{{item.pay_status === 0}}"
+          src="../../../img/index/icon-copy.png"
+          mode="widthFix"
+          class="icon-delete"
+          data-item="{{item}}"
+          data-index="{{index}}"
+          catch:tap="clickDeleteDemandNote"
+        />
         <view class="item__status" style="color: {{item.pay_status === 0 ? 'red' : 'green'}};">
-          {{ item.pay_status === 0 ? 'A pagar' : 'Confirmado' }}
+          {{ item.pay_status === 0 ? otherInvoices.payStatusUnpaid : otherInvoices.payStatusPaid }}
         </view>
       </view>
     </block>
