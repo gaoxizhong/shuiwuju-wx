@@ -15,6 +15,7 @@ Page({
     langDialog: lang.dialog,
     funcLang: lang.func,
     showFuncList: [], // 展示功能列表
+    showQuickActionList: [], // 快捷操作列表
     show: false
   },
 
@@ -36,6 +37,12 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    lang = app.globalData.lang
+    this.setData({
+      lang: lang.index,
+      langDialog: lang.dialog,
+      funcLang: lang.func,
+    })
     const list = lang.tabber.list
     const selected = wx.getStorageSync('tabberIndex')
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
@@ -47,6 +54,7 @@ Page({
         app.handleUserInfo();
       }
     }
+    this.getQuickActionList()
   },
  /**
    * 用户点击右上角分享
@@ -65,6 +73,21 @@ Page({
     this.setData({
       showFuncList
     })
+    this.getQuickActionList()
+  },
+
+  getQuickActionList() {
+    const auth = app.globalData.auth || []
+    const quickActionList = (lang.index.quickActionList || []).filter(i => auth.includes(i.auth))
+    this.setData({
+      showQuickActionList: quickActionList,
+    })
+  },
+
+  handleToQuickActionPage(e) {
+    const { index } = e.currentTarget.dataset
+    const item = this.data.showQuickActionList[index]
+    this.toPage(item.url, item.tabberName || item.title)
   },
 
   handleToSearch() {

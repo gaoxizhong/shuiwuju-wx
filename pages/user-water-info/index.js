@@ -17,6 +17,9 @@ import {
   handleBusinessHallPayBill,
   handleBusinessHallBillReceipt
 } from './../../apis/business-hall'
+import {
+  issueAgtInvoice
+} from './../../apis/admin'
 
 const GBK = require('./../../utils/gbk.min')
 //只需要引用encoding.js,注意路径
@@ -49,7 +52,11 @@ Page({
       minHeight: 100
     },
     printInfo: '', // 缴费单信息打印内容
-    is_Printreturn: true
+    is_Printreturn: true,
+    is_Invoicereturn: true,
+    otherInvoices: lang.otherInvoices,
+    invoiceIssued: false,
+    invoiceStatusText: '',
   },
 
   /**
@@ -63,6 +70,7 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog,
       bluetoolthDevice: lang.admin.bluetoolthDevice,
+      otherInvoices: lang.otherInvoices,
     })
     const form = JSON.parse(options.data)
     console.log(form)
@@ -70,21 +78,22 @@ Page({
     const source = options.source
     const createDate = form.check_time ? this.handleDate(form.check_time) : ""
     form.createDate = createDate
+    // status 驱动 wxml 底部按钮展示，条件自上而下覆盖
     let status = ''
 
     if (source === 'search-person') {
-      // 查表员
-      status = 'pay'
+      // 查表员：pay(待付) → print(已付待开收据) → over(待打印缴费单)
+      status = 'pay'                          // form.status === 1
       if (form.status !== 1) {
-        status = 'print'
+        status = 'print'                      // 已支付
       }
       if (form.receipt_status !== 1) {
-        status = 'over'
+        status = 'over'                       // 收据已处理，进入打印缴费单
       }
     }
 
     if (source === 'business-hall') {
-      // 营业厅
+      // 营业厅：bank_pay(待付) → print(已付待开收据) → print_two(补开收据)
       status = 'bank_pay'
       if (form.status !== 1) {
         status = 'print'
@@ -95,7 +104,8 @@ Page({
     }
 
     if (source === 'financial-manager') {
-      status = 'no'
+      // 财务审核：no(待审核) / yes(已审核，无按钮)
+      status = 'no'                           // form.status === 2
       if (form.status !== 2) {
         status = 'yes'
       }
@@ -107,6 +117,141 @@ Page({
       status,
       payStatusList: JSON.parse(payStatusList || '[]'),
       printInfo: '',
+      invoiceIssued: this.getInvoiceStatus(form).invoiceIssued,
+      invoiceStatusText: this.getInvoiceStatus(form).invoiceStatusText,
+    })
+  },
+  getInvoiceStatus(form) {
+    const userLang = lang.userWaterInfo
+    const code = form.bill_invoice_code
+      || form.invoice_code
+      || form.agt_document_no
+      || form.agt_invoice_no
+      || ''
+    const invoiceIssued = !!(code || form.invoice_status == 2)
+    return {
+      invoiceIssued,
+      invoiceStatusText: invoiceIssued ? userLang.invoice_opened : userLang.invoice_not_open,
+    }
+  },
+  extractAgtDocumentNo(agtInner) {
+    if (!agtInner) return ''
+    return agtInner.documentNo
+      || agtInner.document_no
+      || agtInner.invoice_no
+      || agtInner.invoiceNo
+      || (agtInner.seriesFEResult && agtInner.seriesFEResult.seriesCode)
+      || ''
+  },
+  buildAgtInvoiceParams() {
+    const form = this.data.form
+    const paymentId = form.up_id || form.id
+    const params = {
+      document_type: 'FT',
+      poll: 1,
+      poll_times: 5,
+      poll_interval: 3,
+      source_type: 'user_pay_log',
+      source_id: paymentId,
+    }
+    const taxId = (form.meter && form.meter.user_card) || form.user_card
+    if (taxId) {
+      params.customer_tax_id = taxId
+    }
+    return params
+  },
+  updateInvoiceIssued(agtDocumentNo) {
+    const form = Object.assign({}, this.data.form, {
+      invoice_status: 2,
+    })
+    if (agtDocumentNo) {
+      form.bill_invoice_code = agtDocumentNo
+      form.agt_document_no = agtDocumentNo
+    }
+    const invoiceInfo = this.getInvoiceStatus(form)
+    this.setData({
+      form,
+      invoiceIssued: invoiceInfo.invoiceIssued,
+      invoiceStatusText: invoiceInfo.invoiceStatusText,
+    })
+  },
+  handleInvoiceAction() {
+    if (!this.data.is_Invoicereturn) {
+      return
+    }
+    if (this.data.invoiceIssued) {
+      this.blueToothPrint()
+      return
+    }
+    this.issueAgtInvoiceThenPrint()
+  },
+  isAgtIssueSuccess(res) {
+    const payload = res.data || res
+    const inner = payload.data || payload
+    if (payload.success === false || inner.success === false) {
+      return false
+    }
+    if (inner.error || payload.error) {
+      return false
+    }
+    return true
+  },
+  showAgtIssueFailToast() {
+    const otherInvoices = this.data.otherInvoices || lang.otherInvoices
+    wx.showToast({
+      title: otherInvoices.agtIssueFail,
+      icon: 'none',
+      duration: 2500,
+    })
+  },
+  issueAgtInvoiceThenPrint() {
+    const that = this
+    const otherInvoices = that.data.otherInvoices
+    const paymentId = that.data.form.up_id || that.data.form.id
+    if (!paymentId) {
+      wx.showToast({
+        title: otherInvoices.noDemandNoteId,
+        icon: 'none',
+      })
+      return
+    }
+    that.setData({
+      is_Invoicereturn: false,
+    })
+    wx.showLoading({
+      title: otherInvoices.agtLoading,
+      mask: true,
+    })
+    const resetInvoiceBtn = (delay = 1000) => {
+      setTimeout(() => {
+        that.setData({
+          is_Invoicereturn: true,
+        })
+      }, delay)
+    }
+    const handleIssueFail = () => {
+      wx.hideLoading()
+      that.showAgtIssueFailToast()
+      resetInvoiceBtn(0)
+    }
+    issueAgtInvoice(that.buildAgtInvoiceParams()).then(res => {
+      if (!that.isAgtIssueSuccess(res)) {
+        handleIssueFail()
+        return
+      }
+      wx.hideLoading()
+      const agtPayload = res.data || {}
+      const agtInner = agtPayload.data || agtPayload
+      const agtDocumentNo = that.extractAgtDocumentNo(agtInner)
+      that.updateInvoiceIssued(agtDocumentNo)
+      wx.showToast({
+        title: otherInvoices.agtSuccessTitle,
+        icon: 'none',
+      })
+      that.blueToothPrint()
+      resetInvoiceBtn()
+    }).catch(() => {
+      handleIssueFail()
     })
   },
   handleDate(value) {

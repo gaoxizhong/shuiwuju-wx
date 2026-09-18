@@ -240,11 +240,12 @@ Page({
     const water_meter = itemInfo.water_meter || {}
     const otherInvoices = that.data.otherInvoices || lang.otherInvoices
     const params = {
-      demand_note_id: itemInfo.id,
       document_type: 'FR',
       poll: 1,
       poll_times: 5,
       poll_interval: 3,
+      source_type: 'user_pay_demand_note',
+      source_id: itemInfo.id,
     }
     if (water_meter.user_card) {
       params.customer_tax_id = water_meter.user_card

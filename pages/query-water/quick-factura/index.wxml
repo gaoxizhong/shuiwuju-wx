@@ -1,0 +1,130 @@
+<view class="page-wrap">
+<view class="search-bar">
+  <van-search
+    value="{{ select_value }}"
+    readonly="{{type_seach == 'type'}}"
+    placeholder="{{lang.placeholder}}"
+    bindtap="{{type_seach == 'type' ? 'onShowTypePopup' : ''}}"
+    bind:change="handleChangeInput"
+    bind:blur="handlesearchReading"
+    use-action-slot
+  >
+    <view slot="action">
+      <van-button catchtap="handleSearchInfo" class="icon-btn" type="info" plain size="small">{{lang.btnName}}</van-button>
+    </view>
+  </van-search>
+</view>
+
+<view class="page-body" wx:if="{{!selectradio_info}}">
+  <van-empty image="search" description="{{lang.noEmpty}}" />
+</view>
+
+<block wx:if="{{selectradio_info}}">
+<view class="user-info-brief">
+  <view class="user-info-brief__line">{{selectradio_info.wm_no}} · {{selectradio_info.wm_name}}</view>
+  <view class="user-info-brief__line user-info-brief__line--addr">{{selectradio_info.area2}} {{selectradio_info.wm_address}} {{selectradio_info.area_code}} {{selectradio_info.house_number}}</view>
+</view>
+
+<view class="page-content">
+<view class="container-tabbox">
+  <view class="{{ listTabActive == 1 ? 'active' : '' }}" data-index="1" bind:tap="onListTabChange">{{quickFactura.tabPaymentBill}}</view>
+  <view class="{{ listTabActive == 2 ? 'active' : '' }}" data-index="2" bind:tap="onListTabChange">{{quickFactura.tabOtherInvoice}}</view>
+</view>
+
+<view class="search-pay search-content list-box">
+  <van-empty wx:if="{{listTabActive == 1 && !paymentBillList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+  <van-empty wx:if="{{listTabActive == 2 && !demandNoteList.length}}" image="search" description="{{lang.descriptionEmpty}}" />
+
+  <scroll-view
+    wx:if="{{listTabActive == 1 && paymentBillList.length}}"
+    scroll-with-animation
+    scroll-y="{{isScroll}}"
+    lower-threshold="50"
+    bindscrolltolower="addListData"
+    class="list"
+  >
+    <block wx:for="{{paymentBillList}}" wx:key="id">
+      <view class="item {{item.canSelect ? '' : 'item--disabled'}}" data-index="{{index}}" bindtap="onItemTap">
+        <view wx:if="{{item.canSelect}}" class="custom-checkbox {{item.checked ? 'custom-checkbox--checked' : ''}}">
+          <text wx:if="{{item.checked}}" class="custom-checkbox__tick">✓</text>
+        </view>
+        <view class="item__content">
+          <view class="item__title">{{item.display_title}}</view>
+          <view class="item__money">{{item.display_sub}}</view>
+          <view class="item__money">{{lang.money}}：{{item.display_money}} (KZ)</view>
+          <view class="item__money">{{lang.createTime}}：{{item.created_at}}</view>
+          <view class="item__status-row">
+            <view class="item__badge" style="color: {{item.pay_unpaid ? 'red' : 'green'}};">{{item.pay_label}}</view>
+            <view class="item__badge" style="color: {{item.invoice_printed ? 'green' : '#999'}};">{{item.invoice_print_label}}</view>
+          </view>
+          <view class="item__money" wx:if="{{item.invoice_code_display}}">{{otherInvoices.facturaNoLabel}}：{{item.invoice_code_display}}</view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <scroll-view
+    wx:if="{{listTabActive == 2 && demandNoteList.length}}"
+    scroll-with-animation
+    scroll-y="{{isScroll}}"
+    lower-threshold="50"
+    bindscrolltolower="addListData"
+    class="list"
+  >
+    <block wx:for="{{demandNoteList}}" wx:key="id">
+      <view class="item {{item.canSelect ? '' : 'item--disabled'}}" data-index="{{index}}" data-item="{{item}}" bindtap="onItemTap">
+        <view wx:if="{{item.canSelect}}" class="custom-checkbox {{item.checked ? 'custom-checkbox--checked' : ''}}">
+          <text wx:if="{{item.checked}}" class="custom-checkbox__tick">✓</text>
+        </view>
+        <view class="item__content">
+          <view class="item__title">{{item.display_title}}</view>
+          <view class="item__money">{{item.display_sub}}</view>
+          <view class="item__money">{{lang.money}}：{{item.display_money}} (KZ)</view>
+          <view class="item__money">{{lang.createTime}}：{{item.created_at}}</view>
+          <view class="item__status-row">
+            <view class="item__badge" style="color: {{item.pay_unpaid ? 'red' : 'green'}};">{{item.pay_label}}</view>
+            <view class="item__badge" style="color: {{item.invoice_printed ? 'green' : '#999'}};">{{item.invoice_print_label}}</view>
+          </view>
+          <view class="item__money" wx:if="{{item.invoice_code_display}}">{{otherInvoices.facturaNoLabel}}：{{item.invoice_code_display}}</view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+</view>
+</view>
+
+<view class="page-footer" wx:if="{{selectradio_info && ((listTabActive == 1 && paymentBillList.length) || (listTabActive == 2 && demandNoteList.length))}}">
+  <view class="list-toolbar">
+    <view class="list-toolbar__left" bindtap="toggleSelectAll">
+      <view class="custom-checkbox {{selectAll ? 'custom-checkbox--checked' : ''}}">
+        <text wx:if="{{selectAll}}" class="custom-checkbox__tick">✓</text>
+      </view>
+      <text>{{quickFactura.selectAll}}</text>
+    </view>
+    <text class="list-toolbar__count">{{quickFactura.selected}} {{selectedCount}}</text>
+  </view>
+  <view class="batch-bar">
+    <view class="btn-item btn-item--primary {{selectedCount ? '' : 'btn-item--disabled'}}" bindtap="clickBatchIssue">{{quickFactura.batchIssue}} ({{selectedCount}})</view>
+  </view>
+</view>
+</block>
+
+<van-popup show="{{ Type_show }}" safe-area-tab-bar position="bottom" bind:close="onCloseTypePopup" round>
+  <van-picker id="Type_select" show-toolbar columns="{{ searchStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:cancel="onCloseTypePopup" bind:confirm="handleTypeSelectItem" />
+</van-popup>
+
+<van-dialog use-slot theme="round-button" closeOnClickOverlay="{{true}}" confirmButtonText="{{btnName.submitName}}" show="{{ dialog_show }}" title="{{btnName.selectPop}}" bind:close="onClose_dialog">
+  <view class="dialog-pay-content">
+    <scroll-view scroll-y>
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-cell-group>
+          <van-cell wx:for="{{radioList}}" wx:key="wm_id" title="{{item.wm_name}}  {{item.wm_no}}" label="{{item.area2}} {{item.wm_address}} {{item.area_code}} {{item.house_number}}" clickable data-name="{{item.wm_id}}" data-item="{{item}}" bind:click="onClick">
+            <van-radio slot="right-icon" name="{{item.wm_id}}" />
+          </van-cell>
+        </van-cell-group>
+      </van-radio-group>
+    </scroll-view>
+  </view>
+</van-dialog>
+
+</view>

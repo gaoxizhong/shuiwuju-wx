@@ -1,6 +1,6 @@
 /* pages/index/index.wxss */
 page{
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   background-color: #f2f2f2 !important;
   background-image: url('https://oss.qingshanpai.com/wx_shuiwuju/index-bg.png');
@@ -8,6 +8,11 @@ page{
   background-position: 0 0;   /* 图片居中 */
   background-size: 100%;  /* 自适应容器 */
   z-index: -999;
+}
+
+.index {
+  padding-bottom: calc(180rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 .image-logo {
@@ -126,6 +131,13 @@ page{
   height: 128rpx;
 }
 
-.notice .content {
-  height: 300rpx;
+.quick-action-content {
+  padding-bottom: 20rpx;
+}
+
+.quick-action.box {
+  margin-bottom: 0;
+}
+.quick-action-btn {
+  width: calc(100% / 3);
 }

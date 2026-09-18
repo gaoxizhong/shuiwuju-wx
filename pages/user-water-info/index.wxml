@@ -33,6 +33,13 @@
         <view class="info-item__label">{{lang.total_money}}</view>
         <view class="info-item__info">{{form.price}}（KZ）</view>
       </view>
+      <!-- 营业厅详情：展示发票状态 未开/已开 -->
+      <view class="info-item" wx:if="{{source === 'business-hall'}}">
+        <view class="info-item__label">{{lang.f_status}}</view>
+        <view class="info-item__info">
+          <text style="color: {{invoiceIssued ? '#07c160' : '#ff0000'}};">{{invoiceStatusText}}</text>
+        </view>
+      </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.waterList}}</view>
         <van-image width="200" height="140" fit="cover" src="{{form.image}}" />
@@ -40,13 +47,73 @@
 
     </view>
   </view>
+  <!--
+    按钮展示由 onLoad 中 status 字段驱动，各 source 下 status 含义：
+    search-person（查表员）：
+      pay   → form.status === 1（待支付）
+      print → form.status !== 1（已支付，待开收据）
+      over  → form.receipt_status !== 1（收据已开，待打印缴费单）
+    business-hall（营业厅）：
+      bank_pay   → form.status === 1（待银行支付）
+      print      → form.status !== 1（已支付，待开收据）
+      print_two  → form.receipt_status !== 1（待补开收据）
+    financial-manager（财务审核）：
+      no  → form.status === 2（待审核，显示同意/不同意）
+      yes → form.status !== 2（已审核，无按钮）
+  -->
   <view class="btn">
-    <view class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup" wx:if="{{(source === 'search-person' || source === 'business-hall') && !form.del_admin_id}}">
-      {{btnName.pay}}
-    </view>
-    <view class="btn-item {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}" wx:if="{{form.del_admin_id}}">
-      {{btnName.print}}
-    </view>
+    <!-- 查表员入口 source=search-person -->
+    <block wx:if="{{source === 'search-person'}}">
+      <!-- status=pay：待支付，弹出缴费方式选择 -->
+      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
+        {{btnName.pay}}
+      </view>
+      <!-- status=print：已支付，打印收据 -->
+      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
+        {{btnName.printOther}}
+      </view>
+      <!-- status=over 时占满整行；蓝牙打印缴费单，始终显示 -->
+      <view class="btn-item {{status === 'over' ? 'over' : ''}} {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}">
+        {{btnName.print}}
+      </view>
+    </block>
+
+    <!-- 营业厅：【发票】左侧 1/3，与右侧操作按钮并排 -->
+    <block wx:if="{{source === 'business-hall'}}">
+      <view class="btn-row-hall">
+        <!-- 未开：AGT 开票后打印缴费单；已开：直接打印，不禁用 -->
+        <view
+          class="btn-item btn-third {{is_Invoicereturn ? '' : 'btn-return'}}"
+          style="border-right: 1px solid #ebeef5;"
+          bindtap="handleInvoiceAction"
+        >
+          {{lang.invoiceBtn}}
+        </view>
+        <!-- status=bank_pay：待支付，占满剩余宽度 -->
+        <view wx:if="{{status === 'bank_pay'}}" class="btn-item btn-fill" bindtap="showPayPopup">
+          {{btnName.pay}}
+        </view>
+        <!-- status=print：已支付，开收据 -->
+        <view wx:if="{{status === 'print'}}" class="btn-item btn-fill" bindtap="businessHallPrint">
+          {{btnName.printOther}}
+        </view>
+        <!-- status=print_two：补开收据 -->
+        <view wx:if="{{status === 'print_two'}}" class="btn-item btn-fill" bindtap="businessHallPrint">
+          {{btnName.printOtherTwo}}
+        </view>
+      </view>
+    </block>
+
+    <!-- 财务审核入口 source=financial-manager -->
+    <block wx:if="{{source === 'financial-manager'}}">
+      <!-- status=no：待审核 -->
+      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="1" style="border-right: 1px solid #ebeef5;" bindtap="handleInfoStatus">
+        {{btnName.agree}}
+      </view>
+      <view wx:if="{{status === 'no'}}" class="btn-item" data-status="2" bindtap="handleOpenResult">
+        {{btnName.disagree}}
+      </view>
+    </block>
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">

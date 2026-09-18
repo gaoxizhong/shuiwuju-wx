@@ -29,6 +29,7 @@
     "pages/admin/set-lang/index",
     "pages/query-water/fecho/index",
     "pages/query-water/other-invoices/index",
+    "pages/query-water/quick-factura/index",
     "pages/water-info-edit/index",
     "pages/user-parenType-info/index",
     "pages/userInfoDetails/index"

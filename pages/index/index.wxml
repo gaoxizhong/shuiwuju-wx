@@ -37,15 +37,22 @@
         </view>
       </view>
     </view>
-    <view class="notice box">
+    <view class="quick-action box" wx:if="{{showQuickActionList.length}}">
       <view class="title">
-        <image src="/img/index/icon-index-3.png" mode="widthFix"/>
+        <image src="/img/index/icon-index-2.png" mode="widthFix"/>
         <view class="title-text">
-          <text>{{lang.iconNotice}}</text>
+          <text>{{lang.iconQuickAction}}</text>
         </view>
       </view>
-      <view class="content">
-        {{lang.iconNoticeText}}
+      <view class="content quick-action-content">
+        <view wx:for="{{showQuickActionList}}" wx:key="index" class="box-btn quick-action-btn" data-index="{{index}}" bindtap="handleToQuickActionPage">
+          <view class="icon">
+            <image src="{{item.key}}" mode="widthFix" />
+          </view>
+          <view class="text">
+            {{item.title}}
+          </view>
+        </view>
       </view>
     </view>
 

@@ -51,3 +51,22 @@
 .over {
   flex: 1;
 }
+
+.btn-row-hall {
+  display: flex;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.btn-third {
+  flex: 0 0 33.33%;
+  width: 33.33%;
+  box-sizing: border-box;
+}
+
+.btn-fill {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
+}

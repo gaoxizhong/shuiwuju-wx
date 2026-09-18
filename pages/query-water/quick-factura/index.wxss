@@ -1,0 +1,258 @@
+page {
+  height: 100%;
+  background-color: #f2f2f2;
+}
+
+.page-wrap {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.page-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 16rpx 20rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.page-body {
+  flex: 1;
+  margin: 20rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 220rpx);
+}
+
+.search-bar {
+  width: 100%;
+  padding-right: 20rpx;
+  margin-top: 20rpx;
+  background: #fff;
+}
+
+.search-bar .van-icon {
+  display: inline-block;
+  padding-left: 26rpx;
+  padding-right: 16rpx;
+  font-size: 34rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+}
+
+.dialog-pay-content {
+  height: 680rpx;
+}
+
+.dialog-pay-content scroll-view {
+  height: 100%;
+}
+
+.user-info-brief {
+  margin: 12rpx 20rpx;
+  padding: 16rpx 24rpx;
+  background-color: #fff;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #323233;
+}
+
+.user-info-brief__line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+
+.user-info-brief__line--addr {
+  color: #646566;
+  font-size: 24rpx;
+}
+
+.container-tabbox {
+  width: calc(100% - 40rpx);
+  margin: 0 20rpx 12rpx;
+  display: flex;
+  background: #fff;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.container-tabbox > view {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #646566;
+  position: relative;
+}
+
+.container-tabbox > view.active {
+  color: #1989fa;
+  font-weight: 600;
+}
+
+.container-tabbox > view.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 80rpx;
+  height: 4rpx;
+  background: #1989fa;
+  transform: translateX(-50%);
+}
+
+.list-toolbar {
+  padding: 0 4rpx 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 26rpx;
+  color: #323233;
+}
+
+.list-toolbar__left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.list-toolbar__count {
+  color: #969799;
+}
+
+.batch-bar {
+  margin: 0;
+}
+
+.btn-item {
+  text-align: center;
+  padding: 22rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.btn-item--primary {
+  color: #fff;
+  background-color: #1989fa;
+}
+
+.btn-item--disabled {
+  opacity: 0.45;
+}
+
+.van-search__action {
+  margin-left: 20rpx;
+}
+
+.search-content {
+  border-radius: 10rpx;
+  overflow: hidden;
+  margin: 0 20rpx 20rpx;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-box {
+  flex: 1;
+  min-height: 400rpx;
+  max-height: none;
+  margin-bottom: 0;
+}
+
+.search-content .list {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.search-content .list .item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx;
+  font-size: 28rpx;
+  border-bottom: 1rpx solid #f1f1f1;
+}
+
+.search-content .list .item--disabled {
+  opacity: 0.72;
+}
+
+.custom-checkbox {
+  flex-shrink: 0;
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 16rpx;
+  margin-top: 4rpx;
+  border: 2rpx solid #c8c9cc;
+  border-radius: 6rpx;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-checkbox--checked {
+  border-color: #1989fa;
+  background-color: #fff;
+}
+
+.custom-checkbox__tick {
+  color: #1989fa;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.list-toolbar .custom-checkbox {
+  margin-top: 0;
+  margin-right: 12rpx;
+}
+
+.item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-content .list .item__title {
+  font-weight: 600;
+  padding-bottom: 10rpx;
+}
+
+.item__money {
+  padding-bottom: 6rpx;
+}
+
+.item__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 8rpx;
+}
+
+.item__badge {
+  font-size: 24rpx;
+  font-weight: 600;
+}
