@@ -106,6 +106,7 @@ const zh_lang = {
     demandNoteList: '缴费单列表',
     createSection: '新建发票',
     invoicePrinted: '已开票',
+    invoiceFrIssued: '已开发票/收据',
     invoiceNotPrinted: '未开票',
     createAndIssue: '开票并打印',
     batchIssue: '批量开票',
@@ -167,6 +168,7 @@ const zh_lang = {
     money: '缴费金额',
     saldo: '账户余额',
     createTime: '查询时间',
+    registerTime: '注册时间',
     iconSearch: '用户查询',
     iconFunc: '功能',
     iconQuickAction: '快捷操作',
@@ -192,7 +194,7 @@ const zh_lang = {
         key: '/img/index/icon-search.png',
         title: '收据',
         tabberName: '收据',
-        url: '/pages/business-hall/index/index?docType=RG',
+        url: '/pages/financial-manager/bill-payment/index',
       },
       {
         auth: 'L',
@@ -568,77 +570,94 @@ const zh_lang = {
     invoice_opened: '已开',
     invoiceBtn: '发票',
   },
-  // 功能列表
+  // 设备维护（首页入口聚合页）
+  equipmentMaintenance: {
+    pageTitle: '设备维护',
+    list: [{
+        auth: 'L',
+        key: '/img/index/icon-report-pepair1.png',
+        title: '请求维护',
+        tabberName: '请求维护',
+        url: '/pages/query-water/report-repair/index',
+      },
+      {
+        auth: 'C',
+        key: '/img/index/icon-maintenance1.png',
+        title: '维修清单',
+        tabberName: '维修清单',
+        url: '/pages/maintenance/maintenance/index',
+      },
+    ],
+  },
+  // 功能列表（图标与葡语 en.js 保持一致，统一使用 *1.png）
   func: {
     list: [{
         auth: 'L',
-        key: '/img/index/icon-index-add.png',
-        title: '新增用户',
-        color: '#6cbcfc',
-        url: '/pages/query-water/add-account/index'
-      },
-      {
-        auth: 'L',
-        key: '/img/index/icon-search-pay.png',
+        key: '/img/index/icon-search-pay1.png',
         title: '查表缴费',
+        tabberName: '查表缴费',
         color: '#fc9c3c',
         url: '/pages/query-water/pay/collect-info/index'
       },
       {
+        auth: 'R',
+        key: '/img/index/icon-business-hall1.png',
+        title: '缴费和收据',
+        tabberName: '缴费和收据',
+        color: '#58cab4',
+        url: '/pages/business-hall/index/index',
+      },
+      {
+        auth: 'R',
+        key: '/img/index/icon-other-invoices1.png',
+        title: '其他发票',
+        tabberName: '其他发票',
+        color: '#58cab4',
+        url: '/pages/query-water/other-invoices/index',
+      },
+      {
+        auth: 'LC',
+        key: '/img/index/icon-maintenance1.png',
+        title: '设备维护',
+        tabberName: '设备维护',
+        color: '#58cab4',
+        url: '/pages/maintenance/equipment/index',
+      },
+      {
         auth: 'L',
-        key: '/img/index/icon-today-summary.png',
+        key: '/img/index/icon-today-summary1.png',
         title: '今日收费',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },
       {
-        auth: 'L',
-        key: '/img/index/icon-report-pepair.png',
-        title: '请求维护',
-        color: '#58cab4',
-        url: '/pages/query-water/report-repair/index'
-      },
-      {
-        auth: 'C',
-        key: '/img/index/icon-maintenance.png',
-        title: '维修清单',
-        color: '#fc9c3c',
-        url: '/pages/maintenance/maintenance/index'
-      },
-      {
-        auth: 'R',
-        key: '/img/index/icon-business-hall.png',
-        title: '缴费和收据',
-        color: '#58cab4',
-        url: '/pages/business-hall/index/index',
-      },
-      {
         auth: 'CF',
-        key: '/img/index/icon-fm-search-account.png',
+        key: '/img/index/icon-fm-search-account1.png',
         title: '对账',
         color: '#6cbcfc',
         url: '/pages/financial-manager/search-account/index'
       },
       {
         auth: 'GC',
-        key: '/img/index/icon-search.png',
+        key: '/img/index/icon-search1.png',
         title: '收据单',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },
       {
         auth: 'L',
-        key: '/img/index/icon-user-status.png',
+        key: '/img/index/icon-user-status1.png',
         title: '用户状态',
         color: '#6cbcfc',
         url: '/pages/query-water/account-status/index'
       },
       {
-        auth: 'R',
-        key: '/img/index/icon-other-invoices.png',
-        title: '其他发票',
-        color: '#58cab4',
-        url: '/pages/query-water/other-invoices/index',
+        auth: 'L',
+        key: '/img/index/icon-index-add1.png',
+        title: '新增用户',
+        tabberName: '新增用户',
+        color: '#6cbcfc',
+        url: '/pages/query-water/add-account/index'
       },
       // {
       //   auth: 'DG',

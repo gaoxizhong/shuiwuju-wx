@@ -62,6 +62,10 @@ Page({
   onShareAppMessage: function () {
 
   },
+  matchItemAuth(itemAuth, userAuth) {
+    if (!itemAuth || !userAuth) return false
+    return String(itemAuth).split('').some(code => userAuth.includes(code))
+  },
   // 用户权限变化
   getFuncList() {
     console.log('用户权限变化')
@@ -69,7 +73,7 @@ Page({
     const allList = this.data.funcLang.list
     console.log(auth)
     console.log(allList)
-    const showFuncList = allList.filter(i => auth.includes(i.auth))
+    const showFuncList = allList.filter(i => this.matchItemAuth(i.auth, auth))
     this.setData({
       showFuncList
     })

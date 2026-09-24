@@ -11,6 +11,7 @@
     "pages/query-water/report-repair/index",
     "pages/query-water/account-status/index",
     "pages/maintenance/maintenance/index",
+    "pages/maintenance/equipment/index",
     "pages/business-hall/index/index",
     "pages/business-hall/historical/index",
     "pages/business-hall/fecho/index",

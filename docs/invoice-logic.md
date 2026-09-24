@@ -225,7 +225,7 @@ no（待审核：同意/不同意）→ yes（已审核，无按钮）
 |------|------|----------|----------|
 | 发票 / Factura | `/pages/query-water/quick-factura/index` | **FT** | ✅ 已接 AGT 批量开票 |
 | 发票/收据 / Factura/Recibo | `other-invoices?title_active=1&docType=FR` | FR（意图） | ⚠️ 仅本地创建+打印 |
-| 收据 / Recibo | `business-hall?docType=RG` | RG（意图） | ⚠️ 传统收据，未接 AGT |
+| 收据 / Recibo | `/pages/financial-manager/bill-payment/index` | 收据单 | ✅ 与功能模块「收据单」同页 |
 | 预交费 / Adiantamento | `other-invoices?title_active=4&docType=FA` | FA（意图） | ⚠️ 未接 AGT |
 
 > URL 参数 `docType` 目前**未被页面 onLoad 读取**，仅作入口标识。
@@ -280,18 +280,20 @@ business-hall 列表 → user-water-info?source=business-hall
 **Tab1 — 缴费单（抄表）**
 
 ```
-getBusinessHallList → 多选（status=1 且未开票）
+getBusinessHallList → 多选（未开 FT 且未开 FR 二合一；与是否待付/部分缴费无关）
   → 批量 issueAgtInvoice(FT, user_pay_log)
-  → 点击条目 → user-parenType-info 收款
+  → 不可选条目点击不勾选；Tab2 未可选时点击可进收款页
 ```
 
 **Tab2 — 其他发票**
 
 ```
-getDemandNoteList → 多选（pay_status=0 且未开票）
+getDemandNoteList → 多选（同上：仅看发票/FR 标识）
   → 批量 issueAgtInvoice(FT, user_pay_demand_note)
   → 点击条目 → user-parenType-info 收款
 ```
+
+**可选判断**（`canIssueFtForBill`）：已开 FT（`bill_invoice_code` / `invoice_status==2` 等）或已开 FR（`agt_document_type==FR`、双状态均已开等）则不可再开 FT。
 
 **关键方法**：`buildAgtParams()` / `clickBatchIssue()`
 

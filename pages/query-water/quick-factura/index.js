@@ -98,18 +98,57 @@ Page({
     })
   },
 
+  isAgtDocumentFr(ele) {
+    const t = String(ele.agt_document_type || ele.document_type || '').toUpperCase()
+    return t === 'FR'
+  },
+
+  /** 已开 AGT/本地 发票/收据二合一（FR），不可再开 FT */
+  isFrCombinedIssued(ele) {
+    if (this.isAgtDocumentFr(ele)) return true
+    const frCode = ele.bill_fr_code || ele.fr_code || ele.agt_fr_no || ''
+    if (frCode) return true
+    const invoiceDone = ele.invoice_status == 2 && !ele.cancel_invoice_number
+    const receiptDone = ele.receipt_status == 2 && !ele.cancel_receipt_number
+    return invoiceDone && receiptDone
+  },
+
+  /** 已开 FT 发票（非 FR 二合一） */
+  isFtInvoiceIssued(ele) {
+    if (ele.invoice_status == 3 || ele.cancel_invoice_number) return false
+    if (this.isFrCombinedIssued(ele)) return false
+    const code = ele.bill_invoice_code
+      || ele.invoice_code
+      || ele.agt_invoice_no
+      || ''
+    const agtNo = ele.agt_document_no || ''
+    return !!(code || agtNo || ele.invoice_status == 2)
+  },
+
+  canIssueFtForBill(ele) {
+    return !this.isFtInvoiceIssued(ele) && !this.isFrCombinedIssued(ele)
+  },
+
   mapInvoicePrintStatus(ele) {
     const qf = this.data.quickFactura
+    const frIssued = this.isFrCombinedIssued(ele)
+    const ftIssued = this.isFtInvoiceIssued(ele)
+    const blocked = frIssued || ftIssued
+    let invoice_print_label = qf.invoiceNotPrinted
+    if (frIssued) invoice_print_label = qf.invoiceFrIssued
+    else if (ftIssued) invoice_print_label = qf.invoicePrinted
     const code = ele.bill_invoice_code
       || ele.invoice_code
       || ele.agt_document_no
       || ele.agt_invoice_no
+      || ele.bill_fr_code
+      || ele.fr_code
+      || ele.agt_fr_no
       || ''
-    const printed = !!(code || ele.invoice_status == 2)
     return {
-      invoice_printed: printed,
-      invoice_print_label: printed ? qf.invoicePrinted : qf.invoiceNotPrinted,
-      invoice_code_display: code,
+      invoice_printed: blocked,
+      invoice_print_label,
+      invoice_code_display: blocked ? code : '',
     }
   },
 
@@ -117,7 +156,7 @@ Page({
     const otherInvoices = this.data.otherInvoices
     const invoiceInfo = this.mapInvoicePrintStatus(ele)
     const unpaid = ele.status === 1
-    const canSelect = unpaid && !invoiceInfo.invoice_printed
+    const canSelect = this.canIssueFtForBill(ele)
     return {
       ...ele,
       ...invoiceInfo,
@@ -136,7 +175,7 @@ Page({
     const otherInvoices = this.data.otherInvoices
     const invoiceInfo = this.mapInvoicePrintStatus(ele)
     const unpaid = ele.pay_status === 0
-    const canSelect = unpaid && !invoiceInfo.invoice_printed
+    const canSelect = this.canIssueFtForBill(ele)
     return {
       ...ele,
       ...invoiceInfo,

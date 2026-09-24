@@ -108,6 +108,7 @@ const en_lang = {
     demandNoteList: 'Lista de recibos',
     createSection: 'Nova Factura',
     invoicePrinted: 'Factura emitida',
+    invoiceFrIssued: 'Factura/Recibo emitida',
     invoiceNotPrinted: 'Sem factura',
     createAndIssue: 'Emitir e imprimir',
     batchIssue: 'Emitir em lote',
@@ -169,6 +170,7 @@ const en_lang = {
     money: 'Valor a pagar',
     saldo: 'Saldo da conta',
     createTime: 'Hora de leitura',
+    registerTime: 'Data de registo',
     iconSearch: 'Consulta',
     iconFunc: 'Função',
     iconQuickAction: 'Acções Rápidas',
@@ -194,7 +196,7 @@ const en_lang = {
         key: '/img/index/icon-search1.png',
         title: 'Recibo',
         tabberName: 'Recibo',
-        url: '/pages/business-hall/index/index?docType=RG',
+        url: '/pages/financial-manager/bill-payment/index',
       },
       {
         auth: 'L',
@@ -571,17 +573,28 @@ const en_lang = {
     invoice_opened: 'Emitido',
     invoiceBtn: 'Factura',
   },
+  // 设备维护（首页入口聚合页）
+  equipmentMaintenance: {
+    pageTitle: 'Manutenção de equipamentos',
+    list: [{
+        auth: 'L',
+        key: '/img/index/icon-report-pepair1.png',
+        title: 'Ocorrencias',
+        tabberName: 'Mautenção e Reparação',
+        url: '/pages/query-water/report-repair/index',
+      },
+      {
+        auth: 'C',
+        key: '/img/index/icon-maintenance1.png',
+        title: 'Relatorio de Ocorrencias',
+        tabberName: 'Tavefas de Revisão',
+        url: '/pages/maintenance/maintenance/index',
+      },
+    ],
+  },
   // 功能列表
   func: {
     list: [{
-        auth: 'L',
-        key: '/img/index/icon-index-add1.png',
-        title: 'Cadastrar',
-        tabberName: 'Cadastrar consumidor',
-        color: '#6cbcfc',
-        url: '/pages/query-water/add-account/index'
-      },
-      {
         auth: 'L',
         key: '/img/index/icon-search-pay1.png',
         title: 'Leituras',
@@ -590,36 +603,36 @@ const en_lang = {
         url: '/pages/query-water/pay/collect-info/index'
       },
       {
-        auth: 'L',
-        key: '/img/index/icon-today-summary1.png',
-        title: 'Relatorios',
-        tabberName: 'Relatorios',
-        color: '#58cab4',
-        url: '/pages/query-water/today-summary/index'
-      },
-      {
-        auth: 'L',
-        key: '/img/index/icon-report-pepair1.png',
-        title: 'Ocorrencias',
-        tabberName: 'Mautenção e Reparação',
-        color: '#58cab4',
-        url: '/pages/query-water/report-repair/index'
-      },
-      {
-        auth: 'C',
-        key: '/img/index/icon-maintenance1.png',
-        title: 'Relatorio de Ocorrencias',
-        tabberName: 'Tavefas de Revisão',
-        color: '#fc9c3c',
-        url: '/pages/maintenance/maintenance/index'
-      },
-      {
         auth: 'R',
         key: '/img/index/icon-business-hall1.png',
         title: 'Pagamentos',
         tabberName: 'Pagamento e recibo',
         color: '#58cab4',
         url: '/pages/business-hall/index/index',
+      },
+      {
+        auth: 'R',
+        key: '/img/index/icon-other-invoices1.png',
+        title: 'Faturação',
+        tabberName: 'Faturação',
+        color: '#58cab4',
+        url: '/pages/query-water/other-invoices/index',
+      },
+      {
+        auth: 'LC',
+        key: '/img/index/icon-maintenance1.png',
+        title: 'Manutenção',
+        tabberName: 'Manutenção de equipamentos',
+        color: '#58cab4',
+        url: '/pages/maintenance/equipment/index',
+      },
+      {
+        auth: 'L',
+        key: '/img/index/icon-today-summary1.png',
+        title: 'Relatorios',
+        tabberName: 'Relatorios',
+        color: '#58cab4',
+        url: '/pages/query-water/today-summary/index'
       },
       {
         auth: 'CF',
@@ -644,12 +657,12 @@ const en_lang = {
         url: '/pages/query-water/account-status/index'
       },
       {
-        auth: 'R',
-        key: '/img/index/icon-other-invoices1.png',
-        title: 'Faturação',
-        tabberName: 'Faturação',
-        color: '#58cab4',
-        url: '/pages/query-water/other-invoices/index',
+        auth: 'L',
+        key: '/img/index/icon-index-add1.png',
+        title: 'Cadastrar',
+        tabberName: 'Cadastrar consumidor',
+        color: '#6cbcfc',
+        url: '/pages/query-water/add-account/index'
       },
       // {
       //   auth: 'DG',

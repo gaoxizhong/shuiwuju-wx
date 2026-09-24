@@ -1,0 +1,19 @@
+<view class="equipment-page">
+  <view class="equipment-panel" wx:if="{{entryList.length}}">
+    <view class="equipment-grid">
+      <view
+        wx:for="{{entryList}}"
+        wx:key="url"
+        class="equipment-btn"
+        data-index="{{index}}"
+        bindtap="handleEntryTap"
+      >
+        <view class="equipment-btn__icon">
+          <image src="{{item.key}}" mode="widthFix" />
+        </view>
+        <view class="equipment-btn__text">{{item.title}}</view>
+      </view>
+    </view>
+  </view>
+  <van-empty wx:else image="search" description="{{emptyText}}" />
+</view>

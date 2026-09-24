@@ -59,6 +59,7 @@ Page({
     show_1:false,
 
     title_active: 1,
+    hideTabs: false,
     demandNoteList: [],// 收费项目订单列表
     page_demandNote: 1,
     isScroll: true,
@@ -79,7 +80,18 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    this.getTrPriceList();
+    this.getTrPriceList()
+    const titleActive = options.title_active ? Number(options.title_active) : 1
+    const hideTabs = titleActive === 4
+    this.setData({
+      title_active: titleActive,
+      hideTabs,
+    })
+    if (titleActive === 4) {
+      this.getFbSelectWmList()
+    } else if (titleActive === 2) {
+      this.getDemandNoteList()
+    }
   },
 
   /**

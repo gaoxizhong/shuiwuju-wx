@@ -18,7 +18,7 @@ export const getRegistarFactura = (d) => {
   console.log(d)
   let _data = d;
   let data = {
-    "schemaVersion": "1.0.1", // 服务schema版本，如"1.0"
+    "schemaVersion": "2.0", // 服务 schema 版本（AGT 门户 2026 起要求 2.x，1.0.x 已不支持）
     "submissionUUID": "13e7aaf7-e9e1-40af-875b-930f070c22be",
     "taxRegistrationNumber": "5601022917", // 纳税人识别号
     "submissionTimeStamp": "2026-06-16T14:30:00Z", // 请求提交时间戳，格式为ISO 8601，示例："2025-05-27T14:30:00Z"（UTC）；"2025-05-27T14:30:00-03:00"（含时区信息）
@@ -49,24 +49,19 @@ export const getRegistarFactura = (d) => {
             "productDescription": "Factura de Adiantamento",  // 产品或服务描述
             "quantity": 1,  // 数量，整数或小数
             "unitOfMeasure": "string",  // 计量单位
-            "unitPrice": "string",  // 单价，不含折扣和税费
-            "unitPriceBase": "string",  // 扣除行或头折扣后的单价，不含税费
-            "debitAmount": "string", // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁 免原因的值。debitAmount和 creditAmount字段只 能填写其一；（借方金额）‌：代表资金流出或资产增加的数值，在会计记账中记入借方。
-            "creditAmount": "string",  // 每行总金额，不含税，已扣除折扣，其中已应用税率和/或豁免原因的值。debitAmount和creditAmount字段只能填写其一 （贷方金额）‌：代表资金流入或负债/权益增加的数值，在会计记账中记入贷方。
-            //预付款发票场景下，‌付款时填借方（预付账款），收货/核销时填贷方（冲减预付账款）‌。‌‌
-            "referenceInfo": { // 详细说明本发票文件所引用基础文件的参考信息。以下类型发票必填：NC（贷项通知单），用于标识退货的基础发票
-              "reference": "string",  // 本条目引用的原始发票文件参考编号
-              "reason": "Cancelar", // 原始文件介入原因
-              "referenceItemLineNo": 1 // 本条目引用的原始发票文件中条目行号的参考
-            },
-            "taxes": [{  // 指定为该行计算的税 款的对象数组
-                "taxType": "IVA",  // 税制类型，可选值：IVA — 增值税；IS —印花税；IEC — 特别 消费税
-                "taxCountryRegion": "AO",  //税收适用的国家/地区代码
-                "taxCode": "ISE",   //税率代码。ISE表示豁免；NS表示不征税
-                "taxPercentage": 0,  // 适用百分比税率（如14表示14%税率）。 豁免或不征税时填写0
-                "taxContribution": "string"  // 本行税款的计算值（最多两位小数的十 进制值），贡献于发票文件总税额。此字 段计算值应向上取整 到下一个分，示例：23.144 → 23.15；0.001844 → 0.01；5.9999999 → 6.00
+            "unitPrice": "100.00",  // 单价，不含折扣和税费（字符串）
+            "unitPriceBase": "100.00",  // 扣除行或头折扣后的单价，不含税费
+            // 每行 debitAmount / creditAmount 只能填其一。除 NC 等外，全文档各行 credit 合计须 > debit 合计
+            // FA/FT/FR 等正常开票：行金额填 creditAmount（销项/收入侧），勿填 debitAmount
+            "creditAmount": "100.00",
+            "taxes": [{
+                "taxType": "IVA",
+                "taxCountryRegion": "AO",
+                "taxCode": "ISE",
+                "taxPercentage": 0,
+                "taxContribution": "0"
             }],
-            "settlementAmount": "string"  // 折扣总额，应反映该行折扣比例和特定折 扣
+            "settlementAmount": "0"
         }],
         "documentTotals": {  //包含发票总计的对象
           "taxPayable": 0,  // 发票总税额（最多两 位小数的十进制值）
@@ -101,7 +96,7 @@ export const getRegistarFactura = (d) => {
 //2、获取电子发票验证状态
 //Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/obterEstado
 let obterEstado_data = {
-    "schemaVersion": "string", // 服务schema版本，如"1.0
+    "schemaVersion": "2.0", // 服务 schema 版本（须 2.x）
     "submissionUUID": "string",   // 由软件提供的请求标识符（GUID或UUID）
     "taxRegistrationNumber": "5601022917", // 纳税人识别号
     "submissionTimeStamp": "string", // 请求提交时间戳，格式ISO 8601
@@ -118,7 +113,7 @@ let obterEstado_data = {
 // 3、 列出发票
 // Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/listarFacturas
 let listarFacturas_data = {
-  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "schemaVersion": "2.0", // 服务 schema 版本（须 2.x）
   "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
   "softwareInfo": {  //开票软件数据对象
@@ -139,7 +134,7 @@ let listarFacturas_data = {
 
 // Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/consultarFactura
 let consultarFactura_data = {
-  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "schemaVersion": "2.0", // 服务 schema 版本（须 2.x）
   "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
   "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601
@@ -158,7 +153,7 @@ let consultarFactura_data = {
 // 5、申请序列号
 // Endpoint： https://sifphml.minfin.gov.ao/sigt/fe/v1/solicitarSerie
 let solicitarSerie_data = {
-  "schemaVersion": "string", // 服务schema版本，如"1.0"
+  "schemaVersion": "2.0", // 服务 schema 版本（须 2.x）
   "submissionUUID": "string", // 由软件提供的请求标识符（GUID或UUID）
   "taxRegistrationNumber": "5601022917", // 纳税人识别号
   "submissionTimeStamp": "string",  // 请求提交时间戳，格式ISO 8601

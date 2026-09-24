@@ -1,11 +1,13 @@
-<view class="container-tabbox">
-  <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_2.one}}</view>
-  <view class="{{ title_active == 4? 'active' : '' }}" data-index="4" bind:tap="onTabChange">{{lang.tabs_2.tab_yjf}}</view>
-</view>
-<view class="container-tabbox">
-  <view class="{{ title_active == 3? 'active' : '' }}" data-index="3" bind:tap="onTabChange">{{lang.tabs_2.baojia}}</view>
-  <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_2.two}}</view>
-</view>
+<block wx:if="{{!hideTabs}}">
+  <view class="container-tabbox">
+    <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onTabChange">{{lang.tabs_2.one}}</view>
+    <view class="{{ title_active == 4? 'active' : '' }}" data-index="4" bind:tap="onTabChange">{{lang.tabs_2.tab_yjf}}</view>
+  </view>
+  <view class="container-tabbox">
+    <view class="{{ title_active == 3? 'active' : '' }}" data-index="3" bind:tap="onTabChange">{{lang.tabs_2.baojia}}</view>
+    <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onTabChange">{{lang.tabs_2.two}}</view>
+  </view>
+</block>
 <view class="search-bar">
   <van-search value="{{ select_value }}" readonly="{{type_seach == 'type'?true:false}}" placeholder="{{lang.placeholder}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handlesearchReading"  use-action-slot>
     <view class="icon"  slot="action">
@@ -102,7 +104,7 @@
 
             <view class="wixi-item_i">
               <view class="wixi-item_i_label">
-                {{lang.createTime}}：
+                {{lang.registerTime}}：
               </view>
               <view class="wixi-item_i_content">
                 {{item.created_at}}
