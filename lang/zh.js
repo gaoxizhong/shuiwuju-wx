@@ -238,7 +238,7 @@ const zh_lang = {
       two: '删除记录',
     },
     tabs_4: {
-      one: '缴费记录',
+      one: '催缴记录',
       two: '删除记录',
     },
     pay_type: '支付方式',
@@ -388,6 +388,14 @@ const zh_lang = {
       total_water: '用水量',
       months: '月份',
       total_money: '应缴金额',
+      total_money_this: '本次应缴金额',
+      arrears_total: '欠费总额',
+      history_payment_bill: '历史催缴单',
+      history_col_time: '开单时间',
+      history_col_amount: '金额',
+      history_col_status: '状态',
+      print_btn_demand: '打印催缴单',
+      print_btn_fr: 'FR',
       paid_total_money: '实缴金额',
       last_date:'上次抄表时间',
       now_date:'本次抄表时间',
@@ -610,8 +618,8 @@ const zh_lang = {
       {
         auth: 'R',
         key: '/img/index/icon-other-invoices1.png',
-        title: '其他发票',
-        tabberName: '其他发票',
+        title: '其他收费',
+        tabberName: '其他收费',
         color: '#58cab4',
         url: '/pages/query-water/other-invoices/index',
       },
@@ -640,7 +648,7 @@ const zh_lang = {
       {
         auth: 'GC',
         key: '/img/index/icon-search1.png',
-        title: '收据单',
+        title: '缴费记录',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },

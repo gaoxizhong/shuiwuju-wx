@@ -16,6 +16,9 @@ const {
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../../../utils/encoding.js")
 const { getRegistarFactura } = require('../../../../apis/agt')
+import {
+  getBusinessHallList,
+} from '../../../../apis/business-hall'
 // const { SendControlCommand } = require("./../../../../utils/print")
 
 Page({
@@ -50,6 +53,8 @@ Page({
     printing: false,
     is_T: false,
     is_yujiao: '', // 'automatica' 预缴
+    historyPaymentBills: [],
+    indexLang: lang.index,
   },
 
   /**
@@ -99,13 +104,18 @@ Page({
       btnName: lang.btnName,
       steps: lang.pay.steps,
       bluetoolthDevice: lang.admin.bluetoolthDevice,
-      is_yujiao
+      is_yujiao,
+      indexLang: lang.index,
     })
+    if (wm_no) {
+      this.getArrearsMoneySum(wm_no)
+      this.loadHistoryPaymentBills(wm_no)
+    }
   },
   onShow(){
-    getRegistarFactura({a:1,b:2,c:3}).then( res =>{
-      console.log(res)
-    })
+    // getRegistarFactura({a:1,b:2,c:3}).then( res =>{
+    //   console.log(res)
+    // })
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){
@@ -138,6 +148,28 @@ Page({
       })
     })
   },
+
+  loadHistoryPaymentBills(wm_no) {
+    const currentUpId = this.data.form.up_id
+    getBusinessHallList({
+      wm_no,
+      select: wm_no,
+      type: 1,
+      status: '',
+      page: 1,
+    }).then(res => {
+      if (res.code != 200) return
+      const raw = (res.data.list && res.data.list.data) || []
+      const historyPaymentBills = raw
+        .filter(item => !currentUpId || String(item.id) !== String(currentUpId))
+        .map(item => ({
+          ...item,
+          display_reading: (Number(item.reading) * 10000) / 10000,
+        }))
+      this.setData({ historyPaymentBills })
+    }).catch(() => {})
+  },
+
   showPayPopup() {
     this.setData({
       showPay: true

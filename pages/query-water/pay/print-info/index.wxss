@@ -16,6 +16,13 @@
 .info {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-content {
+  flex: 1;
+  height: 0;
 }
 
 .info-label {
@@ -42,6 +49,65 @@
   padding-left: 30rpx;
   display: flex;
   justify-content: flex-end;
+}
+
+.info-item--photo {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.info-item--photo .info-item__info {
+  justify-content: flex-start;
+  padding-left: 0;
+  margin-top: 16rpx;
+}
+
+.history-section {
+  padding: 0 32rpx 24rpx;
+}
+
+.history-section__title {
+  font-size: 28rpx;
+  color: rgba(69, 90, 100, 0.6);
+  padding: 16rpx 0;
+}
+
+.loglist-box {
+  width: 100%;
+}
+
+.loglist-title-box {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  border-bottom: 1rpx solid #ebeef5;
+  font-size: 22rpx;
+}
+
+.loglist-title-box--history > view,
+.loglist-item-box--history > view {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 4rpx;
+  font-size: 22rpx;
+  word-break: break-all;
+}
+
+.loglist-item-box {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx dotted #ebeef5;
+}
+
+.history-list-body {
+  min-height: 80rpx;
+}
+
+.history-empty {
+  padding: 24rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
 }
 .btn{
   display: flex;

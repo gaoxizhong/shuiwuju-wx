@@ -241,7 +241,7 @@ const en_lang = {
       two: 'Anuado',
     },
     tabs_4: {
-      one: 'Conta correnta',
+      one: 'Registos de cobrança',
       two: 'Anuado',
     },
     pay_type: 'Métodos de Pagamento',
@@ -391,6 +391,14 @@ const en_lang = {
       total_water: 'Consumo de água',
       months: 'Em julho',
       total_money: 'Montante a pagar',
+      total_money_this: 'Montante a pagar desta leitura',
+      arrears_total: 'Valor total em dívida',
+      history_payment_bill: 'Histórico de facturas simplificadas',
+      history_col_time: 'Data de emissão',
+      history_col_amount: 'Valor',
+      history_col_status: 'Estado',
+      print_btn_demand: 'Imprimir aviso de cobrança',
+      print_btn_fr: 'FR',
       paid_total_money: 'Valor a pagar',
       last_date:'Ultima data',
       now_date:'Esta data',
@@ -613,8 +621,8 @@ const en_lang = {
       {
         auth: 'R',
         key: '/img/index/icon-other-invoices1.png',
-        title: 'Faturação',
-        tabberName: 'Faturação',
+        title: 'Outras cobranças',
+        tabberName: 'Outras cobranças',
         color: '#58cab4',
         url: '/pages/query-water/other-invoices/index',
       },
@@ -645,7 +653,7 @@ const en_lang = {
       {
         auth: 'GC',
         key: '/img/index/icon-search1.png',
-        title: 'Recibo',
+        title: 'Registo de pagamentos',
         color: '#6cbcfc',
         url: '/pages/financial-manager/bill-payment/index'
       },
