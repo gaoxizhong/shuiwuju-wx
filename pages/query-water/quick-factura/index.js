@@ -2,12 +2,13 @@ const app = getApp()
 let lang = app.globalData.lang
 const {
   wxAsyncApi,
+  isAgtValidationPassed,
 } = require('../../../utils/util')
 import {
   isAdmin,
   getTrPriceList,
   getDemandNoteList,
-  issueAgtInvoice,
+  issueAgtInvoiceThenQueryEstado,
 } from '../../../apis/admin'
 import {
   getBusinessHallList,
@@ -427,14 +428,21 @@ Page({
 
   buildAgtParams(item) {
     const { selectradio_info } = this.data
+    // customer_tax_id：测试阶段固定 999999999
+    // TODO: 测试通过后恢复优先级：入参 > water_meter.nif/user_card > 999999999
+    // company_name 可选：默认用水表户名
+    const meter = item.water_meter || item.meter || selectradio_info || {}
+    const companyName = meter.wm_name || meter.user_name || selectradio_info.wm_name || ''
     const params = {
       document_type: 'FT',
-      poll: 1,
-      poll_times: 5,
+      // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
+      poll: 0,
+      poll_times: 0,
       poll_interval: 3,
+      customer_tax_id: '999999999',
     }
-    if (selectradio_info.user_card) {
-      params.customer_tax_id = selectradio_info.user_card
+    if (companyName) {
+      params.company_name = companyName
     }
     if (item.listType === 'payment') {
       params.source_type = 'user_pay_log'
@@ -447,7 +455,8 @@ Page({
   },
 
   issueOneInvoice(item) {
-    return issueAgtInvoice(this.buildAgtParams(item))
+    // 开票后用 request_id 查 tr_obter_agt_estado，以最终校验结果为准
+    return issueAgtInvoiceThenQueryEstado(this.buildAgtParams(item)).then(({ finalRes }) => finalRes)
   },
 
   clickBatchIssue() {
@@ -481,8 +490,13 @@ Page({
         })
         return
       }
-      this.issueOneInvoice(selected[index]).then(() => {
-        successCount += 1
+      this.issueOneInvoice(selected[index]).then((res) => {
+        // 仅 AGT 校验通过（V）计为成功
+        if (isAgtValidationPassed(res)) {
+          successCount += 1
+        } else {
+          failCount += 1
+        }
         runNext(index + 1)
       }).catch(() => {
         failCount += 1

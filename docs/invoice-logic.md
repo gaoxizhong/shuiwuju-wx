@@ -63,6 +63,9 @@
 | `poll_times` | number | 最大轮询次数，默认 5 |
 | `poll_interval` | number | 轮询间隔（秒），默认 3 |
 | `customer_tax_id` | string | 客户 NIF，通常取 `water_meter.user_card` |
+| `schema_version` / `schemaVersion` | string | AGT schema 版本，**必须 2.x**（如 `"2.0"`）。传 `1.2` 会被 AGT 拒绝：`E99 — A versão 1.2 do schema já não é suportada` |
+
+> **注意**：实际发往 AGT `registarFactura` 的 `schemaVersion` 由后端组装。若仍报 1.2 不支持，请将后端默认值改为 `"2.0"`（前端 `issueAgtInvoice` 已默认附带 `schema_version: "2.0"`）。
 
 ### 2.2 数据来源（二选一）
 

@@ -58,7 +58,7 @@ Page({
     amount: '',
     show_1:false,
 
-    title_active: 1,
+    title_active: 3,
     hideTabs: false,
     demandNoteList: [],// 收费项目订单列表
     page_demandNote: 1,
@@ -81,8 +81,8 @@ Page({
    */
   onLoad(options) {
     this.getTrPriceList()
-    const titleActive = options.title_active ? Number(options.title_active) : 1
-    const hideTabs = titleActive === 4
+    const titleActive = options.title_active ? Number(options.title_active) : 3
+    const hideTabs = false
     this.setData({
       title_active: titleActive,
       hideTabs,

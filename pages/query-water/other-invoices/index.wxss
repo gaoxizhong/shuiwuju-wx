@@ -116,6 +116,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 20rpx;
 }
 .item__status__btn{
   width: auto;
@@ -130,9 +131,8 @@
 .search-content .list .icon-delete {
   width: 40rpx;
   height: 30rpx;
-  position: absolute;
-  right: 20rpx;
-  bottom: 30rpx;
+  flex-shrink: 0;
+  position: static;
 }
 .tabbox2{
   padding-bottom: 0;

@@ -126,6 +126,8 @@ const zh_lang = {
     agtSuccessTitle: 'AGT开票成功',
     agtFailTitle: 'AGT开票失败',
     agtIssueFail: '开票失败',
+    agtPending: '发票已提交，AGT校验未完成，请稍后重试',
+    agtRateLimit: 'AGT查询限流，请约2分钟后重试',
     agtInvoiceNo: '发票号',
     printAnyway: '仍打印',
     noDemandNoteId: '未获取到缴费单ID',
@@ -180,14 +182,14 @@ const zh_lang = {
         key: '/img/index/icon-other-invoices.png',
         title: '发票',
         tabberName: '发票',
-        url: '/pages/query-water/quick-factura/index',
+        url: '/pages/business-hall/index/index',
       },
       {
         auth: 'R',
         key: '/img/index/icon-business-hall.png',
         title: '发票/收据',
         tabberName: '发票/收据',
-        url: '/pages/query-water/other-invoices/index?title_active=1&docType=FR',
+        url: '/pages/business-hall/index/index',
       },
       {
         auth: 'R',
@@ -199,9 +201,9 @@ const zh_lang = {
       {
         auth: 'L',
         key: '/img/index/icon-search-pay.png',
-        title: '预交费',
-        tabberName: '预交费',
-        url: '/pages/query-water/other-invoices/index?title_active=4&docType=FA',
+        title: '形式发票',
+        tabberName: '形式发票',
+        url: '/pages/query-water/other-invoices/index?title_active=3',
       },
     ],
     wm_name: '用户名',
@@ -227,10 +229,10 @@ const zh_lang = {
       two: '管理员',
     },
     tabs_2: {
-      one: '发票',
+      one: '其他收费',
       tab_yjf: '预交费',
       baojia: '报价',
-      two: '缴费单',
+      two: '开票记录',
       tab_jl: '记录',
     },
     tabs_3: {
@@ -409,7 +411,7 @@ const zh_lang = {
       zjsc: '最近三次记录'
     }
   },
-  // 今日收费
+  // 金额汇总（原今日收费）
   todaySummary: {
     noEmpty: '暂无数据',
     todayNumber: '缴费单',
@@ -418,6 +420,10 @@ const zh_lang = {
     receipt: '收据',
     cash: '现金',
     pos: 'POS机',
+    transfer: '银行转账',
+    cheque: '支票',
+    ftStat: 'FT',
+    frStat: 'FR',
     itemWater: '用水量',
     itemMoney: '缴费金额',
     user_pay_demand_note_count: '收据数量',
@@ -426,8 +432,8 @@ const zh_lang = {
     pay_demand_note_total_money_sum: '收费总金额',
     num: '个',
     tabs_1: {
-      one: '用户',
-      two: '管理员',
+      one: '票据分类汇总',
+      two: '账号管理员',
     },
     other: '其他发票类',
   },
@@ -543,8 +549,9 @@ const zh_lang = {
     reading: '本次读数',
     last_water_1:'末次读数',
     total_water: '用水量',
-    total_money: '应缴金额',
+    total_money: '本次应缴金额',
     total_money_1: '应缴金额',
+    arrears_total: '总欠款额度',
     createDate: '查询时间',
     waterList: '照片',
 
@@ -577,6 +584,15 @@ const zh_lang = {
     invoice_not_open: '未开',
     invoice_opened: '已开',
     invoiceBtn: '发票',
+    ftBtn: 'FT',
+    frBtn: 'FR',
+    otherAmountBtn: '其他金额',
+    payThisBillSub: '为本催缴单缴费',
+    otherAmountSub: 'FT/FR',
+    submitPrintFt: '提交并打印 FT',
+    submitPrintFr: '提交并打印 FR',
+    submitPrintSub: '提交并打印',
+    payPopupTitle: '缴费信息',
   },
   // 设备维护（首页入口聚合页）
   equipmentMaintenance: {
@@ -634,7 +650,8 @@ const zh_lang = {
       {
         auth: 'L',
         key: '/img/index/icon-today-summary1.png',
-        title: '今日收费',
+        title: '收费记录',
+        tabberName: '收费记录',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },

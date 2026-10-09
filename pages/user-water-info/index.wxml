@@ -4,7 +4,7 @@
     <view class="info-label">
       {{lang.title}}
     </view>
-    <view class="info-content">
+    <scroll-view scroll-y class="info-content">
       <view class="info-item">
         <view class="info-item__label">{{lang.wm_no}}</view>
         <view class="info-item__info">{{form.wm_no}}</view>
@@ -33,6 +33,10 @@
         <view class="info-item__label">{{lang.total_money}}</view>
         <view class="info-item__info">{{form.price}}（KZ）</view>
       </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.arrears_total}}</view>
+        <view class="info-item__info">{{arrears_money_t}}（KZ）</view>
+      </view>
       <!-- 营业厅详情：展示发票状态 未开/已开 -->
       <view class="info-item" wx:if="{{source === 'business-hall'}}">
         <view class="info-item__label">{{lang.f_status}}</view>
@@ -44,63 +48,48 @@
         <view class="info-item__label">{{lang.waterList}}</view>
         <van-image width="200" height="140" fit="cover" src="{{form.image}}" />
       </view>
-
-    </view>
+    </scroll-view>
   </view>
   <!--
     按钮展示由 onLoad 中 status 字段驱动，各 source 下 status 含义：
     search-person（查表员）：
-      pay   → form.status === 1（待支付）
+      pay   → form.status === 1（待支付）→ 竖列 FT / FR / 其他金额
       print → form.status !== 1（已支付，待开收据）
       over  → form.receipt_status !== 1（收据已开，待打印缴费单）
     business-hall（营业厅）：
-      bank_pay   → form.status === 1（待银行支付）
+      bank_pay   → form.status === 1（待银行支付）→ 竖列 FT / FR / 其他金额
       print      → form.status !== 1（已支付，待开收据）
       print_two  → form.receipt_status !== 1（待补开收据）
+    ftfr_done（本页 FT/FR 缴费完成）：仅重打缴费单，不再显示旧「发票/打印收据」
     financial-manager（财务审核）：
       no  → form.status === 2（待审核，显示同意/不同意）
       yes → form.status !== 2（已审核，无按钮）
   -->
-  <view class="btn">
-    <!-- 查表员入口 source=search-person -->
-    <block wx:if="{{source === 'search-person'}}">
-      <!-- status=pay：待支付，弹出缴费方式选择 -->
-      <view wx:if="{{status === 'pay'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="showPayPopup">
-        {{btnName.pay}}
+  <view class="btn {{(source === 'search-person' || source === 'business-hall') && status !== 'ftfr_done' ? 'btn-vertical' : ''}}">
+    <!--
+      查表员 / 营业厅：
+      - 未支付：FT / FR / 其他金额（均可点）
+      - 已支付：同样三个按钮，FT/FR 置灰禁用，仅「其他金额」可点
+    -->
+    <block wx:if="{{(source === 'search-person' || source === 'business-hall') && status !== 'ftfr_done'}}">
+      <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
+        <view>{{lang.ftBtn}}</view>
+        <view class="btn-item-sub">{{lang.payThisBillSub}}</view>
       </view>
-      <!-- status=print：已支付，打印收据 -->
-      <view wx:if="{{status === 'print'}}" class="btn-item" style="border-right: 1px solid #ebeef5;" bindtap="printWaterInfo">
-        {{btnName.printOther}}
+      <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FR" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
+        <view>{{lang.frBtn}}</view>
+        <view class="btn-item-sub">{{lang.payThisBillSub}}</view>
       </view>
-      <!-- status=over 时占满整行；蓝牙打印缴费单，始终显示 -->
-      <view class="btn-item {{status === 'over' ? 'over' : ''}} {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}">
-        {{btnName.print}}
+      <view class="btn-item {{ftfrSubmitting ? 'btn-return' : ''}}" bindtap="{{ftfrSubmitting ? '' : 'showPayPopup'}}">
+        <view>{{lang.otherAmountBtn}}</view>
+        <view class="btn-item-sub">{{lang.otherAmountSub}}</view>
       </view>
     </block>
 
-    <!-- 营业厅：【发票】左侧 1/3，与右侧操作按钮并排 -->
-    <block wx:if="{{source === 'business-hall'}}">
-      <view class="btn-row-hall">
-        <!-- 未开：AGT 开票后打印缴费单；已开：直接打印，不禁用 -->
-        <view
-          class="btn-item btn-third {{is_Invoicereturn ? '' : 'btn-return'}}"
-          style="border-right: 1px solid #ebeef5;"
-          bindtap="handleInvoiceAction"
-        >
-          {{lang.invoiceBtn}}
-        </view>
-        <!-- status=bank_pay：待支付，占满剩余宽度 -->
-        <view wx:if="{{status === 'bank_pay'}}" class="btn-item btn-fill" bindtap="showPayPopup">
-          {{btnName.pay}}
-        </view>
-        <!-- status=print：已支付，开收据 -->
-        <view wx:if="{{status === 'print'}}" class="btn-item btn-fill" bindtap="businessHallPrint">
-          {{btnName.printOther}}
-        </view>
-        <!-- status=print_two：补开收据 -->
-        <view wx:if="{{status === 'print_two'}}" class="btn-item btn-fill" bindtap="businessHallPrint">
-          {{btnName.printOtherTwo}}
-        </view>
+    <!-- FT/FR 缴费完成：只保留重打缴费单 -->
+    <block wx:if="{{status === 'ftfr_done'}}">
+      <view class="btn-item over {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}">
+        {{btnName.print}}
       </view>
     </block>
 
@@ -115,9 +104,71 @@
       </view>
     </block>
   </view>
-  <!-- 缴费 -->
-  <van-popup show="{{ showPay }}" position="bottom" custom-style="height: 300px;" bind:close="onClosePay">
-    <van-picker id="pay" show-toolbar columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}"  bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
+
+  <!-- FT / FR 缴费弹窗 -->
+  <van-popup show="{{ showFtFrPay }}" position="bottom" round bind:close="onCloseFtFrPay" custom-style="max-height: 80%;">
+    <view class="ftfr-pay-popup">
+      <view class="ftfr-pay-title">{{lang.payPopupTitle}}</view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_no}}</view>
+        <view class="info-item__info">{{form.wm_no}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.wm_name}}</view>
+        <view class="info-item__info">{{form.meter.wm_name || form.wm_name}}</view>
+      </view>
+      <view class="info-item">
+        <view class="info-item__label">{{lang.total_money}}</view>
+        <view class="info-item__info">{{form.price}}（KZ）</view>
+      </view>
+      <van-cell-group>
+        <van-field
+          type="digit"
+          custom-style="flex-direction: column;"
+          title-width="100%"
+          readonly
+          required
+          label="{{lang.paid_total_money}}  (KZ)"
+          model:value="{{ paid_total_money }}"
+          placeholder="{{lang.paid_total_money}}"
+        />
+      </van-cell-group>
+      <van-cell-group>
+        <van-field
+          custom-style="flex-direction: column;"
+          title-width="100%"
+          readonly
+          required
+          error="{{pay_type_error}}"
+          label="{{lang.pay_type}}"
+          model:value="{{ pay_text }}"
+          placeholder="{{lang.pay_type}}"
+          bindtap="showPayWayPicker"
+        />
+      </van-cell-group>
+      <van-cell-group wx:if="{{ showCheck }}">
+        <van-field
+          type="digit"
+          custom-style="flex-direction: column;"
+          title-width="100%"
+          required
+          error="{{ check_num_error }}"
+          label="{{lang.cheque_number}}"
+          model:value="{{ cheque_number }}"
+          placeholder="{{lang.cheque_number}}"
+        />
+      </van-cell-group>
+      <view class="ftfr-pay-actions">
+        <van-button type="info" block bind:click="submitFtFrPay" loading="{{ ftfrSubmitting }}">
+          {{ payDocType === 'FR' ? lang.submitPrintFr : lang.submitPrintFt }}
+        </van-button>
+      </view>
+    </view>
+  </van-popup>
+
+  <!-- 支付方式选择（与 user-total-info 一致；z-index 高于缴费弹窗） -->
+  <van-popup show="{{ showPay }}" position="bottom" z-index="110" custom-style="height: 300px;" bind:close="onClosePay">
+    <van-picker id="pay" show-toolbar default-index="{{ totIndex }}" columns="{{ payStatusList }}" confirm-button-text="{{langDialog.confirmText}}" cancel-button-text="{{langDialog.cancelText}}" bind:confirm="onConfirmPay" bind:cancel="onClosePay" />
   </van-popup>
   <!-- 拒绝原因 -->
   <van-popup show="{{ showResult }}" position="bottom" bind:close="onCloseResult">

@@ -13,59 +13,65 @@
         <van-icon name="ellipsis" bind:tap="onShowPopup" />
       </view>
     </van-search>
-    <view class="tody-summary-total">
-      <view class="important-data" style="margin-right: 8rpx;">
-        <text>{{lang.todayNumber}}</text>
-        <view class="important-data-font">
-          {{today_bill_count}}（{{ lang.num }}）
-        </view>
-      </view>
-      <view class="important-data">
-        <text>{{lang.todayMoney}}</text>
-        <view class="important-data-font">
-          {{today_bill_amount}}（KZ）
-        </view>
-      </view>
-      <view class="general-data" style="margin-right: 8rpx;">
-        <text>{{lang.cash}}</text>
-        <view class="general-data-font">
-          <tex> {{today_cash_count}}（{{ lang.num }}） </tex>
-          <tex> {{today_cash_amount}}（KZ） </tex>
-        </view>
-      </view>
-      <view class="general-data">
-        <text>{{lang.pos}}</text>
-        <view class="general-data-font">
-          <tex> {{today_card_count}}（{{ lang.num }}） </tex>
-          <tex> {{today_card_amount}}（KZ） </tex>
-        </view>
-      </view>
-    </view>
-    <view class="search-content {{!list.length ? 'no-data' : ''}}">
-      <van-empty wx:if="{{!list.length}}" image="search" description="{{lang.noEmpty}}" />
-      <scroll-view wx:else scroll-y="true" class="tody-summary-list" scroll-with-animation lower-threshold="50" bindscrolltolower="addListData">
-        <block wx:for="{{list}}" wx:key="no">
-          <view class="tody-summary-item" data-index="{{index}}" bindtap="handleDetails">
-            <view class="item__title">
-              {{item.wm_no}} {{item.check_date}}
-            </view>
-
-            <view class="item__water">
-              {{lang.itemWater}}：{{ item.water }}（m³）
-            </view>
-
-            <view class="item__money">
-              {{lang.itemMoney}}：{{item.price}}（KZ）
-            </view>
-
-            <view class="item__status {{item.status === 1 ? 'item--no' : 'item--success'}}">
-              {{item.status_text}}
-            </view>
+    <scroll-view scroll-y class="summary-stat-scroll">
+      <view class="tody-summary-total">
+        <view class="important-data" style="margin-right: 8rpx;">
+          <text>{{lang.todayNumber}}</text>
+          <view class="important-data-font">
+            {{today_bill_count}}（{{ lang.num }}）
           </view>
-        </block>
-      </scroll-view>
-    </view>
-    <view class="loading">{{loading}}</view>
+        </view>
+        <view class="important-data">
+          <text>{{lang.todayMoney}}</text>
+          <view class="important-data-font">
+            {{today_bill_amount}}（KZ）
+          </view>
+        </view>
+        <view class="general-data" style="margin-right: 8rpx;">
+          <text>{{lang.cash}}</text>
+          <view class="general-data-font">
+            <text>{{today_cash_count}}（{{ lang.num }}）</text>
+            <text>{{today_cash_amount}}（KZ）</text>
+          </view>
+        </view>
+        <view class="general-data">
+          <text>{{lang.pos}}</text>
+          <view class="general-data-font">
+            <text>{{today_card_count}}（{{ lang.num }}）</text>
+            <text>{{today_card_amount}}（KZ）</text>
+          </view>
+        </view>
+        <view class="general-data" style="margin-right: 8rpx;">
+          <text>{{lang.transfer}}</text>
+          <view class="general-data-font">
+            <text>{{today_transfer_count}}（{{ lang.num }}）</text>
+            <text>{{today_transfer_amount}}（KZ）</text>
+          </view>
+        </view>
+        <view class="general-data">
+          <text>{{lang.cheque}}</text>
+          <view class="general-data-font">
+            <text>{{today_cheque_count}}（{{ lang.num }}）</text>
+            <text>{{today_cheque_amount}}（KZ）</text>
+          </view>
+        </view>
+        <view class="general-data" style="margin-right: 8rpx;">
+          <text>{{lang.ftStat}}</text>
+          <view class="general-data-font">
+            <text>{{today_ft_count}}（{{ lang.num }}）</text>
+            <text>{{today_ft_amount}}（KZ）</text>
+          </view>
+        </view>
+        <view class="general-data">
+          <text>{{lang.frStat}}</text>
+          <view class="general-data-font">
+            <text>{{today_fr_count}}（{{ lang.num }}）</text>
+            <text>{{today_fr_amount}}（KZ）</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <!-- 票据分类汇总：仅展示汇总数据，不展示列表记录 -->
   </view>
   <!-- 管理员  开始 -->
   <view class="page-box page-box-2" wx:if="{{ title_active == 2 }}">

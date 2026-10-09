@@ -110,7 +110,10 @@ export const deletePayDemandNote = (data) => {
  * @param {number} [data.poll=1]           是否轮询 AGT 开票状态：1 是，0 否
  * @param {number} [data.poll_times=5]     轮询最大次数
  * @param {number} [data.poll_interval=3]  轮询间隔（秒）
- * @param {string} [data.customer_tax_id]  客户 NIF，通常传 water_meter.user_card
+ * @param {string} [data.customer_tax_id]  买方税号（AGT customerTaxID / NIF）
+ *   取值优先级：接口入参 > water_meter.nif/user_card > 999999999（最终消费者占位）
+ * @param {string} [data.company_name]     买方名称（可选）；不传时默认用水表户名
+ * @param {string} [data.schema_version]   AGT schema 版本，须 2.x（如 "2.0"）；1.2 已不被 AGT 支持
  *
  * --- 抄表缴费单（user_pay_log）---
  * @param {string} data.source_type  固定为 user_pay_log
@@ -127,22 +130,139 @@ export const deletePayDemandNote = (data) => {
  *   source_type: 'user_pay_log',
  *   source_id: 123,
  *   customer_tax_id: '5601022917',
+ *   schema_version: '2.0',
  * })
  *
  * @example 其他收费开 FT（quick-factura 其他发票 Tab）
- * issueAgtInvoice({ document_type: 'FT', poll: 1, poll_times: 5, poll_interval: 3, source_type: 'user_pay_demand_note', source_id: 456, customer_tax_id: '5601022917' })
+ * issueAgtInvoice({ document_type: 'FT', poll: 1, poll_times: 5, poll_interval: 3, source_type: 'user_pay_demand_note', source_id: 456, customer_tax_id: '5601022917', schema_version: '2.0' })
  *
  * @example 收款后开 FR（user-parenType-info，亦可仅传 demand_note_id）
- * issueAgtInvoice({ document_type: 'FR', poll: 1, poll_times: 5, poll_interval: 3, source_type: 'user_pay_demand_note', source_id: 456, customer_tax_id: '5601022917' })
+ * issueAgtInvoice({ document_type: 'FR', poll: 1, poll_times: 5, poll_interval: 3, source_type: 'user_pay_demand_note', source_id: 456, customer_tax_id: '5601022917', schema_version: '2.0' })
  *
  * @returns {Promise} 成功时 data 含 AGT 返回信息，常见字段：documentNo / document_no / invoice_no
  */
 export const issueAgtInvoice = (data) => {
   const baseUrl = getApp().globalData.baseUrl
+  // AGT 2026 起要求 schemaVersion 2.x；1.2 会返回 E99
+  const payload = Object.assign({
+    schema_version: '2.0',
+    schemaVersion: '2.0',
+  }, data || {})
   return httpRequest({
     url: `${baseUrl}/api/wx/tr/tr_issue_agt_invoice`,
     method: 'POST',
-    data,
+    data: payload,
     timeout: 60000,
+  })
+}
+
+/**
+ * 查询 AGT 校验状态（obterEstado）
+ * POST /api/wx/tr/tr_obter_agt_estado
+ *
+ * 三选一传参（优先 request_id）：
+ * @param {string} [data.request_id]       AGT 提交后的 requestID
+ * @param {number} [data.user_pay_log_id]  缴费支付记录 ID
+ * @param {number} [data.submission_id]    本地 submission ID
+ *
+ * 关注返回：invoice_ok / validation_status(V|I|null) / rate_limited / document_no
+ */
+export const obterAgtEstado = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_obter_agt_estado`,
+    method: 'POST',
+    data: data || {},
+    timeout: 60000,
+  })
+}
+
+function delayMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function pickAgtRequestId(res) {
+  const root = res || {}
+  const data = root.data || root
+  const inner = data.data || data
+  const submission = inner.submission || {}
+  return String(
+    inner.request_id
+    || inner.requestID
+    || submission.request_id
+    || (inner.submit_result && inner.submit_result.data && inner.submit_result.data.requestID)
+    || ''
+  )
+}
+
+/** 测试：每 60s 查一次 tr_obter_agt_estado，不限制次数，直到 V 或 I */
+const AGT_OBTER_INTERVAL_SEC = 60
+
+/**
+ * 开票成功后用 request_id 调用 tr_obter_agt_estado 查询校验结果
+ * 仅 invoice_ok===true 或 validation_status===V 视为可打印
+ * 当前测试策略：不限制查询次数，每 60s 查一次，直到 V/I
+ *
+ * @param {Object} issueData 同 issueAgtInvoice（建议 poll:0，由前端查状态）
+ * @param {Object} [options]
+ * @param {number} [options.poll_interval=60]  轮询间隔（秒）
+ * @returns {Promise<{issueRes:any, estadoRes:any, finalRes:any, request_id:string}>}
+ */
+export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
+  const opts = options || {}
+  const pollIntervalMs = (opts.poll_interval != null
+    ? Number(opts.poll_interval)
+    : AGT_OBTER_INTERVAL_SEC) * 1000
+  const util = require('../utils/util')
+  // 开票阶段不让后端轮询 obterEstado，统一由前端按间隔查询
+  const issuePayload = Object.assign({}, issueData || {}, {
+    poll: 0,
+    poll_times: 0,
+  })
+
+  return issueAgtInvoice(issuePayload).then((issueRes) => {
+    // 开票接口已直接返回 V，无需再查
+    if (util.isAgtValidationPassed(issueRes)) {
+      return {
+        issueRes,
+        estadoRes: null,
+        finalRes: issueRes,
+        request_id: pickAgtRequestId(issueRes),
+      }
+    }
+    const requestId = pickAgtRequestId(issueRes)
+    if (!requestId) {
+      return {
+        issueRes,
+        estadoRes: null,
+        finalRes: issueRes,
+        request_id: '',
+      }
+    }
+
+    const runQuery = () => {
+      return obterAgtEstado({ request_id: requestId }).then((estadoRes) => {
+        if (util.isAgtValidationPassed(estadoRes)) {
+          return {
+            issueRes,
+            estadoRes,
+            finalRes: estadoRes,
+            request_id: requestId,
+          }
+        }
+        const { validationStatus, docStatus } = util.getAgtDocStatuses(estadoRes)
+        // 明确无效才停止；429 / null 继续每 60s 查询
+        if (validationStatus === 'I' || docStatus === 'I') {
+          return {
+            issueRes,
+            estadoRes,
+            finalRes: estadoRes,
+            request_id: requestId,
+          }
+        }
+        return delayMs(pollIntervalMs).then(() => runQuery())
+      })
+    }
+    return runQuery()
   })
 }

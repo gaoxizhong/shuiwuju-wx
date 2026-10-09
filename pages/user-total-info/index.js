@@ -2,7 +2,7 @@
 const app = getApp()
 console.log(new Date().getDay())
 let lang = app.globalData.lang
-const {wxAsyncApi,fmoney,judgmentData,handleTimeValue} = require('./../../utils/util')
+const {wxAsyncApi,fmoney,parseMoneyNumber,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 
@@ -20,6 +20,9 @@ const {
 import {
   handleBusinessHallBillReceipt
 } from './../../apis/business-hall'
+import {
+  issueAgtInvoiceThenQueryEstado
+} from './../../apis/admin'
 Page({
 
   /**
@@ -65,7 +68,9 @@ Page({
     user_payment_info: [], // 缴费记录下的缴费单信息
     total_water: 0, // 总用水量
     is_return: true,
-    invoice_code: '', // 发票号
+    invoice_code: '', // 发票号（AGT document_no）
+    agt_document_no: '',
+    agt_request_id: '',
     userInfo: {},
     password_layer: false,
     is_operatorLsPop: false,
@@ -86,6 +91,9 @@ Page({
     is_yujiao: '', // 'automatica' 预缴
     pay_log_id: '',
     price: 0,
+    fromOtherAmount: false,
+    payDocType: 'FT',
+    otherInvoices: lang.otherInvoices,
     automatica_title:`
 Factura Automatica`,
   },
@@ -115,6 +123,7 @@ Factura Automatica`,
       btnName: lang.btnName,
       langDialog: lang.dialog,
       bluetoolthDevice: lang.admin.bluetoolthDevice,
+      otherInvoices: lang.otherInvoices,
       price,
       wm_no,
       wm_name,
@@ -122,6 +131,7 @@ Factura Automatica`,
       status,
       userInfo,
       is_yujiao: options.is_yujiao,
+      fromOtherAmount: options.from === 'other-amount',
       // payStatusList: JSON.parse(payStatusList || '[]'),
     })
     this.getArrearsMoneySum(options.wm_no)
@@ -252,34 +262,51 @@ Factura Automatica`,
       that.getUserBluetoolthInfoData();
     } else {
       let date = handleTimeValue();
+      // 支付接口要求 total_money 为纯数字，禁止 "1,628.00" 这类千分位字符串
+      const total_money = parseMoneyNumber(that.data.paid_total_money)
+      if (!Number.isFinite(total_money)) {
+        that.setData({
+          no_error: true,
+        })
+        wx.showToast({
+          title: lang.message.formWarning,
+          icon: 'none',
+        })
+        return
+      }
       const params = {
         wm_no: that.data.wm_no,
-        total_money: that.data.paid_total_money,
+        total_money,
         pay_way: that.data.pay_way,
         pay_time: date.time,
-        discount_money: Number(arrears_money_sum * (that.data.discount_money / 100)).toFixed(2),
+        discount_money: Number(Number(arrears_money_sum * (that.data.discount_money / 100)).toFixed(2)),
         operator_name: that.data.operator_name
       }
       if(params.pay_way == 4){
         params.cheque_number = that.data.cheque_number;
       }
       new_payWater(params).then(res => {
+        // 支付成功：data.data.id = 缴费单支付记录ID，用于 AGT source_id
+        const pay_log_id = (res.data && res.data.data && res.data.data.id) || ''
         that.setData({
           status: 'print',
           showPay: false,
-          pay_success: true
-        })
-
-        this.setData({
+          pay_success: true,
+          password_layer: false,
           user_PayFees_info: res.data.data, // 缴费记录信息
           user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
           total_water: res.data.total_water, // 总用水量
           invoice_code: res.data.invoice_code,
-          pay_log_id: res.data.data.id
+          pay_log_id,
         })
         //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
-        that.getUserBluetoolthInfoData();
+        // 从「其他金额」进入：收款后先开 AGT FT/FR，再打印
+        if (that.data.fromOtherAmount && that.data.payDocType) {
+          that.issueAgtInvoiceThenPrint(pay_log_id)
+        } else {
+          that.getUserBluetoolthInfoData();
+        }
       }).catch((res) => {
         wx.showToast({
           title: res.desc,
@@ -289,6 +316,214 @@ Factura Automatica`,
     }
 
 
+  },
+  /**
+   * 从 tr_issue_agt_invoice 成功返回中解析发票号
+   * 优先 data.document_no / submission.document_no
+   */
+  parseAgtInvoiceResult(res) {
+    const root = res || {}
+    const data = root.data || root
+    const submission = data.submission || {}
+    let document_no = data.document_no
+      || data.documentNo
+      || submission.document_no
+      || submission.documentNo
+      || ''
+    if (!document_no) {
+      const statusData = (data.status_result && data.status_result.data) || {}
+      const list = statusData.documentStatusList || []
+      if (list[0] && (list[0].documentNo || list[0].document_no)) {
+        document_no = list[0].documentNo || list[0].document_no
+      }
+    }
+    if (!document_no) {
+      document_no = data.invoice_no
+        || data.invoiceNo
+        || (data.seriesFEResult && data.seriesFEResult.seriesCode)
+        || ''
+    }
+    const request_id = data.request_id
+      || data.requestID
+      || submission.request_id
+      || (data.submit_result && data.submit_result.data && data.submit_result.data.requestID)
+      || ''
+    return {
+      document_no: document_no ? String(document_no) : '',
+      request_id: request_id ? String(request_id) : '',
+      validation_status: data.validation_status || submission.validation_status || '',
+    }
+  },
+  extractAgtDocumentNo(agtData) {
+    return this.parseAgtInvoiceResult(agtData).document_no
+  },
+  // 必须以 AGT 校验通过（validation_status/documentStatus = V）才算开票成功并打印
+  isAgtIssueSuccess(res) {
+    return isAgtValidationPassed(res)
+  },
+  /**
+   * customer_tax_id：测试阶段固定 999999999
+   * company_name 可选：默认用水表户名
+   */
+  resolveAgtCustomerTaxId(meter, explicitTaxId) {
+    // TODO: 测试通过后恢复优先级：入参 > water_meter.nif/user_card > 999999999
+    return '999999999'
+  },
+  resolveAgtCompanyName(meter, explicitName) {
+    if (explicitName) return String(explicitName)
+    return (meter && (meter.wm_name || meter.user_name)) || this.data.wm_name || ''
+  },
+  buildAgtInvoiceParams(documentType, sourceId, options) {
+    const opts = options || {}
+    const meter = opts.meter || {}
+    const params = {
+      document_type: documentType || 'FT',
+      // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
+      poll: 0,
+      poll_times: 0,
+      poll_interval: 3,
+      source_type: 'user_pay_log',
+      // 缴费单支付记录ID：支付接口返回 data.data.id
+      source_id: sourceId || this.data.pay_log_id || (this.data.user_PayFees_info && this.data.user_PayFees_info.id),
+      customer_tax_id: this.resolveAgtCustomerTaxId(meter, opts.customer_tax_id),
+    }
+    const companyName = this.resolveAgtCompanyName(meter, opts.company_name)
+    if (companyName) {
+      params.company_name = companyName
+    }
+    return params
+  },
+  issueAgtInvoiceThenPrint(payLogId) {
+    const that = this
+    const otherInvoices = that.data.otherInvoices || lang.otherInvoices
+    const sourceId = payLogId || that.data.pay_log_id || (that.data.user_PayFees_info && that.data.user_PayFees_info.id)
+    if (!sourceId) {
+      wx.showToast({
+        title: otherInvoices.noDemandNoteId,
+        icon: 'none',
+      })
+      that.getUserBluetoolthInfoData()
+      return
+    }
+    wx.showLoading({
+      title: otherInvoices.agtLoading,
+      mask: true,
+    })
+    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams(that.data.payDocType, sourceId, {
+      company_name: that.data.wm_name,
+    })).then(({ issueRes, finalRes, request_id }) => {
+      wx.hideLoading()
+      if (!that.isAgtIssueSuccess(finalRes)) {
+        const res = finalRes || issueRes
+        let title = otherInvoices.agtIssueFail
+        if (isAgtValidationPending(res)) {
+          const errors = getAgtValidationErrors(res)
+          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+            || /limite|限流|excedido/i.test(String(e)))
+          title = is429
+            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+        } else {
+          const errors = getAgtValidationErrors(res)
+          const detail = errors.length ? errors.slice(0, 2).join('；') : ''
+          if (detail) {
+            title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
+          }
+        }
+        wx.showToast({
+          title,
+          icon: 'none',
+          duration: 3000,
+        })
+        return
+      }
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
+      if (documentNo) {
+        that.setData({
+          invoice_code: documentNo,
+          agt_document_no: documentNo,
+          agt_request_id: requestId || '',
+        })
+      }
+      wx.showToast({
+        title: otherInvoices.agtSuccessTitle,
+        icon: 'none',
+      })
+      that.getUserBluetoolthInfoData()
+    }).catch(() => {
+      wx.hideLoading()
+      wx.showToast({
+        title: otherInvoices.agtIssueFail,
+        icon: 'none',
+      })
+    })
+  },
+  // 校验缴费表单（实缴金额 / 支付方式 / 支票号）
+  validatePayForm() {
+    const paid_total_money = this.data.paid_total_money
+    const pay_text = this.data.pay_text
+    if (!paid_total_money) {
+      this.setData({
+        no_error: true,
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        duration: 2000,
+        icon: 'none',
+      })
+      return false
+    }
+    if (!pay_text) {
+      this.setData({
+        pay_type_error: true,
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        duration: 2000,
+        icon: 'none',
+      })
+      return false
+    }
+    if (this.data.pay_way == 4 && !this.data.cheque_number) {
+      this.setData({
+        check_num_error: true,
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        duration: 2000,
+        icon: 'none',
+      })
+      return false
+    }
+    return true
+  },
+  // 从「其他金额」进入：底部 FT / FR
+  onFtFrSubmit(e) {
+    if (!this.data.is_return) {
+      return
+    }
+    const payDocType = ((e.currentTarget.dataset.type) || 'FT').toUpperCase()
+    if (!this.validatePayForm()) {
+      return
+    }
+    this.setData({
+      payDocType,
+    })
+    if (payDocType === 'FR') {
+      // FR：先填操作员姓名（与原打印收据流程一致），再收款开票打印
+      this.setData({
+        print_type: 'receiptInfo',
+        password_layer: true,
+      })
+      return
+    }
+    // FT：直接收款开票打印
+    this.setData({
+      print_type: 'invoiceInfo',
+    })
+    this.new_onConfirmPay()
   },
 
   // 近n天
@@ -727,6 +962,15 @@ Factura Automatica`,
         sewage_rate_price = Number(sewage_rate_num * user_type_price).toFixed(2);
         consumo_price = Number(total_water * user_type_price).toFixed(2); // 非阶段计价 水费用展示
       }
+      // 发票号：优先 AGT document_no
+      const printInvoiceNo = that.data.agt_document_no || that.data.invoice_code || ''
+      const payDocType = (that.data.payDocType || '').toUpperCase()
+      let facturaTitle = 'Factura/Recibo'
+      if (payDocType === 'FT' || String(printInvoiceNo).indexOf('FT ') === 0) {
+        facturaTitle = 'Factura'
+      } else if (payDocType === 'FR' || String(printInvoiceNo).indexOf('FR ') === 0) {
+        facturaTitle = 'Factura/Recibo'
+      }
       // 发票
       let invoiceInfo_title = `EPASKS-E.P.`;
       let invoiceInfo_title_1 = `
@@ -737,7 +981,7 @@ Atendimento ao Cliente941648993
 Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
-Factura/Recibo N° ${that.data.invoice_code}
+${facturaTitle} N° ${printInvoiceNo}
 `;
 
       let invoiceInfo_CustomerData = `

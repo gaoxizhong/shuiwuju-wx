@@ -50,6 +50,12 @@
   border-top: 1px solid #ebeef5;
   padding: 20rpx;
 }
+.btn-item-sub {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: #fff;
+  line-height: 1.2;
+}
 
 .over {
   flex: 1;

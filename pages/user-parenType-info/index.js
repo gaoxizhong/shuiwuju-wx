@@ -4,7 +4,7 @@ console.log(new Date().getDay())
 
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
-const {wxAsyncApi,fmoney,judgmentData,handleTimeValue} = require('./../../utils/util')
+const {wxAsyncApi,fmoney,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 const {
@@ -19,7 +19,7 @@ const {
 } = require('./../../apis/water')
 const {
   payDemandNote,
-  issueAgtInvoice,
+  issueAgtInvoiceThenQueryEstado,
 } = require('./../../apis/admin')
 const GBK = require('./../../utils/gbk.min')
 Page({
@@ -239,34 +239,67 @@ Page({
     const itemInfo = that.data.itemInfo
     const water_meter = itemInfo.water_meter || {}
     const otherInvoices = that.data.otherInvoices || lang.otherInvoices
+    // customer_tax_id：测试阶段固定 999999999
+    // TODO: 测试通过后恢复优先级：入参 > water_meter.nif/user_card > 999999999
+    // company_name 可选：默认用水表户名
+    const companyName = water_meter.wm_name || water_meter.user_name || that.data.wm_name || ''
     const params = {
       document_type: 'FR',
-      poll: 1,
-      poll_times: 5,
+      // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
+      poll: 0,
+      poll_times: 0,
       poll_interval: 3,
       source_type: 'user_pay_demand_note',
       source_id: itemInfo.id,
+      customer_tax_id: '999999999',
     }
-    if (water_meter.user_card) {
-      params.customer_tax_id = water_meter.user_card
+    if (companyName) {
+      params.company_name = companyName
     }
     wx.showLoading({
       title: otherInvoices.agtLoading,
       mask: true,
     })
-    issueAgtInvoice(params).then(res => {
+    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    issueAgtInvoiceThenQueryEstado(params).then(({ issueRes, finalRes, request_id }) => {
       wx.hideLoading()
-      console.log('AGT开票成功', res)
-      const agtPayload = res.data || {}
-      const agtInner = agtPayload.data || agtPayload
-      const agt_document_no = that.extractAgtDocumentNo(agtInner)
+      if (!isAgtValidationPassed(finalRes)) {
+        const res = finalRes || issueRes
+        const errors = getAgtValidationErrors(res)
+        let failContent = ''
+        if (isAgtValidationPending(res)) {
+          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+            || /limite|限流|excedido/i.test(String(e)))
+          failContent = is429
+            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+          if (errors.length) {
+            failContent += `\n${errors.join('\n')}`
+          }
+        } else {
+          failContent = errors.length
+            ? errors.join('\n')
+            : that.formatAgtResultForDisplay(res)
+        }
+        wx.showModal({
+          title: otherInvoices.agtFailTitle,
+          content: failContent.slice(0, 500),
+          showCancel: false,
+          confirmText: lang.dialog.confirmText,
+        })
+        return
+      }
+      console.log('AGT开票成功', finalRes)
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
       that.setData({
-        agtInvoiceResult: agtPayload,
-        agt_document_no,
+        agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
+        agt_document_no: documentNo,
+        agt_request_id: requestId,
       })
       wx.showModal({
         title: otherInvoices.agtSuccessTitle,
-        content: that.formatAgtResultForDisplay(res) + (agt_document_no ? `\n\n${otherInvoices.agtInvoiceNo}: ${agt_document_no}` : ''),
+        content: that.formatAgtResultForDisplay(finalRes) + (documentNo ? `\n\n${otherInvoices.agtInvoiceNo}: ${documentNo}` : ''),
         showCancel: false,
         confirmText: lang.dialog.confirmText,
         success() {
@@ -279,13 +312,8 @@ Page({
       wx.showModal({
         title: otherInvoices.agtFailTitle,
         content: (e.desc || e.msg || that.formatAgtResultForDisplay(e)).slice(0, 500),
-        confirmText: otherInvoices.printAnyway,
-        cancelText: lang.dialog.cancelText,
-        success(modalRes) {
-          if (modalRes.confirm) {
-            that.getUserBluetoolthInfoData(that.handlePrint)
-          }
-        },
+        showCancel: false,
+        confirmText: lang.dialog.confirmText,
       })
     })
   },

@@ -128,6 +128,8 @@ const en_lang = {
     agtSuccessTitle: 'AGT emitido com sucesso',
     agtFailTitle: 'Falha na emissão AGT',
     agtIssueFail: 'Falha na emissão da fatura',
+    agtPending: 'Factura submetida, validação AGT pendente. Tente mais tarde',
+    agtRateLimit: 'Limite AGT excedido. Tente novamente em cerca de 2 minutos',
     agtInvoiceNo: 'N° da Factura',
     printAnyway: 'Imprimir mesmo assim',
     noDemandNoteId: 'ID do recibo não obtido',
@@ -182,14 +184,14 @@ const en_lang = {
         key: '/img/index/icon-other-invoices1.png',
         title: 'Factura',
         tabberName: 'Factura',
-        url: '/pages/query-water/quick-factura/index',
+        url: '/pages/business-hall/index/index',
       },
       {
         auth: 'R',
         key: '/img/index/icon-business-hall1.png',
         title: 'Factura/Recibo',
         tabberName: 'Factura/Recibo',
-        url: '/pages/query-water/other-invoices/index?title_active=1&docType=FR',
+        url: '/pages/business-hall/index/index',
       },
       {
         auth: 'R',
@@ -201,9 +203,9 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/icon-search-pay1.png',
-        title: 'Adiantamento',
-        tabberName: 'Factura Automatica',
-        url: '/pages/query-water/other-invoices/index?title_active=4&docType=FA',
+        title: 'Factura pro-forma',
+        tabberName: 'Factura pro-forma',
+        url: '/pages/query-water/other-invoices/index?title_active=3',
       },
     ],
     wm_name: 'Nome do Cliente',
@@ -229,10 +231,10 @@ const en_lang = {
       two: 'Pagamento',
     },
     tabs_2: {
-      one: 'Factura',
+      one: 'Outras cobranças',
       tab_yjf: 'Factura Automatica',
       baojia: 'Factura pro-forma',
-      two: 'Factura Simplificada',
+      two: 'Registo de faturação',
       tab_jl: 'Registos',
 
     },
@@ -412,7 +414,7 @@ const en_lang = {
       zjsc: 'Ultimos três registros'
     }
   },
-  // 今日收费
+  // 金额汇总（原今日收费）
   todaySummary: {
     noEmpty: 'Dados não disponíveis ainda',
     todayNumber: 'Factura Simplificada',
@@ -421,6 +423,10 @@ const en_lang = {
     receipt: 'Recibo',
     cash: 'Numerário',
     pos: 'Cartão Multicaixa',
+    transfer: 'Transferência Bancária',
+    cheque: 'Cheque',
+    ftStat: 'FT',
+    frStat: 'FR',
     itemWater: 'Consumo de água',
     itemMoney: 'Valor a pagar',
     user_pay_demand_note_count: 'Factura Simplificada',
@@ -429,8 +435,8 @@ const en_lang = {
     pay_demand_note_total_money_sum: 'Valor a pagar',
     num: 'un',
     tabs_1: {
-      one: 'Utilizador',
-      two: 'Administrador',
+      one: 'Resumo por tipo de documento',
+      two: 'Administrador de conta',
     },
     other: 'Outros itens carregados',
 
@@ -546,8 +552,9 @@ const en_lang = {
     reading: 'Leitura do contador',
     last_water_1: 'Leitura O último',
     total_water: 'Consumo de água',
-    total_money: 'Valor da factura',
+    total_money: 'Valor a pagar deste aviso',
     total_money_1: 'Valor da factura',
+    arrears_total: 'Valor total em dívida',
     createDate: 'Date',
     waterList: 'Fotos',
 
@@ -580,6 +587,15 @@ const en_lang = {
     invoice_not_open: 'Não emitido',
     invoice_opened: 'Emitido',
     invoiceBtn: 'Factura',
+    ftBtn: 'FT',
+    frBtn: 'FR',
+    otherAmountBtn: 'Outro valor',
+    payThisBillSub: 'Pagar este aviso de cobrança',
+    otherAmountSub: 'FT/FR',
+    submitPrintFt: 'Submeter e imprimir FT',
+    submitPrintFr: 'Submeter e imprimir FR',
+    submitPrintSub: 'Submeter e imprimir',
+    payPopupTitle: 'Informação de pagamento',
   },
   // 设备维护（首页入口聚合页）
   equipmentMaintenance: {
@@ -637,8 +653,8 @@ const en_lang = {
       {
         auth: 'L',
         key: '/img/index/icon-today-summary1.png',
-        title: 'Relatorios',
-        tabberName: 'Relatorios',
+        title: 'Registo de cobrança',
+        tabberName: 'Registo de cobrança',
         color: '#58cab4',
         url: '/pages/query-water/today-summary/index'
       },

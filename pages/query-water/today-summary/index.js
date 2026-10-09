@@ -34,6 +34,14 @@ Page({
     today_cash_amount: 0,
     today_card_count: 0,
     today_card_amount: 0,
+    today_transfer_count: 0,
+    today_transfer_amount: 0,
+    today_cheque_count: 0,
+    today_cheque_amount: 0,
+    today_ft_count: 0,
+    today_ft_amount: 0,
+    today_fr_count: 0,
+    today_fr_amount: 0,
 
     startTime: '',
     endTime: '',
@@ -251,14 +259,31 @@ Page({
       })
       const list = that.data.list.concat(data)
       const total = res.data.list.total
-      const {
-        today_bill_count,  //用户数据 缴费单数
-        today_bill_amount,
-        today_cash_count,
-        today_cash_amount,
-        today_card_count,
-        today_card_amount,
-      } = res.data.stas
+      const stas = res.data.stas || {}
+      const pickStat = (...keys) => {
+        for (let i = 0; i < keys.length; i++) {
+          const v = stas[keys[i]]
+          if (v !== undefined && v !== null && v !== '') {
+            return v
+          }
+        }
+        return 0
+      }
+      const today_bill_count = pickStat('today_bill_count')
+      const today_bill_amount = pickStat('today_bill_amount')
+      const today_cash_count = pickStat('today_cash_count')
+      const today_cash_amount = pickStat('today_cash_amount')
+      const today_card_count = pickStat('today_card_count')
+      const today_card_amount = pickStat('today_card_amount')
+      // 银行转账 / 支票 / FT / FR（兼容多种后端字段名）
+      const today_transfer_count = pickStat('today_transfer_count', 'today_bank_count', 'today_transfer_accounts_count')
+      const today_transfer_amount = pickStat('today_transfer_amount', 'today_bank_amount', 'today_transfer_accounts_amount')
+      const today_cheque_count = pickStat('today_cheque_count', 'today_check_count')
+      const today_cheque_amount = pickStat('today_cheque_amount', 'today_check_amount')
+      const today_ft_count = pickStat('today_ft_count', 'ft_count', 'today_agt_ft_count')
+      const today_ft_amount = pickStat('today_ft_amount', 'ft_amount', 'today_agt_ft_amount')
+      const today_fr_count = pickStat('today_fr_count', 'fr_count', 'today_agt_fr_count')
+      const today_fr_amount = pickStat('today_fr_amount', 'fr_amount', 'today_agt_fr_amount')
       const payWayList = res.data.pay_way.map(i => ({
         text: i.title,
         key: i.key
@@ -275,9 +300,17 @@ Page({
         today_bill_count,
         today_cash_count,
         today_card_count,
-        today_card_amount: fmoney(Number(today_card_amount),2),
-        today_bill_amount: fmoney(Number(today_bill_amount),2),
-        today_cash_amount: fmoney(Number(today_cash_amount),2),
+        today_card_amount: fmoney(Number(today_card_amount), 2),
+        today_bill_amount: fmoney(Number(today_bill_amount), 2),
+        today_cash_amount: fmoney(Number(today_cash_amount), 2),
+        today_transfer_count,
+        today_transfer_amount: fmoney(Number(today_transfer_amount), 2),
+        today_cheque_count,
+        today_cheque_amount: fmoney(Number(today_cheque_amount), 2),
+        today_ft_count,
+        today_ft_amount: fmoney(Number(today_ft_amount), 2),
+        today_fr_count,
+        today_fr_amount: fmoney(Number(today_fr_amount), 2),
         payWayList,
         statusList,
         isScroll: true,

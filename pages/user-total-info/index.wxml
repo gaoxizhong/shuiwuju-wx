@@ -43,8 +43,18 @@
     </view>
   </view>
   <view class="btn">
-    <block>
-
+    <!-- 从缴费详情「其他金额」进入：FT / FR -->
+    <block wx:if="{{fromOtherAmount}}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" data-type="FT" bindtap="{{is_return ? 'onFtFrSubmit' : ''}}">
+        <view>{{lang.ftBtn}}</view>
+        <view class="btn-item-sub">{{lang.submitPrintSub}}</view>
+      </view>
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" data-type="FR" bindtap="{{is_return ? 'onFtFrSubmit' : ''}}">
+        <view>{{lang.frBtn}}</view>
+        <view class="btn-item-sub">{{lang.submitPrintSub}}</view>
+      </view>
+    </block>
+    <block wx:else>
       <!-- 缴费员---打印收据 开始。 抄表员search-person不显示此按钮--> 
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{source != 'search-person'}}">
         {{btnName.printOther}}
