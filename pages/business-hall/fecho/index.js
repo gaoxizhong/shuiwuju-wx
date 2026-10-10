@@ -208,7 +208,7 @@ Numerário:         ${infoData.invoice_cash} kZ
 Cartão Multicaixa: ${infoData.invoice_pos} kZ
 Transferência:     ${infoData.invoice_transfer_accounts} kZ
 --------------------------------
-Outros itens carregados:
+Outros itens de cobrança:
 Recibo:            ${infoData.demand_note_receipt_num} Un
 Facura/recibo:     ${infoData.demand_note_invoice_num} Un
 Numerário:         ${infoData.demand_note_cash_sum} kZ 

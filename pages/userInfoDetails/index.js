@@ -267,7 +267,7 @@ Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Factura Simplificada N° ${selectPrintInfo.order_no}
+Aviso de cobrança N° ${selectPrintInfo.order_no}
 
 Dados do Cliente`;
       let printInfo_Comsumidor = `

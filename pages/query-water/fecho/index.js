@@ -179,7 +179,7 @@ Page({
     let date = this.handleTimeValue();
     let printInfo_title =`EPASKS-E.P.`;
     let printInfo = `
-Factura Simplificada:     ${infoData.user_payment_count} Un
+Aviso de cobrança:     ${infoData.user_payment_count} Un
 Valor a pagar:      ${infoData.price_sum} kZ
 --------------------------------
 recibo:                  ${infoData.receipt_num} Un

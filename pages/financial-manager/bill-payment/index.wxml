@@ -5,7 +5,7 @@
 </view>
 
 <view class="container business-hall">
-<!-- 缴费单记录 -->
+<!-- 催缴单记录 -->
 <view class="page-box" wx:if="{{ title_active == 1 }}">
   <view class="search-bar">
     <van-search value="{{ select_value }}" placeholder="{{lang.searchBar}}" readonly="{{type_seach == 'type'?true:false}}" bindtap="{{type_seach == 'type'?'onShowTypePopup':''}}" bind:change="handleChangeInput"  bind:blur="handleReading"  bind:search="handleSearchInfo" use-action-slot>
