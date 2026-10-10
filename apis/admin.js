@@ -195,17 +195,19 @@ function pickAgtRequestId(res) {
   )
 }
 
-/** 测试：每 60s 查一次 tr_obter_agt_estado，不限制次数，直到 V 或 I */
-const AGT_OBTER_INTERVAL_SEC = 60
+/** 开票后查状态：最多 3 次，间隔 30s；仍 pending（如 E92）则返回，由页面决定「仍打印」 */
+const AGT_OBTER_INTERVAL_SEC = 30
+const AGT_OBTER_MAX_TIMES = 3
 
 /**
  * 开票成功后用 request_id 调用 tr_obter_agt_estado 查询校验结果
- * 仅 invoice_ok===true 或 validation_status===V 视为可打印
- * 当前测试策略：不限制查询次数，每 60s 查一次，直到 V/I
+ * 仅 invoice_ok===true 或 validation_status===V 视为校验通过
+ * 默认最多查 max_poll_times 次；仍 pending（如 E92）则返回，由页面决定「仍打印」
  *
  * @param {Object} issueData 同 issueAgtInvoice（建议 poll:0，由前端查状态）
  * @param {Object} [options]
- * @param {number} [options.poll_interval=60]  轮询间隔（秒）
+ * @param {number} [options.poll_interval=30]  轮询间隔（秒）
+ * @param {number} [options.max_poll_times=3] 最多查询次数（0=开票后不查）
  * @returns {Promise<{issueRes:any, estadoRes:any, finalRes:any, request_id:string}>}
  */
 export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
@@ -213,8 +215,11 @@ export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
   const pollIntervalMs = (opts.poll_interval != null
     ? Number(opts.poll_interval)
     : AGT_OBTER_INTERVAL_SEC) * 1000
+  const maxPollTimes = opts.max_poll_times != null
+    ? Number(opts.max_poll_times)
+    : AGT_OBTER_MAX_TIMES
   const util = require('../utils/util')
-  // 开票阶段不让后端轮询 obterEstado，统一由前端按间隔查询
+  // 开票阶段不让后端轮询 obterEstado，统一由前端查询
   const issuePayload = Object.assign({}, issueData || {}, {
     poll: 0,
     poll_times: 0,
@@ -231,17 +236,19 @@ export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
       }
     }
     const requestId = pickAgtRequestId(issueRes)
-    if (!requestId) {
+    if (!requestId || maxPollTimes <= 0) {
       return {
         issueRes,
         estadoRes: null,
         finalRes: issueRes,
-        request_id: '',
+        request_id: requestId || '',
       }
     }
 
+    let pollCount = 0
     const runQuery = () => {
       return obterAgtEstado({ request_id: requestId }).then((estadoRes) => {
+        pollCount += 1
         if (util.isAgtValidationPassed(estadoRes)) {
           return {
             issueRes,
@@ -251,8 +258,8 @@ export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
           }
         }
         const { validationStatus, docStatus } = util.getAgtDocStatuses(estadoRes)
-        // 明确无效才停止；429 / null 继续每 60s 查询
-        if (validationStatus === 'I' || docStatus === 'I') {
+        // 明确无效，或已达查询上限（含 E92 处理中）→ 返回给页面
+        if (validationStatus === 'I' || docStatus === 'I' || pollCount >= maxPollTimes) {
           return {
             issueRes,
             estadoRes,

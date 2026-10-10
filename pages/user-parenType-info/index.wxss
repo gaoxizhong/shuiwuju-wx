@@ -51,6 +51,33 @@
   padding: 20rpx;
 }
 
+.btn-vertical {
+  flex-direction: column;
+  width: 100%;
+  padding: 16rpx 20rpx calc(16rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.btn-vertical .btn-item {
+  width: 100%;
+  flex: none;
+  border-top: none;
+  border-radius: 8rpx;
+  padding: 8rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.btn-vertical .btn-item:last-child {
+  margin-bottom: 0;
+}
+
+.btn-item-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #fff;
+  line-height: 1.2;
+}
+
 .over {
   flex: 1;
 }

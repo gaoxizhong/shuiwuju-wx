@@ -409,49 +409,71 @@ Factura Automatica`,
       title: otherInvoices.agtLoading,
       mask: true,
     })
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams(that.data.payDocType, sourceId, {
       company_name: that.data.wm_name,
     })).then(({ issueRes, finalRes, request_id }) => {
       wx.hideLoading()
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        const res = finalRes || issueRes
-        let title = otherInvoices.agtIssueFail
-        if (isAgtValidationPending(res)) {
-          const errors = getAgtValidationErrors(res)
-          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
-            || /limite|限流|excedido/i.test(String(e)))
-          title = is429
-            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
-            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
-        } else {
-          const errors = getAgtValidationErrors(res)
-          const detail = errors.length ? errors.slice(0, 2).join('；') : ''
-          if (detail) {
-            title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
-          }
-        }
-        wx.showToast({
-          title,
-          icon: 'none',
-          duration: 3000,
-        })
-        return
-      }
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      if (documentNo) {
+      const saveDocAndPrint = () => {
+        if (documentNo) {
+          that.setData({
+            invoice_code: documentNo,
+            agt_document_no: documentNo,
+            agt_request_id: requestId || '',
+          })
+        }
+        that.getUserBluetoolthInfoData()
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        saveDocAndPrint()
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
         that.setData({
           invoice_code: documentNo,
           agt_document_no: documentNo,
           agt_request_id: requestId || '',
         })
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              saveDocAndPrint()
+            }
+          },
+        })
+        return
+      }
+      let title = otherInvoices.agtIssueFail
+      if (isAgtValidationPending(res)) {
+        const errors = getAgtValidationErrors(res)
+        const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+          || /limite|限流|excedido/i.test(String(e)))
+        title = is429
+          ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+          : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+      } else {
+        const errors = getAgtValidationErrors(res)
+        const detail = errors.length ? errors.slice(0, 2).join('；') : ''
+        if (detail) {
+          title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
+        }
       }
       wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
+        title,
         icon: 'none',
+        duration: 3000,
       })
-      that.getUserBluetoolthInfoData()
     }).catch(() => {
       wx.hideLoading()
       wx.showToast({

@@ -84,6 +84,7 @@ Page({
     paid_total_money: 0,
     agt_document_no: '',
     agtInvoiceResult: null,
+    payDocType: 'FR',
   },
 
   /**
@@ -243,9 +244,10 @@ Page({
     // TODO: 测试通过后恢复优先级：入参 > water_meter.nif/user_card > 999999999
     // company_name 可选：默认用水表户名
     const companyName = water_meter.wm_name || water_meter.user_name || that.data.wm_name || ''
+    const payDocType = (that.data.payDocType || 'FR').toUpperCase()
     const params = {
-      document_type: 'FR',
-      // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
+      document_type: payDocType === 'FT' ? 'FT' : 'FR',
+      // 状态查询改由前端 tr_obter_agt_estado（最多 3 次 / 间隔 30s）
       poll: 0,
       poll_times: 0,
       poll_interval: 3,
@@ -260,51 +262,71 @@ Page({
       title: otherInvoices.agtLoading,
       mask: true,
     })
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(params).then(({ issueRes, finalRes, request_id }) => {
       wx.hideLoading()
-      if (!isAgtValidationPassed(finalRes)) {
-        const res = finalRes || issueRes
-        const errors = getAgtValidationErrors(res)
-        let failContent = ''
-        if (isAgtValidationPending(res)) {
-          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
-            || /limite|限流|excedido/i.test(String(e)))
-          failContent = is429
-            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
-            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
-          if (errors.length) {
-            failContent += `\n${errors.join('\n')}`
-          }
-        } else {
-          failContent = errors.length
-            ? errors.join('\n')
-            : that.formatAgtResultForDisplay(res)
-        }
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
+      const doPrint = () => {
+        that.setData({
+          agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
+          agt_document_no: documentNo,
+          agt_request_id: requestId,
+        })
+        that.getUserBluetoolthInfoData(that.handlePrint)
+      }
+      if (isAgtValidationPassed(finalRes)) {
         wx.showModal({
-          title: otherInvoices.agtFailTitle,
-          content: failContent.slice(0, 500),
+          title: otherInvoices.agtSuccessTitle,
+          content: that.formatAgtResultForDisplay(finalRes) + (documentNo ? `\n\n${otherInvoices.agtInvoiceNo}: ${documentNo}` : ''),
           showCancel: false,
           confirmText: lang.dialog.confirmText,
+          success() {
+            doPrint()
+          },
         })
         return
       }
-      console.log('AGT开票成功', finalRes)
-      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
-      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.setData({
-        agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
-        agt_document_no: documentNo,
-        agt_request_id: requestId,
-      })
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.setData({
+          agt_document_no: documentNo,
+          agt_request_id: requestId,
+        })
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: lang.dialog.cancelText,
+          success: (r) => {
+            if (r.confirm) {
+              doPrint()
+            }
+          },
+        })
+        return
+      }
+      const errors = getAgtValidationErrors(res)
+      let failContent = ''
+      if (isAgtValidationPending(res)) {
+        const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+          || /limite|限流|excedido/i.test(String(e)))
+        failContent = is429
+          ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+          : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+        if (errors.length) {
+          failContent += `\n${errors.join('\n')}`
+        }
+      } else {
+        failContent = errors.length
+          ? errors.join('\n')
+          : that.formatAgtResultForDisplay(res)
+      }
       wx.showModal({
-        title: otherInvoices.agtSuccessTitle,
-        content: that.formatAgtResultForDisplay(finalRes) + (documentNo ? `\n\n${otherInvoices.agtInvoiceNo}: ${documentNo}` : ''),
+        title: otherInvoices.agtFailTitle,
+        content: failContent.slice(0, 500),
         showCancel: false,
         confirmText: lang.dialog.confirmText,
-        success() {
-          that.getUserBluetoolthInfoData(that.handlePrint)
-        },
       })
     }).catch(e => {
       wx.hideLoading()
@@ -349,7 +371,12 @@ Page({
           itemInfo,
         })
         if (itemInfo.type == 1) {
-          that.issueAgtInvoiceThenPrint()
+          const payDocType = (that.data.payDocType || '').toUpperCase()
+          if (payDocType === 'RC') {
+            that.getUserBluetoolthInfoData(that.handlePrint)
+          } else {
+            that.issueAgtInvoiceThenPrint()
+          }
         } else {
           that.getUserBluetoolthInfoData(that.handlePrint);
         }
@@ -416,6 +443,21 @@ Page({
       no_error: false
     })
   },
+  // FT / FR / RC
+  openDocPay(e) {
+    if (!this.data.is_return) {
+      return
+    }
+    const payDocType = (e.currentTarget.dataset.type || 'FR').toUpperCase()
+    // 已支付：仅 RC 可重打收据；形式发票(type=2)三个都可点
+    if (this.data.itemInfo.pay_status == 1 && this.data.itemInfo.type != 2 && payDocType !== 'RC') {
+      return
+    }
+    this.setData({
+      payDocType
+    })
+    this.printWaterInfo()
+  },
   // 收据按钮 ---  收银员
   printWaterInfo() {
     const dayTime = handleTimeValue().dayTime;
@@ -435,24 +477,11 @@ Page({
     }
     const pay_text = this.data.pay_text;
     if(this.data.itemInfo.type == 1){
-      if (!pay_text) {
-        this.setData({
-          pay_type_error: true
-        })
-        wx.showToast({
-          title: lang.message.formWarning,
-          duration: 2000,
-          icon: 'none'
-        })
-        return
-      }
-      const pay_way = this.data.pay_way;
-      const cheque_number = this.data.cheque_number;
-  
-      if (pay_way == 4) {
-        if(!cheque_number || cheque_number == ''){
+      // 已支付重打收据：跳过支付方式校验
+      if (this.data.itemInfo.pay_status != 1) {
+        if (!pay_text) {
           this.setData({
-            check_num_error: true
+            pay_type_error: true
           })
           wx.showToast({
             title: lang.message.formWarning,
@@ -460,6 +489,22 @@ Page({
             icon: 'none'
           })
           return
+        }
+        const pay_way = this.data.pay_way;
+        const cheque_number = this.data.cheque_number;
+  
+        if (pay_way == 4) {
+          if(!cheque_number || cheque_number == ''){
+            this.setData({
+              check_num_error: true
+            })
+            wx.showToast({
+              title: lang.message.formWarning,
+              duration: 2000,
+              icon: 'none'
+            })
+            return
+          }
         }
       }
       this.setData({

@@ -51,27 +51,13 @@
     </scroll-view>
   </view>
   <!--
-    按钮展示由 onLoad 中 status 字段驱动，各 source 下 status 含义：
-    search-person（查表员）：
-      pay   → form.status === 1（待支付）→ 竖列 FT / FR / 其他金额
-      print → form.status !== 1（已支付，待开收据）
-      over  → form.receipt_status !== 1（收据已开，待打印缴费单）
-    business-hall（营业厅）：
-      bank_pay   → form.status === 1（待银行支付）→ 竖列 FT / FR / 其他金额
-      print      → form.status !== 1（已支付，待开收据）
-      print_two  → form.receipt_status !== 1（待补开收据）
-    ftfr_done（本页 FT/FR 缴费完成）：仅重打缴费单，不再显示旧「发票/打印收据」
-    financial-manager（财务审核）：
-      no  → form.status === 2（待审核，显示同意/不同意）
-      yes → form.status !== 2（已审核，无按钮）
+    查表员 / 营业厅：始终展示 FT / FR / 其他金额
+    - 未支付：三个都可点
+    - 已支付 / FT·FR 完成后：前两个置灰，仅「其他金额」可点
+    financial-manager：同意 / 不同意
   -->
-  <view class="btn {{(source === 'search-person' || source === 'business-hall') && status !== 'ftfr_done' ? 'btn-vertical' : ''}}">
-    <!--
-      查表员 / 营业厅：
-      - 未支付：FT / FR / 其他金额（均可点）
-      - 已支付：同样三个按钮，FT/FR 置灰禁用，仅「其他金额」可点
-    -->
-    <block wx:if="{{(source === 'search-person' || source === 'business-hall') && status !== 'ftfr_done'}}">
+  <view class="btn {{(source === 'search-person' || source === 'business-hall') ? 'btn-vertical' : ''}}">
+    <block wx:if="{{source === 'search-person' || source === 'business-hall'}}">
       <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
         <view>{{lang.ftBtn}}</view>
         <view class="btn-item-sub">{{lang.payThisBillSub}}</view>
@@ -83,13 +69,6 @@
       <view class="btn-item {{ftfrSubmitting ? 'btn-return' : ''}}" bindtap="{{ftfrSubmitting ? '' : 'showPayPopup'}}">
         <view>{{lang.otherAmountBtn}}</view>
         <view class="btn-item-sub">{{lang.otherAmountSub}}</view>
-      </view>
-    </block>
-
-    <!-- FT/FR 缴费完成：只保留重打缴费单 -->
-    <block wx:if="{{status === 'ftfr_done'}}">
-      <view class="btn-item over {{is_Printreturn ? '' : 'btn-return'}}" bindtap="{{is_Printreturn ? 'blueToothPrint' : ''}}">
-        {{btnName.print}}
       </view>
     </block>
 

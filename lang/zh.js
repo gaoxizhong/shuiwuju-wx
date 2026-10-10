@@ -127,9 +127,11 @@ const zh_lang = {
     agtFailTitle: 'AGT开票失败',
     agtIssueFail: '开票失败',
     agtPending: '发票已提交，AGT校验未完成，请稍后重试',
+    agtPendingPrintConfirm: 'AGT校验尚未完成，是否使用已登记发票号先打印？',
     agtRateLimit: 'AGT查询限流，请约2分钟后重试',
     agtInvoiceNo: '发票号',
     printAnyway: '仍打印',
+    printAnywayBtn: '仍打印',
     noDemandNoteId: '未获取到缴费单ID',
     createDemandNoteFail: '创建缴费单失败',
     printError: '打印失败',
@@ -170,6 +172,7 @@ const zh_lang = {
     money: '缴费金额',
     saldo: '账户余额',
     createTime: '查询时间',
+    payTime: '缴费日期',
     registerTime: '注册时间',
     iconSearch: '用户查询',
     iconFunc: '功能',
@@ -247,6 +250,12 @@ const zh_lang = {
     cheque_number: '支票编码',
     placeholderName: '请输入姓名',
     paid_total_money: '实缴金额',
+    ftBtn: 'FT',
+    frBtn: 'FR',
+    rcBtn: 'RC',
+    ftSub: '发票',
+    frSub: '发票/收据二合一',
+    rcSub: '收据',
   },
   // 新增用户
   addAccount: {
@@ -517,7 +526,7 @@ const zh_lang = {
     jbsj: '交班时间',
     actual_amount:'实收金额',
     other: '其他发票类',
-
+    noData: '暂无交班数据',
   },
   // 用户水表信息修改
   waterInfoEdit: {
@@ -581,6 +590,10 @@ const zh_lang = {
     wkj_status: '未开具',
     ykj_status: '已开具',
     yqx_status: '已取消',
+    queryStatus: '查询状态',
+    agtValid: 'AGT已通过',
+    agtInvalid: 'AGT未通过',
+    agtPendingStatus: 'AGT校验中',
     invoice_not_open: '未开',
     invoice_opened: '已开',
     invoiceBtn: '发票',

@@ -29,7 +29,7 @@
             {{lang.saldo}}：{{item.after_arrears_money}} (KZ)
           </view>
           <view class="item__money">
-            {{lang.createTime}}：{{item.created_at}}
+            {{lang.payTime}}：{{item.pay_time}}
           </view>
           <image src="../../../img/index/icon-copy.png" mode="widthFix" class="icon-copy" data-index="{{index}}" data-item="{{item}}" catchtap="clickDelete" />
         </view>
@@ -63,7 +63,7 @@
             {{lang.saldo}}：{{item.after_arrears_money}} (KZ)
           </view>
           <view class="item__money">
-            {{lang.createTime}}：{{item.updated_at}}
+            {{lang.payTime}}：{{item.pay_time}}
           </view>
         </view>
       </block>

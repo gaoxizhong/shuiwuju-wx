@@ -169,6 +169,13 @@ Page({
     }
     // 获取打印信息
     let infoData = this.data.infoData;
+    if (!infoData) {
+      wx.showToast({
+        title: this.data.lang.noData || getApp().globalData.lang.message.noMoreEmpty,
+        icon: 'none',
+      })
+      return
+    }
     let date = this.handleTimeValue();
     let printInfo_title =`EPASKS-E.P.`;
     let printInfo = `

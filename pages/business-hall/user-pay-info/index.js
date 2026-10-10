@@ -3,7 +3,8 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
 const {
-  wxAsyncApi,judgmentData,handleTimeValue,fmoney
+  wxAsyncApi,judgmentData,handleTimeValue,fmoney,
+  getAgtInvoiceData,isAgtValidationPassed,isAgtValidationPending,mergeAgtDocumentNo
 } = require('../../../utils/util')
 const {
   getUserPayItemDetail,
@@ -12,6 +13,9 @@ const {
   setInvoiceStatus,
   addUserPayLogNumber
 } = require('../../../apis/water')
+import {
+  obterAgtEstado,
+} from '../../../apis/admin'
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
 Page({
@@ -67,6 +71,8 @@ Page({
     cancelList: [], // 取消原因
     selt_cancel_status: {}, // 选中的取消原因
     status_type: '',
+    agt_status_text: '',
+    querying_agt: false,
   },
 
   /**
@@ -148,6 +154,112 @@ Page({
         title: res.desc,
         icon: 'none',
         duration: 2000
+      })
+    })
+  },
+
+  /** 按缴费记录 ID 查询 AGT 校验状态 */
+  queryAgtStatus() {
+    const that = this
+    const lang = that.data.lang
+    const oiLang = getApp().globalData.lang.otherInvoices || {}
+    const payLogId = (that.data.item && that.data.item.id) || (that.data.from && that.data.from.id)
+    if (!payLogId) {
+      wx.showToast({
+        title: getApp().globalData.lang.message.noMoreEmpty,
+        icon: 'none',
+      })
+      return
+    }
+    if (that.data.querying_agt) {
+      return
+    }
+    that.setData({ querying_agt: true })
+    wx.showLoading({
+      title: oiLang.agtLoading || lang.agtPendingStatus,
+      mask: true,
+    })
+    obterAgtEstado({
+      user_pay_log_id: payLogId,
+    }).then((res) => {
+      wx.hideLoading()
+      that.setData({ querying_agt: false })
+      const data = getAgtInvoiceData(res)
+      const documentNo = mergeAgtDocumentNo(null, res)
+      if (data.rate_limited === true) {
+        that.setData({ agt_status_text: lang.agtPendingStatus })
+        wx.showToast({
+          title: oiLang.agtRateLimit || lang.agtPendingStatus,
+          icon: 'none',
+          duration: 3000,
+        })
+        return
+      }
+      if (isAgtValidationPassed(res)) {
+        const item = Object.assign({}, that.data.item || {}, {
+          invoice_status: 2,
+        })
+        const patch = {
+          item,
+          agt_status_text: lang.agtValid,
+        }
+        if (documentNo) {
+          patch.invoice_code = documentNo
+        }
+        that.setData(patch)
+        wx.showToast({
+          title: documentNo
+            ? `${oiLang.agtSuccessTitle || lang.agtValid}: ${documentNo}`
+            : (oiLang.agtSuccessTitle || lang.agtValid),
+          icon: 'none',
+          duration: 3000,
+        })
+        return
+      }
+      if (isAgtValidationPending(res)) {
+        that.setData({ agt_status_text: lang.agtPendingStatus })
+        const pendingDocNo = documentNo || that.data.invoice_code || ''
+        if (pendingDocNo) {
+          if (pendingDocNo && !that.data.invoice_code) {
+            that.setData({ invoice_code: pendingDocNo })
+          }
+          wx.showModal({
+            title: oiLang.agtPending || lang.agtPendingStatus,
+            content: `${oiLang.agtPendingPrintConfirm || ''}\n${oiLang.agtInvoiceNo || ''}: ${pendingDocNo}`,
+            confirmText: oiLang.printAnywayBtn || oiLang.printAnyway || lang.queryStatus,
+            cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+            success: (r) => {
+              if (r.confirm) {
+                that.setData({
+                  print_type: 'invoiceInfo',
+                  invoice_code: pendingDocNo,
+                })
+                that.getUserBluetoolthInfoData(that.handlePrint)
+              }
+            },
+          })
+          return
+        }
+        wx.showToast({
+          title: oiLang.agtPending || lang.agtPendingStatus,
+          icon: 'none',
+          duration: 3000,
+        })
+        return
+      }
+      that.setData({ agt_status_text: lang.agtInvalid })
+      wx.showToast({
+        title: oiLang.agtFailTitle || lang.agtInvalid,
+        icon: 'none',
+        duration: 3000,
+      })
+    }).catch((err) => {
+      wx.hideLoading()
+      that.setData({ querying_agt: false })
+      wx.showToast({
+        title: (err && err.desc) || oiLang.agtIssueFail || lang.agtInvalid,
+        icon: 'none',
+        duration: 3000,
       })
     })
   },

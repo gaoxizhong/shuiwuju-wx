@@ -406,22 +406,43 @@ Page({
       that.showAgtIssueFailToast(res)
       resetInvoiceBtn(0)
     }
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；E92/pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams('FT')).then(({ issueRes, finalRes, request_id }) => {
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        handleIssueFail(finalRes || issueRes)
-        return
-      }
       wx.hideLoading()
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.updateInvoiceIssued(documentNo, requestId)
-      wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
-        icon: 'none',
-      })
-      that.blueToothPrint(documentNo)
-      resetInvoiceBtn()
+      const doPrint = (no) => {
+        that.updateInvoiceIssued(no || documentNo, requestId)
+        that.blueToothPrint(no || documentNo)
+        resetInvoiceBtn()
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        doPrint(documentNo)
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.updateInvoiceIssued(documentNo, requestId)
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              doPrint(documentNo)
+            } else {
+              resetInvoiceBtn(0)
+            }
+          },
+        })
+        return
+      }
+      handleIssueFail(res)
     }).catch((err) => {
       handleIssueFail(err)
     })
@@ -574,11 +595,11 @@ Page({
         title: lang.message.success,
         icon: 'none',
       })
-      // 注意：不要立刻把 status 设为 print，否则会切到旧的「发票/打印收据」按钮
-      // 保持当前待付态至 AGT+打印结束，再进入 ftfr_done
+      // 收款成功：FT/FR 置灰，底部仍保持三个按钮
       that.setData({
         pay_log_id,
         showFtFrPay: false,
+        ftFrDisabled: true,
       })
       that.issueAgtInvoiceAfterPay(pay_log_id)
     }).catch((res) => {
@@ -612,41 +633,61 @@ Page({
       mask: true,
     })
     const finishSuccess = () => {
-      // 仅 AGT 校验通过后：进入完成态，才允许打印
+      // 开票结束：仍展示三按钮，仅 FT/FR 置灰
       that.setData({
         ftfrSubmitting: false,
         showFtFrPay: false,
-        status: 'ftfr_done',
+        ftFrDisabled: true,
       })
     }
     const finishFail = () => {
-      // 收款可能已成功，但开票未通过：不打印、不提示成功
+      // 收款可能已成功：同样保持三按钮，FT/FR 置灰
       that.setData({
         ftfrSubmitting: false,
         showFtFrPay: false,
-        status: 'ftfr_done',
+        ftFrDisabled: true,
       })
     }
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(
       that.buildAgtInvoiceParams(that.data.payDocType, paymentId)
     ).then(({ issueRes, finalRes, request_id }) => {
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        wx.hideLoading()
-        that.showAgtIssueFailToast(finalRes || issueRes)
-        finishFail()
-        return
-      }
       wx.hideLoading()
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.updateInvoiceIssued(documentNo, requestId)
-      wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
-        icon: 'none',
-      })
-      finishSuccess()
-      that.blueToothPrint(documentNo)
+      const doPrint = () => {
+        that.updateInvoiceIssued(documentNo, requestId)
+        finishSuccess()
+        that.blueToothPrint(documentNo)
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        doPrint()
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.updateInvoiceIssued(documentNo, requestId)
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              doPrint()
+            } else {
+              finishFail()
+            }
+          },
+        })
+        return
+      }
+      that.showAgtIssueFailToast(res)
+      finishFail()
     }).catch((err) => {
       wx.hideLoading()
       that.showAgtIssueFailToast(err)
