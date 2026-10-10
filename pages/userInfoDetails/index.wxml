@@ -71,7 +71,7 @@
             <view class="{{ title_active == 1? 'active' : '' }}" data-index="1" bind:tap="onChange">{{lang.jfd}}</view>
             <view class="{{ title_active == 2? 'active' : '' }}" data-index="2" bind:tap="onChange">{{lang.jfjl}}</view>
           </view>
-          <!-- 缴费单（抄表记录） -->
+          <!-- 催缴单（抄表记录） -->
           <view wx:if="{{title_active == 1}}">
             <block wx:for="{{form.user_payment_list}}" wx:key="index">
               <view class="item" data-index="{{index}}">

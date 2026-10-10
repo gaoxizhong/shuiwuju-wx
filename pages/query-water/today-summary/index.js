@@ -194,8 +194,24 @@ Page({
     getAdminList(params).then(res => {
 
       const data = res.data.data || [];
-      data.forEach(ele =>{
+      const pickNum = (obj, ...keys) => {
+        for (let i = 0; i < keys.length; i++) {
+          const v = obj[keys[i]]
+          if (v !== undefined && v !== null && v !== '') {
+            return Number(v) || 0
+          }
+        }
+        return 0
+      }
+      data.forEach(ele => {
         ele.total_price = Number(ele.total_price)
+        // 支付方式金额（兼容多种后端字段名）
+        ele.cash_amount_display = fmoney(pickNum(ele, 'cash_sum', 'cash_amount', 'cash'), 2)
+        ele.pos_amount_display = fmoney(pickNum(ele, 'pos_sum', 'card_sum', 'card_amount', 'pos_amount'), 2)
+        ele.transfer_amount_display = fmoney(pickNum(ele,
+          'transfer_accounts_sum', 'transfer_sum', 'transfer_amount', 'bank_amount'), 2)
+        ele.cheque_amount_display = fmoney(pickNum(ele,
+          'cheque_sum', 'check_sum', 'cheque_amount', 'check_amount'), 2)
       })
       const adminList = this.data.adminList.concat(data)
       console.log(adminList)
@@ -374,13 +390,13 @@ Page({
       printInfo: `
 ${stime} —— ${etime}
 --------------------------------
-Factura Simplificada: ${tj.a} Un / ${tj.a1} kZ
+Aviso de cobrança: ${tj.a} Un / ${tj.a1} kZ
 Facura/recibo:     ${tj.b} Un
 Recibo:            ${tj.c} Un
 Total:             ${tj.d} kZ 
 --------------------------------
-Outros itens carregados:
-Factura Simplificada: ${tj.e} Un 
+Outros itens de cobrança:
+Aviso de cobrança: ${tj.e} Un 
 Facura/recibo:     ${tj.f} Un
 Valor total:       ${tj.g} kZ 
 Valor a pagar:     ${tj.h} kZ

@@ -795,7 +795,7 @@ Page({
         : ''
       const printInvoiceNo = agtDocNo || localOrderNo || ''
       const payDocType = (that.data.payDocType || '').toUpperCase()
-      let facturaTitle = 'Factura Simplificada'
+      let facturaTitle = 'Aviso de cobrança'
       if (agtDocNo) {
         if (payDocType === 'FR' || String(agtDocNo).indexOf('FR ') === 0) {
           facturaTitle = 'Factura/Recibo'

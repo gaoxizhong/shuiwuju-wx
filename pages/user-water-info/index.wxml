@@ -37,13 +37,6 @@
         <view class="info-item__label">{{lang.arrears_total}}</view>
         <view class="info-item__info">{{arrears_money_t}}（KZ）</view>
       </view>
-      <!-- 营业厅详情：展示发票状态 未开/已开 -->
-      <view class="info-item" wx:if="{{source === 'business-hall'}}">
-        <view class="info-item__label">{{lang.f_status}}</view>
-        <view class="info-item__info">
-          <text style="color: {{invoiceIssued ? '#07c160' : '#ff0000'}};">{{invoiceStatusText}}</text>
-        </view>
-      </view>
       <view class="info-item">
         <view class="info-item__label">{{lang.waterList}}</view>
         <van-image width="200" height="140" fit="cover" src="{{form.image}}" />

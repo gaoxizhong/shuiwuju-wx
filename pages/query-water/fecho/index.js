@@ -135,7 +135,7 @@ Page({
     this.setData({
       printInfo_title: `EPASKS-E.P.`,
       printInfo: `
-Factura Simplificada:     ${infoData.user_payment_count} Un
+Aviso de cobrança:     ${infoData.user_payment_count} Un
 Valor a pagar:      ${infoData.price_sum} kZ
 --------------------------------
 recibo:                  ${infoData.receipt_num} Un

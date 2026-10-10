@@ -51,7 +51,7 @@ const zh_lang = {
     printOther: '打印收据',
     printOther1: '打印收据',
     printOtherTwo: '补开收据',
-    print: '打印缴费单',
+    print: '打印催缴单',
     invoice: '打印发票',
     invoice_1: '打印发票',
     agree: '同意',
@@ -101,9 +101,9 @@ const zh_lang = {
   quickFactura: {
     pageTitle: 'Factura (FT)',
     userInfo: '个人信息',
-    tabPaymentBill: '缴费单',
+    tabPaymentBill: '催缴单',
     tabOtherInvoice: '其他发票',
-    demandNoteList: '缴费单列表',
+    demandNoteList: '催缴单列表',
     createSection: '新建发票',
     invoicePrinted: '已开票',
     invoiceFrIssued: '已开发票/收据',
@@ -132,8 +132,8 @@ const zh_lang = {
     agtInvoiceNo: '发票号',
     printAnyway: '仍打印',
     printAnywayBtn: '仍打印',
-    noDemandNoteId: '未获取到缴费单ID',
-    createDemandNoteFail: '创建缴费单失败',
+    noDemandNoteId: '未获取到催缴单ID',
+    createDemandNoteFail: '创建催缴单失败',
     printError: '打印失败',
     facturaNoLabel: '发票号',
     reciboNoLabel: '收据号',
@@ -423,7 +423,7 @@ const zh_lang = {
   // 金额汇总（原今日收费）
   todaySummary: {
     noEmpty: '暂无数据',
-    todayNumber: '缴费单',
+    todayNumber: '催缴单',
     todayMoney: '金额总数',
     invoice: '发票',
     receipt: '收据',
@@ -444,7 +444,7 @@ const zh_lang = {
       one: '票据分类汇总',
       two: '账号管理员',
     },
-    other: '其他发票类',
+    other: '其他收费项',
   },
   // 上报维修
   reportRepair: {
@@ -510,7 +510,7 @@ const zh_lang = {
   },
   //交班人
   fecho: {
-    title: '缴费单',
+    title: '催缴单',
     receipt: '收据',
     invoice: '发票',
     price: '金额',
@@ -525,7 +525,7 @@ const zh_lang = {
     submit: '提交打印',
     jbsj: '交班时间',
     actual_amount:'实收金额',
-    other: '其他发票类',
+    other: '其他收费项',
     noData: '暂无交班数据',
   },
   // 用户水表信息修改
@@ -551,7 +551,7 @@ const zh_lang = {
   // 用水详情
   userWaterInfo: {
     title: '用水信息',
-    title_1: '缴费单',
+    title_1: '催缴单',
     wm_name: '用户名',
     wm_no: '水表号',
     last_water: '初始读数',
@@ -572,12 +572,12 @@ const zh_lang = {
     placeholderName: '请输入姓名',
     cheque_number: '支票编码',
     jfjl: '缴费记录',
-    jfd: '缴费单',
+    jfd: '催缴单',
     jmed: '减免总额',
     jfzje: '缴费总金额',
-    jfdzje: '缴费单总金额',
+    jfdzje: '催缴单总金额',
     qfzje: '欠费总额',
-    jfdsl: '缴费单数量',
+    jfdsl: '催缴单数量',
     zhye: '账户余额',
     num: 'un',
     wm_name: '用户名',
