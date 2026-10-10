@@ -176,3 +176,6 @@
   color: #fff;
   background-color: #1989fa;
 }
+.query-status-btn {
+  flex-shrink: 0;
+}

@@ -2,6 +2,10 @@
 const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
+const {
+  arrEncoderCopy,
+} = require('./../../../utils/print')
+
 
 const {
   wxAsyncApi,fmoney
@@ -85,7 +89,7 @@ Page({
     const hideTabs = false
     this.setData({
       title_active: titleActive,
-      hideTabs,
+      hideTabs
     })
     if (titleActive === 4) {
       this.getFbSelectWmList()
@@ -114,7 +118,7 @@ Page({
       btnName: lang.btnName,
       searchStatusList: lang.searchStatusList, 
       typeStatusList: lang.typeStatusList, 
-      bluetoolthDevice: lang.admin.bluetoolthDevice,
+      bluetoolthDevice: lang.admin.bluetoolthDevice
     })
   },
   // 页面tab
@@ -135,8 +139,7 @@ Page({
       yjfwmList: [],
       selectIndex: 0,
       agt_document_no: '',
-      agtInvoiceResult: null,
-
+      agtInvoiceResult: null
     })
     if(title_active == 2){
       // 收费项目列表
@@ -146,17 +149,7 @@ Page({
       this.getFbSelectWmList();
     }
   },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
-  },
+
   //获取当前时间
   handleTimeValue(date) {
     const _date = date ? new Date(date) : new Date()
@@ -289,7 +282,7 @@ Page({
   handleChangeInput(e) {
     const value = e.detail
     this.setData({
-      select_value: value,
+      select_value: value
     })
   },
 
@@ -311,7 +304,7 @@ handleSearchInfo() {
     radioList: [],
     selectradio_info: null,
     radio: '',
-    yjfwmList: [],
+    yjfwmList: []
   })
   if(this.data.title_active == 4){
     this.getFbSelectWmList();
@@ -329,7 +322,7 @@ handleSearchInfo() {
       page: this.data.page,
     }
     wx.showLoading({
-      title: lang.message.loading,
+      title: lang.message.loading
     })
     isAdmin(p).then(res => {
       wx.hideLoading();
@@ -346,7 +339,7 @@ handleSearchInfo() {
           })
         }
         this.setData({
-          radioList,
+          radioList
         })
       }else{
         wx.showToast({
@@ -378,7 +371,7 @@ handleSearchInfo() {
       p.wm_no = selectradio_info.wm_no;
     }
     wx.showLoading({
-      title: `${lang.message.loading}...`,
+      title: `${lang.message.loading}...`
     });
     getDemandNoteList(p).then( res =>{
       wx.hideLoading();
@@ -409,7 +402,7 @@ handleSearchInfo() {
   onClose_dialog(){
     if(!this.data.radio){
       this.setData({ 
-        dialog_show: false,
+        dialog_show: false
        });
       return
     }else{
@@ -423,7 +416,7 @@ handleSearchInfo() {
   onChange(event) {
     console.log(event)
     this.setData({
-      radio: event.detail,
+      radio: event.detail
     });
   },
   // 选择用户弹窗  确认按钮
@@ -433,12 +426,12 @@ handleSearchInfo() {
     this.setData({
       selectradio_info: event.currentTarget.dataset.item,
       select_value: event.currentTarget.dataset.item.wm_no,
-      radio: name,
+      radio: name
     });
     if(this.data.title_active == 2){
       this.setData({
         page_demandNote: 1,
-        demandNoteList: [],
+        demandNoteList: []
       })
       // 收费项目列表
       this.getDemandNoteList();
@@ -465,7 +458,7 @@ handleSearchInfo() {
       typeLabel_1,
       seltTypeInfo: e.detail.value,
       showCheck: true,
-      amount: e.detail.value.amount?fmoney(Number(e.detail.value.amount),2) : '',
+      amount: e.detail.value.amount?fmoney(Number(e.detail.value.amount),2) : ''
     })
     that.onCloseType1Select();
     if(that.data.selectradio_info){
@@ -516,18 +509,18 @@ handleSearchInfo() {
     }
     wx.showLoading({
       title: lang.message.loading,
-      mask: true,
+      mask: true
     })
     createPayDemandNote(p).then( res =>{
       wx.hideLoading()
       if(p.type == 2){
         that.setData({
-          proforma_number: res.data.data.proforma_number,
+          proforma_number: res.data.data.proforma_number
         })
       } else {
         that.setData({
           agt_document_no: '',
-          agtInvoiceResult: null,
+          agtInvoiceResult: null
         })
       }
       that.getPrint(selectradio_info, total_money);
@@ -536,7 +529,7 @@ handleSearchInfo() {
       console.log(e)
       wx.showToast({
         title: e.desc || that.data.otherInvoices.createDemandNoteFail,
-        icon: 'none',
+        icon: 'none'
       })
     })
     // this.getPrint(selectradio_info,total_money);
@@ -559,7 +552,8 @@ Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
 Dados do Cliente
-
+`;
+    let invoiceInfo_CustomerData = `
 Comsumidor: ${selectradio_info.wm_name}
 N° do Cliente: ${selectradio_info.user_code}
 N° Contador: ${selectradio_info.wm_no}
@@ -580,187 +574,120 @@ Processado por programaválido n31.1/AGT20
 ${date.time}
 
 `;
-    let invoiceInfo_data = {
-      "name": "printMix", //普通纸混合打印
-      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-      "data": [
-        {
-          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": encodeURIComponent(invoiceInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-          "concentration": 15, //打印浓度1~20，默认15
-          "align": 1, //0左对齐，1居中对齐，2右对齐；
-          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-          "isDoubleHeight": true, //是否倍高；
-          "isDoubleWidth": false, //是否倍宽；
-          "isUnderLine": 0, //是否加下划线；
-          "isBold": true, //是否加粗；
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(invoiceInfo_title_1) + "\n",
-          "concentration": 15,
-          "align": 0,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(invoiceInfo_valores) + "\n",
-          "concentration": 15,
-          "align": 1,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-      ]
-    };
-    this.handlePrint(invoiceInfo_data);
+    this.setData({
+      proForm_title: `
+Factura-proforma
+
+`,
+      invoiceInfo_title,
+      invoiceInfo_title_1,
+      invoiceInfo_CustomerData,
+      invoiceInfo_valores,
+    })
+    this.blueToothPrint();
   },
 
-  // 开始打印
-  handlePrint(p) {
-    let that = this;
-    let print_type = that.data.print_type;
-    let title_active = this.data.title_active;
-    let is_zhuanhuan = this.data.is_zhuanhuan;
-
-    // GBK.encode({string}) 解码GBK为一个字节数组
-    let info = [];
-    if(title_active == 1 || is_zhuanhuan){
-      that.SendControlCommand(p);
-    }
-    if(title_active == 3 && !is_zhuanhuan){
-      let proForm_title = `Factura-proforma
-`;
-      let proForm_title_data = {
-        "printType": 0,
-        "text": encodeURIComponent(proForm_title) + "\n", 
-        "concentration": 15,
-        "align": 1,
-        "lineHeight": 28,
-        "isDoubleHeight": true, //是否倍高；
-        "isDoubleWidth": false, //是否倍宽；
-        "isUnderLine": 0, //是否加下划线；
-        "isBold": true, //是否加粗；
-      }
-      p.data.splice(0, 0, proForm_title_data);
-      that.SendControlCommand(p);
-    }
-    
-   
-  },
-   // 新打印机打印方法
-   SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
       wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
           if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: 'none',
+            })
           }
         }
       })
       return
-    }else{
-      that.SendControlCommand_1(printData);
     }
+    wx.showToast({
+      title: lang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
   },
-  SendControlCommand_1(printData) {
+
+  handlePrint(p) {
     let that = this;
-    wx.showLoading({
-      title: ''
-    });
-
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
+    let title_active = this.data.title_active;
+    let is_zhuanhuan = this.data.is_zhuanhuan;
+    let info = [];
+    if (title_active == 1 || is_zhuanhuan) {
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
     }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
+    if (title_active == 3 && !is_zhuanhuan) {
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.proForm_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+    if (!info.length) {
+      return
+    }
+    console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
       },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-        }else{
-          wx.showToast({
-            title: that.data.otherInvoices.printError,
-            icon: "none",
-            duration: 3000,
-          })
-        }
-        that.getOrderInfo(res.data.data[0].orderId);
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
+      onFail(res) {
+        console.log('打印失败...', res)
       }
-    })
-  },
-  getOrderInfo(id){
-
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-        
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
-      }
-    })
+    });
   },
   addListData() {
     if(this.data.title_active == 2){
       let page_demandNote = this.data.page_demandNote;
       page_demandNote += 1;
       this.setData({
-        page_demandNote,
+        page_demandNote
       })
       this.getDemandNoteList();
     }
@@ -771,12 +698,12 @@ ${date.time}
         page += 1
         this.setData({
           page,
-          loading: `${lang.message.loading}...`,
+          loading: `${lang.message.loading}...`
         })
         this.getFbSelectWmList()
       } else {
         this.setData({
-          loading: lang.message.noMoreEmpty,
+          loading: lang.message.noMoreEmpty
         })
       }
     }
@@ -788,10 +715,10 @@ ${date.time}
     const item = e.currentTarget.dataset.item;
     const data = JSON.stringify(item)
     wxAsyncApi('navigateTo', {
-      url: `/pages/user-parenType-info/index?data=${data}&source=business-hall`,
+      url: `/pages/user-parenType-info/index?data=${data}&source=business-hall`
     }).then(res => {
       wx.setNavigationBarTitle({
-        title: lang.message.info,
+        title: lang.message.info
       })
     })
   },
@@ -813,29 +740,29 @@ ${date.time}
         }
         wx.showLoading({
           title: lang.message.loading,
-          mask: true,
+          mask: true
         })
         deletePayDemandNote({
-          demand_note_id: item.id,
+          demand_note_id: item.id
         }).then(() => {
           wx.hideLoading()
           const demandNoteList = this.data.demandNoteList
           demandNoteList.splice(index, 1)
           this.setData({
-            demandNoteList,
+            demandNoteList
           })
           wx.showToast({
             title: lang.message.success,
-            icon: 'success',
+            icon: 'success'
           })
         }).catch(err => {
           wx.hideLoading()
           wx.showToast({
             title: err.desc || lang.message.fail,
-            icon: 'none',
+            icon: 'none'
           })
         })
-      },
+      }
     })
   },
   // 点击形式发票一键转换
@@ -866,7 +793,7 @@ ${date.time}
         })
         wx.showToast({
           title: lang.message.success,
-          icon: 'success',
+          icon: 'success'
         })
         that.getPrint(selectradio_info, amount);
       }else{
@@ -902,7 +829,7 @@ ${date.time}
         total,
         per_page,
         yjfwmList,
-        isScroll: true,
+        isScroll: true
       })
       if (!yjfwmList.length) {
         wx.showToast({
@@ -923,7 +850,7 @@ ${date.time}
     console.log(e)
     let item = e.currentTarget.dataset.item;
     wx.navigateTo({
-      url: '/pages/query-water/adiantamento-water/index?item=' + JSON.stringify(item),
+      url: '/pages/query-water/adiantamento-water/index?item=' + JSON.stringify(item)
     })
   },
 // 点击搜索框右侧 ... 
@@ -959,5 +886,5 @@ ${date.time}
     this.onClosePopup()
     // 收费项目记录列表
     this.getDemandNoteList();
-  }
+  },
 })

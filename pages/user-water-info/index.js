@@ -3,6 +3,9 @@ const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {
+  arrEncoderCopy,
+} = require('./../../utils/print')
+const {
   wxAsyncApi,fmoney,parseMoneyNumber,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId
 } = require('./../../utils/util')
 const {
@@ -406,22 +409,43 @@ Page({
       that.showAgtIssueFailToast(res)
       resetInvoiceBtn(0)
     }
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；E92/pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams('FT')).then(({ issueRes, finalRes, request_id }) => {
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        handleIssueFail(finalRes || issueRes)
-        return
-      }
       wx.hideLoading()
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.updateInvoiceIssued(documentNo, requestId)
-      wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
-        icon: 'none',
-      })
-      that.blueToothPrint(documentNo)
-      resetInvoiceBtn()
+      const doPrint = (no) => {
+        that.updateInvoiceIssued(no || documentNo, requestId)
+        that.blueToothPrint(no || documentNo)
+        resetInvoiceBtn()
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        doPrint(documentNo)
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.updateInvoiceIssued(documentNo, requestId)
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              doPrint(documentNo)
+            } else {
+              resetInvoiceBtn(0)
+            }
+          },
+        })
+        return
+      }
+      handleIssueFail(res)
     }).catch((err) => {
       handleIssueFail(err)
     })
@@ -574,11 +598,11 @@ Page({
         title: lang.message.success,
         icon: 'none',
       })
-      // 注意：不要立刻把 status 设为 print，否则会切到旧的「发票/打印收据」按钮
-      // 保持当前待付态至 AGT+打印结束，再进入 ftfr_done
+      // 收款成功：FT/FR 置灰，底部仍保持三个按钮
       that.setData({
         pay_log_id,
         showFtFrPay: false,
+        ftFrDisabled: true,
       })
       that.issueAgtInvoiceAfterPay(pay_log_id)
     }).catch((res) => {
@@ -612,41 +636,61 @@ Page({
       mask: true,
     })
     const finishSuccess = () => {
-      // 仅 AGT 校验通过后：进入完成态，才允许打印
+      // 开票结束：仍展示三按钮，仅 FT/FR 置灰
       that.setData({
         ftfrSubmitting: false,
         showFtFrPay: false,
-        status: 'ftfr_done',
+        ftFrDisabled: true,
       })
     }
     const finishFail = () => {
-      // 收款可能已成功，但开票未通过：不打印、不提示成功
+      // 收款可能已成功：同样保持三按钮，FT/FR 置灰
       that.setData({
         ftfrSubmitting: false,
         showFtFrPay: false,
-        status: 'ftfr_done',
+        ftFrDisabled: true,
       })
     }
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(
       that.buildAgtInvoiceParams(that.data.payDocType, paymentId)
     ).then(({ issueRes, finalRes, request_id }) => {
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        wx.hideLoading()
-        that.showAgtIssueFailToast(finalRes || issueRes)
-        finishFail()
-        return
-      }
       wx.hideLoading()
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.updateInvoiceIssued(documentNo, requestId)
-      wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
-        icon: 'none',
-      })
-      finishSuccess()
-      that.blueToothPrint(documentNo)
+      const doPrint = () => {
+        that.updateInvoiceIssued(documentNo, requestId)
+        finishSuccess()
+        that.blueToothPrint(documentNo)
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        doPrint()
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.updateInvoiceIssued(documentNo, requestId)
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              doPrint()
+            } else {
+              finishFail()
+            }
+          },
+        })
+        return
+      }
+      that.showAgtIssueFailToast(res)
+      finishFail()
     }).catch((err) => {
       wx.hideLoading()
       that.showAgtIssueFailToast(err)
@@ -818,253 +862,135 @@ Processado por programaválido n31.1/AGT20
 ${date.time}
 
 `;
-      let printData = {
-        "name": "printMix", //普通纸混合打印
-        "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-        "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-        "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-        "data": [
-          {
-            "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": encodeURIComponent(printInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-            "concentration": 15, //打印浓度1~20，默认15
-            "align": 1, //0左对齐，1居中对齐，2右对齐；
-            "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-            //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-            "isDoubleHeight": true, //是否倍高；
-            "isDoubleWidth": false, //是否倍宽；
-            "isUnderLine": 0, //是否加下划线；
-            "isBold": true, //是否加粗；
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_title_1) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_Comsumidor) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 32,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": true, //加粗；
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_CustomerData) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_historyData_title) + "\n",
-            "concentration": 15,
-            "align": 1, // 居中
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_historyData_info) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_facturacao_title) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_facturacao_info) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_TOTAL) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 24,
-            "isDoubleHeight": true, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_valores) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 34,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(printInfo_time) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 26,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-        ]
-      }
-
-      setTimeout(()=>{
+      // 旧打印：明文写入 data，再走 blueToolth + arrEncoderCopy
+      that.setData({
+        printInfo_title,
+        printInfo_title_1,
+        printInfo_Comsumidor,
+        printInfo_CustomerData,
+        abolido,
+        printInfo_historyData_title,
+        printInfo_historyData_info,
+        printInfo_facturacao_title,
+        printInfo_facturacao_info,
+        printInfo_TOTAL,
+        printInfo_valores,
+        printInfo_time,
+      })
+      setTimeout(() => {
         that.setData({
           is_Printreturn: true,
         })
-      },1000)
-      console.log('开始打印，api传信息...')
-      this.SendControlCommand(printData);
+      }, 1000)
+      that.verifyBlueToothPrint()
     }).catch((res) => {
+      that.setData({
+        is_Printreturn: true,
+      })
       wx.showToast({
         title: res.desc,
         icon: 'none',
         duration: 2000
       })
     })
-    setTimeout(()=>{
-      that.setData({
-        is_Printreturn: true,
-      })
-    },1000)
   },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
+
+  // 旧蓝牙：检查已连接设备
+  verifyBlueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    let connectDeviceInfo = ''
+    try {
+      connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    } catch (e) {
+      connectDeviceInfo = ''
+    }
+    const blueLang = getApp().globalData.lang
+    if (!connectDeviceInfo || !connectDeviceInfo.deviceId) {
       wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
+        title: blueLang.blueToolth.noConnect,
+        content: blueLang.blueToolth.noConnectWarning,
+        cancelText: blueLang.blueToolth.cancelText,
+        confirmText: blueLang.blueToolth.confirmText,
+        complete: (res) => {
           if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: blueLang.blueToolth.title,
+              })
+            })
           }
-        }
+          if (res.cancel) {
+            wx.showToast({
+              title: blueLang.blueToolth.cancel,
+              icon: 'none',
+            })
+          }
+        },
       })
       return
-    }else{
-      that.SendControlCommand_1(printData);
     }
-  },
-  SendControlCommand_1(printData) {
-    let that = this;
-     wx.showLoading({
-      title: ''
-    });
-
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
-    }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          that.getOrderInfo(res.data.data[0].orderId);
-        }else{
-          wx.showToast({
-            title: 'error',
-            icon: "none",
-            duration: 3000,
-          })
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-      }
+    wx.showToast({
+      title: blueLang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
     })
+    this.handlePrint(connectDeviceInfo)
   },
-  getOrderInfo(id){
 
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
+  // 旧蓝牙：ESC/POS + arrEncoderCopy + blueToolth.writeBLECharacteristicValue
+  handlePrint(p) {
+    const that = this
+    const info = [
+      ...blueToolth.printCommand.clear,
+      ...blueToolth.printCommand.center,
+      ...blueToolth.printCommand.ct,
+      ...arrEncoderCopy(that.data.printInfo_title),
+      ...blueToolth.printCommand.ct_zc,
+      ...arrEncoderCopy(that.data.printInfo_title_1),
+      ...blueToolth.printCommand.ct,
+      ...arrEncoderCopy(that.data.printInfo_Comsumidor),
+      ...blueToolth.printCommand.ct_zc,
+      ...blueToolth.printCommand.left,
+      ...arrEncoderCopy(that.data.printInfo_CustomerData),
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(that.data.printInfo_historyData_title),
+      ...blueToolth.printCommand.left,
+      ...arrEncoderCopy(that.data.printInfo_historyData_info),
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(that.data.printInfo_facturacao_title),
+      ...blueToolth.printCommand.left,
+      ...arrEncoderCopy(that.data.printInfo_facturacao_info),
+      ...blueToolth.printCommand.center,
+      ...blueToolth.printCommand.ct,
+      ...arrEncoderCopy(that.data.printInfo_TOTAL),
+      ...arrEncoderCopy(that.data.printInfo_valores),
+      ...blueToolth.printCommand.ct_zc,
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(that.data.printInfo_time),
+      ...blueToolth.printCommand.enter,
+    ]
+    console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
+        that.setData({
+          is_Printreturn: true,
+        })
       },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      onFail(res) {
+        console.log('打印失败...', res)
+        that.setData({
+          is_Printreturn: true,
+        })
       },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
-      }
     })
   },
 
@@ -1138,16 +1064,5 @@ ${date.time}
       })
     })
   },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
-  }
 
 })

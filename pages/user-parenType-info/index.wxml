@@ -39,16 +39,19 @@
       </van-cell-group>
     </view>
   </view>
-  <view class="btn">
-    <block>
-      <!-- <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printAgain':''}}" wx:if="{{ itemInfo.pay_status == 1 }}">
-        再次打印
-      </view> -->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}">
-        {{ itemInfo.pay_status == 1 ?btnName.printOtherTwo:btnName.printOther }}
-      </view>
-      <!-- 打印 结束-->
-    </block>
+  <view class="btn btn-vertical">
+    <view class="btn-item {{(!is_return || (itemInfo.pay_status == 1 && itemInfo.type != 2)) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(!is_return || (itemInfo.pay_status == 1 && itemInfo.type != 2)) ? '' : 'openDocPay'}}">
+      <view>{{lang.ftBtn}}</view>
+      <view class="btn-item-sub">{{lang.ftSub}}</view>
+    </view>
+    <view class="btn-item {{(!is_return || (itemInfo.pay_status == 1 && itemInfo.type != 2)) ? 'btn-return' : ''}}" data-type="FR" bindtap="{{(!is_return || (itemInfo.pay_status == 1 && itemInfo.type != 2)) ? '' : 'openDocPay'}}">
+      <view>{{lang.frBtn}}</view>
+      <view class="btn-item-sub">{{lang.frSub}}</view>
+    </view>
+    <view class="btn-item {{is_return ? '' : 'btn-return'}}" data-type="RC" bindtap="{{is_return ? 'openDocPay' : ''}}">
+      <view>{{lang.rcBtn}}</view>
+      <view class="btn-item-sub">{{lang.rcSub}}</view>
+    </view>
   </view>
   <!-- 缴费 -->
   <van-popup show="{{ showPay }}" safe-area-tab-bar position="bottom" round bind:close="onClosePay">

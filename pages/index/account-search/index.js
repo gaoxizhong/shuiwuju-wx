@@ -3,6 +3,9 @@
 const app = getApp()
 let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
+const {
+  arrEncoderCopy,
+} = require('../../../utils/print')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../../utils/encoding.js")
 import {
@@ -372,23 +375,23 @@ ${item.last_time}
        this.handlePrint(connectDeviceInfo)
       }
     },
-    // 开始打印
+    // 开始打印（完整旧蓝牙：printCommand + arrEncoderCopy + writeBLECharacteristicValue）
     handlePrint(p) {
-      // GBK.encode({string}) 解码GBK为一个字节数组
+      const that = this
       let info = [
         ...blueToolth.printCommand.clear,
         ...blueToolth.printCommand.center,
         ...blueToolth.printCommand.ct,
-        ...this.arrEncoderCopy(this.data.title),
+        ...arrEncoderCopy(this.data.title),
         ...blueToolth.printCommand.ct_zc,
-        ...this.arrEncoderCopy(this.data.title_1),
+        ...arrEncoderCopy(this.data.title_1),
         ...blueToolth.printCommand.left,
-        ...this.arrEncoderCopy(this.data.printInfo),
+        ...arrEncoderCopy(this.data.printInfo),
         ...blueToolth.printCommand.center,
-        ...this.arrEncoderCopy(this.data.valores),
+        ...arrEncoderCopy(this.data.valores),
         ...blueToolth.printCommand.enter
       ]
-      console.log('开始打印，api传信息...')
+      console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
       blueToolth.writeBLECharacteristicValue({
         ...p,
         value: new Uint8Array(info).buffer,
@@ -409,15 +412,4 @@ ${item.last_time}
         }
       });
     },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
-  }
 })

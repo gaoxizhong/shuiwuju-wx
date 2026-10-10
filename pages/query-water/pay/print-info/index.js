@@ -6,6 +6,9 @@ const {
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
+  arrEncoderCopy,
+} = require('./../../../../utils/print')
+const {
   getArrearsMoneySum,
   payWater,
   getUserBluetoolthInfoData,
@@ -13,13 +16,10 @@ const {
   setInvoiceStatus,
   addUserPayLogNumber
 } = require('./../../../../apis/water')
-//只需要引用encoding.js,注意路径
-var encoding = require("./../../../../utils/encoding.js")
 const { getRegistarFactura } = require('../../../../apis/agt')
 import {
   getBusinessHallList,
 } from '../../../../apis/business-hall'
-// const { SendControlCommand } = require("./../../../../utils/print")
 
 Page({
 
@@ -53,6 +53,8 @@ Page({
     printing: false,
     is_T: false,
     is_yujiao: '', // 'automatica' 预缴
+    automatica_title: `
+Factura Automatica`,
     historyPaymentBills: [],
     indexLang: lang.index,
   },
@@ -235,13 +237,12 @@ Page({
       })
     })
   },
-  // 缴费单
+  // 缴费单（旧蓝牙打印机）
   blueToothPrint(){
     this.setData({
       print_type: 'printInfo'
     })
-    this.getUserBluetoolthInfoData();
-         
+    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
 
    // 发票
@@ -250,38 +251,146 @@ Page({
        url:  `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.wm_name}&source=search-person&is_yujiao=${this.data.automatica}`,
      })
   },
- 
+
+  // 蓝牙设备打印：检查已连接设备后写入 ESC/POS
+  verifyBlueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const blueLang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
+      wx.showModal({
+        title: blueLang.blueToolth.noConnect,
+        content: blueLang.blueToolth.noConnectWarning,
+        cancelText: blueLang.blueToolth.cancelText,
+        confirmText: blueLang.blueToolth.confirmText,
+        complete: (res) => {
+          if (res.confirm) {
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: blueLang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: blueLang.blueToolth.cancel,
+              icon: 'none',
+            })
+          }
+        }
+      })
+      return
+    }
+    wx.showToast({
+      title: blueLang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
+  },
+
+  // 旧打印机：组装 ESC/POS 指令并通过蓝牙特征值发送
   handlePrint(p) {
     let that = this;
     let print_type = that.data.print_type;
-    console.log(111)
     let is_yujiao = that.data.is_yujiao;
-    if(print_type == 'printInfo'){
-      if(is_yujiao == 'automatica'){
-        let automatica_title =`
-Factura Automatica`;
-        let automatica_value = {
-          "printType": 0,
-          "text": encodeURIComponent(automatica_title) + "\n",
-          "concentration": 15,
-          "align": 1,
-          "lineHeight": 26,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        };
-        p.data.splice(-1, 0, automatica_value);
+    let info = [];
+    if (print_type == 'printInfo') {
+      if (is_yujiao == 'automatica') {
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...arrEncoderCopy(that.data.printInfo_title_1),
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_Comsumidor),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.printInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.printInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.pagamento_pagamento),
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_valores),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.automatica_title),
+          ...arrEncoderCopy(that.data.printInfo_time),
+          ...blueToolth.printCommand.enter
+        ]
+      } else {
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...arrEncoderCopy(that.data.printInfo_title_1),
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_Comsumidor),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.printInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.printInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.printInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.pagamento_pagamento),
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.printInfo_valores),
+          ...blueToolth.printCommand.ct_zc,
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.printInfo_time),
+          ...blueToolth.printCommand.enter
+        ]
       }
-      console.log('开始打印，传信息...');
-      that.SendControlCommand(p);
-      // console.log('打印成功...')
-      //   wx.showToast({
-      //     title: lang.blueToolth.printSuccess,
-      //     icon: "none",
-      //     duration: 3000,
-      //   })
     }
+    console.log('开始打印，蓝牙传信息...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        console.log('打印成功...')
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
+        that.setData({
+          is_Printreturn: true,
+        })
+      },
+      onFail(res) {
+        console.log('打印失败...', res)
+        that.setData({
+          is_Printreturn: true,
+        })
+      }
+    });
   },
   //输入实缴金额
   handleInputMoney(e){
@@ -295,8 +404,8 @@ Factura Automatica`;
       no_error
     })
   },
-  // 获取用户打印信息
-  getUserBluetoolthInfoData(){
+  // 获取用户打印信息（写入 data 后回调旧蓝牙打印）
+  getUserBluetoolthInfoData(f){
     let that = this;
     const params = {
       wm_no: that.data.form.wm_no,
@@ -324,8 +433,6 @@ Factura Automatica`;
       let first_step_price = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].first_step_price:0;
       let second_step_water = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].second_step_water:0;
       let second_step_price = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].second_step_price:0;
-      let domestico_socio = Number(first_step_water * first_step_price).toFixed(2);
-      let domestico_socio_2 = Number(second_step_water * second_step_price).toFixed(2);
 
       let months = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].months:0; // 月份
       let T_Fixa = Number(userBluetoolthInfoData.user_type.rent_money * months).toFixed(2);
@@ -333,8 +440,9 @@ Factura Automatica`;
       let household_num = userBluetoolthInfoData.water_meter.household_num; // 供用水表户数；
       let average_pairce = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price/household_num.toFixed(2) : userBluetoolthInfoData.water_meter.user_bal/household_num.toFixed(2);  // 平均户数费用
 
-      let printInfo_title =`EPASKS-E.P.`;
-      let printInfo_title_1 =`
+      that.setData({
+        printInfo_title: `EPASKS-E.P.`,
+        printInfo_title_1: `
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF:5601022917
@@ -343,14 +451,14 @@ Comunicação de Roturas941648999
 Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
+
 Factura Simplificada N° ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].order_no:''}
 
-Dados do Cliente`;
-
-      let printInfo_Comsumidor = `
-Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}`;
-
-      let printInfo_CustomerData=`
+Dados do Cliente
+`,
+        printInfo_Comsumidor: `
+Comsumidor: ${userBluetoolthInfoData.water_meter.wm_name}`,
+        printInfo_CustomerData: `
 N° do Cliente: ${userBluetoolthInfoData.water_meter.user_code}
 N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 NIF: ${userBluetoolthInfoData.water_meter.user_card}
@@ -359,20 +467,20 @@ Endereco detalhado: ${userBluetoolthInfoData.water_meter.wm_address}
 N° da Porta: ${userBluetoolthInfoData.water_meter.house_number}
 Giro: ${userBluetoolthInfoData.water_meter.area_code}
 Totalizador/Normal: ${userBluetoolthInfoData.water_meter.is_share ? 'Totalizador':'Normal' }
-Unidades: ${userBluetoolthInfoData.water_meter.household_num }`;
-
-        let printInfo_historyData_title =`
-Histórico de Leituras`;
-
-        let printInfo_historyData_info = `
-  Data       m³      Leitor
+Unidades: ${userBluetoolthInfoData.water_meter.household_num }  
+        `,
+        printInfo_historyData_title: `
+Histórico de Leituras
+        `,
+        printInfo_historyData_info: `
+   Data       m³      Leitor
 --------------------------------
 ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].check_date:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading:''}   ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].reading_user:''}
 ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].check_date:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading:''}   ${userBluetoolthInfoData.user_payment[1]?userBluetoolthInfoData.user_payment[1].reading_user:''}
 ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].check_date:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading:''}   ${userBluetoolthInfoData.user_payment[2]?userBluetoolthInfoData.user_payment[2].reading_user:''}
--------------------------------- `;
-        let printInfo_facturacao_title =`Detalhes de Coberanca`;
-        let printInfo_facturacao_info =`
+-------------------------------- `,
+        printInfo_facturacao_title: `Detalhes de Coberanca`,
+        printInfo_facturacao_info: `
 Categoria Tarifaria: ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}
 Consumo: ${userBluetoolthInfoData.user_type.is_constant == 0?total_water + '(m³)': total_water + '* ' + user_type_price +'=' + consumo_price}
 T.Fixa ${userBluetoolthInfoData.user_type?userBluetoolthInfoData.user_type.type_name:''}: ${ userBluetoolthInfoData.user_type.rent_money +' * '+months +'=' + T_Fixa }
@@ -380,178 +488,39 @@ Agua Resid: (${userBluetoolthInfoData.water_meter.sewage_rate}%): ${ sewage_rate
 ${userBluetoolthInfoData.water_meter.is_share?'O custo médio: ' +average_pairce +'KZ':'' }
 IVA(0%) M04
 CFR: 11.00 Kz X ${userBluetoolthInfoData.user_payment[0].CFR_total_price?userBluetoolthInfoData.user_payment[0].months:0} = ${userBluetoolthInfoData.user_payment[0].CFR_total_price} Kz
-`;
-        let printInfo_TOTAL =`
-TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`;
-        let pagamento_pagamento =`
-limite de pagamento: ${this.getMoreDay(15)}`;
-        let printInfo_valores =`
+`,
+        printInfo_TOTAL: `
+TOTAL A PAGAR  ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price:userBluetoolthInfoData.water_meter.user_bal} KZ`,
+        pagamento_pagamento: `
+limite de pagamento: ${that.getMoreDay(15)}`,
+        printInfo_valores: `
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
-Water manager`;    
-        let printInfo_time =`
+Water manager
 Processado por programaválido n31.1/AGT20
+`,
+        printInfo_time: `
 ${date.time}
 
-`;
-        let printData = {
-          "name": "printMix", //普通纸混合打印
-          "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-          "runOnNewThread": true, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-          "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-          "data": [
-            {
-              "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-              "text":  encodeURIComponent(printInfo_title)+ "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-              "concentration": 15, //打印浓度1~20，默认15
-              "align": 1, //0左对齐，1居中对齐，2右对齐；
-              "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-              //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-              "isDoubleHeight": true, //是否倍高；
-              "isDoubleWidth": false, //是否倍宽；
-              "isUnderLine": 0, //是否加下划线；
-              "isBold": true, //是否加粗；
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_title_1) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_Comsumidor) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 32,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": true, //加粗；
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_CustomerData) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_historyData_title) + "\n",
-              "concentration": 15,
-              "align": 1, // 居中
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_historyData_info) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_facturacao_title) + "\n",
-              "concentration": 15,
-              "align": 1,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_facturacao_info) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_TOTAL) + "\n",
-              "concentration": 15,
-              "align": 1,
-              "lineHeight": 24,
-              "isDoubleHeight": true, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(pagamento_pagamento) + "\n",
-              "concentration": 15,
-              "align": 1,
-              "lineHeight": 30,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_valores) + "\n",
-              "concentration": 15,
-              "align": 1,
-              "lineHeight": 34,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-            {
-              "printType": 0,
-              "text": encodeURIComponent(printInfo_time) + "\n",
-              "concentration": 15,
-              "align": 1,
-              "lineHeight": 26,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            },
-          ]
-        }
-        console.log('初始信息：',printData)
+`,
+      })
+      setTimeout(() => {
         that.setData({
           is_Printreturn: true,
         })
-        setTimeout(() =>{
-          that.handlePrint(printData)
-        },100)
-        
+      }, 1000)
+      if (typeof f == 'function') {
+        return f()
+      }
     }).catch((res) => {
+      that.setData({
+        is_Printreturn: true,
+      })
       wx.showToast({
         title: res.desc,
         icon: 'none',
         duration: 2000
       })
-    })
-    that.setData({
-      is_Printreturn: true,
     })
   },
   // 添加编码
@@ -598,119 +567,4 @@ ${date.time}
       wx.hideToast()
     })
   },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
-      wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
-          if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
-          }
-        }
-      })
-      return
-    }else{
-      that.SendControlCommand_1(printData);
-    }
-  },
-  SendControlCommand_1(printData){
-    let that = this;
-    wx.showLoading({
-      title: ''
-    });
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
-    }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          that.getOrderInfo(res.data.data[0].orderId);
-        }else{
-          wx.showToast({
-            title: 'error',
-            icon: "none",
-            duration: 3000,
-          })
-        }
-        that.setData({
-          is_Printreturn: true,
-        })
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        that.setData({
-          is_Printreturn: true,
-        })
-      }
-    })
-  },
-  getOrderInfo(id){
-
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
-      }
-    })
-  },
-
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
-  }
 })

@@ -4,6 +4,10 @@ console.log(new Date().getDay())
 
 let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
+const {
+  arrEncoderCopy,
+} = require('./../../utils/print')
+
 const {wxAsyncApi,fmoney,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
@@ -84,6 +88,7 @@ Page({
     paid_total_money: 0,
     agt_document_no: '',
     agtInvoiceResult: null,
+    payDocType: 'FR',
   },
 
   /**
@@ -98,7 +103,7 @@ Page({
       otherInvoices: lang.otherInvoices,
       btnName: lang.btnName,
       langDialog: lang.dialog,
-      bluetoolthDevice: lang.admin.bluetoolthDevice,
+      bluetoolthDevice: lang.admin.bluetoolthDevice
     })
     const source = options.source; // 'search-person' 查表员-- pos机子 ,'business-hall'  营业厅
     const itemInfo = JSON.parse(options.data);
@@ -125,7 +130,7 @@ Page({
       let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
       console.log(operatorNameList)
       this.setData({
-        operatorNameList,
+        operatorNameList
       })
     }
   },
@@ -136,7 +141,7 @@ Page({
       lang: lang.index,
       otherInvoices: lang.otherInvoices,
       btnName: lang.btnName,
-      langDialog: lang.dialog,
+      langDialog: lang.dialog
     })
   },
   // 新改版  获取用户待缴费金额接口 
@@ -155,7 +160,7 @@ Page({
       that.setData({
         last_reading,
         last_time,
-        arrears_money_sum: fmoney(arrears_money_sum,2),
+        arrears_money_sum: fmoney(arrears_money_sum,2)
       })
       if(that.data.payStatusList.length <= 0){
         const payWayList = Object.keys(res.data.pay_way).map(i => ({
@@ -167,14 +172,14 @@ Page({
           payStatusList: payWayList,
           pay_way: '',
           pay_text: '',
-          cheque_number: '',
+          cheque_number: ''
         })
         if(that.data.itemInfo.pay_status == 1){
           let way = that.data.itemInfo.pay_way;
           let text = payWayList.find( ele => ele.key == way).text;
           that.setData({
             pay_way: way,
-            pay_text: text,
+            pay_text: text
           })
           if (way == 4){
             that.setData({
@@ -212,7 +217,7 @@ Page({
     console.log(e)
     const paid_total_money = e.detail.value;
     this.setData({
-      paid_total_money,
+      paid_total_money
     })
   },
   extractAgtDocumentNo(agtData) {
@@ -243,8 +248,9 @@ Page({
     // TODO: 测试通过后恢复优先级：入参 > water_meter.nif/user_card > 999999999
     // company_name 可选：默认用水表户名
     const companyName = water_meter.wm_name || water_meter.user_name || that.data.wm_name || ''
+    const payDocType = (that.data.payDocType || 'FR').toUpperCase()
     const params = {
-      document_type: 'FR',
+      document_type: payDocType === 'FT' ? 'FT' : 'FR',
       // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
       poll: 0,
       poll_times: 0,
@@ -258,53 +264,73 @@ Page({
     }
     wx.showLoading({
       title: otherInvoices.agtLoading,
-      mask: true,
+      mask: true
     })
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(params).then(({ issueRes, finalRes, request_id }) => {
       wx.hideLoading()
-      if (!isAgtValidationPassed(finalRes)) {
-        const res = finalRes || issueRes
-        const errors = getAgtValidationErrors(res)
-        let failContent = ''
-        if (isAgtValidationPending(res)) {
-          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
-            || /limite|限流|excedido/i.test(String(e)))
-          failContent = is429
-            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
-            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
-          if (errors.length) {
-            failContent += `\n${errors.join('\n')}`
-          }
-        } else {
-          failContent = errors.length
-            ? errors.join('\n')
-            : that.formatAgtResultForDisplay(res)
-        }
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
+      const doPrint = () => {
+        that.setData({
+          agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
+          agt_document_no: documentNo,
+          agt_request_id: requestId
+        })
+        that.getUserBluetoolthInfoData(that.blueToothPrint)
+      }
+      if (isAgtValidationPassed(finalRes)) {
         wx.showModal({
-          title: otherInvoices.agtFailTitle,
-          content: failContent.slice(0, 500),
+          title: otherInvoices.agtSuccessTitle,
+          content: that.formatAgtResultForDisplay(finalRes) + (documentNo ? `\n\n${otherInvoices.agtInvoiceNo}: ${documentNo}` : ''),
           showCancel: false,
           confirmText: lang.dialog.confirmText,
+          success() {
+            doPrint()
+          }
         })
         return
       }
-      console.log('AGT开票成功', finalRes)
-      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
-      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      that.setData({
-        agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
-        agt_document_no: documentNo,
-        agt_request_id: requestId,
-      })
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.setData({
+          agt_document_no: documentNo,
+          agt_request_id: requestId
+        })
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: lang.dialog.cancelText,
+          success: (r) => {
+            if (r.confirm) {
+              doPrint()
+            }
+          }
+        })
+        return
+      }
+      const errors = getAgtValidationErrors(res)
+      let failContent = ''
+      if (isAgtValidationPending(res)) {
+        const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+          || /limite|限流|excedido/i.test(String(e)))
+        failContent = is429
+          ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+          : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+        if (errors.length) {
+          failContent += `\n${errors.join('\n')}`
+        }
+      } else {
+        failContent = errors.length
+          ? errors.join('\n')
+          : that.formatAgtResultForDisplay(res)
+      }
       wx.showModal({
-        title: otherInvoices.agtSuccessTitle,
-        content: that.formatAgtResultForDisplay(finalRes) + (documentNo ? `\n\n${otherInvoices.agtInvoiceNo}: ${documentNo}` : ''),
+        title: otherInvoices.agtFailTitle,
+        content: failContent.slice(0, 500),
         showCancel: false,
-        confirmText: lang.dialog.confirmText,
-        success() {
-          that.getUserBluetoolthInfoData(that.handlePrint)
-        },
+        confirmText: lang.dialog.confirmText
       })
     }).catch(e => {
       wx.hideLoading()
@@ -313,7 +339,7 @@ Page({
         title: otherInvoices.agtFailTitle,
         content: (e.desc || e.msg || that.formatAgtResultForDisplay(e)).slice(0, 500),
         showCancel: false,
-        confirmText: lang.dialog.confirmText,
+        confirmText: lang.dialog.confirmText
       })
     })
   },
@@ -326,7 +352,7 @@ Page({
       pay_success = true;
     }
     if (pay_success) {
-      that.getUserBluetoolthInfoData(that.handlePrint);
+      that.getUserBluetoolthInfoData(that.blueToothPrint);
     } else {
       let date = handleTimeValue();
       const params = {
@@ -346,12 +372,17 @@ Page({
           showPay: false,
           pay_success: true,
           password_layer: false,
-          itemInfo,
+          itemInfo
         })
         if (itemInfo.type == 1) {
-          that.issueAgtInvoiceThenPrint()
+          const payDocType = (that.data.payDocType || '').toUpperCase()
+          if (payDocType === 'RC') {
+            that.getUserBluetoolthInfoData(that.blueToothPrint)
+          } else {
+            that.issueAgtInvoiceThenPrint()
+          }
         } else {
-          that.getUserBluetoolthInfoData(that.handlePrint);
+          that.getUserBluetoolthInfoData(that.blueToothPrint);
         }
       }).catch((res) => {
         wx.showToast({
@@ -416,6 +447,21 @@ Page({
       no_error: false
     })
   },
+  // FT / FR / RC
+  openDocPay(e) {
+    if (!this.data.is_return) {
+      return
+    }
+    const payDocType = (e.currentTarget.dataset.type || 'FR').toUpperCase()
+    // 已支付：仅 RC 可重打收据；形式发票(type=2)三个都可点
+    if (this.data.itemInfo.pay_status == 1 && this.data.itemInfo.type != 2 && payDocType !== 'RC') {
+      return
+    }
+    this.setData({
+      payDocType
+    })
+    this.printWaterInfo()
+  },
   // 收据按钮 ---  收银员
   printWaterInfo() {
     const dayTime = handleTimeValue().dayTime;
@@ -435,24 +481,11 @@ Page({
     }
     const pay_text = this.data.pay_text;
     if(this.data.itemInfo.type == 1){
-      if (!pay_text) {
-        this.setData({
-          pay_type_error: true
-        })
-        wx.showToast({
-          title: lang.message.formWarning,
-          duration: 2000,
-          icon: 'none'
-        })
-        return
-      }
-      const pay_way = this.data.pay_way;
-      const cheque_number = this.data.cheque_number;
-  
-      if (pay_way == 4) {
-        if(!cheque_number || cheque_number == ''){
+      // 已支付重打收据：跳过支付方式校验
+      if (this.data.itemInfo.pay_status != 1) {
+        if (!pay_text) {
           this.setData({
-            check_num_error: true
+            pay_type_error: true
           })
           wx.showToast({
             title: lang.message.formWarning,
@@ -460,6 +493,22 @@ Page({
             icon: 'none'
           })
           return
+        }
+        const pay_way = this.data.pay_way;
+        const cheque_number = this.data.cheque_number;
+    
+        if (pay_way == 4) {
+          if(!cheque_number || cheque_number == ''){
+            this.setData({
+              check_num_error: true
+            })
+            wx.showToast({
+              title: lang.message.formWarning,
+              duration: 2000,
+              icon: 'none'
+            })
+            return
+          }
         }
       }
       this.setData({
@@ -474,7 +523,7 @@ Page({
   clickoperatorName(e) {
     this.setData({
       operator_name: e.currentTarget.dataset.name,
-      is_operatorLsPop: false,
+      is_operatorLsPop: false
     })
   },
   //  确认姓名
@@ -502,148 +551,111 @@ Page({
       is_operatorLsPop: true
     })
   },
-  // 开始打印
-  handlePrint(p) {
-    console.log('开始打印  p...',p)
-    let that = this;
-    let itemInfo = that.data.itemInfo;
-    // GBK.encode({string}) 解码GBK为一个字节数组
-    // 形式发票
-    if(itemInfo.type == 2){
-      let proForm_title = `Factura-proforma
-`;
-      let proForm_title_data = {
-        "printType": 0,
-        "text": encodeURIComponent(proForm_title) + "\n", 
-        "concentration": 15,
-        "align": 1,
-        "lineHeight": 28,
-        "isDoubleHeight": true, //是否倍高；
-        "isDoubleWidth": false, //是否倍宽；
-        "isUnderLine": 0, //是否加下划线；
-        "isBold": true, //是否加粗；
-      }
-      p.data.splice(0, 0, proForm_title_data);
-    }
-    console.log('开始打印，api传信息...')
-    let n = 1;
-    that.writeBLECharacteristicValue(p,n);
-  },
-  writeBLECharacteristicValue(data,n){
-    let p = data;
-    let that = this;
-    that.SendControlCommand(p);
-    
-    //  n++;
-    //  if(n <= 2){
-    //    that.writeBLECharacteristicValue(p,n);
-    //  }
-  },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
       wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
           if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: 'none',
+            })
           }
         }
       })
       return
-    }else{
-      that.SendControlCommand_1(printData);
     }
+    wx.showToast({
+      title: lang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
   },
-  SendControlCommand_1(printData) {
+
+  handlePrint(p) {
     let that = this;
-     wx.showLoading({
-      title: ''
-    });
-
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
+    let itemInfo = that.data.itemInfo;
+    let info = [];
+    if (itemInfo.type == 1) {
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.receiptInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...arrEncoderCopy(that.data.receiptInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...arrEncoderCopy(that.data.receiptInfo_historyData),
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.receiptInfo_TOTAL),
+        ...blueToolth.printCommand.ct_zc,
+        ...arrEncoderCopy(that.data.receiptInfo_Pagamento),
+        ...blueToolth.printCommand.left,
+        ...arrEncoderCopy(that.data.receiptInfo_Modos),
+        ...blueToolth.printCommand.center,
+        ...arrEncoderCopy(that.data.receiptInfo_Saldo),
+        ...blueToolth.printCommand.enter
+      ]
     }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          if(that.data.itemInfo.type == 1){
-            that.setData({
-              pay_success: false,
-              pay_way: '',
-              pay_text: '',
-              cheque_number: '',
-            })
-            that.getOrderInfo(res.data.data[0].orderId);
-          }
-        }else{
-          wx.showToast({
-            title: that.data.otherInvoices.printError,
-            icon: "none",
-            duration: 3000,
+    if (itemInfo.type == 2) {
+      info = [
+        ...blueToolth.printCommand.clear,
+        ...blueToolth.printCommand.center,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.proForm_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...blueToolth.printCommand.ct,
+        ...arrEncoderCopy(that.data.invoiceInfo_title),
+        ...blueToolth.printCommand.ct_zc,
+        ...arrEncoderCopy(that.data.invoiceInfo_title_1),
+        ...blueToolth.printCommand.left,
+        ...arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+        ...blueToolth.printCommand.center,
+        ...arrEncoderCopy(that.data.invoiceInfo_valores),
+        ...blueToolth.printCommand.enter
+      ]
+    }
+    console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
+        if (itemInfo.type == 1) {
+          that.setData({
+            pay_success: false,
+            pay_way: '',
+            pay_text: '',
+            cheque_number: '',
           })
         }
       },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
+      onFail(res) {
+        console.log('打印失败...', res)
       }
-    })
-  },
-  getOrderInfo(id){
-
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
-      }
-    })
+    });
   },
   // 获取用户打印信息
   getUserBluetoolthInfoData(f) {
@@ -672,6 +684,8 @@ N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}
 Contribuinte: ${userBluetoolthInfoData.water_meter.user_card}`;
       let receiptInfo_historyData = `
 DATA: ${itemInfo.pay_status == 1 ? that.data.itemInfo.pay_time:date.time}`;
+      let receiptInfo_TOTAL = `
+TOTAL: ${that.data.total_money} KZ`;
       let receiptInfo_Pagamento = `
 Modos de Pagamento`;
       let receiptInfo_Modos = `
@@ -693,89 +707,22 @@ Utilizador: ${that.data.operator_name}
 *Obrigado e volte sempre!*
 
 `;
-      let receiptInfo_data = {
-        "name": "printMix", //普通纸混合打印
-        "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-        "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-        "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-        "data": [
-          {
-            "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": encodeURIComponent(receiptInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-            "concentration": 15, //打印浓度1~20，默认15
-            "align": 1, //0左对齐，1居中对齐，2右对齐；
-            "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-            //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-            "isDoubleHeight": true, //是否倍高；
-            "isDoubleWidth": false, //是否倍宽；
-            "isUnderLine": 0, //是否加下划线；
-            "isBold": true, //是否加粗；
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_title_1) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_historyData) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Pagamento) + "\n",
-            "concentration": 15,
-            "align": 1, // 居中
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Modos) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Saldo) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-        ]
-      };
-
+      that.setData({
+        receiptInfo_title,
+        receiptInfo_title_1,
+        receiptInfo_historyData,
+        receiptInfo_TOTAL,
+        receiptInfo_Pagamento,
+        receiptInfo_Modos,
+        receiptInfo_Saldo,
+      })
       setTimeout(() => {
         that.setData({
           is_return: true
         })
       }, 1000)
       if (typeof f == 'function') {
-        return f(receiptInfo_data)
+        return f()
       }
     });
     
@@ -795,7 +742,8 @@ Comunicação de Roturas941648999
 Email info.epasksagmail.com
 
 Dados do Cliente
-
+`;
+    let invoiceInfo_CustomerData = `
 Comsumidor: ${selectradio_info.wm_name}
 N° do Cliente: ${selectradio_info.user_code}
 N° Contador: ${selectradio_info.wm_no}
@@ -807,7 +755,8 @@ Giro: ${selectradio_info.area_code}
 
 Espécies: ${selectradio_info.price_name}
 Montante: ${fmoney(selectradio_info.total_money,2)} KZ
-Recibo N°: ${selectradio_info.proforma_number?selectradio_info.proforma_number:''}`;
+Recibo N°: ${selectradio_info.proforma_number?selectradio_info.proforma_number:''}
+`;
       let invoiceInfo_valores = `
 Water manager
 Processado por programaválido n31.1/AGT20
@@ -819,51 +768,12 @@ ${date.time}
 Factura-proforma
 
 `,
-      
+      invoiceInfo_title,
+      invoiceInfo_title_1,
+      invoiceInfo_CustomerData,
+      invoiceInfo_valores,
     })
-    let invoiceInfo_data = {
-      "name": "printMix", //普通纸混合打印
-      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-      "data": [
-        {
-          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": encodeURIComponent(invoiceInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-          "concentration": 15, //打印浓度1~20，默认15
-          "align": 1, //0左对齐，1居中对齐，2右对齐；
-          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-          "isDoubleHeight": true, //是否倍高；
-          "isDoubleWidth": false, //是否倍宽；
-          "isUnderLine": 0, //是否加下划线；
-          "isBold": true, //是否加粗；
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(invoiceInfo_title_1) + "\n",
-          "concentration": 15,
-          "align": 0,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(invoiceInfo_valores) + "\n",
-          "concentration": 15,
-          "align": 1,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-      ]
-    };
-    this.handlePrint(invoiceInfo_data);
+    this.blueToothPrint();
   },
     //获取当前时间
     handleTimeValue(date) {
@@ -892,7 +802,7 @@ Factura-proforma
   cover_layer() {
     this.setData({
       password_layer: false,
-      operator_name: '',
+      operator_name: ''
     })
   },
   handleInputReading(e) {
@@ -920,20 +830,8 @@ Factura-proforma
     console.log(e)
     const operator_name = e.detail.value;
     this.setData({
-      operator_name,
+      operator_name
     })
   },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str) {
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [...inputBuffer]
-    return arr
-  },
-
 
 })

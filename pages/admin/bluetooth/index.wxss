@@ -9,7 +9,6 @@
   background-color: #fff;
   border-radius: 20rpx;
   margin-bottom: 20rpx;
-  padding-bottom: 40rpx;
 }
 
 .device-title {
@@ -38,8 +37,6 @@
 .common-device .device-content {
   display: flex;
   align-items: center;
-  padding: 30rpx 20rpx;
-  box-sizing: border-box;
 }
 
 .common-device__name {
@@ -48,13 +45,9 @@
   overflow: hidden;
 }
 .common-device__btn {
-  margin-top: 30rpx;
-  padding: 20rpx 30rpx;
-  box-sizing: border-box;
+  margin-right: 20rpx;
 }
-.common-device__btn .van-button{
-  width: 100%;
-}
+
 .unconnected-item {
   padding: 10rpx;
   display: flex;

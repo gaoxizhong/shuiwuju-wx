@@ -129,9 +129,11 @@ const en_lang = {
     agtFailTitle: 'Falha na emissão AGT',
     agtIssueFail: 'Falha na emissão da fatura',
     agtPending: 'Factura submetida, validação AGT pendente. Tente mais tarde',
+    agtPendingPrintConfirm: 'Validação AGT ainda pendente. Imprimir com o N° já registado?',
     agtRateLimit: 'Limite AGT excedido. Tente novamente em cerca de 2 minutos',
     agtInvoiceNo: 'N° da Factura',
     printAnyway: 'Imprimir mesmo assim',
+    printAnywayBtn: 'Sim',
     noDemandNoteId: 'ID do recibo não obtido',
     createDemandNoteFail: 'Falha ao criar recibo',
     printError: 'Erro de impressão',
@@ -172,6 +174,7 @@ const en_lang = {
     money: 'Valor a pagar',
     saldo: 'Saldo da conta',
     createTime: 'Hora de leitura',
+    payTime: 'Data de pagamento',
     registerTime: 'Data de registo',
     iconSearch: 'Consulta',
     iconFunc: 'Função',
@@ -250,7 +253,12 @@ const en_lang = {
     cheque_number: 'N* do Cheque',
     placeholderName: 'Preencher o nome do pedágio',
     paid_total_money: 'Valor real pago',
-
+    ftBtn: 'FT',
+    frBtn: 'FR',
+    rcBtn: 'RC',
+    ftSub: 'Factura',
+    frSub: 'Factura/Recibo',
+    rcSub: 'Recibo',
   },
   // 新增用户
   addAccount: {
@@ -521,6 +529,7 @@ const en_lang = {
     jbsj: 'Horário de turno',
     actual_amount:'Valor Declarado',
     other: 'Outros itens carregados',
+    noData: 'Sem dados de fecho',
   },
    // 用户水表信息修改
    waterInfoEdit: {
@@ -584,6 +593,10 @@ const en_lang = {
     wkj_status: 'Não emitido',
     ykj_status: 'Já emitido em',
     yqx_status: 'Já foi cancelado',
+    queryStatus: 'Consultar estado',
+    agtValid: 'AGT validado',
+    agtInvalid: 'AGT inválido',
+    agtPendingStatus: 'AGT em processamento',
     invoice_not_open: 'Não emitido',
     invoice_opened: 'Emitido',
     invoiceBtn: 'Factura',

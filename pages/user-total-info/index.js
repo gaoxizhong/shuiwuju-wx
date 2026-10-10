@@ -3,8 +3,13 @@ const app = getApp()
 console.log(new Date().getDay())
 let lang = app.globalData.lang
 const {wxAsyncApi,fmoney,parseMoneyNumber,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
+const blueToolth = require('./../../utils/bluetoolth')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
+const {
+  arrEncoderCopy,
+} = require('./../../utils/print')
+
 
 const {
   getArrearsMoneySum,
@@ -132,7 +137,7 @@ Factura Automatica`,
       userInfo,
       is_yujiao: options.is_yujiao,
       fromOtherAmount: options.from === 'other-amount',
-      // payStatusList: JSON.parse(payStatusList || '[]'),
+      // payStatusList: JSON.parse(payStatusList || '[]')
     })
     this.getArrearsMoneySum(options.wm_no)
 
@@ -140,7 +145,7 @@ Factura Automatica`,
       let operatorNameList = JSON.parse(wx.getStorageSync('operatorNameList'));
       console.log(operatorNameList)
       this.setData({
-        operatorNameList,
+        operatorNameList
       })
     }
   },
@@ -167,7 +172,7 @@ Factura Automatica`,
         last_reading,
         last_time,
         arrears_money_sum,
-        arrears_money_t: fmoney(money,2),
+        arrears_money_t: fmoney(money,2)
       })
       if(that.data.payStatusList.length <= 0){
         const payWayList = Object.keys(res.data.pay_way).map(i => ({
@@ -181,7 +186,7 @@ Factura Automatica`,
             totIndex: 1,
             payStatusList,
             pay_way: payStatusList[0].key,
-            pay_text: payStatusList[0].text,
+            pay_text: payStatusList[0].text
           })
         }
         if (that.data.source == 'business-hall') {
@@ -190,7 +195,7 @@ Factura Automatica`,
             payStatusList: payWayList,
             pay_way: '',
             pay_text: '',
-            cheque_number: '',
+            cheque_number: ''
           })
         }
         console.log(that.data.payStatusList)
@@ -209,11 +214,11 @@ Factura Automatica`,
     const max = 100;
     if (max > Number(discount_money) ) {
       this.setData({
-        discount_money:discount_money,
+        discount_money:discount_money
       })
     }else{
       this.setData({
-        discount_money:max,
+        discount_money:max
       })
     }
   },
@@ -235,11 +240,11 @@ Factura Automatica`,
     const max = 100;
     if (max > Number(discount_money) ) {
       this.setData({
-        discount_money:discount_money,
+        discount_money:discount_money
       })
     }else{
       this.setData({
-        discount_money:max,
+        discount_money:max
       })
     }
     
@@ -249,7 +254,7 @@ Factura Automatica`,
     console.log(e)
     const paid_total_money = e.detail.value;
     this.setData({
-      paid_total_money,
+      paid_total_money
     })
   },
   //  新的确认支付
@@ -266,11 +271,11 @@ Factura Automatica`,
       const total_money = parseMoneyNumber(that.data.paid_total_money)
       if (!Number.isFinite(total_money)) {
         that.setData({
-          no_error: true,
+          no_error: true
         })
         wx.showToast({
           title: lang.message.formWarning,
-          icon: 'none',
+          icon: 'none'
         })
         return
       }
@@ -297,7 +302,7 @@ Factura Automatica`,
           user_payment_info: res.data.user_payment_info, // 缴费记录下的缴费单信息
           total_water: res.data.total_water, // 总用水量
           invoice_code: res.data.invoice_code,
-          pay_log_id,
+          pay_log_id
         })
         //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
@@ -400,63 +405,85 @@ Factura Automatica`,
     if (!sourceId) {
       wx.showToast({
         title: otherInvoices.noDemandNoteId,
-        icon: 'none',
+        icon: 'none'
       })
       that.getUserBluetoolthInfoData()
       return
     }
     wx.showLoading({
       title: otherInvoices.agtLoading,
-      mask: true,
+      mask: true
     })
-    // 开票 → tr_obter_agt_estado(request_id) → 仅 V / invoice_ok 才打印
+    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
     issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams(that.data.payDocType, sourceId, {
-      company_name: that.data.wm_name,
+      company_name: that.data.wm_name
     })).then(({ issueRes, finalRes, request_id }) => {
       wx.hideLoading()
-      if (!that.isAgtIssueSuccess(finalRes)) {
-        const res = finalRes || issueRes
-        let title = otherInvoices.agtIssueFail
-        if (isAgtValidationPending(res)) {
-          const errors = getAgtValidationErrors(res)
-          const is429 = errors.some((e) => String(e).indexOf('429') !== -1
-            || /limite|限流|excedido/i.test(String(e)))
-          title = is429
-            ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
-            : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
-        } else {
-          const errors = getAgtValidationErrors(res)
-          const detail = errors.length ? errors.slice(0, 2).join('；') : ''
-          if (detail) {
-            title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
-          }
-        }
-        wx.showToast({
-          title,
-          icon: 'none',
-          duration: 3000,
-        })
-        return
-      }
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      if (documentNo) {
+      const saveDocAndPrint = () => {
+        if (documentNo) {
+          that.setData({
+            invoice_code: documentNo,
+            agt_document_no: documentNo,
+            agt_request_id: requestId || ''
+          })
+        }
+        that.getUserBluetoolthInfoData()
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none'
+        })
+        saveDocAndPrint()
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
         that.setData({
           invoice_code: documentNo,
           agt_document_no: documentNo,
-          agt_request_id: requestId || '',
+          agt_request_id: requestId || ''
         })
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+          success: (r) => {
+            if (r.confirm) {
+              saveDocAndPrint()
+            }
+          }
+        })
+        return
+      }
+      let title = otherInvoices.agtIssueFail
+      if (isAgtValidationPending(res)) {
+        const errors = getAgtValidationErrors(res)
+        const is429 = errors.some((e) => String(e).indexOf('429') !== -1
+          || /limite|限流|excedido/i.test(String(e)))
+        title = is429
+          ? (otherInvoices.agtRateLimit || otherInvoices.agtPending)
+          : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
+      } else {
+        const errors = getAgtValidationErrors(res)
+        const detail = errors.length ? errors.slice(0, 2).join('；') : ''
+        if (detail) {
+          title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
+        }
       }
       wx.showToast({
-        title: otherInvoices.agtSuccessTitle,
+        title,
         icon: 'none',
+        duration: 3000
       })
-      that.getUserBluetoolthInfoData()
     }).catch(() => {
       wx.hideLoading()
       wx.showToast({
         title: otherInvoices.agtIssueFail,
-        icon: 'none',
+        icon: 'none'
       })
     })
   },
@@ -466,34 +493,34 @@ Factura Automatica`,
     const pay_text = this.data.pay_text
     if (!paid_total_money) {
       this.setData({
-        no_error: true,
+        no_error: true
       })
       wx.showToast({
         title: lang.message.formWarning,
         duration: 2000,
-        icon: 'none',
+        icon: 'none'
       })
       return false
     }
     if (!pay_text) {
       this.setData({
-        pay_type_error: true,
+        pay_type_error: true
       })
       wx.showToast({
         title: lang.message.formWarning,
         duration: 2000,
-        icon: 'none',
+        icon: 'none'
       })
       return false
     }
     if (this.data.pay_way == 4 && !this.data.cheque_number) {
       this.setData({
-        check_num_error: true,
+        check_num_error: true
       })
       wx.showToast({
         title: lang.message.formWarning,
         duration: 2000,
-        icon: 'none',
+        icon: 'none'
       })
       return false
     }
@@ -509,19 +536,19 @@ Factura Automatica`,
       return
     }
     this.setData({
-      payDocType,
+      payDocType
     })
     if (payDocType === 'FR') {
       // FR：先填操作员姓名（与原打印收据流程一致），再收款开票打印
       this.setData({
         print_type: 'receiptInfo',
-        password_layer: true,
+        password_layer: true
       })
       return
     }
     // FT：直接收款开票打印
     this.setData({
-      print_type: 'invoiceInfo',
+      print_type: 'invoiceInfo'
     })
     this.new_onConfirmPay()
   },
@@ -659,7 +686,7 @@ Factura Automatica`,
   clickoperatorName(e) {
     this.setData({
       operator_name: e.currentTarget.dataset.name,
-      is_operatorLsPop: false,
+      is_operatorLsPop: false
     })
   },
   //  确认姓名
@@ -744,189 +771,162 @@ Factura Automatica`,
     this.new_onConfirmPay();
   },
 
-  // 开始打印
-  handlePrint(i_data,r_data) {
-    let that = this;
-    let print_type = that.data.print_type;
-    console.log('开始打印',print_type)
-    let p_d = {
-      id: that.data.pay_log_id,
-    }
-    // 发票
-    if (print_type == 'invoiceInfo'){
-      p_d.tyep = 2;  // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
-    }
-    // 收据
-    if (print_type == 'receiptInfo'){
-      p_d.tyep = 1;
-    }
-    console.log('p_d',p_d)
-    // 获取编码
-    addUserPayLogNumber(p_d).then(res => {
-      console.log('获取编码接口',res)
-      if(res.code == 200){
-        // 发票
-        if (print_type == 'invoiceInfo') {
-          let invoiceInfo_number = `Ref. Recibo: ${res.data.invoice_number}`;
-          console.log(invoiceInfo_number)
-
-          let i_value = {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_number) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 26,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          };
-          i_data.data.splice(2, 0, i_value);
-        }
-        //  收据
-        if (print_type == 'receiptInfo') {
-          let receiptInfo_number = `Ref. Recibo: ${res.data.receipt_number}`;
-            console.log(receiptInfo_number)
-            let r_value = {
-              "printType": 0,
-              "text": encodeURIComponent(receiptInfo_number) + "\n",
-              "concentration": 15,
-              "align": 0,
-              "lineHeight": 26,
-              "isDoubleHeight": false, 
-              "isDoubleWidth": false,
-              "isUnderLine": 0,
-              "isBold": false,
-            };
-            r_data.data.splice(2, 0, r_value);
-        }
-        console.log('开始打印，api传信息...')
-        let n = 1;
-        that.writeBLECharacteristicValue(i_data,r_data,n);
-      }
-    }).catch(e => {
-      console.log(e)
-    })
-
-  },
-  writeBLECharacteristicValue(i_d,r_d,n){
-    let num = n; 
-    let that = this;
-    let print_type = that.data.print_type;
-    //打印收据
-    if (print_type == 'receiptInfo') {
-      that.SendControlCommand(r_d);
-      num++;
-      if(num <= 2){
-        that.writeBLECharacteristicValue(i_d,r_d,num);
-      }else{
-        // 4.修改打印收据状态
-        that.setReceiptStatus();
-      }
-    } 
-    if (print_type == 'invoiceInfo'){
-      that.SendControlCommand(i_d);
-      // 5.修改发票状态
-      that.setInvoiceStatus();
-    }
-  },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
       wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
           if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: 'none',
+            })
           }
         }
       })
       return
-    }else{
-      that.SendControlCommand_1(printData);
     }
+    wx.showToast({
+      title: lang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
   },
-  SendControlCommand_1(printData) {
+
+  handlePrint(p) {
     let that = this;
-     wx.showLoading({
-      title: ''
-    });
-
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
+    let print_type = that.data.print_type;
+    let p_d = {
+      id: that.data.pay_log_id,
     }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          that.getOrderInfo(res.data.data[0].orderId);
-        }else{
-          wx.showToast({
-            title: 'error',
-            icon: "none",
-            duration: 3000,
-          })
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
+    if (print_type == 'invoiceInfo') {
+      p_d.tyep = 2;
+    }
+    if (print_type == 'receiptInfo') {
+      p_d.tyep = 1;
+    }
+    addUserPayLogNumber(p_d).then(res => {
+      if (res.code != 200) {
+        return
       }
+      let info = [];
+      if (print_type == 'invoiceInfo') {
+        const invoiceInfo_number = `
+Ref. Recibo: ${res.data.invoice_number}
+`;
+        that.setData({ invoiceInfo_number })
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.invoiceInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...arrEncoderCopy(that.data.invoiceInfo_title_1),
+          ...arrEncoderCopy(that.data.invoiceInfo_invoice_code),
+          ...arrEncoderCopy(invoiceInfo_number),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.invoiceInfo_CustomerData),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.invoiceInfo_historyData_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.invoiceInfo_historyData_info),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.invoiceInfo_facturacao_title),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.invoiceInfo_facturacao_info),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.invoiceInfo_valores),
+          ...blueToolth.printCommand.enter
+        ]
+      }
+      if (print_type == 'receiptInfo') {
+        const receiptInfo_number = `
+Ref. Recibo: ${res.data.receipt_number}
+`;
+        that.setData({ receiptInfo_number })
+        info = [
+          ...blueToolth.printCommand.clear,
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.receiptInfo_title),
+          ...blueToolth.printCommand.ct_zc,
+          ...arrEncoderCopy(that.data.receiptInfo_title_1),
+          ...arrEncoderCopy(receiptInfo_number),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.receiptInfo_historyData),
+          ...blueToolth.printCommand.center,
+          ...blueToolth.printCommand.ct,
+          ...arrEncoderCopy(that.data.receiptInfo_TOTAL),
+          ...blueToolth.printCommand.ct_zc,
+          ...arrEncoderCopy(that.data.receiptInfo_Pagamento),
+          ...blueToolth.printCommand.left,
+          ...arrEncoderCopy(that.data.receiptInfo_Modos),
+          ...blueToolth.printCommand.center,
+          ...arrEncoderCopy(that.data.receiptInfo_Saldo),
+          ...blueToolth.printCommand.enter
+        ]
+      }
+      console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
+      let n = 1;
+      that.writeBLECharacteristicValue(p, info, n);
+    }).catch(e => {
+      console.log(e)
     })
   },
-  getOrderInfo(id){
-
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
+  writeBLECharacteristicValue(data, i, n) {
+    let p = data;
+    let info = i;
+    let num = n;
+    let that = this;
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
+        that.setData({
+          paid_total_money: '',
+          pay_success: false,
+          pay_way: '',
+          pay_text: '',
+          cheque_number: '',
+        })
+        let print_type = that.data.print_type;
+        if (print_type == 'receiptInfo') {
+          num++;
+          if (num <= 2) {
+            that.writeBLECharacteristicValue(p, i, num);
+          } else {
+            that.setReceiptStatus();
+          }
+        }
+        if (print_type == 'invoiceInfo') {
+          that.setInvoiceStatus();
         }
       },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
+      onFail(res) {
+        console.log('打印失败...', res)
       }
-    })
+    });
   },
   // 获取用户打印信息
   getUserBluetoolthInfoData() {
@@ -971,7 +971,6 @@ Factura Automatica`,
       } else if (payDocType === 'FR' || String(printInvoiceNo).indexOf('FR ') === 0) {
         facturaTitle = 'Factura/Recibo'
       }
-      // 发票
       let invoiceInfo_title = `EPASKS-E.P.`;
       let invoiceInfo_title_1 = `
 Empresa Publica de Aquas e Saneamento do Kwanza Sul EP
@@ -980,7 +979,8 @@ NIF:5601022917
 Atendimento ao Cliente941648993
 Comunicação de Roturas941648999
 Email info.epasksagmail.com
-
+`;
+      let invoiceInfo_invoice_code = `
 ${facturaTitle} N° ${printInvoiceNo}
 `;
 
@@ -1023,107 +1023,6 @@ Processado por programaválido n31.1/AGT20
 ${date.time}
       
 `;
-      let invoiceInfo_data = {
-        "name": "printMix", //普通纸混合打印
-        "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-        "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-        "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-        "data": [
-          {
-            "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": encodeURIComponent(invoiceInfo_title)+ "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-            "concentration": 15, //打印浓度1~20，默认15
-            "align": 1, //0左对齐，1居中对齐，2右对齐；
-            "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-            //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-            "isDoubleHeight": true, //是否倍高；
-            "isDoubleWidth": false, //是否倍宽；
-            "isUnderLine": 0, //是否加下划线；
-            "isBold": true, //是否加粗；
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_title_1) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_CustomerData) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_historyData_title) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 24,
-            "isDoubleHeight": true, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_historyData_info) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_facturacao_title) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_facturacao_info) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(invoiceInfo_valores) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-        ]
-
-      };
-
-
-
 //收据
 
       let receiptInfo_title = `EPASKS-E.P.`;
@@ -1166,96 +1065,30 @@ Utilizador: ${that.data.operator_name}
 
 `;
 
-      let receiptInfo_data = {
-        "name": "printMix", //普通纸混合打印
-        "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-        "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-        "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-        "data": [
-          {
-            "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-            "text": encodeURIComponent(receiptInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-            "concentration": 15, //打印浓度1~20，默认15
-            "align": 1, //0左对齐，1居中对齐，2右对齐；
-            "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-            //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-            "isDoubleHeight": true, //是否倍高；
-            "isDoubleWidth": false, //是否倍宽；
-            "isUnderLine": 0, //是否加下划线；
-            "isBold": true, //是否加粗；
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_title_1) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_historyData) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_TOTAL) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 24,
-            "isDoubleHeight": true, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Pagamento) + "\n",
-            "concentration": 15,
-            "align": 1, // 居中
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Modos) + "\n",
-            "concentration": 15,
-            "align": 0,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-          {
-            "printType": 0,
-            "text": encodeURIComponent(receiptInfo_Saldo) + "\n",
-            "concentration": 15,
-            "align": 1,
-            "lineHeight": 30,
-            "isDoubleHeight": false, 
-            "isDoubleWidth": false,
-            "isUnderLine": 0,
-            "isBold": false,
-          },
-        ]
-      };
-      that.handlePrint(invoiceInfo_data,receiptInfo_data);
       that.setData({
-        is_return: true
+        invoiceInfo_title,
+        invoiceInfo_title_1,
+        invoiceInfo_invoice_code,
+        invoiceInfo_CustomerData,
+        invoiceInfo_historyData_title,
+        invoiceInfo_historyData_info,
+        invoiceInfo_facturacao_title,
+        invoiceInfo_facturacao_info,
+        invoiceInfo_valores,
+        receiptInfo_title,
+        receiptInfo_title_1,
+        receiptInfo_historyData,
+        receiptInfo_TOTAL,
+        receiptInfo_Pagamento,
+        receiptInfo_Modos,
+        receiptInfo_Saldo,
       })
+      setTimeout(() => {
+        that.setData({
+          is_return: true
+        })
+      }, 1000)
+      that.blueToothPrint()
       
       
     }).catch((res) => {
@@ -1378,7 +1211,7 @@ Utilizador: ${that.data.operator_name}
   cover_layer() {
     this.setData({
       password_layer: false,
-      operator_name: '',
+      operator_name: ''
     })
   },
   handleInputReading(e) {
@@ -1404,24 +1237,7 @@ Utilizador: ${that.data.operator_name}
   },
   handleNameBlur(e) {
     console.log(e)
-    const operator_name = e.detail.value;
-  
-  },
-  handleNameBlur(e) {
-    console.log(e)
-    const operator_name = e.detail.value;
-    
-  },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str) {
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [...inputBuffer]
-    return arr
+    const operator_name = e.detail.value
   },
 
 })

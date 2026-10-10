@@ -1,12 +1,17 @@
-// pages/business-hall/hecho/index.js
+// pages/business-hall/fecho/index.js
 const app = getApp()
 let lang = app.globalData.lang
-
+const blueToolth = require('../../../utils/bluetoolth')
 const {
-  getAdminShift
+  wxAsyncApi,
+} = require('../../../utils/util')
+const {
+  getAdminShift,
 } = require('../../../apis/water')
-//只需要引用encoding.js,注意路径
-var encoding = require("../../../utils/encoding.js")
+const {
+  arrEncoderCopy,
+} = require('../../../utils/print')
+
 Page({
 
   /**
@@ -18,7 +23,9 @@ Page({
     bluetoolthDevice: lang.admin.bluetoolthDevice,
     operator_name: '',
     name_error: false,
-    printInfo:'', //  打印数据
+    printInfo: '',
+    printInfo_title: '',
+    printInfo_data: '',
     infoData: null,
     total_price: 0,
     cash_sum: 0,
@@ -51,7 +58,7 @@ Page({
     this.setData({
       lang: lang.fecho,
       btnName: lang.btnName,
-      bluetoolthDevice: lang.admin.bluetoolthDevice,
+      bluetoolthDevice: lang.admin.bluetoolthDevice
     })
   },
   //获取当前时间
@@ -96,7 +103,7 @@ Page({
         cash_sum: cash_sum,
         pos_sum: pos_sum,
         transfer_accounts_sum: transfer_accounts_sum,
-        discount_money_sum,
+        discount_money_sum
       })
     }).catch((res) => {
       wx.showToast({
@@ -168,13 +175,13 @@ Page({
   handleBluractual_amount(e){
      const actual_amount = e.detail.value
      this.setData({
-      actual_amount,
+      actual_amount
      })
   },
   handleInputactual_amount(e) {
     const actual_amount = e.detail
     this.setData({
-      actual_amount,
+      actual_amount
     })
   },
   clickPrint(){
@@ -185,12 +192,19 @@ Page({
       })
       return
     }
-    // 获取打印信息
+    // 获取打印信息（明文写入 data，再走旧蓝牙）
     let infoData = this.data.infoData;
+    if (!infoData) {
+      wx.showToast({
+        title: this.data.lang.noData || getApp().globalData.lang.message.noMoreEmpty,
+        icon: 'none',
+      })
+      return
+    }
     let date = this.handleTimeValue();
-
-    let printInfo_title =`EPASKS-E.P.`;
-    let printInfo =`
+    this.setData({
+      printInfo_title: `EPASKS-E.P.`,
+      printInfo: `
 Recibo:            ${infoData.receipt_num} Un
 Numerário:         ${infoData.receipt_cash} kZ
 Cartão Multicaixa: ${infoData.receipt_pos} kZ
@@ -214,157 +228,89 @@ Numerário:         ${this.data.cash_sum} kZ
 Cartão Multicaixa: ${this.data.pos_sum} kZ
 Transferência:     ${this.data.transfer_accounts_sum} kZ
 --------------------------------
-${this.data.actual_amount?'Valor Declarado:   '+ this.data.actual_amount +'KZ': ''}
+${this.data.actual_amount ? 'Valor Declarado:   ' + this.data.actual_amount + 'KZ' : ''}
 Pessoa de entrega: ${operator_name}
 Processado por programaválido n31.1/AGT20
+`,
+      printInfo_data: `
+DATA: ${date.time}
 
-`;
-    let printInfo_data = `DATA: ${date.time}`;
-    let printData = {
-      "name": "printMix", //普通纸混合打印
-      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-      "data": [
-        {
-          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": encodeURIComponent(printInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-          "concentration": 15, //打印浓度1~20，默认15
-          "align": 1, //0左对齐，1居中对齐，2右对齐；
-          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-          "isDoubleHeight": true, //是否倍高；
-          "isDoubleWidth": false, //是否倍宽；
-          "isUnderLine": 0, //是否加下划线；
-          "isBold": true, //是否加粗；
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(printInfo) + "\n",
-          "concentration": 15,
-          "align": 0,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(printInfo_data) + "\n",
-          "concentration": 15,
-          "align": 1,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-      ]
-    }
-    this.SendControlCommand(printData);
+`,
+    })
+    this.blueToothPrint();
   },
 
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
+  // 蓝牙设备打印：检查已连接设备
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
       wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
           if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: 'none',
+            })
           }
         }
       })
       return
-    }else{
-      that.SendControlCommand_1(printData);
     }
+    wx.showToast({
+      title: lang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
   },
-  // 新打印机打印方法
-  SendControlCommand_1(printData) {
-    let that = this;
-    wx.showLoading({
-      title: ''
-    });
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
-    }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          that.getOrderInfo(res.data.data[0].orderId);
-        }else{
-          wx.showToast({
-            title: 'error',
-            icon: "none",
-            duration: 3000,
-          })
-        }
+
+  // 旧打印机：blueToolth.printCommand + arrEncoderCopy + writeBLECharacteristicValue
+  handlePrint(p) {
+    const that = this
+    const lang = getApp().globalData.lang
+    const info = [
+      ...blueToolth.printCommand.clear,
+      ...blueToolth.printCommand.center,
+      ...blueToolth.printCommand.ct,
+      ...arrEncoderCopy(this.data.printInfo_title),
+      ...blueToolth.printCommand.ct_zc,
+      ...arrEncoderCopy(this.data.printInfo),
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(this.data.printInfo_data),
+      ...blueToolth.printCommand.enter
+    ]
+    console.log('BLE writeBLECharacteristicValue...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
         that.setData({
           pay_success: false,
         })
-        that.getAdminShift(1,that.data.operator_name,that.data.actual_amount);
+        that.getAdminShift(1, that.data.operator_name, that.data.actual_amount)
       },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-       
-      }
-    })
-  },
-  getOrderInfo(id){
-
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
+      onFail(res) {
+        console.log('BLE print fail', res)
       }
     })
   },

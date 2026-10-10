@@ -5,6 +5,10 @@ import {
   wxAsyncApi,fmoney
 } from './../../../utils/util'
 const blueToolth = require('../../../utils/bluetoolth')
+const {
+  arrEncoderCopy,
+} = require('./../../../utils/print')
+
 //只需要引用encoding.js,注意路径
 var encoding = require("../../../utils/encoding.js")
 import {
@@ -61,11 +65,11 @@ Page({
     if(auth.indexOf('DG') != -1 || auth.indexOf('CT') != -1  || auth.indexOf('R') != -1){
       // 找到角色
       this.setData({
-        is_admin: true,
+        is_admin: true
       })
     }else{
       this.setData({
-        is_admin: false,
+        is_admin: false
       })
     }
    
@@ -131,7 +135,7 @@ Page({
         that.setData({
           repairUserLabel:'',
           seltTypeInfo: {},
-          form,
+          form
         })
         
         setTimeout( () =>{
@@ -169,7 +173,7 @@ Page({
 
   onCloseRepairDone() {
     this.setData({
-      show: false,
+      show: false
     })
   },
   handleInputCheckDetail(e) {
@@ -186,7 +190,7 @@ Page({
       count: 1,
       mediaType: ['image'],
       sizeType: ['original', 'compressed'],
-      sourceType: ['album', 'camera'],
+      sourceType: ['album', 'camera']
     }).then(res => {
       if (res.tempFiles && res.tempFiles[0]) {
         const done_pic = res.tempFiles[0].tempFilePath
@@ -281,7 +285,7 @@ Page({
     this.setData({
       repairUsererror: false,
       repairUserLabel,
-      seltTypeInfo: e.detail.value,
+      seltTypeInfo: e.detail.value
     })
     this.onCloseType1Select();
   },
@@ -305,8 +309,9 @@ Page({
     let date = this.handleTimeValue();
     let form = that.data.form;
     let lang = that.data.lang;
-    let printInfo_title = `EPASKS-E.P.`;
-    let printInfo = `
+    this.setData({
+      printInfo_title: `EPASKS-E.P.`,
+      printInfo: `
 Informações de reparação
 --------------------------------
 Status:      ${form.status_text}
@@ -318,156 +323,17 @@ Telefone:    ${form.meter.wm_phone? form.meter.wm_phone : ''}
 Resolução:   ${form.report_note? form.report_note : ''}
 Status da atribuição:   ${form.do_uid > 0 ? lang.distribution_1: lang.distribution_2}
 Distribuição:    ${that.data.repairUserLabel}
---------------------------------` ;
-
-      let printInfo_data= `
+--------------------------------
 Processado por programaválido n31.1/AGT20
+`,
+      printInfo_data: `
 DATA: ${date.time}
 
-`;
-    let printData = {
-      "name": "printMix", //普通纸混合打印
-      "top": 80,  //打印内容距离纸张顶部的空白高度，单位为点(8个点等于1毫米), 取值范围是8~304；
-      "runOnNewThread": false, // 注意：这里是布尔值，不是字符串！是否新开线程来执行本次打印任务，默认为false;
-      "forwardMorePaper": 80, //内容打印完成后，继续走纸的距离(目的是使打印内容完成吐到纸仓内外) 单位为点(8个点等于1毫米),取值范围是0~248；
-      "data": [
-        {
-          "printType": 0,  // 0(文字)，1(条形码)，2(二维码)，3(图片);
-          "text": encodeURIComponent(printInfo_title) + "\n", //注意"printMix"方法中"printType"=0时,文字内容末尾必须添加\n作为结尾标记；
-          "concentration": 15, //打印浓度1~20，默认15
-          "align": 1, //0左对齐，1居中对齐，2右对齐；
-          "lineHeight": 30,//行高，单位为点(8个点等于1毫米)，需要不小于字符本身高度(默认字符高24，倍高则为48)；
-          //注意，使用倍高时，本参数会自动翻倍，故应设置为想要高度的一半； 最大值为255；为0时打印机使用默认行高；
-          "isDoubleHeight": true, //是否倍高；
-          "isDoubleWidth": false, //是否倍宽；
-          "isUnderLine": 0, //是否加下划线；
-          "isBold": true, //是否加粗；
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(printInfo) + "\n",
-          "concentration": 15,
-          "align": 0,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-        {
-          "printType": 0,
-          "text": encodeURIComponent(printInfo_data) + "\n",
-          "concentration": 15,
-          "align": 1,
-          "lineHeight": 30,
-          "isDoubleHeight": false, 
-          "isDoubleWidth": false,
-          "isUnderLine": 0,
-          "isBold": false,
-        },
-      ]
-    };
-    this.SendControlCommand(printData);
-
-  },
-  // 新打印机打印方法
-  SendControlCommand(printData) {
-    let that = this;
-    let bluetoolthDevice = that.data.bluetoolthDevice;
-    // 判断是否有设备SN码
-    let terminalNo = wx.getStorageSync('terminalNo');
-    if(!terminalNo || terminalNo == ''){
-      wx.showModal({
-        title: bluetoolthDevice.equipmentNumber,
-        editable: true, // 开启输入框
-        placeholderText: bluetoolthDevice.pleaseequipmentNumber, // 输入框提示文字
-        success(res) {
-          if (res.confirm) {
-            // 用户点击确定后，通过res.content获取输入的内容
-            console.log('设备SN码：', res.content)
-            wx.setStorageSync('terminalNo',res.content);
-            app.globalData.terminalNo = res.content;
-            that.SendControlCommand_1(printData);
-          }
-        }
-      })
-      return
-    }else{
-      that.SendControlCommand_1(printData);
-    }
-  },
-  SendControlCommand_1(printData) {
-    let that = this;
-     wx.showLoading({
-      title: ''
-    });
-
-    let printCtn = {
-      "type":"print",
-      "printJsonStr": printData
-    }
-    wx.request({
-      url: app.globalData.apiUrl + "/iotAdmin/iot/write2Printer",
-      method: "post",
-      data: {
-        terminalNo: wx.getStorageSync('terminalNo'),
-        groupId: app.globalData.groupId,
-        printCtn: JSON.stringify(printCtn)
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          wx.showToast({
-            title: lang.blueToolth.printSuccess,
-            icon: "",
-            duration: 3000,
-          })
-          that.getOrderInfo(res.data.data[0].orderId);
-        }else{
-          wx.showToast({
-            title: 'error',
-            icon: "none",
-            duration: 3000,
-          })
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-      }
+`,
     })
+    this.blueToothPrint();
   },
-  getOrderInfo(id){
 
-    wx.request({
-      url: "https://iot.unioncore.vip/iotAdmin/iot/getOrderInfo",
-      method: "post",
-      data: {
-        orderId: id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log('success...',res)
-        if(res.data.code == 200){
-          
-        }else{
-         
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading();
-        console.log('err...',err)// 控制台打印完整错误，方便排查
-        
-      }
-    })
-  },
   //获取当前时间
   handleTimeValue(date) {
     const _date = date ? new Date(date) : new Date()
@@ -487,15 +353,73 @@ DATA: ${date.time}
       days
     }
   },
-  // 转二进制 并数组复制
-  arrEncoderCopy(str){
-    let data = str;
-    // const encoder = new TextEncoder('cp860');  // 微信小程序不支持 new TextEncoder
-    // let arr = [...encoder.encode(data)]
-    // console.log(arr)
-    //utf8
-    let inputBuffer = new encoding.TextEncoder().encode(str);
-    let arr = [ ...inputBuffer ]
-    return arr
-  }
+
+  blueToothPrint() {
+    const connectStorage = wx.getStorageSync('connectDevice')
+    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const lang = getApp().globalData.lang
+    if (!connectDeviceInfo) {
+      wx.showModal({
+        title: lang.blueToolth.noConnect,
+        content: lang.blueToolth.noConnectWarning,
+        cancelText: lang.blueToolth.cancelText,
+        confirmText: lang.blueToolth.confirmText,
+        complete: (res) => {
+          if (res.confirm) {
+            wxAsyncApi('navigateTo', {
+              url: `/pages/admin/bluetooth/index?origin=page`,
+            }).then(() => {
+              wx.setNavigationBarTitle({
+                title: lang.blueToolth.title,
+              })
+            })
+          }
+          if (res.cancel) {
+            wx.showToast({
+              title: lang.blueToolth.cancel,
+              icon: 'none',
+            })
+          }
+        }
+      })
+      return
+    }
+    wx.showToast({
+      title: lang.blueToolth.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
+  },
+
+  handlePrint(p) {
+    const lang = getApp().globalData.lang
+    const info = [
+      ...blueToolth.printCommand.clear,
+      ...blueToolth.printCommand.ct,
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(this.data.printInfo_title),
+      ...blueToolth.printCommand.ct_zc,
+      ...blueToolth.printCommand.left,
+      ...arrEncoderCopy(this.data.printInfo),
+      ...blueToolth.printCommand.center,
+      ...arrEncoderCopy(this.data.printInfo_data),
+      ...blueToolth.printCommand.enter
+    ]
+    console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
+    blueToolth.writeBLECharacteristicValue({
+      ...p,
+      value: new Uint8Array(info).buffer,
+      lasterSuccess() {
+        wx.showToast({
+          title: lang.blueToolth.printSuccess,
+          icon: 'none',
+          duration: 3000,
+        })
+      },
+      onFail(res) {
+        console.log('打印失败...', res)
+      }
+    })
+  },
 })
