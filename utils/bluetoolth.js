@@ -199,7 +199,7 @@ function writeBLECharacteristicValue(options) {
 }
 
 // 使用的 ESC/POS指令， 十进制方式
-// 更多指令请查看 ./PrintCommandDocs/ESC-POS指令文档(凯盛诺打印机代表).pdf
+// QR：GS ( k，见 utils/escposQr.js（与凯胜诺「最全指令集」QR 章节一致）
 
 const printCommand = {
   left: [27, 97, 0], //居左

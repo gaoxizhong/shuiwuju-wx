@@ -177,6 +177,29 @@ export const obterAgtEstado = (data) => {
   })
 }
 
+/**
+ * AGT 贷项通知单（NC 冲红）
+ * POST /api/wx/tr/tr_issue_agt_credit_note
+ *
+ * @param {Object} data
+ * @param {number} data.user_pay_log_id  缴费记录 ID（jc 缴费记录删除冲红）
+ * @param {string} [data.reason]         冲红原因
+ * @param {number} [data.poll=1]
+ * @param {number} [data.poll_times=5]
+ * @param {number} [data.poll_interval=3]
+ *
+ * 其他收费单示例：source_type=user_pay_demand_note + demand_note_id
+ */
+export const issueAgtCreditNote = (data) => {
+  const baseUrl = getApp().globalData.baseUrl
+  return httpRequest({
+    url: `${baseUrl}/api/wx/tr/tr_issue_agt_credit_note`,
+    method: 'POST',
+    data: data || {},
+    timeout: 60000,
+  })
+}
+
 function delayMs(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }

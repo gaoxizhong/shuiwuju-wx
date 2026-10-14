@@ -8,6 +8,11 @@
  */
 const blueToolth = require('./bluetoolth')
 const { wxAsyncApi } = require('./util')
+const {
+  buildAgtConsultaFeUrl,
+  buildEscPosQrCodeBytes,
+  DEFAULT_EMISSOR_NIF,
+} = require('./escposQr')
 var encoding = require('./encoding.js')
 
 /** 打印内容转义/编码为字节数组（旧方法） */
@@ -130,6 +135,19 @@ function printTextSegments(segments, hooks) {
   })
 }
 
+/** 已开票小票末尾追加 AGT 校验 QR（居中） */
+function appendAgtInvoiceQrCommands(infoBytes, documentNo, emissorNif) {
+  const url = buildAgtConsultaFeUrl(documentNo, emissorNif || DEFAULT_EMISSOR_NIF)
+  if (!url) return infoBytes
+  return [
+    ...infoBytes,
+    ...printCommand.center,
+    ...buildEscPosQrCodeBytes(url),
+    ...printCommand.enter,
+    ...printCommand.enter,
+  ]
+}
+
 module.exports = {
   blueToolth,
   printCommand,
@@ -138,4 +156,7 @@ module.exports = {
   writeBLECharacteristicValue,
   printEscPos,
   printTextSegments,
+  appendAgtInvoiceQrCommands,
+  buildAgtConsultaFeUrl,
+  buildEscPosQrCodeBytes,
 }

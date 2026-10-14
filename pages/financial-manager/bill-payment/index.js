@@ -2,8 +2,14 @@
 const app = getApp()
 let lang = app.globalData.lang
 import { getAllUserPayLog,delAllUserPayLog,getDelAllUserPayLog, } from './../../../apis/financial-manager'
-const { addUserPayLogNumber } = require('../../../apis/water')
-import { wxAsyncApi,fmoney,handleTimeValue } from './../../../utils/util'
+import { obterAgtEstado, issueAgtCreditNote } from './../../../apis/admin'
+import {
+  wxAsyncApi,
+  fmoney,
+  handleTimeValue,
+  resolveAgtPayLogDeleteGate,
+  isAgtPayLogRedInkDone,
+} from './../../../utils/util'
 Page({
 
   /**
@@ -11,6 +17,7 @@ Page({
    */
   data: {
     lang: lang.index,
+    otherInvoices: lang.otherInvoices,
     langDialog: lang.dialog,
     btnName: lang.btnName,
     page: 1,
@@ -47,9 +54,10 @@ Page({
     const etime = this.data.endTime
     this.setData({
       lang: lang.index,
+      otherInvoices: lang.otherInvoices,
       langDialog: lang.dialog,
       btnName: lang.btnName,
-      searchStatusList: lang.searchStatusList, 
+      searchStatusList: lang.searchStatusList,
 
     })
     // if (stime && etime) {
@@ -202,13 +210,111 @@ Page({
   goToFecho(){
   
   },
+  pollObterUntilRedInk(userPayLogId, maxTimes, intervalSec) {
+    const times = maxTimes != null ? maxTimes : 5
+    const interval = (intervalSec != null ? intervalSec : 3) * 1000
+    let count = 0
+    const run = () => {
+      return obterAgtEstado({ user_pay_log_id: userPayLogId }).then((estadoRes) => {
+        count += 1
+        if (isAgtPayLogRedInkDone(null, estadoRes)) {
+          return estadoRes
+        }
+        if (count >= times) {
+          return Promise.reject({ desc: lang.otherInvoices.agtDeleteNcFail })
+        }
+        return new Promise((resolve) => {
+          setTimeout(resolve, interval)
+        }).then(() => run())
+      })
+    }
+    return run()
+  },
+
+  issueNcForPayLog(item, reason) {
+    return issueAgtCreditNote({
+      user_pay_log_id: item.id,
+      reason: reason || 'Anulacao por erro de emissao',
+      poll: 1,
+      poll_times: 5,
+      poll_interval: 3,
+    }).then(() => this.pollObterUntilRedInk(item.id, 5, 3))
+  },
+
+  removePayLogFromList(index) {
+    const list = this.data.list.slice()
+    list.splice(index, 1)
+    this.setData({
+      list,
+      del_selt_index: null,
+      del_selt_info: {},
+      cancelShowPop: false,
+    })
+  },
+
+  delPayLogRecord(item) {
+    return delAllUserPayLog({
+      user_pay_log_id: item.id,
+      del_data_time: handleTimeValue().time,
+    })
+  },
+
+  /** 查询 AGT 状态 → 必要时 NC 冲红 → jc 删除（不调 fb_add_user_pay_log_number） */
+  runDeletePayLogWithAgtGate(item, index, options) {
+    const that = this
+    const opts = options || {}
+    const oi = lang.otherInvoices
+    const comment = opts.comment || ''
+    wx.showLoading({
+      title: lang.message.loading,
+      mask: true,
+    })
+    return obterAgtEstado({ user_pay_log_id: item.id }).then((estadoRes) => {
+      const gate = resolveAgtPayLogDeleteGate(item, estadoRes)
+      if (gate === 'forbid_issuing') {
+        wx.hideLoading()
+        wx.showToast({
+          title: oi.agtDeleteIssuing,
+          icon: 'none',
+          duration: 3000,
+        })
+        return Promise.reject({ skipReset: true })
+      }
+      if (gate === 'need_nc') {
+        wx.showLoading({
+          title: oi.agtDeleteNcLoading,
+          mask: true,
+        })
+        return that.issueNcForPayLog(item, comment)
+      }
+      return estadoRes
+    }).then(() => that.delPayLogRecord(item)).then((res) => {
+      wx.hideLoading()
+      if (res && res.code == 200) {
+        wx.showToast({ title: lang.message.success })
+        that.removePayLogFromList(index)
+      } else if (res) {
+        wx.showToast({ title: res.desc, icon: 'none' })
+      }
+    }).catch((e) => {
+      wx.hideLoading()
+      if (!e || !e.skipReset) {
+        wx.showToast({
+          title: (e && e.desc) || oi.agtDeleteNcFail,
+          icon: 'none',
+        })
+      }
+    }).finally(() => {
+      that.setData({ is_return: true })
+    })
+  },
+
   // 点击列表删除 icon
   clickDelete(e){
-    let that = this;
-    let item = e.currentTarget.dataset.item;
-    let index = e.currentTarget.dataset.index;
-    let list = that.data.list;
-    if(item.cancel_receipt_number){
+    const that = this
+    const item = e.currentTarget.dataset.item
+    const index = e.currentTarget.dataset.index
+    if (item.cancel_receipt_number) {
       wx.showModal({
         title: lang.historical.title,
         content: lang.historical.content,
@@ -216,42 +322,24 @@ Page({
         confirmText: lang.historical.confirmText,
         complete: (res) => {
           if (res.confirm) {
-            console.log(item)
-            delAllUserPayLog({
-              user_pay_log_id: item.id,
-              del_data_time: handleTimeValue().time
-            }).then( res =>{
-              if(res.code == 200){
-                wx.showToast({
-                  title: lang.message.success,
-                })
-                list.splice(index,1);
-                that.setData({
-                  list,
-                })
-              }else{
-                wx.showToast({
-                  title: res.desc,
-                  icon: 'none'
-                })
-              }
-            })
+            that.setData({ is_return: false })
+            that.runDeletePayLogWithAgtGate(item, index, {})
           }
-        }
+        },
       })
-    }else{
-      that.setData({
-        cancelList: [
-          {id: 1,text:'Erro de lançamento'},
-          {id: 2,text:'Duplicação'},
-          {id: 3,text:'Devolução do pagamento'},
-          {id: 4,text:'Outro motivo justificado'},
-        ],
-        del_selt_index: index,
-        del_selt_info: item,
-        cancelShowPop: true
-      })
+      return
     }
+    that.setData({
+      cancelList: [
+        { id: 1, text: 'Erro de lançamento' },
+        { id: 2, text: 'Duplicação' },
+        { id: 3, text: 'Devolução do pagamento' },
+        { id: 4, text: 'Outro motivo justificado' },
+      ],
+      del_selt_index: index,
+      del_selt_info: item,
+      cancelShowPop: true,
+    })
   },
   onChange(e){
     console.log(e)
@@ -303,70 +391,16 @@ Page({
   },
   // 取消原因弹窗 确认
   onConfirmType1Select(e){
-    let that = this;
-    let valueinfo = e.detail.value; // 取消原因
-    let datainfo = this.data.del_selt_info; 
-    let list = that.data.list;
-    let index = that.data.del_selt_index;
-    if( !that.data.is_return ){
+    const that = this
+    const valueinfo = e.detail.value
+    const datainfo = this.data.del_selt_info
+    const index = that.data.del_selt_index
+    if (!that.data.is_return) {
       return
     }
-    that.setData({
-      is_return: false
+    that.setData({ is_return: false })
+    that.runDeletePayLogWithAgtGate(datainfo, index, {
+      comment: valueinfo.text,
     })
-    let p = {
-      id: datainfo.id,
-      type: 3,
-      comment: valueinfo.text
-    }
-    // 1:收据编码 2:发票编码 3:取消收据编码 4:取消发票编码
-    // 获取编码
-    addUserPayLogNumber(p).then(res => {
-      console.log(res)
-      if(res.code == 200){
-        // that.blueToothPrint();
-        // 删除接口
-        delAllUserPayLog({
-          user_pay_log_id: datainfo.id,
-          del_data_time: handleTimeValue().time
-        }).then( res =>{
-          if(res.code == 200){
-            wx.showToast({
-              title: lang.message.success,
-            })
-            list.splice(index,1);
-            that.setData({
-              list,
-              del_selt_index: null,
-              del_selt_info: {},
-              cancelShowPop: false
-            })
-          }else{
-            wx.showToast({
-              title: res.desc,
-              icon: 'none'
-            })
-          }
-        })
-      }else{
-        wx.showToast({
-          title: 'Error',
-          icon:'none'
-        })
-      }
-      that.setData({
-        is_return: true
-      })
-    }).catch(e => {
-      console.log(e)
-      wx.showToast({
-        title: e.desc,
-        icon: 'none'
-      })
-      that.setData({
-        is_return: true
-      })
-    })
-    
   },
 })

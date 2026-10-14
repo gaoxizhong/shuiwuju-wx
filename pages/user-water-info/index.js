@@ -4,6 +4,7 @@ let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {
   arrEncoderCopy,
+  appendAgtInvoiceQrCommands,
 } = require('./../../utils/print')
 const {
   wxAsyncApi,fmoney,parseMoneyNumber,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId
@@ -942,7 +943,10 @@ ${date.time}
   // 旧蓝牙：ESC/POS + arrEncoderCopy + blueToolth.writeBLECharacteristicValue
   handlePrint(p) {
     const that = this
-    const info = [
+    const agtDoc = that.data.agt_document_no
+      || (that.data.form && (that.data.form.agt_document_no || that.data.form.bill_invoice_code))
+      || ''
+    let info = [
       ...blueToolth.printCommand.clear,
       ...blueToolth.printCommand.center,
       ...blueToolth.printCommand.ct,
@@ -971,6 +975,9 @@ ${date.time}
       ...arrEncoderCopy(that.data.printInfo_time),
       ...blueToolth.printCommand.enter,
     ]
+    if (agtDoc) {
+      info = appendAgtInvoiceQrCommands(info, agtDoc)
+    }
     console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
     blueToolth.writeBLECharacteristicValue({
       ...p,

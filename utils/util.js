@@ -49,7 +49,10 @@ function fmoney(s, n){
 	* n：保留几位小数
 	* */
 	n = n > 0 && n <= 20 ? n : 2;
-	s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";
+	let num = parseFloat((s + "").replace(/[^\d\.-]/g, ""));
+	if (!Number.isFinite(num)) num = 0;
+	const negative = num < 0;
+	s = Math.abs(num).toFixed(n) + "";
 	var l = s.split(".")[0].split("").reverse(),
 	r = s.split(".")[1],
 	t = "";
@@ -58,7 +61,8 @@ function fmoney(s, n){
 	t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
 
 	}
-	return t.split("").reverse().join("") + "." + r;
+	const body = t.split("").reverse().join("") + "." + r;
+	return negative ? "-" + body : body;
 }
 /**
  * 支付金额转纯数字（去掉千分位逗号等），供 fb_user_payment 的 total_money 使用
@@ -265,6 +269,51 @@ function extractAgtRequestId(res) {
   )
 }
 
+/** 缴费记录删除：AGT/业务态（2 已开票 / 4 开票中 / 6 已冲红） */
+function getAgtPayLogBusinessStatus(item, estadoRes) {
+  const data = getAgtInvoiceData(estadoRes)
+  const raw = data.agt_business_status
+    ?? data.business_status
+    ?? data.agt_invoice_status
+    ?? (item && (item.agt_business_status ?? item.agt_invoice_status ?? item.agt_status))
+  const n = Number(raw)
+  return Number.isFinite(n) ? n : 0
+}
+
+function isAgtPayLogRedInkDone(item, estadoRes) {
+  const data = getAgtInvoiceData(estadoRes)
+  if (getAgtPayLogBusinessStatus(item, estadoRes) === 6) return true
+  if (data.credit_note_ok === true || data.nc_ok === true) return true
+  if (item && (item.agt_business_status === 6 || item.agt_invoice_status === 6)) return true
+  return false
+}
+
+/**
+ * 删除缴费记录前的 AGT 门禁
+ * @returns {'delete_ok'|'need_nc'|'forbid_issuing'}
+ */
+function resolveAgtPayLogDeleteGate(item, estadoRes) {
+  if (isAgtPayLogRedInkDone(item, estadoRes)) {
+    return 'delete_ok'
+  }
+  const biz = getAgtPayLogBusinessStatus(item, estadoRes)
+  if (biz === 4) {
+    return 'forbid_issuing'
+  }
+  const data = getAgtInvoiceData(estadoRes)
+  const localIssued = item && item.invoice_status == 2 && !item.cancel_invoice_number
+  const hasCode = !!(item && (item.bill_invoice_code || item.agt_document_no))
+    || !!(data.document_no || data.documentNo)
+  const agtValid = isAgtValidationPassed(estadoRes)
+  if (biz === 2 || localIssued || hasCode || agtValid) {
+    return 'need_nc'
+  }
+  if (isAgtValidationPending(estadoRes)) {
+    return 'forbid_issuing'
+  }
+  return 'delete_ok'
+}
+
 /** 合并开票结果与查询结果的发票号 */
 function mergeAgtDocumentNo(issueRes, estadoRes) {
   const fromEstado = getAgtInvoiceData(estadoRes || {})
@@ -296,4 +345,7 @@ module.exports = {
   isAgtValidationPassed,
   extractAgtRequestId,
   mergeAgtDocumentNo,
+  getAgtPayLogBusinessStatus,
+  isAgtPayLogRedInkDone,
+  resolveAgtPayLogDeleteGate,
 }

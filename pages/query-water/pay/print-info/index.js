@@ -2,12 +2,20 @@
 const app = getApp()
 let lang = app.globalData.lang
 const {
-  wxAsyncApi
+  wxAsyncApi,
+  mergeAgtDocumentNo,
+  extractAgtRequestId,
+  isAgtValidationPassed,
+  isAgtValidationPending,
 } = require('./../../../../utils/util')
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
   arrEncoderCopy,
+  appendAgtInvoiceQrCommands,
 } = require('./../../../../utils/print')
+import {
+  issueAgtInvoiceThenQueryEstado,
+} from '../../../../apis/admin'
 const {
   getArrearsMoneySum,
   payWater,
@@ -28,6 +36,7 @@ Page({
    */
   data: {
     lang: lang.pay.collectInfo,
+    otherInvoices: lang.otherInvoices,
     langDialog: lang.dialog,
     bluetoolthDevice: lang.admin.bluetoolthDevice,
     paid_total_money: '',
@@ -57,6 +66,8 @@ Page({
 Factura Automatica`,
     historyPaymentBills: [],
     indexLang: lang.index,
+    agt_document_no: '',
+    agt_request_id: '',
   },
 
   /**
@@ -102,6 +113,7 @@ Factura Automatica`,
       is_T: is_T == 'true'?true:false,
       payStatusList: arr,
       lang: lang.pay.collectInfo,
+      otherInvoices: lang.otherInvoices,
       langDialog: lang.dialog,
       btnName: lang.btnName,
       steps: lang.pay.steps,
@@ -114,10 +126,14 @@ Factura Automatica`,
       this.loadHistoryPaymentBills(wm_no)
     }
   },
-  onShow(){
-    // getRegistarFactura({a:1,b:2,c:3}).then( res =>{
-    //   console.log(res)
-    // })
+  onShow() {
+    lang = app.globalData.lang
+    this.setData({
+      lang: lang.pay.collectInfo,
+      otherInvoices: lang.otherInvoices,
+      langDialog: lang.dialog,
+      btnName: lang.btnName,
+    })
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){
@@ -245,11 +261,96 @@ Factura Automatica`,
     this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
 
-   // 发票
-   blueToothInvoice(){
-     wx.navigateTo({
-       url:  `/pages/user-total-info/index?wm_no=${this.data.form.wm_no}&wm_name=${this.data.form.wm_name}&source=search-person&is_yujiao=${this.data.automatica}`,
-     })
+  buildAgtInvoiceParams() {
+    const form = this.data.form || {}
+    const params = {
+      document_type: 'FT',
+      poll: 0,
+      poll_times: 0,
+      poll_interval: 3,
+      source_type: 'user_pay_log',
+      source_id: form.up_id,
+    }
+    if (form.wm_no) {
+      // customer_tax_id 由后端按水表补全时可省略
+    }
+    return params
+  },
+
+  isAgtIssueSuccess(res) {
+    return isAgtValidationPassed(res)
+  },
+
+  issueAgtInvoiceThenPrint() {
+    const that = this
+    const otherInvoices = that.data.otherInvoices
+    const upId = that.data.form.up_id
+    if (!upId) {
+      wx.showToast({
+        title: otherInvoices.noDemandNoteId || lang.message.fail,
+        icon: 'none',
+      })
+      return
+    }
+    if (!that.data.is_Invoicereturn) {
+      return
+    }
+    that.setData({ is_Invoicereturn: false })
+    wx.showLoading({
+      title: otherInvoices.agtLoading,
+      mask: true,
+    })
+    const resetBtn = (delay = 1000) => {
+      setTimeout(() => that.setData({ is_Invoicereturn: true }), delay)
+    }
+    const handleFail = (res) => {
+      wx.hideLoading()
+      wx.showToast({
+        title: otherInvoices.agtIssueFail,
+        icon: 'none',
+        duration: 3000,
+      })
+      resetBtn(0)
+    }
+    issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams()).then(({ issueRes, finalRes, request_id }) => {
+      wx.hideLoading()
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
+      const startPrint = (no) => {
+        that.setData({
+          agt_document_no: no || documentNo,
+          agt_request_id: requestId || '',
+          print_type: 'invoiceInfo',
+          is_Invoicereturn: true,
+        })
+        that.getUserBluetoolthInfoData(that.verifyBlueToothPrint)
+      }
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({ title: otherInvoices.agtSuccessTitle, icon: 'none' })
+        startPrint(documentNo)
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        wx.showModal({
+          title: otherInvoices.agtPending,
+          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+          cancelText: lang.dialog.cancelText,
+          success: (r) => {
+            if (r.confirm) startPrint(documentNo)
+            else resetBtn(0)
+          },
+        })
+        return
+      }
+      handleFail(res)
+    }).catch(handleFail)
+  },
+
+  // AGT 开票并蓝牙打印（含 QR）
+  blueToothInvoice() {
+    this.issueAgtInvoiceThenPrint()
   },
 
   // 蓝牙设备打印：检查已连接设备后写入 ESC/POS
@@ -297,7 +398,7 @@ Factura Automatica`,
     let print_type = that.data.print_type;
     let is_yujiao = that.data.is_yujiao;
     let info = [];
-    if (print_type == 'printInfo') {
+    if (print_type == 'printInfo' || print_type == 'invoiceInfo') {
       if (is_yujiao == 'automatica') {
         info = [
           ...blueToolth.printCommand.clear,
@@ -369,6 +470,9 @@ Factura Automatica`,
         ]
       }
     }
+    if (print_type === 'invoiceInfo' && that.data.agt_document_no) {
+      info = appendAgtInvoiceQrCommands(info, that.data.agt_document_no)
+    }
     console.log('开始打印，蓝牙传信息...')
     blueToolth.writeBLECharacteristicValue({
       ...p,
@@ -382,12 +486,14 @@ Factura Automatica`,
         })
         that.setData({
           is_Printreturn: true,
+          is_Invoicereturn: true,
         })
       },
       onFail(res) {
         console.log('打印失败...', res)
         that.setData({
           is_Printreturn: true,
+          is_Invoicereturn: true,
         })
       }
     });
@@ -410,14 +516,17 @@ Factura Automatica`,
     const params = {
       wm_no: that.data.form.wm_no,
     }
-    if(that.data.print_type == 'printInfo'){
-      //缴费单
-      if( !that.data.is_Printreturn ){
+    if (that.data.print_type === 'printInfo') {
+      if (!that.data.is_Printreturn) {
         return
       }
-      that.setData({
-        is_Printreturn: false
-      })
+      that.setData({ is_Printreturn: false })
+    }
+    if (that.data.print_type === 'invoiceInfo') {
+      if (!that.data.is_Invoicereturn) {
+        return
+      }
+      that.setData({ is_Invoicereturn: false })
     }
    
     getUserBluetoolthInfoData(params).then(res => {
@@ -440,6 +549,12 @@ Factura Automatica`,
       let household_num = userBluetoolthInfoData.water_meter.household_num; // 供用水表户数；
       let average_pairce = userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].price/household_num.toFixed(2) : userBluetoolthInfoData.water_meter.user_bal/household_num.toFixed(2);  // 平均户数费用
 
+      const isInvoicePrint = that.data.print_type === 'invoiceInfo'
+      const agtNo = that.data.agt_document_no || ''
+      const docLine = isInvoicePrint && agtNo
+        ? `Factura N° ${agtNo}`
+        : `Aviso de cobrança N° ${userBluetoolthInfoData.user_payment[0] ? userBluetoolthInfoData.user_payment[0].order_no : ''}`
+
       that.setData({
         printInfo_title: `EPASKS-E.P.`,
         printInfo_title_1: `
@@ -452,7 +567,7 @@ Email info.epasksagmail.com
 0040.0000.9258.2876.1026.4 Banco Bai
 0055.0000.4694.8358.1011.7 Banco Atlantica
 
-Aviso de cobrança N° ${userBluetoolthInfoData.user_payment[0]?userBluetoolthInfoData.user_payment[0].order_no:''}
+${docLine}
 
 Dados do Cliente
 `,
@@ -505,9 +620,11 @@ ${date.time}
 `,
       })
       setTimeout(() => {
-        that.setData({
-          is_Printreturn: true,
-        })
+        const patch = { is_Printreturn: true }
+        if (that.data.print_type === 'invoiceInfo') {
+          patch.is_Invoicereturn = true
+        }
+        that.setData(patch)
       }, 1000)
       if (typeof f == 'function') {
         return f()
@@ -515,6 +632,7 @@ ${date.time}
     }).catch((res) => {
       that.setData({
         is_Printreturn: true,
+        is_Invoicereturn: true,
       })
       wx.showToast({
         title: res.desc,
