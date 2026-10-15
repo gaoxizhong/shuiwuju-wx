@@ -153,14 +153,41 @@
 .btn-item.btn-item-2{
   background: #ff0000;
 }
-.status-box{
+.status-box {
   width: 100%;
   padding: 30rpx;
+  box-sizing: border-box;
 }
-.status-box>view{
-  margin-top: 30rpx;
+
+.status-row {
+  margin-top: 28rpx;
+}
+
+.status-row__label {
+  font-size: 28rpx;
+  color: rgba(69, 90, 100, 0.6);
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+}
+
+.status-row__body {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.status-row__texts {
+  flex: 1;
+  min-width: 0;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.status-row__agt {
+  color: #1989fa;
+  margin-left: 12rpx;
 }
 .qx-btn{
   margin-left: 30rpx;

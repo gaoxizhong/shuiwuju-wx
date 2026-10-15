@@ -13,6 +13,10 @@ const {
   arrEncoderCopy,
   appendAgtInvoiceQrCommands,
 } = require('./../../../../utils/print')
+const {
+  getStoredConnectDevice,
+  runAfterBluetoothGate,
+} = require('./../../../../utils/printBluetoothGate')
 import {
   issueAgtInvoiceThenQueryEstado,
 } from '../../../../apis/admin'
@@ -68,6 +72,7 @@ Factura Automatica`,
     indexLang: lang.index,
     agt_document_no: '',
     agt_request_id: '',
+    pendingPrintFlow: '',
   },
 
   /**
@@ -134,6 +139,19 @@ Factura Automatica`,
       langDialog: lang.dialog,
       btnName: lang.btnName,
     })
+    this.resumePendingPrintFlow()
+  },
+
+  resumePendingPrintFlow() {
+    const flow = this.data.pendingPrintFlow
+    if (!flow || !getStoredConnectDevice()) {
+      return
+    }
+    this.setData({ pendingPrintFlow: '' })
+    if (flow === 'demand_note_print') {
+      this.setData({ print_type: 'printInfo' })
+      this.getUserBluetoolthInfoData(this.verifyBlueToothPrint)
+    }
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n){
@@ -254,11 +272,11 @@ Factura Automatica`,
     })
   },
   // 缴费单（旧蓝牙打印机）
-  blueToothPrint(){
-    this.setData({
-      print_type: 'printInfo'
+  blueToothPrint() {
+    runAfterBluetoothGate(this, 'demand_note_print', () => {
+      this.setData({ print_type: 'printInfo' })
+      this.getUserBluetoolthInfoData(this.verifyBlueToothPrint)
     })
-    this.getUserBluetoolthInfoData(this.verifyBlueToothPrint);
   },
 
   buildAgtInvoiceParams() {
@@ -348,39 +366,37 @@ Factura Automatica`,
     }).catch(handleFail)
   },
 
-  // AGT 开票并蓝牙打印（含 QR）
+  // FR：跳转收款页，收款后再打印（不在本页直接开票/打印）
   blueToothInvoice() {
-    this.issueAgtInvoiceThenPrint()
+    const form = this.data.form || {}
+    const wmNo = form.wm_no || ''
+    const wmName = encodeURIComponent(form.wm_name || '')
+    const isYujiao = this.data.is_yujiao || ''
+    const price = form.total_money != null ? form.total_money : ''
+    const upId = form.up_id != null && form.up_id !== '' ? form.up_id : ''
+    if (!wmNo) {
+      wx.showToast({
+        title: lang.message.fail,
+        icon: 'none',
+      })
+      return
+    }
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-total-info/index?wm_no=${wmNo}&wm_name=${wmName}&source=search-person&from=meter-fr&is_yujiao=${isYujiao}&price=${price}&up_id=${upId}`,
+    }).then(() => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
   },
 
   // 蓝牙设备打印：检查已连接设备后写入 ESC/POS
   verifyBlueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
+    const connectDeviceInfo = getStoredConnectDevice()
     const blueLang = getApp().globalData.lang
     if (!connectDeviceInfo) {
-      wx.showModal({
-        title: blueLang.blueToolth.noConnect,
-        content: blueLang.blueToolth.noConnectWarning,
-        cancelText: blueLang.blueToolth.cancelText,
-        confirmText: blueLang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(() => {
-              wx.setNavigationBarTitle({
-                title: blueLang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: blueLang.blueToolth.cancel,
-              icon: 'none',
-            })
-          }
-        }
+      runAfterBluetoothGate(this, 'demand_note_print', () => {
+        this.verifyBlueToothPrint()
       })
       return
     }

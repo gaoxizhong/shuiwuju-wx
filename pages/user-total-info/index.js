@@ -8,7 +8,12 @@ const blueToolth = require('./../../utils/bluetoolth')
 var encoding = require("./../../utils/encoding.js")
 const {
   arrEncoderCopy,
+  appendAgtInvoiceQrCommands,
 } = require('./../../utils/print')
+const {
+  getStoredConnectDevice,
+  runAfterBluetoothGate,
+} = require('./../../utils/printBluetoothGate')
 
 
 const {
@@ -95,8 +100,12 @@ Page({
     cheque_number: '',
     is_yujiao: '', // 'automatica' 预缴
     pay_log_id: '',
+    up_id: '',
     price: 0,
     fromOtherAmount: false,
+    fromMeterReadingFr: false,
+    bill_quota_display: '',
+    pendingPrintFlow: '',
     payDocType: 'FT',
     otherInvoices: lang.otherInvoices,
     automatica_title:`
@@ -122,7 +131,16 @@ Factura Automatica`,
     const wm_no = options.wm_no;
     const wm_name = options.wm_name;
     const price = Number(options.price);
+    const fromMeterReadingFr = options.from === 'meter-fr'
+    const up_id = options.up_id != null && options.up_id !== '' ? String(options.up_id) : ''
     const userInfo = app.globalData.userInfo || {}
+    const billQuotaPatch = {}
+    if (fromMeterReadingFr && Number.isFinite(price)) {
+      billQuotaPatch.bill_quota_display = fmoney(price, 2)
+      billQuotaPatch.paid_total_money = String(price)
+      billQuotaPatch.payDocType = 'FR'
+      billQuotaPatch.print_type = 'invoiceInfo'
+    }
     this.setData({
       lang: lang.userWaterInfo,
       btnName: lang.btnName,
@@ -137,6 +155,9 @@ Factura Automatica`,
       userInfo,
       is_yujiao: options.is_yujiao,
       fromOtherAmount: options.from === 'other-amount',
+      fromMeterReadingFr,
+      up_id,
+      ...billQuotaPatch,
       // payStatusList: JSON.parse(payStatusList || '[]')
     })
     this.getArrearsMoneySum(options.wm_no)
@@ -153,6 +174,44 @@ Factura Automatica`,
     this.setData({
       is_return: true
     })
+    this.resumePendingPrintFlow()
+  },
+
+  resumePendingPrintFlow() {
+    const flow = this.data.pendingPrintFlow
+    if (!flow || !getStoredConnectDevice()) {
+      return
+    }
+    this.setData({ pendingPrintFlow: '' })
+    if (flow === 'ftfr') {
+      if (!this.data.pay_success) {
+        this.new_onConfirmPay()
+      } else if (this.data.pay_log_id && (this.data.fromOtherAmount || this.data.fromMeterReadingFr)) {
+        this.issueAgtInvoiceThenPrint(this.data.pay_log_id)
+      } else {
+        this.getUserBluetoolthInfoData()
+      }
+      return
+    }
+    if (flow === 'local_invoice') {
+      if (!this.data.pay_success) {
+        this.new_onConfirmPay()
+      } else {
+        this.getUserBluetoolthInfoData()
+      }
+      return
+    }
+    if (flow === 'local_receipt_pw') {
+      this.setData({ password_layer: true })
+      return
+    }
+    if (flow === 'local_receipt_pay') {
+      this.continueReceiptPayAfterOperator()
+      return
+    }
+    if (flow === 'local_print_only') {
+      this.getUserBluetoolthInfoData()
+    }
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
@@ -290,6 +349,9 @@ Factura Automatica`,
       if(params.pay_way == 4){
         params.cheque_number = that.data.cheque_number;
       }
+      if (that.data.up_id) {
+        params.user_payment_id = that.data.up_id
+      }
       new_payWater(params).then(res => {
         // 支付成功：data.data.id = 缴费单支付记录ID，用于 AGT source_id
         const pay_log_id = (res.data && res.data.data && res.data.data.id) || ''
@@ -307,7 +369,7 @@ Factura Automatica`,
         //获取用户待缴费金额接口 
         that.getArrearsMoneySum(that.data.wm_no);
         // 从「其他金额」进入：收款后先开 AGT FT/FR，再打印
-        if (that.data.fromOtherAmount && that.data.payDocType) {
+        if ((that.data.fromOtherAmount || that.data.fromMeterReadingFr) && that.data.payDocType) {
           that.issueAgtInvoiceThenPrint(pay_log_id)
         } else {
           that.getUserBluetoolthInfoData();
@@ -536,21 +598,12 @@ Factura Automatica`,
       return
     }
     this.setData({
-      payDocType
+      payDocType,
+      print_type: 'invoiceInfo',
     })
-    if (payDocType === 'FR') {
-      // FR：先填操作员姓名（与原打印收据流程一致），再收款开票打印
-      this.setData({
-        print_type: 'receiptInfo',
-        password_layer: true
-      })
-      return
-    }
-    // FT：直接收款开票打印
-    this.setData({
-      print_type: 'invoiceInfo'
+    runAfterBluetoothGate(this, 'ftfr', () => {
+      this.new_onConfirmPay()
     })
-    this.new_onConfirmPay()
   },
 
   // 近n天
@@ -678,8 +731,8 @@ Factura Automatica`,
       }
     }
 
-    this.setData({
-      password_layer: true
+    runAfterBluetoothGate(this, 'local_receipt_pw', () => {
+      this.setData({ password_layer: true })
     })
     return
   },
@@ -689,24 +742,29 @@ Factura Automatica`,
       is_operatorLsPop: false
     })
   },
-  //  确认姓名
-  clickPrint() {
-    let operator_name = this.data.operator_name;
+  continueReceiptPayAfterOperator() {
+    const operator_name = this.data.operator_name
     if (!operator_name) {
-      this.setData({
-        name_error: true
-      })
+      this.setData({ name_error: true })
       return
     }
-    this.setData({
-      print_type: 'receiptInfo'
-    })
-    let operatorNameList = this.data.operatorNameList;
+    this.setData({ print_type: 'receiptInfo' })
+    let operatorNameList = this.data.operatorNameList
     if (operatorNameList.indexOf(operator_name) == -1) {
-      operatorNameList.push(operator_name);
+      operatorNameList.push(operator_name)
       wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
     }
-    this.new_onConfirmPay();
+    this.new_onConfirmPay()
+  },
+  //  确认姓名
+  clickPrint() {
+    if (!this.data.operator_name) {
+      this.setData({ name_error: true })
+      return
+    }
+    runAfterBluetoothGate(this, 'local_receipt_pay', () => {
+      this.continueReceiptPayAfterOperator()
+    })
   },
   // 点击历史姓名记录
   operatorLs(){
@@ -768,41 +826,22 @@ Factura Automatica`,
     this.setData({
       print_type: 'invoiceInfo'
     })
-    this.new_onConfirmPay();
+    runAfterBluetoothGate(this, 'local_invoice', () => {
+      this.new_onConfirmPay()
+    })
   },
 
   blueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    const lang = getApp().globalData.lang
+    const connectDeviceInfo = getStoredConnectDevice()
+    const blueLang = getApp().globalData.lang.blueToolth
     if (!connectDeviceInfo) {
-      wx.showModal({
-        title: lang.blueToolth.noConnect,
-        content: lang.blueToolth.noConnectWarning,
-        cancelText: lang.blueToolth.cancelText,
-        confirmText: lang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(() => {
-              wx.setNavigationBarTitle({
-                title: lang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: lang.blueToolth.cancel,
-              icon: 'none',
-            })
-          }
-        }
+      runAfterBluetoothGate(this, 'local_print_only', () => {
+        this.blueToothPrint()
       })
       return
     }
     wx.showToast({
-      title: lang.blueToolth.connectDevice,
+      title: blueLang.connectDevice,
       icon: 'none',
       duration: 30000,
     })
@@ -815,11 +854,14 @@ Factura Automatica`,
     let p_d = {
       id: that.data.pay_log_id,
     }
+    const payDocType = (that.data.payDocType || 'FT').toUpperCase()
+    const isOtherAmountFr = payDocType === 'FR'
+      && (that.data.fromOtherAmount || that.data.fromMeterReadingFr)
     if (print_type == 'invoiceInfo') {
-      p_d.tyep = 2;
+      p_d.type = isOtherAmountFr ? 1 : 2
     }
     if (print_type == 'receiptInfo') {
-      p_d.tyep = 1;
+      p_d.type = 1
     }
     addUserPayLogNumber(p_d).then(res => {
       if (res.code != 200) {
@@ -827,8 +869,11 @@ Factura Automatica`,
       }
       let info = [];
       if (print_type == 'invoiceInfo') {
+        const refNo = isOtherAmountFr
+          ? (res.data.receipt_number || res.data.invoice_number)
+          : (res.data.invoice_number || res.data.receipt_number)
         const invoiceInfo_number = `
-Ref. Recibo: ${res.data.invoice_number}
+Ref. Recibo: ${refNo}
 `;
         that.setData({ invoiceInfo_number })
         info = [
@@ -854,6 +899,9 @@ Ref. Recibo: ${res.data.invoice_number}
           ...arrEncoderCopy(that.data.invoiceInfo_valores),
           ...blueToolth.printCommand.enter
         ]
+        if (that.data.agt_document_no) {
+          info = appendAgtInvoiceQrCommands(info, that.data.agt_document_no)
+        }
       }
       if (print_type == 'receiptInfo') {
         const receiptInfo_number = `
@@ -920,7 +968,13 @@ Ref. Recibo: ${res.data.receipt_number}
           }
         }
         if (print_type == 'invoiceInfo') {
-          that.setInvoiceStatus();
+          const isFrDoc = (that.data.fromOtherAmount || that.data.fromMeterReadingFr)
+            && (that.data.payDocType || '').toUpperCase() === 'FR'
+          if (isFrDoc) {
+            that.setReceiptStatus()
+          } else {
+            that.setInvoiceStatus()
+          }
         }
       },
       onFail(res) {

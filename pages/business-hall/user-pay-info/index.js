@@ -5,6 +5,10 @@ const blueToolth = require('../../../utils/bluetoolth')
 const {
   arrEncoderCopy,
 } = require('./../../../utils/print')
+const {
+  getStoredConnectDevice,
+  runAfterBluetoothGate,
+} = require('../../../utils/printBluetoothGate')
 
 const {
   wxAsyncApi,judgmentData,handleTimeValue,fmoney,
@@ -75,6 +79,7 @@ Page({
     status_type: '',
     agt_status_text: '',
     querying_agt: false,
+    pendingPrintFlow: '',
   },
 
   /**
@@ -129,6 +134,23 @@ Page({
     this.setData({
       is_return: true
     })
+    this.resumePendingPrintFlow()
+  },
+
+  resumePendingPrintFlow() {
+    const flow = this.data.pendingPrintFlow
+    if (!flow || !getStoredConnectDevice()) {
+      return
+    }
+    this.setData({ pendingPrintFlow: '' })
+    const that = this
+    if (flow === 'detail_receipt_print') {
+      that.getUserBluetoolthInfoData(that.blueToothPrint)
+      return
+    }
+    if (flow === 'detail_invoice_print') {
+      that.getUserBluetoolthInfoData(that.blueToothPrint)
+    }
   },
   // 获取当前缴费记录下的 包含的缴费单数据
   getUserPayItemDetail(i){
@@ -183,6 +205,8 @@ Page({
     })
     obterAgtEstado({
       user_pay_log_id: payLogId,
+      item: that.data.item,
+      defaultType: 'FT',
     }).then((res) => {
       wx.hideLoading()
       that.setData({ querying_agt: false })
@@ -198,21 +222,11 @@ Page({
         return
       }
       if (isAgtValidationPassed(res)) {
-        const item = Object.assign({}, that.data.item || {}, {
-          invoice_status: 2,
-        })
-        const patch = {
-          item,
-          agt_status_text: lang.agtValid,
-        }
-        if (documentNo) {
-          patch.invoice_code = documentNo
-        }
-        that.setData(patch)
+        that.setData({ agt_status_text: lang.agtValid })
         wx.showToast({
           title: documentNo
-            ? `${oiLang.agtSuccessTitle || lang.agtValid}: ${documentNo}`
-            : (oiLang.agtSuccessTitle || lang.agtValid),
+            ? `${lang.agtValid} · ${documentNo}`
+            : lang.agtValid,
           icon: 'none',
           duration: 3000,
         })
@@ -221,29 +235,10 @@ Page({
       if (isAgtValidationPending(res)) {
         that.setData({ agt_status_text: lang.agtPendingStatus })
         const pendingDocNo = documentNo || that.data.invoice_code || ''
-        if (pendingDocNo) {
-          if (pendingDocNo && !that.data.invoice_code) {
-            that.setData({ invoice_code: pendingDocNo })
-          }
-          wx.showModal({
-            title: oiLang.agtPending || lang.agtPendingStatus,
-            content: `${oiLang.agtPendingPrintConfirm || ''}\n${oiLang.agtInvoiceNo || ''}: ${pendingDocNo}`,
-            confirmText: oiLang.printAnywayBtn || oiLang.printAnyway || lang.queryStatus,
-            cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
-            success: (r) => {
-              if (r.confirm) {
-                that.setData({
-                  print_type: 'invoiceInfo',
-                  invoice_code: pendingDocNo,
-                })
-                that.getUserBluetoolthInfoData(that.handlePrint)
-              }
-            },
-          })
-          return
-        }
         wx.showToast({
-          title: oiLang.agtPending || lang.agtPendingStatus,
+          title: pendingDocNo
+            ? `${lang.agtPendingStatus} · ${pendingDocNo}`
+            : (oiLang.agtPending || lang.agtPendingStatus),
           icon: 'none',
           duration: 3000,
         })
@@ -319,11 +314,9 @@ Page({
       print_type: 'receiptInfo',
       status_type: ''
     })
-    // this.setData({
-    //   password_layer: true
-    // })
-    // return
-    that.getUserBluetoolthInfoData(that.blueToothPrint);
+    runAfterBluetoothGate(that, 'detail_receipt_print', () => {
+      that.getUserBluetoolthInfoData(that.blueToothPrint)
+    })
   },
   clickoperatorName(e) {
     this.setData({
@@ -421,48 +414,30 @@ Page({
     that.setData({
       print_type: 'invoiceInfo'
     })
-    that.getUserBluetoolthInfoData(that.blueToothPrint);
+    runAfterBluetoothGate(that, 'detail_invoice_print', () => {
+      that.getUserBluetoolthInfoData(that.blueToothPrint)
+    })
   },
 
   // 蓝牙设备打印
   blueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    console.log(connectDeviceInfo)
-    const lang = getApp().globalData.lang
+    const connectDeviceInfo = getStoredConnectDevice()
+    const blueLang = getApp().globalData.lang.blueToolth
     if (!connectDeviceInfo) {
-      wx.showModal({
-        title: lang.blueToolth.noConnect,
-        content: lang.blueToolth.noConnectWarning,
-        cancelText: lang.blueToolth.cancelText,
-        confirmText: lang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`
-            }).then(res => {
-              wx.setNavigationBarTitle({
-                title: lang.blueToolth.title
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: lang.blueToolth.cancel,
-              icon: "none"
-            })
-          }
-        }
+      const flow = this.data.print_type === 'invoiceInfo'
+        ? 'detail_invoice_print'
+        : 'detail_receipt_print'
+      runAfterBluetoothGate(this, flow, () => {
+        this.getUserBluetoolthInfoData(this.blueToothPrint)
       })
-    } else {
-      console.log('已连接。。。')
-      wx.showToast({
-        title: lang.blueToolth.connectDevice,
-        icon: "none",
-        duration: 30000
-      })
-     this.handlePrint(connectDeviceInfo)
+      return
     }
+    wx.showToast({
+      title: blueLang.connectDevice,
+      icon: 'none',
+      duration: 30000,
+    })
+    this.handlePrint(connectDeviceInfo)
   },
   handlePrint(p) {
     let that = this;

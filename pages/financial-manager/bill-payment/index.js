@@ -210,14 +210,17 @@ Page({
   goToFecho(){
   
   },
-  pollObterUntilRedInk(userPayLogId, maxTimes, intervalSec) {
+  pollObterUntilRedInk(userPayLogId, payLogItem, maxTimes, intervalSec) {
     const times = maxTimes != null ? maxTimes : 5
     const interval = (intervalSec != null ? intervalSec : 3) * 1000
     let count = 0
     const run = () => {
-      return obterAgtEstado({ user_pay_log_id: userPayLogId }).then((estadoRes) => {
+      return obterAgtEstado({
+        user_pay_log_id: userPayLogId,
+        document_type: 'NC',
+      }).then((estadoRes) => {
         count += 1
-        if (isAgtPayLogRedInkDone(null, estadoRes)) {
+        if (isAgtPayLogRedInkDone(payLogItem, estadoRes)) {
           return estadoRes
         }
         if (count >= times) {
@@ -238,7 +241,7 @@ Page({
       poll: 1,
       poll_times: 5,
       poll_interval: 3,
-    }).then(() => this.pollObterUntilRedInk(item.id, 5, 3))
+    }).then(() => this.pollObterUntilRedInk(item.id, item, 5, 3))
   },
 
   removePayLogFromList(index) {
@@ -269,7 +272,11 @@ Page({
       title: lang.message.loading,
       mask: true,
     })
-    return obterAgtEstado({ user_pay_log_id: item.id }).then((estadoRes) => {
+    return obterAgtEstado({
+      user_pay_log_id: item.id,
+      item,
+      defaultType: 'FT',
+    }).then((estadoRes) => {
       const gate = resolveAgtPayLogDeleteGate(item, estadoRes)
       if (gate === 'forbid_issuing') {
         wx.hideLoading()

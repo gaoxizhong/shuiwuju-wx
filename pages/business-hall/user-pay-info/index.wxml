@@ -33,19 +33,27 @@
         <van-field custom-style="flex-direction: column;" title-width="100%" label="{{lang.pay_type}}" readonly model:value="{{ pay_text }}" placeholder="{{lang.pay_type}}"/>
       </van-cell-group>
       <view class="status-box">
-        <view>
-          <text>{{lang.f_status}}：</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1 && !item.cancel_invoice_number}}">{{lang.wkj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2 && !item.cancel_invoice_number}}">{{lang.ykj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3 || item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
-          <text style="color: #1989fa; margin-left: 12rpx;" wx:if="{{agt_status_text}}">{{agt_status_text}}</text>
-          <view class="qx-btn active query-status-btn" bindtap="queryAgtStatus">{{lang.queryStatus}}</view>
+        <view class="status-row">
+          <view class="status-row__label">{{lang.f_status}}</view>
+          <view class="status-row__body">
+            <view class="status-row__texts">
+              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1 && !item.cancel_invoice_number}}">{{lang.wkj_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2 && !item.cancel_invoice_number}}">{{lang.ykj_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3 || item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
+              <text class="status-row__agt" wx:if="{{agt_status_text}}">{{agt_status_text}}</text>
+            </view>
+            <view class="qx-btn active query-status-btn" bindtap="queryAgtStatus">{{lang.queryStatus}}</view>
+          </view>
         </view>
-        <view>
-          <text>{{lang.s_status}}：</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1 && !item.cancel_receipt_number}}">{{lang.wkj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2 && !item.cancel_receipt_number}}">{{lang.ykj_status}}</text>
-          <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3 || item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
+        <view class="status-row">
+          <view class="status-row__label">{{lang.s_status}}</view>
+          <view class="status-row__body">
+            <view class="status-row__texts">
+              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1 && !item.cancel_receipt_number}}">{{lang.wkj_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2 && !item.cancel_receipt_number}}">{{lang.ykj_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3 || item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>

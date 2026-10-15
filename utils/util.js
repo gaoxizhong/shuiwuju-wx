@@ -314,6 +314,86 @@ function resolveAgtPayLogDeleteGate(item, estadoRes) {
   return 'delete_ok'
 }
 
+const AGT_DOC_TYPE_RE = /^(FT|FR|FA|RG|NC)$/i
+
+/**
+ * 推断 tr_obter_agt_estado 的 document_type（与开票类型一致）
+ * @param {Object} [hints]
+ * @param {string} [hints.document_type]
+ * @param {string} [hints.agt_document_type]
+ * @param {string} [hints.payDocType]
+ * @param {string} [hints.document_no]
+ * @param {Object} [hints.item] 缴费记录等
+ * @param {string} [hints.defaultType='FT']
+ */
+function resolveAgtObterDocumentType(hints) {
+  const h = hints || {}
+  const pick = (v) => {
+    const t = String(v || '').trim().toUpperCase()
+    return AGT_DOC_TYPE_RE.test(t) ? t : ''
+  }
+  let docType = pick(h.document_type)
+  if (docType) return docType
+  docType = pick(h.agt_document_type || h.payDocType)
+  if (docType) return docType
+
+  const item = h.item
+  if (item) {
+    docType = pick(item.agt_document_type || item.document_type)
+    if (docType) return docType
+  }
+
+  const docNo = String(
+    h.document_no || h.documentNo
+    || (item && (
+      item.agt_document_no
+      || item.invoice_code
+      || item.bill_invoice_code
+      || item.bill_fr_code
+      || item.fr_code
+      || item.agt_fr_no
+      || ''
+    ))
+  ).trim()
+  const head = docNo.toUpperCase()
+  if (head.indexOf('FR ') === 0 || head.startsWith('FR/') || head.startsWith('FR-')) {
+    return 'FR'
+  }
+  if (head.indexOf('FT ') === 0 || head.startsWith('FT/') || head.startsWith('FT-')) {
+    return 'FT'
+  }
+
+  if (item) {
+    const frCode = item.bill_fr_code || item.fr_code || item.agt_fr_no
+    if (frCode) return 'FR'
+    const invoiceDone = item.invoice_status == 2 && !item.cancel_invoice_number
+    const receiptDone = item.receipt_status == 2 && !item.cancel_receipt_number
+    if (invoiceDone && receiptDone && !item.bill_invoice_code && !item.agt_document_no) {
+      return 'FR'
+    }
+  }
+
+  return pick(h.defaultType) || 'FT'
+}
+
+/**
+ * 组装 obter_agt_estado 请求体（始终带上 document_type；不向后端传 item）
+ */
+function normalizeObterAgtEstadoParams(data) {
+  const raw = Object.assign({}, data || {})
+  const item = raw.item
+  delete raw.item
+  const defaultType = raw.defaultType
+  delete raw.defaultType
+  raw.document_type = resolveAgtObterDocumentType({
+    document_type: raw.document_type,
+    document_no: raw.document_no,
+    item,
+    defaultType,
+  })
+  return raw
+}
+
 /** 合并开票结果与查询结果的发票号 */
 function mergeAgtDocumentNo(issueRes, estadoRes) {
   const fromEstado = getAgtInvoiceData(estadoRes || {})
@@ -348,4 +428,6 @@ module.exports = {
   getAgtPayLogBusinessStatus,
   isAgtPayLogRedInkDone,
   resolveAgtPayLogDeleteGate,
+  resolveAgtObterDocumentType,
+  normalizeObterAgtEstadoParams,
 }

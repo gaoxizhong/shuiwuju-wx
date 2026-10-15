@@ -22,8 +22,8 @@
         <view class="info-item__info">{{last_time}}</view>
       </view>
       <view class="info-item">
-        <view class="info-item__label">{{lang.total_money_1}}</view>
-        <view class="info-item__info">{{arrears_money_t}}（KZ）</view>
+        <view class="info-item__label">{{fromMeterReadingFr ? lang.total_money_bill_quota : lang.total_money_1}}</view>
+        <view class="info-item__info">{{fromMeterReadingFr ? bill_quota_display : arrears_money_t}}（KZ）</view>
       </view>
       <!-- 优惠 -->
       <van-cell-group wx:if="{{source != 'search-person'}}">
@@ -52,6 +52,12 @@
       <view class="btn-item {{is_return ? '' : 'btn-return'}}" data-type="FR" bindtap="{{is_return ? 'onFtFrSubmit' : ''}}">
         <view>{{lang.frBtn}}</view>
         <view class="btn-item-sub">{{lang.submitPrintSub}}</view>
+      </view>
+    </block>
+    <block wx:elif="{{fromMeterReadingFr}}">
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" data-type="FR" bindtap="{{is_return ? 'onFtFrSubmit' : ''}}">
+        <view>{{lang.frBtn}}</view>
+        <view class="btn-item-sub">{{lang.submitPrintFr}}</view>
       </view>
     </block>
     <block wx:else>

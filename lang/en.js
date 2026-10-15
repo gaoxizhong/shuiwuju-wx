@@ -566,6 +566,7 @@ const en_lang = {
     total_water: 'Consumo de água',
     total_money: 'Valor a pagar deste aviso',
     total_money_1: 'Valor da factura',
+    total_money_bill_quota: 'Valor a pagar desta leitura',
     arrears_total: 'Valor total em dívida',
     createDate: 'Date',
     waterList: 'Fotos',

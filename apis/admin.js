@@ -164,15 +164,20 @@ export const issueAgtInvoice = (data) => {
  * @param {string} [data.request_id]       AGT 提交后的 requestID
  * @param {number} [data.user_pay_log_id]  缴费支付记录 ID
  * @param {number} [data.submission_id]    本地 submission ID
+ * @param {string} [data.document_type]    FT / FR / FA / RG；冲红结果查询传 NC
+ * @param {Object} [data.item]             仅前端：用于推断 document_type，不会提交后端
+ * @param {string} [data.defaultType]        推断失败时的默认票种，默认 FT
  *
  * 关注返回：invoice_ok / validation_status(V|I|null) / rate_limited / document_no
  */
 export const obterAgtEstado = (data) => {
+  const util = require('../utils/util')
+  const payload = util.normalizeObterAgtEstadoParams(data)
   const baseUrl = getApp().globalData.baseUrl
   return httpRequest({
     url: `${baseUrl}/api/wx/tr/tr_obter_agt_estado`,
     method: 'POST',
-    data: data || {},
+    data: payload,
     timeout: 60000,
   })
 }
@@ -268,9 +273,13 @@ export const issueAgtInvoiceThenQueryEstado = (issueData, options) => {
       }
     }
 
+    const queryDocType = String(issuePayload.document_type || 'FT').toUpperCase()
     let pollCount = 0
     const runQuery = () => {
-      return obterAgtEstado({ request_id: requestId }).then((estadoRes) => {
+      return obterAgtEstado({
+        request_id: requestId,
+        document_type: queryDocType,
+      }).then((estadoRes) => {
         pollCount += 1
         if (util.isAgtValidationPassed(estadoRes)) {
           return {

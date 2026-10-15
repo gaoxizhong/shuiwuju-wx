@@ -563,6 +563,7 @@ const zh_lang = {
     total_water: '用水量',
     total_money: '本次应缴金额',
     total_money_1: '应缴金额',
+    total_money_bill_quota: '本次应缴额度',
     arrears_total: '总欠款额度',
     createDate: '查询时间',
     waterList: '照片',

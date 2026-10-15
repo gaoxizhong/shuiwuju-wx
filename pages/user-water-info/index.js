@@ -7,6 +7,10 @@ const {
   appendAgtInvoiceQrCommands,
 } = require('./../../utils/print')
 const {
+  getStoredConnectDevice,
+  runAfterBluetoothGate,
+} = require('./../../utils/printBluetoothGate')
+const {
   wxAsyncApi,fmoney,parseMoneyNumber,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId
 } = require('./../../utils/util')
 const {
@@ -80,6 +84,38 @@ Page({
     pay_log_id: '',
     agt_document_no: '', // AGT 返回 document_no，打印小票发票号
     agt_request_id: '',
+    pendingPrintFlow: '',
+  },
+
+  onShow() {
+    this.resumePendingPrintFlow()
+  },
+
+  resumePendingPrintFlow() {
+    const flow = this.data.pendingPrintFlow
+    if (!flow || !getStoredConnectDevice()) {
+      return
+    }
+    this.setData({ pendingPrintFlow: '' })
+    if (flow === 'submit_ftfr') {
+      if (this.data.pay_log_id) {
+        this.issueAgtInvoiceAfterPay(this.data.pay_log_id)
+      } else {
+        this.submitFtFrPay()
+      }
+      return
+    }
+    if (flow === 'agt_ft_invoice') {
+      if (this.data.invoiceIssued) {
+        this.blueToothPrint()
+      } else {
+        this.issueAgtInvoiceThenPrint()
+      }
+      return
+    }
+    if (flow === 'agt_print_only') {
+      this.verifyBlueToothPrint()
+    }
   },
 
   /**
@@ -347,11 +383,13 @@ Page({
     if (!this.data.is_Invoicereturn) {
       return
     }
-    if (this.data.invoiceIssued) {
-      this.blueToothPrint()
-      return
-    }
-    this.issueAgtInvoiceThenPrint()
+    runAfterBluetoothGate(this, 'agt_ft_invoice', () => {
+      if (this.data.invoiceIssued) {
+        this.blueToothPrint()
+        return
+      }
+      this.issueAgtInvoiceThenPrint()
+    })
   },
   // 必须以 AGT 校验通过（validation_status/documentStatus = V）才算开票成功并打印
   isAgtIssueSuccess(res) {
@@ -538,6 +576,16 @@ Page({
   },
   // 提交并打印 FT / FR（缴费接口与其他缴费页一致：fb_user_payment）
   submitFtFrPay() {
+    const that = this
+    if (that.data.ftfrSubmitting) {
+      return
+    }
+    runAfterBluetoothGate(that, 'submit_ftfr', () => {
+      that.doSubmitFtFrPay()
+    })
+  },
+
+  doSubmitFtFrPay() {
     const that = this
     if (that.data.ftfrSubmitting) {
       return
@@ -898,37 +946,11 @@ ${date.time}
 
   // 旧蓝牙：检查已连接设备
   verifyBlueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    let connectDeviceInfo = ''
-    try {
-      connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    } catch (e) {
-      connectDeviceInfo = ''
-    }
+    const connectDeviceInfo = getStoredConnectDevice()
     const blueLang = getApp().globalData.lang
     if (!connectDeviceInfo || !connectDeviceInfo.deviceId) {
-      wx.showModal({
-        title: blueLang.blueToolth.noConnect,
-        content: blueLang.blueToolth.noConnectWarning,
-        cancelText: blueLang.blueToolth.cancelText,
-        confirmText: blueLang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(() => {
-              wx.setNavigationBarTitle({
-                title: blueLang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: blueLang.blueToolth.cancel,
-              icon: 'none',
-            })
-          }
-        },
+      runAfterBluetoothGate(this, 'agt_print_only', () => {
+        this.verifyBlueToothPrint()
       })
       return
     }

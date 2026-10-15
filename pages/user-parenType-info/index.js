@@ -7,6 +7,10 @@ const blueToolth = require('./../../utils/bluetoolth')
 const {
   arrEncoderCopy,
 } = require('./../../utils/print')
+const {
+  getStoredConnectDevice,
+  runAfterBluetoothGate,
+} = require('./../../utils/printBluetoothGate')
 
 const {wxAsyncApi,fmoney,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
@@ -89,6 +93,7 @@ Page({
     agt_document_no: '',
     agtInvoiceResult: null,
     payDocType: 'FR',
+    pendingPrintFlow: '',
   },
 
   /**
@@ -143,6 +148,30 @@ Page({
       btnName: lang.btnName,
       langDialog: lang.dialog
     })
+    this.resumePendingPrintFlow()
+  },
+
+  resumePendingPrintFlow() {
+    const flow = this.data.pendingPrintFlow
+    if (!flow || !getStoredConnectDevice()) {
+      return
+    }
+    this.setData({ pendingPrintFlow: '' })
+    if (flow === 'demand_pw') {
+      this.setData({ password_layer: true })
+      return
+    }
+    if (flow === 'demand_pay') {
+      this.continueDemandPayAfterOperator()
+      return
+    }
+    if (flow === 'proforma_print') {
+      this.getPrint(this.data.itemInfo)
+      return
+    }
+    if (flow === 'local_print_only') {
+      this.blueToothPrint()
+    }
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
@@ -511,13 +540,15 @@ Page({
           }
         }
       }
-      this.setData({
-        password_layer: true
+      runAfterBluetoothGate(this, 'demand_pw', () => {
+        this.setData({ password_layer: true })
       })
     }
     // 补开形式发票
-    if(this.data.itemInfo.type == 2){
-      this.getPrint(this.data.itemInfo);
+    if (this.data.itemInfo.type == 2) {
+      runAfterBluetoothGate(this, 'proforma_print', () => {
+        this.getPrint(this.data.itemInfo)
+      })
     }
   },
   clickoperatorName(e) {
@@ -526,24 +557,29 @@ Page({
       is_operatorLsPop: false
     })
   },
-  //  确认姓名
-  clickPrint() {
-    let operator_name = this.data.operator_name;
+  continueDemandPayAfterOperator() {
+    const operator_name = this.data.operator_name
     if (!operator_name) {
-      this.setData({
-        name_error: true
-      })
+      this.setData({ name_error: true })
       return
     }
-    this.setData({
-      print_type: 'receiptInfo'
-    })
-    let operatorNameList = this.data.operatorNameList;
+    this.setData({ print_type: 'receiptInfo' })
+    let operatorNameList = this.data.operatorNameList
     if (operatorNameList.indexOf(operator_name) == -1) {
-      operatorNameList.push(operator_name);
+      operatorNameList.push(operator_name)
       wx.setStorageSync('operatorNameList', JSON.stringify(operatorNameList))
     }
-    this.payDemandNote();
+    this.payDemandNote()
+  },
+  //  确认姓名
+  clickPrint() {
+    if (!this.data.operator_name) {
+      this.setData({ name_error: true })
+      return
+    }
+    runAfterBluetoothGate(this, 'demand_pay', () => {
+      this.continueDemandPayAfterOperator()
+    })
   },
   // 点击历史姓名记录
   operatorLs(){
@@ -552,37 +588,16 @@ Page({
     })
   },
   blueToothPrint() {
-    const connectStorage = wx.getStorageSync('connectDevice')
-    const connectDeviceInfo = connectStorage ? JSON.parse(connectStorage) : ''
-    const lang = getApp().globalData.lang
+    const connectDeviceInfo = getStoredConnectDevice()
+    const blueLang = getApp().globalData.lang.blueToolth
     if (!connectDeviceInfo) {
-      wx.showModal({
-        title: lang.blueToolth.noConnect,
-        content: lang.blueToolth.noConnectWarning,
-        cancelText: lang.blueToolth.cancelText,
-        confirmText: lang.blueToolth.confirmText,
-        complete: (res) => {
-          if (res.confirm) {
-            wxAsyncApi('navigateTo', {
-              url: `/pages/admin/bluetooth/index?origin=page`,
-            }).then(() => {
-              wx.setNavigationBarTitle({
-                title: lang.blueToolth.title,
-              })
-            })
-          }
-          if (res.cancel) {
-            wx.showToast({
-              title: lang.blueToolth.cancel,
-              icon: 'none',
-            })
-          }
-        }
+      runAfterBluetoothGate(this, 'local_print_only', () => {
+        this.blueToothPrint()
       })
       return
     }
     wx.showToast({
-      title: lang.blueToolth.connectDevice,
+      title: blueLang.connectDevice,
       icon: 'none',
       duration: 30000,
     })
