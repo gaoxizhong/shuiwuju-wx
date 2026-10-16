@@ -142,6 +142,7 @@ const en_lang = {
     printError: 'Erro de impressão',
     facturaNoLabel: 'Factura N°',
     reciboNoLabel: 'Recibo N°',
+    rcBlockedByFr: 'FR já emitida; não é possível emitir RG',
     noSearchData: 'Dados não disponíveis',
   },
   // 搜索类型
@@ -258,7 +259,7 @@ const en_lang = {
     paid_total_money: 'Valor real pago',
     ftBtn: 'FT',
     frBtn: 'FR',
-    rcBtn: 'RC',
+    rcBtn: 'RG',
     ftSub: 'Factura',
     frSub: 'Factura/Recibo',
     rcSub: 'Recibo',

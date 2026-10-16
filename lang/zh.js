@@ -140,6 +140,7 @@ const zh_lang = {
     printError: '打印失败',
     facturaNoLabel: '发票号',
     reciboNoLabel: '收据号',
+    rcBlockedByFr: '已开具 FR，不可再开 RG',
     noSearchData: '暂无数据',
   },
   // 搜索类型
@@ -255,7 +256,7 @@ const zh_lang = {
     paid_total_money: '实缴金额',
     ftBtn: 'FT',
     frBtn: 'FR',
-    rcBtn: 'RC',
+    rcBtn: 'RG',
     ftSub: '发票',
     frSub: '发票/收据二合一',
     rcSub: '收据',

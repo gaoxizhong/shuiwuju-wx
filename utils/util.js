@@ -316,6 +316,39 @@ function resolveAgtPayLogDeleteGate(item, estadoRes) {
 
 const AGT_DOC_TYPE_RE = /^(FT|FR|FA|RG|NC)$/i
 
+/** UI/业务 payDocType → AGT tr_issue_agt_invoice 的 document_type */
+function resolveAgtIssueDocumentType(payDocType) {
+  const t = String(payDocType || 'FR').toUpperCase()
+  if (t === 'FT') return 'FT'
+  if (t === 'RC' || t === 'RG') return 'RG'
+  return 'FR'
+}
+
+function isAgtDocumentFr(item) {
+  const t = String((item && (item.agt_document_type || item.document_type)) || '').toUpperCase()
+  return t === 'FR'
+}
+
+/** 已开 FR（发票/收据二合一），不可再开 FT / RC(RG) */
+function isFrCombinedIssued(item) {
+  if (!item) return false
+  if (isAgtDocumentFr(item)) return true
+  const frCode = item.bill_fr_code || item.fr_code || item.agt_fr_no || ''
+  if (frCode) return true
+  const agtNo = String(item.agt_document_no || item.bill_invoice_code || '')
+  if (/^FR[\s/]/i.test(agtNo)) return true
+  const invoiceDone = item.invoice_status == 2 && !item.cancel_invoice_number
+  const receiptDone = item.receipt_status == 2 && !item.cancel_receipt_number
+  return invoiceDone && receiptDone
+}
+
+function isRgAgtIssued(item, agtDocumentNo) {
+  const t = String((item && item.agt_document_type) || '').toUpperCase()
+  if (t === 'RG') return true
+  const no = String(agtDocumentNo || (item && item.agt_document_no) || '')
+  return /^RG[\s/]/i.test(no)
+}
+
 /**
  * 推断 tr_obter_agt_estado 的 document_type（与开票类型一致）
  * @param {Object} [hints]
@@ -332,6 +365,9 @@ function resolveAgtObterDocumentType(hints) {
     const t = String(v || '').trim().toUpperCase()
     return AGT_DOC_TYPE_RE.test(t) ? t : ''
   }
+  const payDocUi = String(h.payDocType || '').toUpperCase()
+  if (payDocUi === 'RC' || payDocUi === 'RG') return 'RG'
+
   let docType = pick(h.document_type)
   if (docType) return docType
   docType = pick(h.agt_document_type || h.payDocType)
@@ -361,6 +397,9 @@ function resolveAgtObterDocumentType(hints) {
   }
   if (head.indexOf('FT ') === 0 || head.startsWith('FT/') || head.startsWith('FT-')) {
     return 'FT'
+  }
+  if (head.indexOf('RG ') === 0 || head.startsWith('RG/') || head.startsWith('RG-')) {
+    return 'RG'
   }
 
   if (item) {
@@ -430,4 +469,8 @@ module.exports = {
   resolveAgtPayLogDeleteGate,
   resolveAgtObterDocumentType,
   normalizeObterAgtEstadoParams,
+  resolveAgtIssueDocumentType,
+  isAgtDocumentFr,
+  isFrCombinedIssued,
+  isRgAgtIssued,
 }

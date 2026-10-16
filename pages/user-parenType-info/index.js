@@ -12,7 +12,20 @@ const {
   runAfterBluetoothGate,
 } = require('./../../utils/printBluetoothGate')
 
-const {wxAsyncApi,fmoney,judgmentData,handleTimeValue,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId} = require('./../../utils/util')
+const {
+  wxAsyncApi,
+  fmoney,
+  judgmentData,
+  handleTimeValue,
+  isAgtValidationPassed,
+  isAgtValidationPending,
+  getAgtValidationErrors,
+  mergeAgtDocumentNo,
+  extractAgtRequestId,
+  resolveAgtIssueDocumentType,
+  isFrCombinedIssued,
+  isRgAgtIssued,
+} = require('./../../utils/util')
 //只需要引用encoding.js,注意路径
 var encoding = require("./../../utils/encoding.js")
 const {
@@ -94,6 +107,7 @@ Page({
     agtInvoiceResult: null,
     payDocType: 'FR',
     pendingPrintFlow: '',
+    rcDisabled: false,
   },
 
   /**
@@ -128,7 +142,9 @@ Page({
       itemInfo,
       total_money: fmoney(total_money,2),
       paid_total_money: JSON.parse(options.data).total_money,
-      operator_name: itemInfo.operator_name?itemInfo.operator_name: ''
+      operator_name: itemInfo.operator_name?itemInfo.operator_name: '',
+      rcDisabled: isFrCombinedIssued(itemInfo),
+      agt_document_no: itemInfo.agt_document_no || that.data.agt_document_no || '',
     })
 
     if (wx.getStorageSync('operatorNameList')) {
@@ -171,7 +187,20 @@ Page({
     }
     if (flow === 'local_print_only') {
       this.blueToothPrint()
+      return
     }
+    if (flow === 'demand_agt_issue') {
+      this.issueAgtInvoiceThenPrint()
+    }
+  },
+
+  toastRcBlockedByFr() {
+    const oi = this.data.otherInvoices || lang.otherInvoices
+    wx.showToast({
+      title: oi.rcBlockedByFr,
+      icon: 'none',
+      duration: 3000,
+    })
   },
   // 新改版  获取用户待缴费金额接口 
   getArrearsMoneySum(n) {
@@ -279,7 +308,7 @@ Page({
     const companyName = water_meter.wm_name || water_meter.user_name || that.data.wm_name || ''
     const payDocType = (that.data.payDocType || 'FR').toUpperCase()
     const params = {
-      document_type: payDocType === 'FT' ? 'FT' : 'FR',
+      document_type: resolveAgtIssueDocumentType(payDocType),
       // 状态查询改由前端 tr_obter_agt_estado（测试：60s 轮询至 V/I）
       poll: 0,
       poll_times: 0,
@@ -301,10 +330,20 @@ Page({
       const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
       const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
       const doPrint = () => {
+        const issuedType = resolveAgtIssueDocumentType(payDocType)
+        const itemPatch = Object.assign({}, that.data.itemInfo || {}, {
+          agt_document_no: documentNo || that.data.itemInfo.agt_document_no,
+          agt_document_type: issuedType,
+        })
+        if (issuedType === 'FR') {
+          itemPatch.rcDisabled = true
+        }
         that.setData({
           agtInvoiceResult: (finalRes && finalRes.data) || finalRes,
           agt_document_no: documentNo,
-          agt_request_id: requestId
+          agt_request_id: requestId,
+          itemInfo: itemPatch,
+          rcDisabled: isFrCombinedIssued(itemPatch),
         })
         that.getUserBluetoolthInfoData(that.blueToothPrint)
       }
@@ -381,7 +420,25 @@ Page({
       pay_success = true;
     }
     if (pay_success) {
-      that.getUserBluetoolthInfoData(that.blueToothPrint);
+      const payDocType = (that.data.payDocType || '').toUpperCase()
+      if (payDocType === 'RG') {
+        if (isFrCombinedIssued(that.data.itemInfo)) {
+          that.toastRcBlockedByFr()
+          return
+        }
+        const reprintRg = isRgAgtIssued(that.data.itemInfo, that.data.agt_document_no)
+        if (reprintRg) {
+          runAfterBluetoothGate(that, 'local_print_only', () => {
+            that.getUserBluetoolthInfoData(that.blueToothPrint)
+          })
+        } else {
+          runAfterBluetoothGate(that, 'demand_agt_issue', () => {
+            that.issueAgtInvoiceThenPrint()
+          })
+        }
+        return
+      }
+      that.getUserBluetoolthInfoData(that.blueToothPrint)
     } else {
       let date = handleTimeValue();
       const params = {
@@ -405,10 +462,17 @@ Page({
         })
         if (itemInfo.type == 1) {
           const payDocType = (that.data.payDocType || '').toUpperCase()
-          if (payDocType === 'RC') {
-            that.getUserBluetoolthInfoData(that.blueToothPrint)
-          } else {
+          if (payDocType === 'RG' && isFrCombinedIssued(itemInfo)) {
+            that.toastRcBlockedByFr()
+            return
+          }
+          const runAgt = () => {
             that.issueAgtInvoiceThenPrint()
+          }
+          if (payDocType === 'RG' || payDocType === 'FT' || payDocType === 'FR') {
+            runAfterBluetoothGate(that, 'demand_agt_issue', runAgt)
+          } else {
+            that.getUserBluetoolthInfoData(that.blueToothPrint)
           }
         } else {
           that.getUserBluetoolthInfoData(that.blueToothPrint);
@@ -476,14 +540,18 @@ Page({
       no_error: false
     })
   },
-  // FT / FR / RC
+  // FT / FR / RG
   openDocPay(e) {
     if (!this.data.is_return) {
       return
     }
     const payDocType = (e.currentTarget.dataset.type || 'FR').toUpperCase()
-    // 已支付：仅 RC 可重打收据；形式发票(type=2)三个都可点
-    if (this.data.itemInfo.pay_status == 1 && this.data.itemInfo.type != 2 && payDocType !== 'RC') {
+    // 已支付：仅 RG 可重打/补开；形式发票(type=2)三个都可点
+    if (this.data.itemInfo.pay_status == 1 && this.data.itemInfo.type != 2 && payDocType !== 'RG') {
+      return
+    }
+    if (payDocType === 'RG' && isFrCombinedIssued(this.data.itemInfo)) {
+      this.toastRcBlockedByFr()
       return
     }
     this.setData({
@@ -688,11 +756,17 @@ Page({
       let receiptInfo_title = `EPASKS-E.P.`;
       const otherInvoices = that.data.otherInvoices || lang.otherInvoices
       const agt_document_no = that.data.agt_document_no
+      const payDocType = (that.data.payDocType || '').toUpperCase()
+      const docLine = agt_document_no
+        ? (payDocType === 'RG' || /^RG[\s/]/i.test(agt_document_no)
+          ? `${otherInvoices.reciboNoLabel}: ${agt_document_no}`
+          : `${otherInvoices.facturaNoLabel}: ${agt_document_no}`)
+        : ''
       let receiptInfo_title_1 = `
 Empresa Publica de Aguas e Saneamento do Cuanza Su7Sul Sul EP
 Avenida 14 de Abril. N° 15-zona 1 Sumbe- Cuanza-Sul
 NIF: 5601022917
-${agt_document_no ? `${otherInvoices.facturaNoLabel}: ${agt_document_no}` : ''}
+${docLine}
 Dados do Cliente
 Nome: ${userBluetoolthInfoData.water_meter.wm_name}
 N° Contador: ${userBluetoolthInfoData.water_meter.wm_no}

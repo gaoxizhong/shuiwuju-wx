@@ -48,7 +48,7 @@
       <view>{{lang.frBtn}}</view>
       <view class="btn-item-sub">{{lang.frSub}}</view>
     </view>
-    <view class="btn-item {{is_return ? '' : 'btn-return'}}" data-type="RC" bindtap="{{is_return ? 'openDocPay' : ''}}">
+    <view class="btn-item {{is_return && !rcDisabled ? '' : 'btn-return'}}" data-type="RG" bindtap="{{is_return && !rcDisabled ? 'openDocPay' : ''}}">
       <view>{{lang.rcBtn}}</view>
       <view class="btn-item-sub">{{lang.rcSub}}</view>
     </view>
