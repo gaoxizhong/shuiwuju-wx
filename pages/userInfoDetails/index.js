@@ -313,7 +313,7 @@ Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager`; 
       let printInfo_time =`
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 ${date_time}
 
 `;
@@ -391,7 +391,7 @@ ${that.data.pay_text}   AOA    ${selectPrintInfo.total_money} KZ
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${selectPrintInfo.operator_name}
@@ -618,7 +618,7 @@ ${log_list?log_list:''}
 `,
       valores: `
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 DATA: ${date_time}
 
     `

@@ -12,7 +12,8 @@ const {
 
 const {
   wxAsyncApi,judgmentData,handleTimeValue,fmoney,
-  getAgtInvoiceData,isAgtValidationPassed,isAgtValidationPending,mergeAgtDocumentNo
+  getAgtInvoiceData,isAgtValidationPassed,isAgtValidationPending,mergeAgtDocumentNo,
+  extractAgtRequestId,getAgtValidationErrors,
 } = require('../../../utils/util')
 const {
   getUserPayItemDetail,
@@ -23,6 +24,7 @@ const {
 } = require('../../../apis/water')
 import {
   obterAgtEstado,
+  issueAgtInvoiceThenQueryEstado,
 } from '../../../apis/admin'
 Page({
 
@@ -79,6 +81,8 @@ Page({
     status_type: '',
     agt_status_text: '',
     querying_agt: false,
+    submitting_agt_ft: false,
+    canIssueAgtFt: false,
     pendingPrintFlow: '',
   },
 
@@ -128,8 +132,164 @@ Page({
         del_admin_id: item.del_admin_id
       })
     }
+    this.syncCanIssueAgtFt(item)
     this.getUserPayItemDetail(id)
   },
+
+  /** 仅未开具(1)、开具失败(5) 且未冲红时可重新提交 AGT FT */
+  canIssueAgtFtByItem(item) {
+    const it = item || {}
+    if (it.cancel_invoice_number) {
+      return false
+    }
+    const s = Number(it.invoice_status)
+    return s === 1 || s === 5
+  },
+
+  syncCanIssueAgtFt(item) {
+    const it = item || this.data.item
+    this.setData({
+      canIssueAgtFt: this.canIssueAgtFtByItem(it),
+    })
+  },
+
+  buildAgtFtParams() {
+    const item = this.data.item || {}
+    const from = this.data.from || {}
+    const payLogId = item.id || from.id
+    const params = {
+      document_type: 'FT',
+      poll: 0,
+      poll_times: 0,
+      poll_interval: 3,
+      source_type: 'user_pay_log',
+      source_id: payLogId,
+      customer_tax_id: '999999999',
+    }
+    const companyName = item.wm_name || from.wm_name || ''
+    if (companyName) {
+      params.company_name = companyName
+    }
+    return params
+  },
+
+  patchLocalInvoiceStatus(invoiceStatus, extra) {
+    const item = Object.assign({}, this.data.item, extra || {}, {
+      invoice_status: invoiceStatus,
+    })
+    this.setData({
+      item,
+      invoice_code: extra && extra.invoice_code != null
+        ? extra.invoice_code
+        : this.data.invoice_code,
+    })
+    this.syncCanIssueAgtFt(item)
+  },
+
+  submitAgtFt() {
+    const that = this
+    const langUi = that.data.lang
+    const oiLang = getApp().globalData.lang.otherInvoices || {}
+    if (!that.data.canIssueAgtFt) {
+      wx.showToast({
+        title: langUi.agtFtBlocked || oiLang.agtIssueFail,
+        icon: 'none',
+        duration: 3000,
+      })
+      return
+    }
+    if (that.data.submitting_agt_ft) {
+      return
+    }
+    const payLogId = (that.data.item && that.data.item.id) || (that.data.from && that.data.from.id)
+    if (!payLogId) {
+      wx.showToast({
+        title: getApp().globalData.lang.message.noMoreEmpty,
+        icon: 'none',
+      })
+      return
+    }
+    that.setData({ submitting_agt_ft: true })
+    that.patchLocalInvoiceStatus(4)
+    that.setInvoiceStatus(4)
+    wx.showLoading({
+      title: oiLang.agtLoading || langUi.kjz_status,
+      mask: true,
+    })
+    issueAgtInvoiceThenQueryEstado(that.buildAgtFtParams()).then(({ issueRes, finalRes, request_id }) => {
+      wx.hideLoading()
+      that.setData({ submitting_agt_ft: false })
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
+      const finalizeSuccess = () => {
+        that.patchLocalInvoiceStatus(2, {
+          invoice_code: documentNo || that.data.invoice_code,
+          agt_document_no: documentNo,
+          agt_request_id: requestId,
+        })
+        that.setInvoiceStatus(2)
+        that.setData({
+          agt_status_text: langUi.agtValid,
+          invoice_code: documentNo || that.data.invoice_code,
+        })
+      }
+      const finalizeFail = () => {
+        that.patchLocalInvoiceStatus(5)
+        that.setInvoiceStatus(5)
+        that.setData({ agt_status_text: langUi.agtInvalid })
+      }
+      if (isAgtValidationPassed(finalRes)) {
+        wx.showToast({
+          title: documentNo
+            ? `${langUi.agtValid} · ${documentNo}`
+            : langUi.agtValid,
+          icon: 'none',
+          duration: 3000,
+        })
+        finalizeSuccess()
+        return
+      }
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res) && documentNo) {
+        that.patchLocalInvoiceStatus(4, {
+          invoice_code: documentNo,
+          agt_document_no: documentNo,
+          agt_request_id: requestId,
+        })
+        that.setData({ agt_status_text: langUi.agtPendingStatus })
+        wx.showToast({
+          title: `${langUi.agtPendingStatus} · ${documentNo}`,
+          icon: 'none',
+          duration: 3000,
+        })
+        return
+      }
+      let failMsg = oiLang.agtFailTitle || langUi.kjsb_status
+      const errors = getAgtValidationErrors(res)
+      if (errors.length) {
+        failMsg = errors.slice(0, 2).join('；').slice(0, 80)
+      } else if (res && res.desc) {
+        failMsg = String(res.desc).slice(0, 80)
+      }
+      wx.showToast({
+        title: failMsg,
+        icon: 'none',
+        duration: 3000,
+      })
+      finalizeFail()
+    }).catch((err) => {
+      wx.hideLoading()
+      that.setData({ submitting_agt_ft: false })
+      that.patchLocalInvoiceStatus(5)
+      that.setInvoiceStatus(5)
+      wx.showToast({
+        title: (err && err.desc) || oiLang.agtIssueFail || langUi.kjsb_status,
+        icon: 'none',
+        duration: 3000,
+      })
+    })
+  },
+
   onShow(){
     this.setData({
       is_return: true
@@ -677,7 +837,7 @@ ${that.data.pay_text}     AOA      ${that.data.from.total_money} KZ
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}
@@ -733,7 +893,7 @@ limite de pagamento: ${this.getMoreDay(15)}`;
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 ${date.time}
       
 `;
@@ -782,7 +942,7 @@ ${date.time}
     let that = this;
     setReceiptStatus({
       id: that.data.from.id,
-      receipt_status: n,  // 1:未开具 2:已开具 3:已取消
+      receipt_status: n,  // 1未开具收据 2已开具 3补开 4开具中 5开具失败
     }).then(res => {
      
     }).catch(res => {
@@ -794,9 +954,9 @@ ${date.time}
     let that = this;
     let p = {
       id: that.data.from.id,
-      invoice_status: n,  // 1:未开具 2:已开具 3:已取消
+      invoice_status: n,  // 1未开具 2已开具 3补开 4开具中 5开具失败
     }
-    if(p.invoice_status == 3){
+    if (that.data.valueinfo && that.data.valueinfo.text) {
       p.comment = that.data.valueinfo.text
     }
     setInvoiceStatus(p).then(res => {

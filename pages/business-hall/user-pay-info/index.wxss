@@ -206,3 +206,49 @@
 .query-status-btn {
   flex-shrink: 0;
 }
+
+.btn-vertical {
+  flex-direction: column;
+  width: 100%;
+  padding: 16rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.btn-vertical .btn-item {
+  width: 100%;
+  flex: none;
+  border-top: none;
+  border-radius: 8rpx;
+  height: 100rpx;
+  padding: 0 20rpx;
+  margin-bottom: 16rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-vertical .btn-item:last-child {
+  margin-bottom: 0;
+}
+
+.btn-vertical .btn-item-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-vertical .btn-item-title {
+  font-size: 28rpx;
+  line-height: 1.35;
+}
+
+.btn-vertical .btn-item-sub {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #fff;
+  line-height: 1.2;
+}

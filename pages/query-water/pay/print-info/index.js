@@ -628,7 +628,7 @@ limite de pagamento: ${that.getMoreDay(15)}`,
 Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 `,
         printInfo_time: `
 ${date.time}

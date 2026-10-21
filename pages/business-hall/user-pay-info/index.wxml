@@ -37,9 +37,12 @@
           <view class="status-row__label">{{lang.f_status}}</view>
           <view class="status-row__body">
             <view class="status-row__texts">
-              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 1 && !item.cancel_invoice_number}}">{{lang.wkj_status}}</text>
-              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 2 && !item.cancel_invoice_number}}">{{lang.ykj_status}}</text>
-              <text style="color: #ff0000;" wx:if="{{item.invoice_status == 3 || item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.cancel_invoice_number}}">{{lang.yqx_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 1}}">{{lang.wkj_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 2}}">{{lang.ykj_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 3}}">{{lang.bk_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 4}}">{{lang.kjz_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 5}}">{{lang.kjsb_status}}</text>
               <text class="status-row__agt" wx:if="{{agt_status_text}}">{{agt_status_text}}</text>
             </view>
             <view class="qx-btn active query-status-btn" bindtap="queryAgtStatus">{{lang.queryStatus}}</view>
@@ -49,26 +52,41 @@
           <view class="status-row__label">{{lang.s_status}}</view>
           <view class="status-row__body">
             <view class="status-row__texts">
-              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 1 && !item.cancel_receipt_number}}">{{lang.wkj_status}}</text>
-              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 2 && !item.cancel_receipt_number}}">{{lang.ykj_status}}</text>
-              <text style="color: #ff0000;" wx:if="{{item.receipt_status == 3 || item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
+              <text style="color: #ff0000;" wx:if="{{item.cancel_receipt_number}}">{{lang.yqx_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 1}}">{{lang.wkj_receipt_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 2}}">{{lang.ykj_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 3}}">{{lang.bk_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 4}}">{{lang.kjz_status}}</text>
+              <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 5}}">{{lang.kjsb_status}}</text>
             </view>
           </view>
         </view>
       </view>
     </view>
   </view>
-  <view class="btn">
+  <view class="btn btn-vertical">
     <block>
-
+      <view
+        class="btn-item {{(!is_return || !canIssueAgtFt || submitting_agt_ft) ? 'btn-return' : ''}}"
+        bindtap="{{(is_return && canIssueAgtFt && !submitting_agt_ft) ? 'submitAgtFt' : ''}}"
+      >
+        <view class="btn-item-inner">
+          <view class="btn-item-title">{{lang.ftBtn}}</view>
+          <view class="btn-item-sub">{{lang.submitPrintFt}}</view>
+        </view>
+      </view>
       <!-- 打印收据 开始 抄表员不显示收据 -->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}" style="border-right: 1px solid #ebeef5;" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{ source == 'business-hall' }}">
-        {{btnName.printOther}}
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" bindtap="{{is_return ?'printWaterInfo':''}}" wx:if="{{ source == 'business-hall' }}">
+        <view class="btn-item-inner">
+          <view class="btn-item-title">{{btnName.printOther}}</view>
+        </view>
       </view>
       <!-- 打印 结束-->
       <!-- 打印发票 开始-->
-      <view class="btn-item {{is_return ? '' : 'btn-return'}}"  bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{ source == 'search-person' }}">
-        {{btnName.invoice}}
+      <view class="btn-item {{is_return ? '' : 'btn-return'}}" bindtap="{{is_return ?'blueToothInvoice':''}}" wx:if="{{ source == 'search-person' }}">
+        <view class="btn-item-inner">
+          <view class="btn-item-title">{{btnName.invoice}}</view>
+        </view>
       </view>
       <!-- 打印发票 结束-->
       <!-- 取消发票 -->

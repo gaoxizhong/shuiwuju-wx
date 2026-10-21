@@ -324,7 +324,7 @@ Resolução:   ${form.report_note? form.report_note : ''}
 Status da atribuição:   ${form.do_uid > 0 ? lang.distribution_1: lang.distribution_2}
 Distribuição:    ${that.data.repairUserLabel}
 --------------------------------
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 `,
       printInfo_data: `
 DATA: ${date.time}

@@ -401,7 +401,7 @@ Facura/recibo:     ${tj.f} Un
 Valor total:       ${tj.g} kZ 
 Valor a pagar:     ${tj.h} kZ
 --------------------------------
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/407/AGT/2026
 `,
       printInfo_data: `
 DATA: ${date.time}
