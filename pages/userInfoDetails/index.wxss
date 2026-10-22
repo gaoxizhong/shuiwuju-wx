@@ -228,3 +228,51 @@
   color: #fff;
   background-color: #1989fa;
 }
+
+.detail-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  margin-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+.detail-action-bar van-button {
+  flex: 1;
+  margin: 0 10rpx;
+  min-width: 0;
+}
+.detail-action-bar .account-action-btn {
+  height: auto !important;
+  min-height: 76rpx;
+  padding: 10rpx 12rpx !important;
+  line-height: 1.25;
+}
+.detail-action-bar .account-action-btn .van-button__text {
+  width: 100%;
+  white-space: normal;
+}
+.account-action-btn__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+.account-action-btn__inner--single {
+  font-size: 28rpx;
+  line-height: 1.35;
+  padding: 6rpx 0;
+}
+.account-action-btn__title {
+  font-size: 26rpx;
+  line-height: 1.3;
+  font-weight: 600;
+}
+.account-action-btn__sub {
+  font-size: 22rpx;
+  line-height: 1.25;
+  margin-top: 4rpx;
+  opacity: 0.92;
+}

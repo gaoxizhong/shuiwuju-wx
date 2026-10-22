@@ -39,9 +39,19 @@
       </view>
     </view>
     <view class="btn">
-      <view class="btn-item" bindtap="next">
-        {{btnName.submitName}}
+      <view class="btn-item {{faSubmitting ? 'btn-return' : ''}}" bindtap="{{faSubmitting ? '' : 'next'}}">
+        <view>{{lang.submitPrintFa}}</view>
       </view>
     </view>
   </view>
 </view>
+<van-popup show="{{ showPay }}" safe-area-tab-bar position="bottom" round bind:close="onClosePay">
+  <van-picker
+    show-toolbar
+    columns="{{ payStatusList }}"
+    confirm-button-text="{{langDialog.confirmText}}"
+    cancel-button-text="{{langDialog.cancelText}}"
+    bind:confirm="onConfirmPay"
+    bind:cancel="onClosePay"
+  />
+</van-popup>

@@ -173,8 +173,9 @@ Page({
     const index = e.currentTarget.dataset.index
     const data = JSON.stringify(this.data.list[index])
     const payWayList = JSON.stringify(this.data.payWayList)
+    const deleted = this.data.title_active === 2 ? '&deleted=1' : ''
     wxAsyncApi('navigateTo', {
-      url: `/pages/user-water-info/index?data=${data}&payWayList=${payWayList}&source=business-hall`
+      url: `/pages/user-water-info/index?data=${data}&payWayList=${payWayList}&source=business-hall${deleted}`
     }).then(res => {
       wx.setNavigationBarTitle({
         title: lang.message.info

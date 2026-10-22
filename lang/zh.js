@@ -49,9 +49,12 @@ const zh_lang = {
     deleteName: '删除',
     pay: '缴费',
     printOther: '打印收据',
-    printOther1: '打印收据',
+    printOther1: 'FT/FR',
+    ftFrBtn: 'FT/FR',
     printOtherTwo: '补开收据',
     print: '打印催缴单',
+    printDemandTitle: '催缴单',
+    printDemandSub: '打印',
     invoice: '打印发票',
     invoice_1: '打印发票',
     agree: '同意',
@@ -421,7 +424,9 @@ const zh_lang = {
       btnName: "搜索",
       noData: "暂无数据",
       look: "查看附近用户",
-      zjsc: '最近三次记录'
+      zjsc: '最近三次记录',
+      submitPrintFa: '提交 FA 并打印',
+      faDocTitle: 'Factura de Adiantamento',
     }
   },
   // 金额汇总（原今日收费）

@@ -124,9 +124,15 @@
     </scroll-view>
     
   </view>
-  <view class="btn">
-    <view class="btn-item" bindtap="imprimirInfo">
-      {{ btnName.cadastrar }}
-    </view>
+  <view class="detail-action-bar">
+    <van-button type="info" size="small" block custom-class="account-action-btn" catch:tap="goToDayin">
+      <view class="account-action-btn__inner">
+        <text class="account-action-btn__title">{{btnName.printDemandTitle}}</text>
+        <text class="account-action-btn__sub">{{btnName.printDemandSub}}</text>
+      </view>
+    </van-button>
+    <van-button type="info" size="small" block custom-class="account-action-btn" catch:tap="goToFtFrDetail">
+      <view class="account-action-btn__inner account-action-btn__inner--single">{{btnName.ftFrBtn}}</view>
+    </van-button>
   </view>
 </view>

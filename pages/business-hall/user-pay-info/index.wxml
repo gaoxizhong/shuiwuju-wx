@@ -45,7 +45,12 @@
               <text style="color: #ff0000;" wx:elif="{{item.invoice_status == 5}}">{{lang.kjsb_status}}</text>
               <text class="status-row__agt" wx:if="{{agt_status_text}}">{{agt_status_text}}</text>
             </view>
-            <view class="qx-btn active query-status-btn" bindtap="queryAgtStatus">{{lang.queryStatus}}</view>
+            <view
+              wx:if="{{item.invoice_status != 1 && !item.cancel_invoice_number}}"
+              class="qx-btn active query-status-btn"
+              data-kind="invoice"
+              bindtap="queryAgtStatus"
+            >{{lang.queryStatus}}</view>
           </view>
         </view>
         <view class="status-row">
@@ -58,7 +63,14 @@
               <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 3}}">{{lang.bk_status}}</text>
               <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 4}}">{{lang.kjz_status}}</text>
               <text style="color: #ff0000;" wx:elif="{{item.receipt_status == 5}}">{{lang.kjsb_status}}</text>
+              <text class="status-row__agt" wx:if="{{agt_receipt_status_text}}">{{agt_receipt_status_text}}</text>
             </view>
+            <view
+              wx:if="{{item.receipt_status != 1 && !item.cancel_receipt_number}}"
+              class="qx-btn active query-status-btn"
+              data-kind="receipt"
+              bindtap="queryAgtStatus"
+            >{{lang.queryStatus}}</view>
           </view>
         </view>
       </view>

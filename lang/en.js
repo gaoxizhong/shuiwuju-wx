@@ -51,9 +51,12 @@ const en_lang = {
     deleteName: 'Apagar',
     pay: 'Pagamento',
     printOther: 'Imprimir recibo',
-    printOther1: 'Impressäo de Recibo',
+    printOther1: 'FT/FR',
+    ftFrBtn: 'FT/FR',
     printOtherTwo: 'Reabastecimento de recibos',
     print: 'Imprimir aviso de cobrança',
+    printDemandTitle: 'Aviso',
+    printDemandSub: 'cobrança',
     invoice: 'Imprimir As facturas',
     invoice_1: 'Factura/recibo',
     agree: 'Concordo',
@@ -423,7 +426,9 @@ const en_lang = {
       btnName: "Pesquisar",
       noData: "Dados não disponíveis",
       look: "Ver usuários próximos",
-      zjsc: 'Ultimos três registros'
+      zjsc: 'Ultimos três registros',
+      submitPrintFa: 'Submeter FA e imprimir',
+      faDocTitle: 'Factura de Adiantamento',
     }
   },
   // 金额汇总（原今日收费）

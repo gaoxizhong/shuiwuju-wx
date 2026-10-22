@@ -15,7 +15,8 @@ import {
   isAdmin
 } from '../../../apis/admin'
 const {
-  wxAsyncApi,fmoney
+  wxAsyncApi,
+  fmoney,
 } = require('../../../utils/util')
 Page({
   data: {
@@ -260,31 +261,6 @@ Page({
       })
     })
   },
-  goToDayin(e){
-    console.log(e)
-    let item = e.currentTarget.dataset.item;
-    const payStatusList = JSON.stringify(this.data.payStatusList);
-    // wxAsyncApi('navigateTo', {
-    //   url: `/pages/query-water/pay/confirm-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=''&last_reading=${0}&pageUrl=accountsearch`,
-      wxAsyncApi('reLaunch', {
-        url: `/pages/query-water/pay/print-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&order_no=''&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=''&last_reading=${item.last_reading}&up_id=''&check_time_text=${item.updated_at}&payStatusList=${payStatusList}`,
-    }).then(res => {
-      wx.setNavigationBarTitle({
-        title: lang.message.info,
-      })
-    })
-  },
-  goTojiaofei(e){
-    let item = e.currentTarget.dataset.item;
-    wxAsyncApi('navigateTo', {
-      url: `/pages/user-total-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&source=business-hall`,
-    }).then(res => {
-      wx.setNavigationBarTitle({
-        title: lang.message.info,
-      })
-    })
-  },
-
   // 打印信息
   imprimirInfo(e){
     let that = this;

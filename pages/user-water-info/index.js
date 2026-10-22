@@ -66,6 +66,8 @@ Page({
     printDeviceInfo: null,
     printInfo: '',
     source: '',
+    /** 催缴单删除记录详情：仅展示信息，不展示 FT/FR/打印操作 */
+    isDeletedRecord: false,
 
     showResult: false,
     check_result: '',
@@ -134,6 +136,7 @@ Page({
     const form = JSON.parse(options.data)
     console.log(form)
     const source = options.source
+    const isDeletedRecord = options.deleted === '1' || options.deleted === 'true'
     const createDate = form.check_time ? this.handleDate(form.check_time) : ""
     form.createDate = createDate
     // status 驱动 wxml 底部按钮展示，条件自上而下覆盖
@@ -183,6 +186,7 @@ Page({
       && status !== 'bank_pay'
     this.setData({
       source,
+      isDeletedRecord,
       form,
       status,
       ftFrDisabled,

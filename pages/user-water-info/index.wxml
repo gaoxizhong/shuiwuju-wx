@@ -49,7 +49,7 @@
     - 已支付 / FT·FR 完成后：前两个置灰，仅「其他金额」可点
     financial-manager：同意 / 不同意
   -->
-  <view class="btn {{(source === 'search-person' || source === 'business-hall') ? 'btn-vertical' : ''}}">
+  <view wx:if="{{!isDeletedRecord}}" class="btn {{(source === 'search-person' || source === 'business-hall') ? 'btn-vertical' : ''}}">
     <block wx:if="{{source === 'search-person' || source === 'business-hall'}}">
       <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
         <view>{{lang.ftBtn}}</view>

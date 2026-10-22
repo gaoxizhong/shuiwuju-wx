@@ -6,7 +6,10 @@ const {
 } = require('./../../utils/print')
 
 const {
-  wxAsyncApi,fmoney,handleTimeValue
+  wxAsyncApi,
+  fmoney,
+  handleTimeValue,
+  parseMoneyNumber,
 } = require('./../../utils/util')
 const GBK = require('./../../utils/gbk.min')
 //只需要引用encoding.js,注意路径
@@ -84,7 +87,97 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
+    lang = app.globalData.lang
+    this.setData({
+      btnName: lang.btnName,
+    })
+  },
 
+  getPayStatusListJson() {
+    return JSON.stringify(
+      (this.data.payStatusList || []).map((i) => ({
+        text: i.title || i.text,
+        key: i.key,
+      }))
+    )
+  },
+
+  getMeterActionItem() {
+    const form = this.data.form || {}
+    const wm = form.water_mater || {}
+    return {
+      wm_no: wm.wm_no,
+      wm_name: wm.wm_name,
+      user_bal: form.user_bal != null ? form.user_bal : wm.user_bal,
+      last_reading: wm.last_reading,
+      updated_at: wm.created_at || wm.updated_at || '',
+      user_card: wm.user_card,
+    }
+  },
+
+  buildDemandFormFromMeter() {
+    const form = this.data.form || {}
+    const wm = form.water_mater || {}
+    const rawBal = parseMoneyNumber(
+      form.water_mater_arrears_money_sum != null && form.water_mater_arrears_money_sum !== ''
+        ? form.water_mater_arrears_money_sum
+        : (form.user_bal != null ? form.user_bal : wm.user_bal)
+    )
+    const price = Number.isFinite(rawBal) ? rawBal : 0
+    return {
+      wm_no: wm.wm_no,
+      wm_name: wm.wm_name,
+      price,
+      status: 1,
+      receipt_status: 1,
+      invoice_status: 1,
+      arrears_money: price,
+      meter: {
+        wm_no: wm.wm_no,
+        wm_name: wm.wm_name,
+        user_bal: price,
+        user_card: wm.user_card,
+      },
+    }
+  },
+
+  goToDayin() {
+    const item = this.getMeterActionItem()
+    if (!item.wm_no) {
+      wx.showToast({
+        title: lang.message.fail,
+        icon: 'none',
+      })
+      return
+    }
+    const payStatusList = this.getPayStatusListJson()
+    wxAsyncApi('reLaunch', {
+      url: `/pages/query-water/pay/print-info/index?wm_no=${item.wm_no}&wm_name=${item.wm_name}&total_money=${item.user_bal}&order_no=''&total_water=${item.last_reading}&reading=${item.last_reading}&imageUrl=''&last_reading=${item.last_reading}&up_id=''&check_time_text=${item.updated_at}&payStatusList=${payStatusList}`,
+    }).then(() => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
+  },
+
+  goToFtFrDetail() {
+    const wm = (this.data.form && this.data.form.water_mater) || {}
+    if (!wm.wm_no) {
+      wx.showToast({
+        title: lang.message.fail,
+        icon: 'none',
+      })
+      return
+    }
+    const data = JSON.stringify(this.buildDemandFormFromMeter())
+    const payWayList = this.getPayStatusListJson()
+    wxAsyncApi('navigateTo', {
+      url: `/pages/user-water-info/index?data=${data}&payWayList=${payWayList}&source=business-hall`,
+    }).then(() => {
+      wx.setNavigationBarTitle({
+        title: lang.message.info,
+      })
+    })
   },
   handleGetTime(e) {
     const {

@@ -68,7 +68,7 @@ Page({
     const month = _date.getMonth() + 1
     const day = _date.getDate()
     const hh = _date.getHours()
-    const mm = _date.getMinutes()
+    const mm = _date.getMinutes() 
     const ss = _date.getSeconds()
     const time = `${year}-${month >= 10 ? month : '0' + month}-${day >= 10 ? day : '0' + day} ${hh >= 10 ? hh : '0' + hh}:${mm >= 10 ? mm : '0' + mm}:${ss >= 10 ? ss : '0' + ss}`
     const timestamp = new Date(year, month - 1, day, hh, mm, ss).getTime() / 1000

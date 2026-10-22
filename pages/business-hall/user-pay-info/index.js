@@ -80,6 +80,7 @@ Page({
     selt_cancel_status: {}, // 选中的取消原因
     status_type: '',
     agt_status_text: '',
+    agt_receipt_status_text: '',
     querying_agt: false,
     submitting_agt_ft: false,
     canIssueAgtFt: false,
@@ -342,12 +343,22 @@ Page({
     })
   },
 
-  /** 按缴费记录 ID 查询 AGT 校验状态 */
-  queryAgtStatus() {
+  /** 发票/收据：非「未开具(1)」时可查 AGT（仅查询，不触发开票） */
+  queryAgtStatus(e) {
+    const kind = (e && e.currentTarget && e.currentTarget.dataset.kind) || 'invoice'
     const that = this
     const lang = that.data.lang
     const oiLang = getApp().globalData.lang.otherInvoices || {}
-    const payLogId = (that.data.item && that.data.item.id) || (that.data.from && that.data.from.id)
+    const item = that.data.item || {}
+    const isReceipt = kind === 'receipt'
+    if (isReceipt) {
+      if (item.cancel_receipt_number || Number(item.receipt_status) === 1) {
+        return
+      }
+    } else if (item.cancel_invoice_number || Number(item.invoice_status) === 1) {
+      return
+    }
+    const payLogId = item.id || (that.data.from && that.data.from.id)
     if (!payLogId) {
       wx.showToast({
         title: getApp().globalData.lang.message.noMoreEmpty,
@@ -358,6 +369,8 @@ Page({
     if (that.data.querying_agt) {
       return
     }
+    const agtTextKey = isReceipt ? 'agt_receipt_status_text' : 'agt_status_text'
+    const defaultType = isReceipt ? 'RG' : 'FT'
     that.setData({ querying_agt: true })
     wx.showLoading({
       title: oiLang.agtLoading || lang.agtPendingStatus,
@@ -365,15 +378,18 @@ Page({
     })
     obterAgtEstado({
       user_pay_log_id: payLogId,
-      item: that.data.item,
-      defaultType: 'FT',
+      item,
+      defaultType,
+      document_type: defaultType,
     }).then((res) => {
       wx.hideLoading()
       that.setData({ querying_agt: false })
       const data = getAgtInvoiceData(res)
       const documentNo = mergeAgtDocumentNo(null, res)
+      const patch = {}
       if (data.rate_limited === true) {
-        that.setData({ agt_status_text: lang.agtPendingStatus })
+        patch[agtTextKey] = lang.agtPendingStatus
+        that.setData(patch)
         wx.showToast({
           title: oiLang.agtRateLimit || lang.agtPendingStatus,
           icon: 'none',
@@ -382,7 +398,8 @@ Page({
         return
       }
       if (isAgtValidationPassed(res)) {
-        that.setData({ agt_status_text: lang.agtValid })
+        patch[agtTextKey] = lang.agtValid
+        that.setData(patch)
         wx.showToast({
           title: documentNo
             ? `${lang.agtValid} · ${documentNo}`
@@ -393,7 +410,8 @@ Page({
         return
       }
       if (isAgtValidationPending(res)) {
-        that.setData({ agt_status_text: lang.agtPendingStatus })
+        patch[agtTextKey] = lang.agtPendingStatus
+        that.setData(patch)
         const pendingDocNo = documentNo || that.data.invoice_code || ''
         wx.showToast({
           title: pendingDocNo
@@ -404,7 +422,8 @@ Page({
         })
         return
       }
-      that.setData({ agt_status_text: lang.agtInvalid })
+      patch[agtTextKey] = lang.agtInvalid
+      that.setData(patch)
       wx.showToast({
         title: oiLang.agtFailTitle || lang.agtInvalid,
         icon: 'none',

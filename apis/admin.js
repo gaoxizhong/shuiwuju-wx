@@ -172,7 +172,12 @@ export const issueAgtInvoice = (data) => {
  */
 export const obterAgtEstado = (data) => {
   const util = require('../utils/util')
-  const payload = util.normalizeObterAgtEstadoParams(data)
+  // 单次 HTTP 只查一次 AGT；轮询由 issueAgtInvoiceThenQueryEstado / 页面间隔重试完成
+  const payload = Object.assign({
+    poll: 0,
+    poll_times: 0,
+    poll_interval: 0,
+  }, util.normalizeObterAgtEstadoParams(data))
   const baseUrl = getApp().globalData.baseUrl
   return httpRequest({
     url: `${baseUrl}/api/wx/tr/tr_obter_agt_estado`,

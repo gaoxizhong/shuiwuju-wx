@@ -51,11 +51,6 @@
           <!-- <view class="wixi-item__status" style="color: {{item.status === 1 ? '#ee0a24' : '#07c160'}};">
             {{item.status_text}}
           </view> -->
-          <view class="his-box">
-            <van-button type="info" size="small" block='true' data-item="{{item}}" catch:tap="goToDayin">{{ btnName.print }}</van-button>
-            <van-button type="info" size="small" block='true' data-item="{{item}}" catch:tap="goTojiaofei">{{ btnName.printOther1 }}</van-button>
-          </view>
-
         </view>
       </block>
     </scroll-view>
