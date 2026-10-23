@@ -51,11 +51,11 @@
   -->
   <view wx:if="{{!isDeletedRecord}}" class="btn {{(source === 'search-person' || source === 'business-hall') ? 'btn-vertical' : ''}}">
     <block wx:if="{{source === 'search-person' || source === 'business-hall'}}">
-      <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
+      <view class="btn-item {{(ftfrSubmitting || (ftFrDisabled && !agt_invoice_retryable)) ? 'btn-return' : ''}}" data-type="FT" bindtap="{{(ftfrSubmitting || (ftFrDisabled && !agt_invoice_retryable)) ? '' : 'openFtFrPay'}}">
         <view>{{lang.ftBtn}}</view>
         <view class="btn-item-sub">{{lang.payThisBillSub}}</view>
       </view>
-      <view class="btn-item {{(ftfrSubmitting || ftFrDisabled) ? 'btn-return' : ''}}" data-type="FR" bindtap="{{(ftfrSubmitting || ftFrDisabled) ? '' : 'openFtFrPay'}}">
+      <view class="btn-item {{(ftfrSubmitting || (ftFrDisabled && !agt_invoice_retryable)) ? 'btn-return' : ''}}" data-type="FR" bindtap="{{(ftfrSubmitting || (ftFrDisabled && !agt_invoice_retryable)) ? '' : 'openFtFrPay'}}">
         <view>{{lang.frBtn}}</view>
         <view class="btn-item-sub">{{lang.payThisBillSub}}</view>
       </view>

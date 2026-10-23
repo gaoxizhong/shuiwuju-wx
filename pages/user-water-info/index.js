@@ -11,7 +11,15 @@ const {
   runAfterBluetoothGate,
 } = require('./../../utils/printBluetoothGate')
 const {
-  wxAsyncApi,fmoney,parseMoneyNumber,isAgtValidationPassed,isAgtValidationPending,getAgtValidationErrors,mergeAgtDocumentNo,extractAgtRequestId
+  wxAsyncApi,
+  fmoney,
+  parseMoneyNumber,
+  isAgtValidationPassed,
+  isAgtValidationPending,
+  getAgtValidationErrors,
+  getAgtDocStatuses,
+  mergeAgtDocumentNo,
+  extractAgtRequestId,
 } = require('./../../utils/util')
 const {
   new_payWater,
@@ -26,8 +34,16 @@ import {
   handleBusinessHallBillReceipt
 } from './../../apis/business-hall'
 import {
-  issueAgtInvoiceThenQueryEstado
+  issueAgtInvoiceThenQueryEstado,
+  obterAgtEstado,
 } from './../../apis/admin'
+
+const AGT_OBTER_RETRY_INTERVAL_MS = 30000
+const AGT_OBTER_RETRY_MAX = 3
+
+function delayMs(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 const GBK = require('./../../utils/gbk.min')
 //只需要引用encoding.js,注意路径
@@ -86,6 +102,10 @@ Page({
     pay_log_id: '',
     agt_document_no: '', // AGT 返回 document_no，打印小票发票号
     agt_request_id: '',
+    /** AGT 校验已通过（V）；与仅有发票号/开具中区分，用于开票失败重试 */
+    agt_validation_done: false,
+    /** 已收款但开票未完成时可再次点 FT/FR 提交，走 obter 或补开 */
+    agt_invoice_retryable: false,
     pendingPrintFlow: '',
   },
 
@@ -184,6 +204,8 @@ Page({
     const ftFrDisabled = (source === 'search-person' || source === 'business-hall')
       && status !== 'pay'
       && status !== 'bank_pay'
+    const agtDocFromForm = form.agt_document_no || form.bill_invoice_code || form.invoice_code || ''
+    const agtReqFromForm = form.agt_request_id ? String(form.agt_request_id) : ''
     this.setData({
       source,
       isDeletedRecord,
@@ -199,6 +221,10 @@ Page({
       pay_way: '',
       pay_text: '',
       printInfo: '',
+      agt_document_no: agtDocFromForm,
+      agt_request_id: agtReqFromForm,
+      agt_validation_done: false,
+      agt_invoice_retryable: false,
       invoiceIssued: this.getInvoiceStatus(form).invoiceIssued,
       invoiceStatusText: this.getInvoiceStatus(form).invoiceStatusText,
     })
@@ -365,23 +391,239 @@ Page({
     }
     return params
   },
-  updateInvoiceIssued(agtDocumentNo, agtRequestId) {
-    const form = Object.assign({}, this.data.form, {
-      invoice_status: 2,
-    })
-    if (agtDocumentNo) {
-      form.bill_invoice_code = agtDocumentNo
-      form.agt_document_no = agtDocumentNo
-      form.invoice_code = agtDocumentNo
+  /** 每次开票/查询后持久化 request_id、发票号（失败也可重试 obter） */
+  persistAgtIssueMeta({ requestId, documentNo, validated }) {
+    const form = Object.assign({}, this.data.form || {})
+    const req = requestId != null && requestId !== ''
+      ? String(requestId)
+      : (this.data.agt_request_id || form.agt_request_id || '')
+    const doc = documentNo != null && documentNo !== ''
+      ? String(documentNo)
+      : (this.data.agt_document_no || form.agt_document_no || '')
+    if (doc) {
+      form.bill_invoice_code = doc
+      form.agt_document_no = doc
+      form.invoice_code = doc
+    }
+    if (req) {
+      form.agt_request_id = req
+    }
+    if (validated) {
+      form.invoice_status = 2
     }
     const invoiceInfo = this.getInvoiceStatus(form)
+    const validationDone = validated === true
+    const retryable = !validationDone && !!(req || doc || this.data.pay_log_id)
     this.setData({
       form,
-      agt_document_no: agtDocumentNo || this.data.agt_document_no || '',
-      agt_request_id: agtRequestId || this.data.agt_request_id || '',
-      invoiceIssued: invoiceInfo.invoiceIssued,
-      invoiceStatusText: invoiceInfo.invoiceStatusText,
+      agt_document_no: doc,
+      agt_request_id: req,
+      agt_validation_done: validationDone ? true : this.data.agt_validation_done,
+      agt_invoice_retryable: retryable,
+      invoiceIssued: validationDone ? invoiceInfo.invoiceIssued : this.data.invoiceIssued,
+      invoiceStatusText: validationDone
+        ? invoiceInfo.invoiceStatusText
+        : this.data.invoiceStatusText,
     })
+  },
+
+  updateInvoiceIssued(agtDocumentNo, agtRequestId) {
+    this.persistAgtIssueMeta({
+      requestId: agtRequestId,
+      documentNo: agtDocumentNo,
+      validated: true,
+    })
+  },
+
+  shouldResumeAgtByQuery(opts) {
+    if (this.data.agt_validation_done) {
+      return false
+    }
+    if (this.data.agt_request_id || this.data.agt_document_no) {
+      return true
+    }
+    // 用户主动重试：无 request_id 时仍可用支付记录 ID 查 obter
+    if (opts && opts.resumeByPayLog && this.data.pay_log_id) {
+      return true
+    }
+    return false
+  },
+
+  pollObterForAgtIssue(queryParams) {
+    const documentType = String((queryParams && queryParams.document_type) || 'FT').toUpperCase()
+    let pollCount = 0
+    const run = () => {
+      return obterAgtEstado(Object.assign({
+        poll: 0,
+        poll_times: 0,
+        poll_interval: 0,
+        document_type: documentType,
+      }, queryParams || {})).then((estadoRes) => {
+        pollCount += 1
+        const requestId = extractAgtRequestId(estadoRes)
+          || (queryParams && queryParams.request_id)
+          || this.data.agt_request_id
+        if (isAgtValidationPassed(estadoRes)) {
+          return { finalRes: estadoRes, request_id: requestId, issueRes: null }
+        }
+        const { validationStatus, docStatus } = getAgtDocStatuses(estadoRes)
+        if (validationStatus === 'I' || docStatus === 'I') {
+          return { finalRes: estadoRes, request_id: requestId, issueRes: null }
+        }
+        if (isAgtValidationPending(estadoRes) || pollCount >= AGT_OBTER_RETRY_MAX) {
+          return { finalRes: estadoRes, request_id: requestId, issueRes: null }
+        }
+        return delayMs(AGT_OBTER_RETRY_INTERVAL_MS).then(run)
+      })
+    }
+    return run()
+  },
+
+  /**
+   * 统一开票：首次 tr_issue + obter；已有 request_id/支付记录则先 obter，必要时再开票
+   */
+  runAgtInvoiceFlow(options) {
+    const that = this
+    const opts = options || {}
+    const documentType = String(opts.documentType || that.data.payDocType || 'FT').toUpperCase()
+    const paymentId = opts.paymentId || that.data.pay_log_id
+      || (that.data.form && (that.data.form.up_id || that.data.form.id))
+    const otherInvoices = that.data.otherInvoices || lang.otherInvoices
+    const onUnlock = typeof opts.onUnlock === 'function' ? opts.onUnlock : () => {}
+    const onPayFlowEnd = typeof opts.onPayFlowEnd === 'function' ? opts.onPayFlowEnd : () => {}
+
+    const finishFail = () => {
+      onPayFlowEnd(false)
+      onUnlock()
+    }
+    const finishSuccess = () => {
+      onPayFlowEnd(true)
+      onUnlock()
+    }
+
+    const handleAgtOutcome = ({ issueRes, finalRes, request_id }) => {
+      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
+      const requestId = request_id
+        || extractAgtRequestId(finalRes)
+        || extractAgtRequestId(issueRes)
+        || that.data.agt_request_id
+
+      that.persistAgtIssueMeta({
+        requestId,
+        documentNo,
+        validated: false,
+      })
+
+      const doPrint = (no) => {
+        const printNo = no || documentNo || that.data.agt_document_no
+        that.updateInvoiceIssued(printNo, requestId)
+        finishSuccess()
+        that.blueToothPrint(printNo)
+      }
+
+      if (that.isAgtIssueSuccess(finalRes)) {
+        wx.showToast({
+          title: otherInvoices.agtSuccessTitle,
+          icon: 'none',
+        })
+        doPrint(documentNo)
+        return
+      }
+
+      const res = finalRes || issueRes
+      if (isAgtValidationPending(res)) {
+        that.setData({ agt_invoice_retryable: true })
+        if (documentNo) {
+          wx.showModal({
+            title: otherInvoices.agtPending,
+            content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
+            confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
+            cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
+            success: (r) => {
+              if (r.confirm) {
+                doPrint(documentNo)
+              } else {
+                finishFail()
+              }
+            },
+          })
+          return
+        }
+        that.showAgtIssueFailToast(res)
+        finishFail()
+        return
+      }
+
+      that.setData({
+        agt_invoice_retryable: !!(requestId || documentNo || paymentId),
+      })
+      that.showAgtIssueFailToast(res)
+      finishFail()
+    }
+
+    const startNewIssue = () => {
+      issueAgtInvoiceThenQueryEstado(
+        that.buildAgtInvoiceParams(documentType, paymentId)
+      ).then(({ issueRes, finalRes, request_id }) => {
+        wx.hideLoading()
+        handleAgtOutcome({ issueRes, finalRes, request_id })
+      }).catch((err) => {
+        wx.hideLoading()
+        const req = extractAgtRequestId(err) || that.data.agt_request_id
+        const doc = mergeAgtDocumentNo(err, null)
+        if (req || doc) {
+          that.persistAgtIssueMeta({ requestId: req, documentNo: doc, validated: false })
+          that.setData({ agt_invoice_retryable: true })
+        }
+        that.showAgtIssueFailToast(err)
+        finishFail()
+      })
+    }
+
+    wx.showLoading({
+      title: otherInvoices.agtLoading,
+      mask: true,
+    })
+
+    if (that.shouldResumeAgtByQuery({ resumeByPayLog: opts.resumeByPayLog })) {
+      const queryParams = {
+        document_type: documentType,
+      }
+      if (that.data.agt_request_id) {
+        queryParams.request_id = that.data.agt_request_id
+      }
+      if (paymentId) {
+        queryParams.user_pay_log_id = paymentId
+      }
+      that.pollObterForAgtIssue(queryParams).then((queryPack) => {
+        if (!queryPack) {
+          startNewIssue()
+          return
+        }
+        const { finalRes, request_id, issueRes } = queryPack
+        if (isAgtValidationPassed(finalRes)) {
+          wx.hideLoading()
+          handleAgtOutcome({ issueRes, finalRes, request_id })
+          return
+        }
+        const { validationStatus, docStatus } = getAgtDocStatuses(finalRes)
+        if (validationStatus === 'I' || docStatus === 'I') {
+          startNewIssue()
+          return
+        }
+        if (isAgtValidationPending(finalRes)) {
+          wx.hideLoading()
+          handleAgtOutcome({ issueRes, finalRes, request_id })
+          return
+        }
+        startNewIssue()
+      }).catch(() => {
+        startNewIssue()
+      })
+      return
+    }
+
+    startNewIssue()
   },
   handleInvoiceAction() {
     if (!this.data.is_Invoicereturn) {
@@ -433,64 +675,13 @@ Page({
       })
       return
     }
-    that.setData({
-      is_Invoicereturn: false,
-    })
-    wx.showLoading({
-      title: otherInvoices.agtLoading,
-      mask: true,
-    })
-    const resetInvoiceBtn = (delay = 1000) => {
-      setTimeout(() => {
-        that.setData({
-          is_Invoicereturn: true,
-        })
-      }, delay)
-    }
-    const handleIssueFail = (res) => {
-      wx.hideLoading()
-      that.showAgtIssueFailToast(res)
-      resetInvoiceBtn(0)
-    }
-    // 开票 → 查状态；V 直接打印；E92/pending 且已有发票号可「仍打印」
-    issueAgtInvoiceThenQueryEstado(that.buildAgtInvoiceParams('FT')).then(({ issueRes, finalRes, request_id }) => {
-      wx.hideLoading()
-      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
-      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      const doPrint = (no) => {
-        that.updateInvoiceIssued(no || documentNo, requestId)
-        that.blueToothPrint(no || documentNo)
-        resetInvoiceBtn()
-      }
-      if (that.isAgtIssueSuccess(finalRes)) {
-        wx.showToast({
-          title: otherInvoices.agtSuccessTitle,
-          icon: 'none',
-        })
-        doPrint(documentNo)
-        return
-      }
-      const res = finalRes || issueRes
-      if (isAgtValidationPending(res) && documentNo) {
-        that.updateInvoiceIssued(documentNo, requestId)
-        wx.showModal({
-          title: otherInvoices.agtPending,
-          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
-          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
-          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
-          success: (r) => {
-            if (r.confirm) {
-              doPrint(documentNo)
-            } else {
-              resetInvoiceBtn(0)
-            }
-          },
-        })
-        return
-      }
-      handleIssueFail(res)
-    }).catch((err) => {
-      handleIssueFail(err)
+    that.setData({ is_Invoicereturn: false })
+    that.runAgtInvoiceFlow({
+      documentType: 'FT',
+      paymentId,
+      onUnlock: () => {
+        that.setData({ is_Invoicereturn: true })
+      },
     })
   },
   handleDate(value) {
@@ -517,8 +708,12 @@ Page({
   },
   // FT / FR：打开本催缴单缴费弹窗（实缴金额 = 本次应缴金额 / 本催缴单额度）
   openFtFrPay(e) {
-    // 已支付：FT/FR 禁止点击
-    if (this.data.ftFrDisabled || this.data.ftfrSubmitting) {
+    const canRetryInvoice = this.data.agt_invoice_retryable && !this.data.agt_validation_done
+    // 已支付且非开票重试：FT/FR 禁止再次收款
+    if (this.data.ftfrSubmitting) {
+      return
+    }
+    if (this.data.ftFrDisabled && !canRetryInvoice) {
       return
     }
     const payDocType = (e.currentTarget.dataset.type || 'FT').toUpperCase()
@@ -594,6 +789,25 @@ Page({
     if (that.data.ftfrSubmitting) {
       return
     }
+    const invoiceRetryOnly = that.data.pay_log_id
+      && that.data.agt_invoice_retryable
+      && !that.data.agt_validation_done
+    if (invoiceRetryOnly) {
+      that.setData({ ftfrSubmitting: true })
+      that.runAgtInvoiceFlow({
+        documentType: that.data.payDocType,
+        paymentId: that.data.pay_log_id,
+        resumeByPayLog: true,
+        onPayFlowEnd: (ok) => {
+          that.setData({
+            ftfrSubmitting: false,
+            showFtFrPay: !ok,
+            ftFrDisabled: true,
+          })
+        },
+      })
+      return
+    }
     const pay_text = that.data.pay_text
     const pay_way = that.data.pay_way
     if (!pay_text) {
@@ -656,6 +870,7 @@ Page({
         pay_log_id,
         showFtFrPay: false,
         ftFrDisabled: true,
+        agt_validation_done: false,
       })
       that.issueAgtInvoiceAfterPay(pay_log_id)
     }).catch((res) => {
@@ -684,70 +899,17 @@ Page({
       })
       return
     }
-    wx.showLoading({
-      title: otherInvoices.agtLoading,
-      mask: true,
-    })
-    const finishSuccess = () => {
-      // 开票结束：仍展示三按钮，仅 FT/FR 置灰
-      that.setData({
-        ftfrSubmitting: false,
-        showFtFrPay: false,
-        ftFrDisabled: true,
-      })
-    }
-    const finishFail = () => {
-      // 收款可能已成功：同样保持三按钮，FT/FR 置灰
-      that.setData({
-        ftfrSubmitting: false,
-        showFtFrPay: false,
-        ftFrDisabled: true,
-      })
-    }
-    // 开票 → 查状态；V 直接打印；pending 且已有发票号可「仍打印」
-    issueAgtInvoiceThenQueryEstado(
-      that.buildAgtInvoiceParams(that.data.payDocType, paymentId)
-    ).then(({ issueRes, finalRes, request_id }) => {
-      wx.hideLoading()
-      const documentNo = mergeAgtDocumentNo(issueRes, finalRes)
-      const requestId = request_id || extractAgtRequestId(finalRes) || extractAgtRequestId(issueRes)
-      const doPrint = () => {
-        that.updateInvoiceIssued(documentNo, requestId)
-        finishSuccess()
-        that.blueToothPrint(documentNo)
-      }
-      if (that.isAgtIssueSuccess(finalRes)) {
-        wx.showToast({
-          title: otherInvoices.agtSuccessTitle,
-          icon: 'none',
+    that.setData({ ftfrSubmitting: true })
+    that.runAgtInvoiceFlow({
+      documentType: that.data.payDocType,
+      paymentId,
+      onPayFlowEnd: () => {
+        that.setData({
+          ftfrSubmitting: false,
+          showFtFrPay: false,
+          ftFrDisabled: true,
         })
-        doPrint()
-        return
-      }
-      const res = finalRes || issueRes
-      if (isAgtValidationPending(res) && documentNo) {
-        that.updateInvoiceIssued(documentNo, requestId)
-        wx.showModal({
-          title: otherInvoices.agtPending,
-          content: `${otherInvoices.agtPendingPrintConfirm}\n${otherInvoices.agtInvoiceNo}: ${documentNo}`,
-          confirmText: otherInvoices.printAnywayBtn || otherInvoices.printAnyway,
-          cancelText: (getApp().globalData.lang.dialog || {}).cancelText || 'Cancel',
-          success: (r) => {
-            if (r.confirm) {
-              doPrint()
-            } else {
-              finishFail()
-            }
-          },
-        })
-        return
-      }
-      that.showAgtIssueFailToast(res)
-      finishFail()
-    }).catch((err) => {
-      wx.hideLoading()
-      that.showAgtIssueFailToast(err)
-      finishFail()
+      },
     })
   },
   printWaterInfo() {
