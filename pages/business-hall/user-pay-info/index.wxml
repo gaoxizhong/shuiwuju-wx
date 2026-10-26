@@ -46,7 +46,7 @@
               <text class="status-row__agt" wx:if="{{agt_status_text}}">{{agt_status_text}}</text>
             </view>
             <view
-              wx:if="{{item.invoice_status != 1 && !item.cancel_invoice_number}}"
+              wx:if="{{item.invoice_status != 1 && item.invoice_status != 2 && !item.cancel_invoice_number}}"
               class="qx-btn active query-status-btn"
               data-kind="invoice"
               bindtap="queryAgtStatus"
@@ -66,7 +66,7 @@
               <text class="status-row__agt" wx:if="{{agt_receipt_status_text}}">{{agt_receipt_status_text}}</text>
             </view>
             <view
-              wx:if="{{item.receipt_status != 1 && !item.cancel_receipt_number}}"
+              wx:if="{{item.receipt_status != 1 && item.receipt_status != 2 && !item.cancel_receipt_number}}"
               class="qx-btn active query-status-btn"
               data-kind="receipt"
               bindtap="queryAgtStatus"
