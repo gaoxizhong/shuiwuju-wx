@@ -3,7 +3,7 @@
   <view class="image-logo">
     <image src="https://oss.qingshanpai.com/wx_shuiwuju/index-bg3.png" mode="widthFix" />
     <view class="image-logo-title">
-      <view class="logo-title">EPASKS-E.P.</view>
+      <view class="logo-title">water manager</view>
     </view>
     <!-- <view class="fix-func">
       <view class="box-btn" bindtap="handleToSearch">
