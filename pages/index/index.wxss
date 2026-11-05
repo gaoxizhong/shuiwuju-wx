@@ -42,7 +42,7 @@ page{
   box-sizing: border-box;
 }
 .logo-title{
-  font-size: 62rpx;
+  font-size: 60rpx;
   font-weight: bold;
   background: -webkit-linear-gradient(left,#0a2b5d,#27599d, #3f7fd2);
   -webkit-background-clip: text;

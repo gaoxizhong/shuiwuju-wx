@@ -453,22 +453,37 @@ handleSearchInfo() {
     let that = this;
     let selectradio_info = that.data.selectradio_info; // 选择的用户
     let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
-    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
-    if (!selectradio_info.wm_no) {
+    if (!selectradio_info || !selectradio_info.wm_no) {
       this.setData({
         wm_no_error : true
       })
-      return
-    }
-    if (!seltTypeInfo) {
-      this.setData({
-        parent_type_error : true
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
       })
       return
     }
+    if (!seltTypeInfo || !seltTypeInfo.id) {
+      this.setData({
+        parent_type_error : true
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
     if (!total_money) {
       this.setData({
         amount_error : true
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
       })
       return
     }
