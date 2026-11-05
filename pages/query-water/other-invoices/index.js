@@ -205,8 +205,13 @@ Page({
   },
   getTrDemandNoteTotalMoney(){
     const that = this;
-    let price_list_id = that.data.seltTypeInfo.id;
-    let wm_id = that.data.selectradio_info.wm_id;
+    const selectradio_info = that.data.selectradio_info
+    const seltTypeInfo = that.data.seltTypeInfo
+    if (!selectradio_info || !selectradio_info.wm_id || !seltTypeInfo || !seltTypeInfo.id) {
+      return
+    }
+    let price_list_id = seltTypeInfo.id;
+    let wm_id = selectradio_info.wm_id;
     let date_time = that.handleTimeValue().time
     getTrDemandNoteTotalMoney({
       wm_id,
@@ -472,22 +477,37 @@ handleSearchInfo() {
     let that = this;
     let selectradio_info = that.data.selectradio_info; // 选择的用户
     let seltTypeInfo = that.data.seltTypeInfo; // 选择的种类
-    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
-    if (!selectradio_info.wm_no) {
+    if (!selectradio_info || !selectradio_info.wm_no) {
       this.setData({
         wm_no_error : true
       })
-      return
-    }
-    if (!seltTypeInfo) {
-      this.setData({
-        parent_type_error : true
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
       })
       return
     }
+    if (!seltTypeInfo || !seltTypeInfo.id) {
+      this.setData({
+        parent_type_error : true
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
+    let total_money = seltTypeInfo.id == 15 ? that.data.amount : seltTypeInfo.amount; // 选择的种类价格
     if (!total_money) {
       this.setData({
         amount_error : true
+      })
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
       })
       return
     }
@@ -537,6 +557,14 @@ handleSearchInfo() {
   // 获取打印信息
   getPrint(info,am){
     let selectradio_info = info;
+    if (!selectradio_info || !selectradio_info.wm_no) {
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
     let amount = am;
     let proforma_number = this.data.proforma_number;
     let agt_document_no = this.data.agt_document_no;
@@ -771,7 +799,15 @@ Factura-proforma
     let item = e.currentTarget.dataset.item;
     let index = e.currentTarget.dataset.index;
     let demandNoteList = that.data.demandNoteList;
-    let selectradio_info = item.water_meter;
+    let selectradio_info = item && item.water_meter;
+    if (!selectradio_info || !selectradio_info.wm_no) {
+      wx.showToast({
+        title: lang.message.formWarning,
+        icon: 'none',
+        duration: 2000
+      })
+      return
+    }
     let amount = item.total_money;
     that.setData({
       is_zhuanhuan: true, // 是否点击转换按钮
