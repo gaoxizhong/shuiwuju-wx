@@ -145,7 +145,7 @@ Facura/recibo:           ${infoData.invoice_num} Un
 Valor a pagar:         ${infoData.invoice_total_price} kZ
 --------------------------------
 Pessoa de entrega: ${operator_name}
-Processado por programaválido FE/407/AGT/2026
+Processado por programaválido FE/440/AGT/2026
 `,
       printInfo_data: `
 DATA: ${date.time}

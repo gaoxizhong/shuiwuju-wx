@@ -26,7 +26,7 @@ export const getRegistarFactura = (d) => {
         "softwareInfoDetail": { 
           "productId": "Water Manager", // 开票软件名称
           "productVersion": "1.0.1", // 开票软件版本
-          "softwareValidationNumber": "FE/407/AGT/2026" // 开票软件认证编号
+          "softwareValidationNumber": "FE/440/AGT/2026" // 开票软件认证编号
         },
         "jwsSoftwareSignature": "string" // 使用软件私钥对开票软件进行的数字签名，采用RS256算法（RSA + SHA-256）。softwareInfo对象的所有字段必须用于签名
     },
@@ -104,7 +104,7 @@ let obterEstado_data = {
       "softwareInfoDetail": { // 开票软件详细信息对象
         "productId": "string",  // 开票软件名称
         "productVersion": "string", // 开票软件版本
-        "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
+        "softwareValidationNumber": "FE/440/AGT/2026"  // 开票软件认证编号
       },
       "jwsSoftwareSignature": "string", //使用软件私钥对开票软件的数字签名，采用RS256算法
     },
@@ -120,7 +120,7 @@ let listarFacturas_data = {
     "softwareInfoDetail": { // 开票软件详细信息对象
       "productId": "string",  // 开票软件名称
       "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
+      "softwareValidationNumber": "FE/440/AGT/2026"  // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
@@ -143,7 +143,7 @@ let consultarFactura_data = {
     "softwareInfoDetail": { // 开票软件详细信息对象
       "productId": "string",  // 开票软件名称
       "productVersion": "string", // 开票软件版本
-      "softwareValidationNumber": "FE/407/AGT/2026"  // 开票软件认证编号
+      "softwareValidationNumber": "FE/440/AGT/2026"  // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },
@@ -161,7 +161,7 @@ let solicitarSerie_data = {
     "softwareInfoDetail": { 
       "productId": "Water Manager", // 开票软件名称
       "productVersion": "1.0.1", // 开票软件版本
-      "softwareValidationNumber": "FE/407/AGT/2026" // 开票软件认证编号
+      "softwareValidationNumber": "FE/440/AGT/2026" // 开票软件认证编号
     },
     "jwsSoftwareSignature": "string" // 软件数字签名
   },

@@ -1073,7 +1073,7 @@ Saldo
 ${userBluetoolthInfoData.water_meter.user_bal} KZ
 Water manager`; 
       let printInfo_time =`
-Processado por programaválido FE/407/AGT/2026
+Processado por programaválido FE/440/AGT/2026
 ${date.time}
 
 `;

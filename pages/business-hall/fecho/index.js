@@ -230,7 +230,7 @@ Transferência:     ${this.data.transfer_accounts_sum} kZ
 --------------------------------
 ${this.data.actual_amount ? 'Valor Declarado:   ' + this.data.actual_amount + 'KZ' : ''}
 Pessoa de entrega: ${operator_name}
-Processado por programaválido FE/407/AGT/2026
+Processado por programaválido FE/440/AGT/2026
 `,
       printInfo_data: `
 DATA: ${date.time}
