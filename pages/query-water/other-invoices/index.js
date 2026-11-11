@@ -4,6 +4,7 @@ let lang = app.globalData.lang
 const blueToolth = require('../../../utils/bluetoolth')
 const {
   arrEncoderCopy,
+  maybeAppendAgtInvoiceQr,
 } = require('./../../../utils/print')
 
 
@@ -694,6 +695,7 @@ Factura-proforma
     if (!info.length) {
       return
     }
+    info = maybeAppendAgtInvoiceQr(info, that.data)
     console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
     blueToolth.writeBLECharacteristicValue({
       ...p,

@@ -12,7 +12,7 @@ const {
 } = require('../../../utils/util')
 const {
   arrEncoderCopy,
-  appendAgtInvoiceQrCommands,
+  maybeAppendAgtInvoiceQr,
 } = require('../../../utils/print')
 const {
   getStoredConnectDevice,
@@ -388,9 +388,7 @@ ${date.time}
 `),
       ...blueToolth.printCommand.enter,
     ]
-    if (agtNo) {
-      info = appendAgtInvoiceQrCommands(info, agtNo)
-    }
+    info = maybeAppendAgtInvoiceQr(info, { agt_document_no: agtNo })
 
     blueToolth.writeBLECharacteristicValue({
       ...p,

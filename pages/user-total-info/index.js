@@ -8,7 +8,7 @@ const blueToolth = require('./../../utils/bluetoolth')
 var encoding = require("./../../utils/encoding.js")
 const {
   arrEncoderCopy,
-  appendAgtInvoiceQrCommands,
+  maybeAppendAgtInvoiceQr,
 } = require('./../../utils/print')
 const {
   getStoredConnectDevice,
@@ -899,9 +899,7 @@ Ref. Recibo: ${refNo}
           ...arrEncoderCopy(that.data.invoiceInfo_valores),
           ...blueToolth.printCommand.enter
         ]
-        if (that.data.agt_document_no) {
-          info = appendAgtInvoiceQrCommands(info, that.data.agt_document_no)
-        }
+        info = maybeAppendAgtInvoiceQr(info, that.data)
       }
       if (print_type == 'receiptInfo') {
         const receiptInfo_number = `
@@ -929,6 +927,7 @@ Ref. Recibo: ${res.data.receipt_number}
           ...arrEncoderCopy(that.data.receiptInfo_Saldo),
           ...blueToolth.printCommand.enter
         ]
+        info = maybeAppendAgtInvoiceQr(info, that.data)
       }
       console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
       let n = 1;

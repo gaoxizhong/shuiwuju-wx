@@ -148,6 +148,37 @@ function appendAgtInvoiceQrCommands(infoBytes, documentNo, emissorNif) {
   ]
 }
 
+/** 从页面常见字段取 AGT document_no，供走 AGT 后打小票追加 QR */
+function pickAgtDocumentNoFromContext(ctx) {
+  const c = ctx || {}
+  const item = c.item || c.itemInfo || c.form || {}
+  const candidates = [
+    c.agt_document_no,
+    item.agt_document_no,
+    item.bill_invoice_code,
+    c.invoice_code,
+    item.invoice_code,
+    (c.form && c.form.agt_document_no),
+    (c.form && c.form.bill_invoice_code),
+  ]
+  for (let i = 0; i < candidates.length; i++) {
+    const v = candidates[i]
+    if (v != null && String(v).trim()) {
+      return String(v).trim()
+    }
+  }
+  return ''
+}
+
+/** 有 AGT 发票号时在小票末尾追加校验 QR */
+function maybeAppendAgtInvoiceQr(infoBytes, ctxOrDocumentNo) {
+  const doc = typeof ctxOrDocumentNo === 'string'
+    ? String(ctxOrDocumentNo || '').trim()
+    : pickAgtDocumentNoFromContext(ctxOrDocumentNo)
+  if (!doc) return infoBytes
+  return appendAgtInvoiceQrCommands(infoBytes, doc)
+}
+
 module.exports = {
   blueToolth,
   printCommand,
@@ -157,6 +188,8 @@ module.exports = {
   printEscPos,
   printTextSegments,
   appendAgtInvoiceQrCommands,
+  pickAgtDocumentNoFromContext,
+  maybeAppendAgtInvoiceQr,
   buildAgtConsultaFeUrl,
   buildEscPosQrCodeBytes,
 }

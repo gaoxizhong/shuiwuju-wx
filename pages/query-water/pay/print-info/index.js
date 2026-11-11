@@ -11,7 +11,7 @@ const {
 const blueToolth = require('./../../../../utils/bluetoolth')
 const {
   arrEncoderCopy,
-  appendAgtInvoiceQrCommands,
+  maybeAppendAgtInvoiceQr,
 } = require('./../../../../utils/print')
 const {
   getStoredConnectDevice,
@@ -486,8 +486,8 @@ Factura Automatica`,
         ]
       }
     }
-    if (print_type === 'invoiceInfo' && that.data.agt_document_no) {
-      info = appendAgtInvoiceQrCommands(info, that.data.agt_document_no)
+    if (print_type === 'invoiceInfo') {
+      info = maybeAppendAgtInvoiceQr(info, that.data)
     }
     console.log('开始打印，蓝牙传信息...')
     blueToolth.writeBLECharacteristicValue({

@@ -6,6 +6,7 @@ let lang = app.globalData.lang
 const blueToolth = require('./../../utils/bluetoolth')
 const {
   arrEncoderCopy,
+  maybeAppendAgtInvoiceQr,
 } = require('./../../utils/print')
 const {
   getStoredConnectDevice,
@@ -716,6 +717,7 @@ Page({
         ...blueToolth.printCommand.enter
       ]
     }
+    info = maybeAppendAgtInvoiceQr(info, that.data)
     console.log('开始打印，蓝牙 writeBLECharacteristicValue...')
     blueToolth.writeBLECharacteristicValue({
       ...p,
