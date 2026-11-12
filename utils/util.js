@@ -123,6 +123,23 @@ function getAgtInvoiceData(res) {
   return payload.data || payload
 }
 
+/** 接口返回 desc/msg（含后端转发 AGT HTTP 错误） */
+function getAgtErrorDescription(res) {
+  const root = res || {}
+  return String(root.desc || root.msg || root.message || '').trim()
+}
+
+/**
+ * 后端调用 AGT registarFactura 返回 401 Unauthorized（环境/账号/JWS 不匹配，非小程序登录问题）
+ */
+function isAgtRegistarUnauthorized(res) {
+  const text = getAgtErrorDescription(res)
+  if (!text) return false
+  return /401\s*Unauthorized/i.test(text)
+    || (/registarFactura/i.test(text) && /\b401\b/.test(text))
+    || (/sifp\.minfin\.gov\.ao/i.test(text) && /\b401\b/.test(text))
+}
+
 /**
  * 收集 AGT obterEstado 校验/请求错误（E11/E40/E70、429 限流等）
  */
@@ -457,6 +474,8 @@ module.exports = {
   parseMoneyNumber,
   judgmentData,
   handleTimeValue,
+  getAgtErrorDescription,
+  isAgtRegistarUnauthorized,
   getAgtInvoiceData,
   getAgtValidationErrors,
   getAgtDocStatuses,

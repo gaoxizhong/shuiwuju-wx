@@ -135,6 +135,8 @@ const zh_lang = {
     agtPending: '发票已提交，AGT校验未完成，请稍后重试',
     agtPendingPrintConfirm: 'AGT校验尚未完成，是否使用已登记发票号先打印？',
     agtRateLimit: 'AGT查询限流，请约2分钟后重试',
+    agtUnauthorized:
+      'AGT鉴权失败(401)：服务端访问税务局接口未授权，请核对正式/测试环境与AGT账号证书',
     agtInvoiceNo: '发票号',
     printAnyway: '仍打印',
     printAnywayBtn: '仍打印',

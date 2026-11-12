@@ -137,6 +137,8 @@ const en_lang = {
     agtPending: 'Factura submetida, validação AGT pendente. Tente mais tarde',
     agtPendingPrintConfirm: 'Validação AGT ainda pendente. Imprimir com o N° já registado?',
     agtRateLimit: 'Limite AGT excedido. Tente novamente em cerca de 2 minutos',
+    agtUnauthorized:
+      'AGT 401: servidor sem autorização no SIFP. Verifique ambiente (prod/hml) e credenciais/certificados',
     agtInvoiceNo: 'N° da Factura',
     printAnyway: 'Imprimir mesmo assim',
     printAnywayBtn: 'Sim',

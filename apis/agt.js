@@ -3,6 +3,11 @@ let uesr = "ws.hml.Watmanagement";
 let password = "mfn79302026";
 let AGTUrl= "https://quiosqueagt.hml.minfin.gov.ao"; // AGT 发票税务 测试环境
 // let AGTUrl=  "https://quiosqueagt.minfin.gov.ao"; // AGT 发票税务 生产正式环
+//
+// SIFP 开票 API（由业务后端 server-to-server 调用，小程序走 tr_issue_agt_invoice）：
+//   测试  https://sifphml.minfin.gov.ao/sigt/fe/v1/registarFactura
+//   正式  https://sifp.minfin.gov.ao/sigt/fe/v1/registarFactura
+// 若 desc 含「401 Unauthorized」+ sifp：多为正式环境与 ws.hml.* 测试账号、或 JWS/证书未在 AGT 门户登记不一致，需在服务端改 AGT 配置。
 //REST
 //请求示例（Accept: application/json）：
 // 开票软件详细信息对象

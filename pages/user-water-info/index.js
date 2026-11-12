@@ -20,6 +20,8 @@ const {
   getAgtDocStatuses,
   mergeAgtDocumentNo,
   extractAgtRequestId,
+  getAgtErrorDescription,
+  isAgtRegistarUnauthorized,
 } = require('./../../utils/util')
 const {
   new_payWater,
@@ -644,7 +646,9 @@ Page({
   showAgtIssueFailToast(res) {
     const otherInvoices = this.data.otherInvoices || lang.otherInvoices
     let title = otherInvoices.agtIssueFail
-    if (res && isAgtValidationPending(res)) {
+    if (isAgtRegistarUnauthorized(res)) {
+      title = otherInvoices.agtUnauthorized || title
+    } else if (res && isAgtValidationPending(res)) {
       const errors = getAgtValidationErrors(res)
       const is429 = errors.some((e) => String(e).indexOf('429') !== -1
         || /limite|限流|excedido/i.test(String(e)))
@@ -653,7 +657,9 @@ Page({
         : (otherInvoices.agtPending || otherInvoices.agtIssueFail)
     } else if (res) {
       const errors = getAgtValidationErrors(res)
-      const detail = errors.length ? errors.slice(0, 2).join('；') : ''
+      const detail = errors.length
+        ? errors.slice(0, 2).join('；')
+        : getAgtErrorDescription(res).slice(0, 40)
       if (detail) {
         title = `${otherInvoices.agtIssueFail}：${detail}`.slice(0, 60)
       }

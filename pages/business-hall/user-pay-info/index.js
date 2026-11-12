@@ -14,7 +14,9 @@ const {
 const {
   wxAsyncApi,judgmentData,handleTimeValue,fmoney,
   getAgtInvoiceData,isAgtValidationPassed,isAgtValidationPending,mergeAgtDocumentNo,
-  extractAgtRequestId,getAgtValidationErrors,
+  extractAgtRequestId,
+  getAgtValidationErrors,
+  isAgtRegistarUnauthorized,
 } = require('../../../utils/util')
 const {
   getUserPayItemDetail,
@@ -284,8 +286,11 @@ Page({
       that.setData({ submitting_agt_ft: false })
       that.patchLocalInvoiceStatus(5)
       that.setInvoiceStatus(5)
+      const failTitle = isAgtRegistarUnauthorized(err)
+        ? (oiLang.agtUnauthorized || oiLang.agtIssueFail)
+        : ((err && err.desc) || oiLang.agtIssueFail || langUi.kjsb_status)
       wx.showToast({
-        title: (err && err.desc) || oiLang.agtIssueFail || langUi.kjsb_status,
+        title: String(failTitle).slice(0, 80),
         icon: 'none',
         duration: 3000,
       })
