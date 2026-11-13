@@ -560,7 +560,7 @@ ${that.data.pay_way == 4?"N* do Cheque: " +that.data.cheque_number : ''}
 Saldo: ${userBluetoolthInfoData.water_meter.user_bal} KZ
 
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/440/AGT/2026
 Este documento nao serve de fatura
 IVA Regime Simplificado
 Utilizador: ${that.data.operator_name}
@@ -631,7 +631,7 @@ Recibo N°: ${selectradio_info.proforma_number?selectradio_info.proforma_number:
 
       invoiceInfo_valores: `
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/440/AGT/2026
 ${date.time}
 
     `,

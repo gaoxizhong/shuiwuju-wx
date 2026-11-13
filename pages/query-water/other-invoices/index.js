@@ -554,7 +554,7 @@ Recibo N°: ${proforma_number?proforma_number:''}
 
       invoiceInfo_valores: `
 Water manager
-Processado por programaválido n31.1/AGT20
+Processado por programaválido FE/440/AGT/2026
 ${date.time}
 
     `,
